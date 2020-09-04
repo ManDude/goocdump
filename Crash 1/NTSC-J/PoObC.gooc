@@ -171,19 +171,13 @@ state Conveyor {
 state Steam_Spawn {
 	statusc 0
 	code () {
-		if (vecx) {
-			SteamCycleTime = vecx >> 8
-		}
-		else {
-			SteamCycleTime = 2.5s + rand(1s)
-		}
+		if (vecx) SteamCycleTime = vecx >> 8;
+		     else SteamCycleTime = 2.5s + rand(1s);
 		SteamCycleOffset = vecy >> 8
-		scalex = 2.0S
-		scaley = 4.0S
-		scalez = 2.0S
+		SetScale(2S, 4S, 2S)
 		y += 2m
 		zindex = -10
-		density = 160.0
+		density = .4m
 		spawn(PoObC, S_STEAM_COPY)
 		changestate(Steam_Wait)
 	}
