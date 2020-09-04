@@ -119,7 +119,7 @@ state Power_Door_Close { // 5
 	}
 	trans {
 		once {
-			soundpitch(3.6 + rand(0.8))
+			SoundPitchDefault()
 			soundplay([do23A], 0.6V)
 			soundsetup(0, voice, 5)
 		}
@@ -253,7 +253,7 @@ state Power_Door_Double_Close { // 12
 			if (!v0) {
 				v0 = 1.0
 			}
-			soundpitch(3.6 + rand(0.8))
+			SoundPitchDefault()
 			soundplay([do33A], 1.0V)
 		}
 		PowerDoorOffset -= 0.5m
