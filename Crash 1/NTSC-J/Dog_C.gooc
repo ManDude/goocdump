@@ -19,34 +19,20 @@ state Guard_Dog_Spawn {
 		return
 		zindex = 24
 		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000
-		if (vecx) {
-			DogAngerDistance = vecx
-		}
-		else {
-			DogAngerDistance = 6m
-		}
-		if (vecy) {
-			DogAttackSpeed = vecy
-		}
-		else {
-			DogAttackSpeed = 15.0
-		}
+		if (vecx) DogAngerDistance = vecx;
+		     else DogAngerDistance = 6m;
+		if (vecy) DogAttackSpeed = vecy;
+		     else DogAttackSpeed = 15.0;
 		density = 40.0
 		yzapproach = 360deg
 		trotx = 360deg
 		calcpath(0)
 		roty = troty
-		changestate(Guard_Dog_Wait)
+		changestate(Guard_Dog_Stance)
 	}
 }
 
-inline sub HitPlayer() {
-	if (STATUS_PLAYER_D_COLLIDER) {
-		sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
-	}
-}
-
-state Guard_Dog_Wait {
+state Guard_Dog_Stance {
 	statusc 0
 	code () {
 		sleepanim(0, GUARD_DOG)
@@ -54,63 +40,47 @@ state Guard_Dog_Wait {
 	event => state Guard_Dog_Attack
 	trans {
 		changestateif(Guard_Dog_Angry, distance(player, 2) < DogAngerDistance)
-		HitPlayer()
+		EnemyHitPlayerGround()
 	}
 }
 
 state Guard_Dog_Angry {
 	statusc 0
 	code () {
-		nop() // weird buggy line
-		scalex = 0.8S
-		scaley = 0.8S
-		scalez = 0.8S
+		debugfunc(1)
+		SetScale(.8S)
 		sleepanim(0, GUARD_DOG)
 	}
 	event => state Guard_Dog_Attack
 	trans {
-		changestateif(Guard_Dog_Wait, distance(player, 2) > DogAngerDistance)
+		changestateif(Guard_Dog_Stance, distance(player, 2) > DogAngerDistance)
 		changestateif(Guard_Dog_Attack, distance(player, 2) < DogAngerDistance - 1m)
-		HitPlayer()
+		EnemyHitPlayerGround()
 	}
 }
 
 state Guard_Dog_Attack {
 	statusc 0
 	code () {
-		scalex = 1.0S
-		scaley = 1.0S
-		scalez = 1.0S
+		SetScale(1S)
 		sleepanim(0, GUARD_DOG)
 	}
 	event (e, a) {
-		if (e == EventSpinHit && interrupter == player) {
-			interrupter->velx = 0
-			interrupter->velz = 0
-			if (interrupter->x < x) {
-				interrupter->troty = 270deg
-				interrupter->speed = 15m
-				interrupter->velx = -15m
-			}
-			else {
-				interrupter->troty = 90deg
-				interrupter->speed = 15m
-				interrupter->velx = 15m
-			}
-			interrupter->statusb &= ~FLAG_DPAD_CONTROL
-		}
+		SpinKnockback(e, 15m)
 	}
 	trans {
 		pathprog = spd(pathprog, DogAttackSpeed)
 		calcpath()
 		changestateif(Guard_Dog_Kill, STATUS_PATH_END)
-		HitPlayer()
+		EnemyHitPlayerGround()
 	}
 }
 
 state Guard_Dog_Kill {
 	statusc 0
-	code () { entitysetspawn(0) }
+	code () {
+		KillEntity()
+	}
 }
 
 state Guard_Dog_Die {
