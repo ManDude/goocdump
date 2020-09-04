@@ -193,7 +193,7 @@ state Bullet_Spawn { // 6
 		}
 		statusb = FLAG_COLLIDABLE
 		zindex = -25
-		roty = a
+		roty = rotation
 		rotz = roty + 90deg
 		if (LEVEL == LEVEL_HeavyMachinery) {
 			rotx = randi(-90deg, 90deg)

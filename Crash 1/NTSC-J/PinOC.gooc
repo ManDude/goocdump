@@ -243,7 +243,7 @@ state Lamp_Broken {
 state Broken_Glass {
 	statusc 0
 	code (xoff, yoff, zoff) {
-		soundpitch(3.6 + rand(0.8))
+		SoundPitchDefault()
 		soundplay([BrG8A], 1.0V)
 		rotx = 0
 		roty = 0

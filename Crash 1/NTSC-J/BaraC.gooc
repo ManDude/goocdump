@@ -80,11 +80,11 @@ state Barrel {
 			}
 			if (vely > 3m) {
 				if (!rand(3)) {
-					soundpitch(3.6 + rand(0.8))
+					SoundPitchDefault()
 					soundplay([bn27A], (vely >> 14) * 0.01V)
 				}
 				else {
-					soundpitch(3.6 + rand(0.8))
+					SoundPitchDefault()
 					soundplay([bnc7A], (vely >> 14) * 0.01V)
 				}
 			}

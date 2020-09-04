@@ -73,7 +73,7 @@ state Power_Robot_Enemy { // 1
 	}
 	trans {
 		sendeventif(Event24, collider, collider, 100.0)
-		calcpath(loopseek(pathprog, pathlen + (PowerRobotEnemySpeed + -1.0), PowerRobotEnemySpeed))
+		LoopPathProg(PowerRobotEnemySpeed)
 		if (vecz) {
 			y = groundy + PowerRobotEnemyHeightOff
 		}
@@ -90,8 +90,7 @@ state Power_Robot_Enemy_Die { // 2
 	stateflag 0x21
 	statusc 0x22
 	code () {
-		soundpitch(3.6 + rand(0.8))
-		soundplay([fli0A], 0.17V + rand(0.05V))
+		SoundEnemyFling()
 		statusb &= ~(0x2000 | 0x80000)
 		velx = 0
 		velz = 0
@@ -116,9 +115,7 @@ state Power_Robot_Enemy_Steam { // 3
 		vely = rand(6m)
 		vectransf(vtrans, vtrans, dist, 0, 0.3m)
 		roty = 0
-		scalex = 0.25S
-		scaley = 0.25S
-		scalez = 0.25S
+		SetScale(.25S)
 		zindex = 20
 		setanim(STEAM)
 		animframe = -2.0
@@ -127,7 +124,7 @@ state Power_Robot_Enemy_Steam { // 3
 		} while (animframe + 2.0 < 7.0)
 	}
 	trans {
-		scalex += 0.1S
+		scalex += .1S
 		scaley = scalex
 	}
 }

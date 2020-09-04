@@ -116,7 +116,7 @@ state Fat_Fling {
 		entitysetspawn(0)
 		health = h + 1.0
 		sendevent(EventCombo, player, h)
-		soundpitch(3.6 + rand(0.8))
+		SoundPitchDefault()
 		soundplay([fli0A], 0.17V + rand(0.05V))
 		troty = 180deg
 		vely = 0

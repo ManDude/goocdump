@@ -99,7 +99,7 @@ state Pinstripe_Shoot {
 	code () {
 		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
 			setanim(PINSTRIPE_GUN2)
-			soundpitch(3.6 + rand(0.8))
+			SoundPitchDefault()
 			soundplay([laf8A], 0.3V + rand(0.2V))
 		}
 		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
@@ -143,13 +143,13 @@ state Pinstripe_Shoot {
 }
 
 inline sub PlayMinigunSound() {
-	soundpitch(3.6 + rand(0.8))
+	SoundPitchDefault()
 	soundsetup(0, 9)
 	soundplay([MGn8A], 0.15V)
 }
 
 inline sub PlayMinigunSound(delay) {
-	soundpitch(3.6 + rand(0.8))
+	SoundPitchDefault()
 	sounddelay(delay)
 	soundsetup(0, 9)
 	soundplay([MGn8A], 0.15V)
@@ -521,7 +521,7 @@ state Pinstripe_Dead {
 		soundfadet(1.5s, voice)
 		soundfadev(0, voice, 2)
 		sounddelay(0.5s)
-		soundpitch(3.6 + rand(0.8))
+		SoundPitchDefault()
 		soundplay([WDn8A], 0.03V)
 		player = GLOBALOBJ
 		sendevent(Event28, player)
