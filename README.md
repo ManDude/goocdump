@@ -1,2 +1,3 @@
-# goocdump
- Crash Bandicoot GOOC Rewrite
+This is a repository that contains the GOOL files in the _Crash Bandicoot_ decompiled into the _gooc_ format, to be used with [gooc](https://github.com/mandude/gooc).
+
+There is a folder for each of the three games, within each folder contains a list of "versions" (regions or pre-release builds), each of which may contain the appropriate __.gooc__ files for the game & version. The main game folder may also contain the gooc files, if they are set up such that the region directives appropriately describe each of the three regions (NTSC-U, PAL, NTSC-J). 
