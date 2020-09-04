@@ -185,6 +185,12 @@ expr BOX_FLAG_NO_TRIGGER	= 0x10000
 expr BOX_FLAG_BONUS_CONTINUE= 0x20000
 expr BOX_FLAG_LOW_Z3		= 0x40000
 
+inline sub SoundBoxLand(vol) {
+	SoundPitchDefault()
+	sounddecay(0.25)
+	soundplay([ld10A], vol)
+}
+
 sub BoxCommonTrans () { // 0
 	if (STATUS_GROUNDLAND && vely < 0 && y == groundy) {
 		if (BoxBelow) {
@@ -196,9 +202,7 @@ sub BoxCommonTrans () { // 0
 		rotx = 0
 		vely = 0
 		if (groundvel) {
-			soundpitch(3.6 + rand(0.8))
-			sounddecay(0.25)
-			soundplay([ld10A], 0.35V)
+			SoundBoxLand(0.35V)
 			interrupter = BoxBelow
 			sendevent(EventCrateLandedOn, interrupter, groundvel)
 		}
@@ -265,7 +269,7 @@ sub BoxCheckSpinEvent (e, a) { // 67
 sub BoxInit (r) { // 124
 	x += 0.5m
 	z += 0.5m
-	statusb = FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | FLAG_SOLID_GROUND | FLAG_SOLID_SIDES | 0x4000000
+	statusb = FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | FLAG_SOLID_GROUND | FLAG_SOLID_SIDES | FLAG_HAS_SHADOW
 	calclight()
 	if (vecx) {
 		BoxReward = vecx
@@ -648,7 +652,6 @@ state Box_Ghost_Spawn { // 4
 state Box_Ghost { // 5
 	statusc 0
 	code () {
-		SetBoxAnim(BOX_GHOST)
 		statusb &= ~FLAG_COLLIDABLE
 		sleepframe(BoxFrame)
 	}
@@ -663,7 +666,7 @@ state Box_Ghost { // 5
 state Box_Ghost_Appear { // 6
 	statusc 0
 	code () {
-		soundpitch(3.6 + rand(0.8))
+		SoundPitchDefault()
 		soundplay([bap0A], 0.4V)
 		entitysetstate(1)
 		#ifnreg "pal"
@@ -694,9 +697,6 @@ state Box_Ghost_Appear { // 6
 		else if (spawn == S_BOX_GHOST_IRON) {
 			SetBoxAnim(BOX_IRON)
 		}
-		else if (spawn == S_BOX_TNT) {
-			SetBoxAnim(BOX_TNT)
-		}
 		if (spawn == S_BOX_SPRING || spawn == S_BOX_SPRING_IRON) {
 			BoxPropulsion = 17.88854m
 			changestate(Box_Spring)
@@ -705,8 +705,6 @@ state Box_Ghost_Appear { // 6
 			changestate(Box_Iron)
 		}
 		else if (spawn == S_BOX_TNT) {
-			BoxFlashInterval = 2s
-			BoxFlashOffset = rand(2s)
 			changestate(Box_TNT)
 		}
 		else if (spawn == S_BOX_ACTION) {
@@ -771,12 +769,16 @@ sub BoxActionTrigger() {
 	changestate(Box_Iron)
 }
 
+inline sub SoundSwitchBreak() {
+	SoundPitchDefault()
+	soundplay([swb0A], 0.5V)
+}
+
 state Box_Action_Triggered { // 9
 	statusc 0
 	code () {
-		sendevent(EventStatus, player, 3.0)
-		soundpitch(3.6 + rand(0.8))
-		soundplay([swb0A], 0.5V)
+		sendevent(EventStatus, player, WILLY_STATUS_REMOVE_BOUNCE)
+		SoundSwitchBreak()
 		playframes(BOX_ACTION1, 0, 9.0)
 		BoxTrigger()
 		if (LEVEL != LEVEL_TheLab) {
@@ -792,9 +794,8 @@ state Box_Action_Triggered { // 9
 state Box_Action_Triggered_Spin { // 10
 	statusc 0
 	code () {
-		sendevent(EventStatus, player, 3.0)
-		soundpitch(3.6 + rand(0.8))
-		soundplay([swb0A], 0.5V)
+		sendevent(EventStatus, player, WILLY_STATUS_REMOVE_BOUNCE)
+		SoundSwitchBreak()
 		playframes(BOX_ACTION2, 0, 9.0)
 		BoxTrigger()
 		if (LEVEL != LEVEL_TheLab) {
@@ -867,7 +868,7 @@ state Box_Continue_Open { // 12
 		if (!BoxAbove) {
 			statusb &= ~FLAG_COLLIDABLE
 		}
-		soundpitch(3.6 + rand(0.8))
+		SoundPitchDefault()
 		soundplay([con0A], 0.3V)
 		playframes(BOX_CONTINUE, 0, 15.0)
 		playanim(14, BOX_CONTINUE)
@@ -893,11 +894,7 @@ state Box_Continue_Open { // 12
 			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_H, -0.6m) playanim(15, BOX_CONTINUE, 0.1s)
 			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_E,  0.0m) playanim(15, BOX_CONTINUE, 0.1s)
 			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_C, +0.6m) playanim(15, BOX_CONTINUE, 0.1s)
-			#ifnreg "pal"
-			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_K, +1.2m) playanim(15, BOX_CONTINUE, 1.2s)
-			#else
-			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_K, +1.2m) playanim(15, BOX_CONTINUE, 1.2s * 5/6)
-			#endif
+			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_K, +1.2m) playanim(15, BOX_CONTINUE, autopal(1.2s))
 			
 			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_P, -1.2m) playanim(15, BOX_CONTINUE, 0.1s)
 			spawn(BoxsC, S_CONTINUE_LETTER, 1, CONTINUE_O, -0.6m) playanim(15, BOX_CONTINUE, 0.1s)
@@ -938,12 +935,8 @@ state Box_Action_Mark { // 14
 	stateflag 0x3
 	code (frame, xspd, yspd, zspd) {
 		zindex = 35
-		scalex = 8.0
-		scaley = 16.0
-		scalez = 8.0
-		rotx = 0
-		roty = 0
-		rotz = 0
+		SetScale(.5S, 1S, .5S)
+		SetRot(0, 0, 0)
 		setanim(BOX_SPRITES)
 		animframe = frame + 0
 		x += xspd
@@ -953,11 +946,7 @@ state Box_Action_Mark { // 14
 		vely = yspd / 2
 		velz = zspd * 64
 		statusb = FLAG_PHYSICS_ENGINE
-		#ifnreg "pal"
-		playframe(animframe, 2.0s)
-		#else
-		playframe(animframe, 2.0s * 5/6)
-		#endif
+		playframe(animframe, autopal(2s))
 		if (yspd) {
 			statusb = 0
 			do (var bframe = 0) {
@@ -975,9 +964,7 @@ state Box_Continue_Letter { // 15
 	stateflag 0x3
 	code (frame, off) {
 		zindex = 25
-		scalex = 0
-		scaley = 0
-		scalez = 0
+		SetScale(0)
 		setanim(BOX_SPRITES)
 		soundpitch(3.84 + rand(0.32))
 		sounddecay(0.125)
@@ -997,9 +984,7 @@ state Box_Continue_Letter { // 15
 			playframe()
 		} while (frametime - starttime < 0.7s)
 		statusb = FLAG_PHYSICS_ENGINE
-		velx = -20m
-		vely = 0
-		velz = 0
+		SetVel(-20m, 0, 0)
 		soundpitch(3.84 + rand(0.32))
 		sounddecay(0.25)
 		soundplay([jmp0A], 0.15V)
@@ -1093,14 +1078,18 @@ sub BoxSpringBounce() {
 	}
 }
 
+inline sub SoundBoxBounce(vol) {
+	SoundPitchDefault()
+	sounddecay(0.625)
+	soundplay([bnc0A], vol)
+}
+
 state Box_Spring_Bounce { // 18
 	code () {
 		if (spawn == S_BOX_SPRING_IRON) {
 			stateflag |= 0x800
 		}
-		soundpitch(3.6 + rand(0.8))
-		sounddecay(0.625)
-		soundplay([bnc0A], 0.4V)
+		SoundBoxBounce(0.4V)
 		BoxSpringBounce()
 		changestate(Box_Spring)
 	}
@@ -1142,9 +1131,7 @@ state Box_Spring_Bounce { // 18
 state Box_Spring_Bounce_Box { // 19
 	code () {
 		statusb |= FLAG_SOLID_TOP
-		soundpitch(3.6 + rand(0.8))
-		sounddecay(0.625)
-		soundplay([bnc0A], 0.15V)
+		SoundBoxBounce(0.15V)
 		sendevent(EventBounce, BoxAbove, 17.88854m)
 		BoxSpringBounce()
 		changestate(Box_Spring)
@@ -1275,15 +1262,19 @@ state Box_Fruit_Bounce { // 22
 	}
 }
 
+inline sub SoundBoxBreak() {
+	SoundPitchDefault()
+	sounddecay(0.625)
+	soundplay([brk0A], 0.35V)
+}
+
 state Box_Break { // 23
 	stateflag 0x803
 	code () {
 		entitysetspawn(0)
 		entitysetstate(0)
 		BoxBreak()
-		soundpitch(3.6 + rand(0.8))
-		sounddecay(0.625)
-		soundplay([brk0A], 0.35V)
+		SoundBoxBreak()
 		FlipRand()
 		playanim(0, BOX_EXPLODE)
 		playanim(1, BOX_EXPLODE)
@@ -1333,14 +1324,10 @@ state Box_Break_Reward { // 24
 			spawn2(3, FruiC_S_FRUIT_HOP, 1, BoxReward, var0)
 		}
 		if (interrupter == child) {
-			LockRewards(BoxReward, var0)
+			ForceReward(BoxReward, var0)
 		}
-		soundpitch(3.6 + rand(0.8))
-		sounddecay(0.625)
-		soundplay([brk0A], 0.35V)
-		if (!rand(2)) {
-			scalex = -scalex
-		}
+		SoundBoxBreak()
+		FlipRand()
 		BoxTrigger()
 		playanim(0, BOX_EXPLODE)
 		playanim(1, BOX_EXPLODE)
@@ -1372,11 +1359,11 @@ state Box_Break_Delayed { // 25
 	}
 }
 
-sub LockRewards (r, o) {
-	if (var r = r; r == 97.0) {
+sub ForceReward (reward, obj_id) {
+	if (var temp = reward; temp == 97.0) {
 		sendevent(Event5, player, 1.0)
 		unless (ZONEFLAGS & 0x2000) {
-			entitysetstate(o, 5)
+			entitysetstate(obj_id, 5)
 		}
 	}
 	else {
@@ -1397,13 +1384,9 @@ state Box_TNT_Spawn { // 26
 	stateflag 0x801
 	code (h, t, sx, sy, sz) {
 		if (spawn == S_BOX_TNT_AUTO) {
-			vecy = 0x8000
-			rotx = 0
-			roty = 0
-			rotz = 0
-			x = sx
-			y = sy
-			z = sz
+			vecy = BOX_FLAG_NO_STACK
+			SetRot(0, 0, 0)
+			SetTrans(sx, sy, sz)
 		}
 		if (spawn == S_BOX_POW) {
 			spawn = S_BOX_TNT
@@ -1413,7 +1396,7 @@ state Box_TNT_Spawn { // 26
 		BoxFlashOffset = rand(2s)
 		BoxInit(100.0)
 		if (spawn == S_BOX_TNT_AUTO) {
-			statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | 0x8000000
+			statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | FLAG_SOLID_BOTTOM
 			y += h
 			BoxFlashInterval = t
 			changestate(Box_TNT_Countdown)
@@ -1494,7 +1477,7 @@ inline sub TNTBeep() {
 }
 
 inline sub PlayTNTSound() {
-	soundpitch(3.6 + rand(0.8))
+	SoundPitchDefault()
 	sounddecay(0.75)
 	soundplay([tnt0A], 1.0V)
 	soundsetup(0, voice, 5)
@@ -1505,55 +1488,29 @@ state Box_TNT_Countdown { // 28
 	code () {
 		TNTFlashColor()
 		TNTBeep()
-		#ifnreg "pal"
-		playanim(0, BOX_TNT3, 0.2s)
+		playanim(0, BOX_TNT3, autopal(0.2s))
 		TNTDefaultColor()
-		playanim(0, BOX_TNT3, 1.2s)
-		#else
-		playanim(0, BOX_TNT3, 0.2s * 5/6)
-		TNTDefaultColor()
-		playanim(0, BOX_TNT3, 1.2s * 5/6)
-		#endif
+		playanim(0, BOX_TNT3, autopal(1.2s))
 		
 		TNTFlashColor()
 		TNTBeep()
-		#ifnreg "pal"
-		playanim(0, BOX_TNT2, 0.2s)
+		playanim(0, BOX_TNT2, autopal(0.2s))
 		TNTDefaultColor()
-		playanim(0, BOX_TNT2, 0.5s)
+		playanim(0, BOX_TNT2, autopal(0.5s))
 		TNTBeep()
-		playanim(0, BOX_TNT2, 0.7s)
-		#else
-		playanim(0, BOX_TNT2, 0.2s * 5/6)
-		TNTDefaultColor()
-		playanim(0, BOX_TNT2, 0.5s * 5/6)
-		TNTBeep()
-		playanim(0, BOX_TNT2, 0.7s * 5/6)
-		#endif
+		playanim(0, BOX_TNT2, autopal(0.7s))
 		
 		TNTFlashColor()
 		TNTBeep()
-		#ifnreg "pal"
-		playanim(0, BOX_TNT1, 0.2s)
+		playanim(0, BOX_TNT1, autopal(0.2s))
 		TNTDefaultColor()
 		playanim(0, BOX_TNT1, 0.35s-0.2s)
 		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s)
+		playanim(0, BOX_TNT1, autopal(0.35s))
 		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s)
+		playanim(0, BOX_TNT1, autopal(0.35s))
 		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s)
-		#else
-		playanim(0, BOX_TNT1, 0.2s * 5/6)
-		TNTDefaultColor()
-		playanim(0, BOX_TNT1, 0.35s-0.2s)
-		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s * 5/6)
-		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s * 5/6)
-		TNTBeep()
-		playanim(0, BOX_TNT1, 0.35s * 5/6)
-		#endif
+		playanim(0, BOX_TNT1, autopal(0.35s))
 		
 		changestate(TNT_Explosion)
 	}
@@ -1816,20 +1773,16 @@ sub BoxVolley () {
 		if (spawn == S_BOX_IRON || spawn == S_BOX_ACTION) {
 			if (STATUS_GRAVITY && vely < 0) {
 				interrupter = DOCTOR
-				sendevent(EventStatus, interrupter, 4.0)
+				sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
 				if (var0) {
 					sendevent(EventHit, interrupter, 100.0)
 				}
 				else {
 					sendevent(EventHit, player, 100.0)
 				}
-				if (!(player->stateflag \ 0x20)) {
-					soundpitch(3.6 + rand(0.8))
-					sounddecay(0.25)
-					soundplay([ld10A], 0.7V)
-					soundpitch(3.6 + rand(0.8))
-					sounddecay(0.625)
-					soundplay([bnc0A], 0.5V)
+				unless (player->stateflag \ 0x20) {
+					SoundBoxLand(0.7V)
+					SoundBoxBounce(0.5V)
 					y = player->y + 2m
 					BoxSetBounce(15.49194m)
 				}
