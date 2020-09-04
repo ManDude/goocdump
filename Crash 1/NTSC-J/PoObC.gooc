@@ -1,0 +1,284 @@
+#gool PoObC 14 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim POWER_SPRING [PoSpV] 5
+
+#sprite CONVEYOR [WillT]
+#tex 0x808080 0 0 3 0 0 24 64 32
+
+#sprite STEAM_1 [P2d4T]
+#tex 0x808080 1 1 0 1 0 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 0 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 0 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 96 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 96 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 96 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 112 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 112 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 112 8 64 32 ! 4 3
+
+#sprite STEAM_2 [P2d5T]
+#tex 0x808080 1 1 0 1 0 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 16 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 32 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 48 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 64 8 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 24 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 16 64 32 ! 4 3
+#tex 0x808080 1 1 0 1 80 8 64 32 ! 4 3
+
+#spawn S_SPRING                   Power_Spring
+#spawn S_STEAM                    Steam_Spawn
+#spawn S_CONVEYOR                 Conveyor_Spawn
+#spawn S_STEAM_COPY               Steam_Copy
+#spawn S_4                        __s_4
+
+var ConveyorSpeed, SteamCycleTime, SteamCycleOffset, ConveyorVoice
+
+event EventDespawn => sub KillVoice
+
+sub KillVoice () {
+	if (spawn != S_SPRING) {
+		voice = -1
+		soundfadet(0.25s, voice)
+		soundfadev(0, voice, 3)
+	}
+	voice = -1
+	soundsetup(0, voice, 5)
+}
+
+state Power_Spring {
+	statusc 0
+	code () {
+		statusb = FLAG_SOLID_ALL | FLAG_COLLIDABLE
+		sleepanim(0, POWER_SPRING)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			sendevent(Event21, interrupter, 91m / 3)
+			rejevcstate(Power_Spring_Recoil, eventaccepted)
+		}
+	}
+	trans {
+		if (!STATUS_FIRSTFRAME && collider) {
+			if (collider->y > y && vely <= 0) {
+				sendevent(Event21, collider, 91m / 3)
+				changestate(Power_Spring_Recoil)
+			}
+		}
+	}
+}
+
+state Power_Spring_Recoil {
+	stateflag 0x81
+	statusc 0
+	code () {
+		soundpitch(1.92 + rand(0.16))
+		soundplay([JPi6A], 0.6V)
+		playanim(0, POWER_SPRING)
+		playanim(1, POWER_SPRING)
+		playanim(2, POWER_SPRING)
+		playanim(3, POWER_SPRING)
+		playanim(4, POWER_SPRING)
+		playanim(3, POWER_SPRING)
+		playanim(2, POWER_SPRING)
+		playanim(3, POWER_SPRING)
+		playanim(4, POWER_SPRING)
+		playanim(3, POWER_SPRING)
+		playanim(4, POWER_SPRING)
+		playanim(3, POWER_SPRING)
+		playanim(2, POWER_SPRING)
+		playanim(1, POWER_SPRING)
+		playanim(0, POWER_SPRING)
+		changestate(Power_Spring)
+	}
+}
+
+state Conveyor_Spawn {
+	statusc 0
+	code () {
+		if (vecx) {
+			scalex = vecx
+		}
+		else {
+			scalex = 4.0S
+		}
+		scaley = 1.4S
+		scalez = 1.8S
+		y -= 0.4m
+		if (vecy) {
+			ConveyorSpeed = vecy
+		}
+		else {
+			ConveyorSpeed = 0.96m
+		}
+		statusb = FLAG_COLLIDABLE | FLAG_INVISIBLE
+		soundpitch(3.2 + rand(1.6))
+		soundfadet(0.25s)
+		soundfadev(0.1V, 0, 2)
+		soundplay([Con6A], 0)
+		ConveyorVoice = voice
+		changestate(Conveyor)
+	}
+}
+
+state Conveyor {
+	stateflag 0x801
+	statusc 0
+	code () {
+		sleepanim(0, CONVEYOR)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			voice = ConveyorVoice
+			soundsetup(0, voice, 5)
+			voice = ConveyorVoice
+			soundfadet(0.25s, voice)
+			soundfadev(0, voice, 3)
+		}
+	}
+	trans {
+		if (collider) {
+			collider->x = spd(collider->x, ConveyorSpeed)
+		}
+	}
+}
+
+state Steam_Spawn {
+	statusc 0
+	code () {
+		if (vecx) {
+			SteamCycleTime = vecx >> 8
+		}
+		else {
+			SteamCycleTime = 2.5s + rand(1s)
+		}
+		SteamCycleOffset = vecy >> 8
+		scalex = 2.0S
+		scaley = 4.0S
+		scalez = 2.0S
+		y += 2m
+		zindex = -10
+		density = 160.0
+		spawn(PoObC, S_STEAM_COPY)
+		changestate(Steam_Wait)
+	}
+}
+
+state Steam_Copy {
+	statusc 0
+	code () {
+		x += 0.025m
+		y += 0.025m
+		zindex = creator->zindex
+		scalex = creator->scalex
+		scaley = creator->scaley
+		scalez = creator->scalez
+		density = creator->density
+		y = creator->y
+		sleep()
+	}
+	trans {
+		animseq = creator->animseq
+		animframe = creator->animframe
+		statusb = creator->statusb
+		statusb &= ~FLAG_COLLIDABLE
+	}
+}
+
+state Steam_Wait {
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, STEAM_1)
+	}
+	trans {
+		changestateifn(Steam_Blast, time(SteamCycleTime, SteamCycleOffset))
+	}
+}
+
+state Steam_Blast {
+	stateflag 0x81
+	statusc 0
+	code () {
+		playanim(0, STEAM_1)
+		playanim(1, STEAM_1)
+		playanim(2, STEAM_1)
+		playanim(3, STEAM_1)
+		soundpitch(1.92 + rand(0.16))
+		soundplay([SBl6A], 0.3V)
+		playanim(4, STEAM_1)
+		playanim(5, STEAM_1)
+		playanim(6, STEAM_1)
+		playanim(7, STEAM_1)
+		statusb = FLAG_COLLIDABLE
+		playanim(8, STEAM_1)
+		playanim(9, STEAM_1)
+		playanim(10, STEAM_1)
+		playanim(11, STEAM_1)
+		playanim(12, STEAM_1)
+		playanim(13, STEAM_1)
+		playanim(14, STEAM_1)
+		playanim(15, STEAM_1)
+		playanim(16, STEAM_1)
+		playanim(17, STEAM_1)
+		playanim(18, STEAM_1)
+		playanim(19, STEAM_1)
+		playanim(20, STEAM_1)
+		playanim(21, STEAM_1)
+		playanim(22, STEAM_1)
+		playanim(23, STEAM_1)
+		playanim(0, STEAM_2)
+		playanim(1, STEAM_2)
+		playanim(2, STEAM_2)
+		playanim(3, STEAM_2)
+		playanim(4, STEAM_2)
+		playanim(5, STEAM_2)
+		playanim(6, STEAM_2)
+		statusb &= ~FLAG_COLLIDABLE
+		playanim(7, STEAM_2)
+		playanim(8, STEAM_2)
+		playanim(9, STEAM_2)
+		playanim(10, STEAM_2)
+		playanim(11, STEAM_2)
+		playanim(12, STEAM_2)
+		playanim(13, STEAM_2)
+		playanim(14, STEAM_2)
+		playanim(15, STEAM_2)
+		changestate(Steam_Wait)
+	}
+	event (e, a) {
+		if (e == Event28) {
+			accev()
+			statusb |= 0x2000000
+		}
+	}
+	trans {
+		sendeventif(EventBurn, collider, !STATUS_FIRSTFRAME && STATUS_PLAYER_D_COLLIDER, 100.0)
+	}
+}
+

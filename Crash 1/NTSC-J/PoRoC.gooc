@@ -1,0 +1,829 @@
+#gool PoRoC 9 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim POWER_ROBOT [PRSSV] 16
+
+#iflev 5
+#sprite SHOCK_START [Ctv2T]
+#tex 0x505050 0 1 1 0 80 8 64 32
+#tex 0x505050 0 1 1 0 88 24 64 32
+#tex 0x505050 0 1 1 0 88 16 64 32
+
+#sprite SHOCK_STRAIGHT [Ctv2T]
+#tex 0x505050 0 1 1 0 88 8 64 32
+#tex 0x505050 0 1 1 0 96 24 64 32
+#tex 0x505050 0 1 1 0 96 16 64 32
+#tex 0x505050 0 1 1 0 96 8 64 32
+
+#sprite SHOCK_LOOP [Ctv2T]
+#tex 0x505050 0 1 1 0 104 24 64 32
+#tex 0x505050 0 1 1 0 104 16 64 32
+#tex 0x505050 0 1 1 0 104 8 64 32
+#tex 0x505050 0 1 1 0 112 24 64 32
+#tex 0x505050 0 1 1 0 112 16 64 32
+#tex 0x505050 0 1 1 0 112 8 64 32
+#tex 0x505050 0 1 1 0 120 24 64 32
+#tex 0x505050 0 1 1 0 120 16 64 32
+#tex 0x505050 0 1 1 0 120 8 64 32
+#eliflev U
+#sprite SHOCK_START [In1UT]
+#tex 0x505050 0 1 8 0 32 8 64 32
+#tex 0x505050 0 1 8 0 40 8 64 32
+#tex 0x505050 0 1 8 0 48 8 64 32
+
+#sprite SHOCK_STRAIGHT [In1UT]
+#tex 0x505050 0 1 8 0 56 8 64 32
+#tex 0x505050 0 1 8 0 64 8 64 32
+#tex 0x505050 0 1 8 0 72 8 64 32
+#tex 0x505050 0 1 8 0 80 24 64 32
+
+#sprite SHOCK_LOOP [In1UT]
+#tex 0x505050 0 1 8 0 80 16 64 32
+#tex 0x505050 0 1 8 0 80 8 64 32
+#tex 0x505050 0 1 8 0 88 24 64 32
+#tex 0x505050 0 1 8 0 88 16 64 32
+#tex 0x505050 0 1 8 0 88 8 64 32
+#tex 0x505050 0 1 8 0 96 24 64 32
+#tex 0x505050 0 1 8 0 96 16 64 32
+#tex 0x505050 0 1 8 0 96 8 64 32
+#tex 0x505050 0 1 8 0 104 24 64 32
+#else
+#sprite SHOCK_START [PoC1T]
+#tex 0x505050 0 1 14 0 48 16 64 32
+#tex 0x505050 0 1 14 0 48 8 64 32
+#tex 0x505050 0 1 14 0 56 24 64 32
+
+#sprite SHOCK_STRAIGHT [PoC1T]
+#tex 0x505050 0 1 14 0 56 16 64 32
+#tex 0x505050 0 1 14 0 56 8 64 32
+#tex 0x505050 0 1 14 0 64 24 64 32
+#tex 0x505050 0 1 14 0 64 16 64 32
+
+#sprite SHOCK_LOOP [PoC1T]
+#tex 0x505050 0 1 14 0 64 8 64 32
+#tex 0x505050 0 1 14 0 72 24 64 32
+#tex 0x505050 0 1 14 0 72 16 64 32
+#tex 0x505050 0 1 14 0 72 8 64 32
+#tex 0x505050 0 1 14 0 80 24 64 32
+#tex 0x505050 0 1 14 0 80 16 64 32
+#tex 0x505050 0 1 14 0 80 8 64 32
+#tex 0x505050 0 1 14 0 88 24 64 32
+#tex 0x505050 0 1 14 0 88 16 64 32
+#endif
+
+#anim POWER_SURVEILLANCE [Psr5V] 15
+
+#sprite BUBBLE [Pow3T]
+#tex 0x64C88C 0 1 2 0 124 16 32 32
+#tex 0x50B48C 0 1 2 0 124 16 32 32
+#tex 0x3CA08C 0 1 2 0 124 16 32 32
+#tex 0x288C8C 0 1 2 0 124 16 32 32
+#tex 0x147882 0 1 2 0 124 16 32 32
+#tex 0x006478 0 1 2 0 124 16 32 32
+#tex 0x00506E 0 1 2 0 124 16 32 32
+#tex 0x003C64 0 1 2 0 124 16 32 32
+#tex 0x001E5A 0 1 2 0 124 16 32 32
+#tex 0x001450 0 1 2 0 124 16 32 32
+#tex 0x000A46 0 1 2 0 124 16 32 32
+#tex 0x00003C 0 1 2 0 124 16 32 32
+#tex 0x000032 0 1 2 0 124 16 32 32
+#tex 0x000028 0 1 2 0 124 16 32 32
+#tex 0x00001E 0 1 2 0 124 16 32 32
+#tex 0x000014 0 1 2 0 124 16 32 32
+#tex 0x00000A 0 1 2 0 124 16 32 32
+
+#sprite POWER_MIST_1 [Po15T]
+#tex 0x404040 0 2 1 0 0 16 64 64
+#tex 0x404040 0 2 1 0 8 16 64 64
+#tex 0x404040 0 2 1 0 16 16 64 64
+#tex 0x404040 0 2 1 0 16 0 64 64
+#tex 0x404040 0 2 1 0 24 16 64 64
+#tex 0x404040 0 2 1 0 24 0 64 64
+#tex 0x404040 0 2 1 0 32 16 64 64
+#tex 0x404040 0 2 1 0 32 0 64 64
+#tex 0x404040 0 2 1 0 40 16 64 64
+#tex 0x404040 0 2 1 0 40 0 64 64
+#tex 0x404040 0 2 1 0 48 16 64 64
+#tex 0x404040 0 2 1 0 48 0 64 64
+#tex 0x404040 0 2 1 0 56 16 64 64
+#tex 0x404040 0 2 1 0 56 0 64 64
+#tex 0x404040 0 2 1 0 64 16 64 64
+#tex 0x404040 0 2 1 0 64 0 64 64
+#tex 0x404040 0 2 1 0 72 16 64 64
+#tex 0x404040 0 2 1 0 72 0 64 64
+#tex 0x404040 0 2 1 0 80 16 64 64
+#tex 0x404040 0 2 1 0 80 0 64 64
+#tex 0x404040 0 2 1 0 88 16 64 64
+#tex 0x404040 0 2 1 0 88 0 64 64
+#tex 0x404040 0 2 1 0 96 16 64 64
+#tex 0x404040 0 2 1 0 96 0 64 64
+#tex 0x404040 0 2 1 0 104 16 64 64
+#tex 0x404040 0 2 1 0 104 0 64 64
+#tex 0x404040 0 2 1 0 112 16 64 64
+#tex 0x404040 0 2 1 0 112 0 64 64
+#tex 0x404040 0 2 1 0 120 16 64 64
+#tex 0x404040 0 2 1 0 120 0 64 64
+
+#sprite POWER_MIST_2 [Po25T]
+#tex 0x404040 0 2 1 0 0 16 64 64
+#tex 0x404040 0 2 1 0 8 16 64 64
+#tex 0x404040 0 2 1 0 16 16 64 64
+#tex 0x404040 0 2 1 0 16 0 64 64
+#tex 0x404040 0 2 1 0 24 16 64 64
+#tex 0x404040 0 2 1 0 24 0 64 64
+#tex 0x404040 0 2 1 0 32 16 64 64
+#tex 0x404040 0 2 1 0 32 0 64 64
+#tex 0x404040 0 2 1 0 40 16 64 64
+#tex 0x404040 0 2 1 0 40 0 64 64
+#tex 0x404040 0 2 1 0 48 16 64 64
+#tex 0x404040 0 2 1 0 48 0 64 64
+#tex 0x404040 0 2 1 0 56 16 64 64
+#tex 0x404040 0 2 1 0 56 0 64 64
+#tex 0x404040 0 2 1 0 64 16 64 64
+#tex 0x404040 0 2 1 0 64 0 64 64
+#tex 0x404040 0 2 1 0 72 16 64 64
+#tex 0x404040 0 2 1 0 72 0 64 64
+#tex 0x404040 0 2 1 0 80 16 64 64
+#tex 0x404040 0 2 1 0 80 0 64 64
+#tex 0x404040 0 2 1 0 88 16 64 64
+#tex 0x404040 0 2 1 0 88 0 64 64
+#tex 0x404040 0 2 1 0 96 16 64 64
+#tex 0x404040 0 2 1 0 96 0 64 64
+#tex 0x404040 0 2 1 0 104 16 64 64
+#tex 0x404040 0 2 1 0 104 0 64 64
+#tex 0x404040 0 2 1 0 112 16 64 64
+#tex 0x404040 0 2 1 0 112 0 64 64
+#tex 0x404040 0 2 1 0 120 16 64 64
+#tex 0x404040 0 2 1 0 120 0 64 64
+
+#sprite POWER_MIST_3 [Po35T]
+#tex 0x404040 0 2 1 0 16 16 64 64
+#tex 0x404040 0 2 1 0 24 16 64 64
+#tex 0x404040 0 2 1 0 32 16 64 64
+#tex 0x404040 0 2 1 0 40 16 64 64
+
+#spawn S_POWER_ROBOT               Power_Robot_Spawn
+#spawn S_SHOCK                     Shock_Spawn
+#spawn S_2                         State_16
+#spawn S_SHOCK_EFFECT              Shock_Effect
+#spawn S_POWER_MIST                Power_Mist
+#spawn S_POWER_SURVEILLANCE_CIRCLE Power_Surveillance_Circle
+#spawn S_POWER_SURVEILLANCE_PATH   Power_Surveillance_Path
+#spawn S_BUBBLE_SPAWNER            Bubble_Spawner
+#spawn S_SMOKE_SPAWNER             Smoke_Spawner
+#spawn S_BUBBLE                    Bubble
+#spawn S_LABASS_SHOCK              LabAss_Shock
+#spawn S_WILLY_SHOCK               Willy_Shock
+
+var ShockMaxMoveCount, ShockMoveCount, ShockCycleTime, ShockCycleOffset, ShockSpeed, PowerMistYOff, PowerMistY, PowerRobotStrafe, PowerSurvCycleTime, PowerSurvCycleOffset,
+PowerSurvSpeed, ShockVoice, ShockVolume
+
+event EventJumpedOn =>      state Power_Robot_Die
+event EventHit =>           state Power_Robot_Die
+event EventSpinHit =>       state Power_Robot_Fling
+event EventHitInvincible => state Power_Robot_Fling
+event EventDespawn =>       sub KillVoice
+event EventFling =>         state Power_Robot_Die
+
+#include "BoxsC.gooh"
+
+sub KillVoice () {
+	voice = -1
+	soundfadet(0.25s, voice)
+	soundfadev(0, voice, 3)
+	voice = -1
+	soundsetup(0, voice, 5)
+}
+
+state Power_Robot_Spawn { // 0
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+		if (vecx) {
+			field_61 = vecx
+		}
+		else {
+			field_61 = 1.5m
+		}
+		if (vecy) {
+			scalex = vecy
+			scaley = vecy
+			scalez = vecy
+		}
+		ShockMoveCount = 12.5 * (scalex / 64)
+		ShockMaxMoveCount = 0
+		zindex = 25
+		density = 80.0
+		PowerRobotStrafe = 0
+		soundpitch(3.84 + rand(0.32))
+		soundplay([srh3A], 0.03V + rand(0.07V))
+		changestate(Power_Robot)
+	}
+}
+
+state Power_Robot { // 1
+	stateflag 0x5
+	statusc 0
+	code () {
+		trotx = 360deg
+		yzapproach = 120deg
+		do {
+			playframes(POWER_ROBOT, 0, 15.0)
+		} while (1)
+	}
+	trans {
+		if (STATUS_PATH_END) {
+			if (statusa \ 0x800) {
+				trotx = 360deg
+				statusb |= 0x20000000
+				statusa &= ~FLAG_PATH_END
+			}
+		}
+		else {
+			calcpath(loopseek(pathprog, pathlen + (spd(1.0) + -1.0), spd(1.0)))
+			if (STATUS_PATH_END) {
+				trotx = 720deg
+				statusb &= ~0x20000000
+			}
+			if (field_61) {
+				var path_rot, deg_to_player
+				save (troty, statusa, statusb, x, y, z, pathprog) {
+					statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+					x = player->x
+					y = player->y
+					z = player->z
+					calcpath(0) // FLAG_PATH_CALCS sets vecy based on trans and pathtrans
+					troty += 90deg
+					setvel(PowerRobotStrafe)
+				}
+				x += velx
+				z += velz
+				path_rot = troty
+				if (abs(PowerRobotStrafe - vecy) > 0.1m) {
+					deg_to_player = degdist(troty, atan2(player->trans))
+					if (deg_to_player < -45deg) {
+						deg_to_player = -45deg
+					}
+					else if (deg_to_player > 45deg) {
+						deg_to_player = 45deg
+					}
+					troty += deg_to_player
+				}
+				PowerRobotStrafe = seek(PowerRobotStrafe, vecy, spd(2m))
+				if (PowerRobotStrafe < -field_61) {
+					troty = path_rot
+					PowerRobotStrafe = -field_61
+				}
+				else if (PowerRobotStrafe > field_61) {
+					troty = path_rot
+					PowerRobotStrafe = field_61
+				}
+			}
+			troty += loopseek(ShockMaxMoveCount, 4deg, 0.25deg) - 2deg
+		}
+		if (STATUS_PLAYER_D_COLLIDER) {
+			sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+		}
+	}
+}
+
+state Power_Robot_Die { // 2
+	stateflag 0x2
+	statusc 0x12
+	code (h) {
+		entitysetspawn(0)
+		sendevent(EventCombo, player, h)
+		statusb &= ~FLAG_ROT_Y
+		velx = 0
+		velz = 0
+		wait(0.4s)
+	}
+	trans {
+		once {
+			voice = -1
+			soundfadet(0.4s, voice)
+			soundpitch(6.0, voice, 2)
+			soundfadev(0.15V, voice, 2)
+			v0 = scalex
+		}
+		scalex = loopseek(v0, 1.2S, 0.1S)
+		scaley = scalex
+		scalez = scalex
+	}
+}
+
+state Power_Robot_Fling { // 3
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFling(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+
+state Shock_Spawn { // 4
+	statusc 0x12
+	code () {
+		scalex = 1.3S
+		scaley = 0.7S
+		scalez = 0.7S
+		ShockMoveCount = 0
+		if (LEVEL == LEVEL_TheLab) {
+			ShockMaxMoveCount = 3.0
+			if (vecx) {
+				ShockCycleTime = vecx >> 8
+			}
+			else {
+				ShockCycleTime = 3s
+			}
+		}
+		else {
+			ShockMaxMoveCount = 1.0
+			if (vecx) {
+				ShockCycleTime = vecx >> 8
+			}
+			else {
+				ShockCycleTime = 1.5s
+			}
+		}
+		if (vecy) {
+			ShockCycleOffset = vecy >> 8
+		}
+		else {
+			ShockCycleOffset = 0
+		}
+		if (vecz) {
+			ShockSpeed = vecz >> 8
+		}
+		else {
+			ShockSpeed = 0.5
+		}
+		zindex = 45
+		spawn(PoRoC, S_SHOCK_EFFECT)
+		changestate(Shock_Wait)
+	}
+}
+
+state Shock_Effect { // 5
+	stateflag 0x80001
+	statusc 0x12
+	code () {
+		scalex = 0.8S
+		scaley = 0.4S
+		scalez = 0.4S
+		zindex = creator->zindex
+		do {
+			if (creator->statusa \ FLAG_PATH_END) {
+				rotz = creator->rotz + 4.0 + randi(-20deg, 20deg)
+				x = creator->x
+				y = creator->y
+				z = creator->z
+			}
+			playframes(SHOCK_LOOP, 0, 8.0)
+			if (!rand(3)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, SHOCK_START, 0.15s)
+				statusb = 0
+			}
+		} while (1)
+	}
+}
+
+state Shock_Wait { // 6
+	stateflag 0x81
+	statusc 0x12
+	code () {
+		do {
+			if (!rand(5)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, SHOCK_START, 0.1s)
+			}
+			statusb = FLAG_COLLIDABLE | FLAG_TRACK_PATH_ROT
+			rotz = rand(360deg)
+			playframes(SHOCK_LOOP, 0, 8.0)
+		} while (1)
+	}
+	trans {
+		once {
+			if (ShockVoice) {
+				voice = ShockVoice
+				soundfadet(1, voice)
+				soundfadev(ShockVolume, voice, 2)
+			}
+		}
+		sendeventif(EventShock, collider, collider, 100.0)
+		changestateif(Shock_Move, !time(ShockCycleTime, ShockCycleOffset) || ShockMoveCount < ShockMaxMoveCount)
+	}
+}
+
+state Shock_Move { // 7
+	stateflag 0x81
+	statusc 0x12
+	code () {
+		if (ShockMoveCount >= ShockMaxMoveCount) {
+			ShockMoveCount = 0
+		}
+		statusb = FLAG_COLLIDABLE | FLAG_TRACK_PATH_ROT
+		rotz = 0
+		playanim(0, SHOCK_START)
+		playanim(1, SHOCK_START)
+		playanim(2, SHOCK_START)
+		setanim(SHOCK_STRAIGHT)
+		do {
+			calcpath(loopseek(pathprog, pathlen + ShockSpeed + -1.0, ShockSpeed))
+			playframe(0 + rand(4.0))
+		} until (STATUS_PATH_END)
+		scalex = -scalex
+		playanim(2, SHOCK_START)
+		playanim(1, SHOCK_START)
+		playanim(0, SHOCK_START)
+		ShockMoveCount += 1.0
+		changestate(Shock_Wait)
+	}
+	trans {
+		once {
+			if (ShockVoice) {
+				voice = ShockVoice
+				soundfadet(1, voice)
+				soundfadev(0, voice, 2)
+			}
+			if (var r = rand(2); r == 0) {
+				if (LEVEL == LEVEL_Intro) {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp13A], 0.1V)
+				}
+				else {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp13A], 0.2V + rand(0.4V))
+				}
+			}
+			else if (r == 1) {
+				if (LEVEL == LEVEL_Intro) {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp23A], 0.1V)
+				}
+				else {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp23A], 0.2V + rand(0.4V))
+				}
+			}
+		}
+		sendeventif(EventShock, collider, collider, 100.0)
+	}
+}
+
+state State_8 { // 8
+	statusc 0x12
+	code () {
+		statusb = FLAG_INVISIBLE
+		do {
+			playanim(0, SHOCK_START)
+		} until (frametime - statetime >= ShockCycleTime)
+		changestate(State_9)
+	}
+}
+
+state State_9 { // 9
+	stateflag 0x81
+	statusc 0x12
+	code () {
+		statusb = FLAG_COLLIDABLE
+		do {
+			playanim(0, SHOCK_STRAIGHT, 1, 2)
+			playanim(1, SHOCK_STRAIGHT)
+			playanim(2, SHOCK_STRAIGHT)
+			playanim(3, SHOCK_STRAIGHT)
+		} until (frametime - statetime >= 1s)
+		changestate(State_8)
+	}
+	trans {
+		sendeventif(EventHit, collider, collider, 100.0)
+	}
+}
+
+state Power_Mist { // 10
+	statusc 0
+	code () {
+		loadfile([PoRoC]) // ?
+		zindex = 0
+		PowerMistYOff = 2.0
+		trotz = 2deg
+		x = 0
+		y = 0
+		z = 0
+		PowerMistY = y
+		scalex = 1.3S
+		scaley = 0.9S
+		scalez = 1.0S
+		statusb = FLAG_2D
+		do {
+			playframes(POWER_MIST_1, 0, 29.0)
+			playframes(POWER_MIST_2, 0, 29.0)
+			playframes(POWER_MIST_3, 0, 3.0)
+		} while (1)
+	}
+	trans {
+		y = PowerMistY + loopseek(PowerMistYOff, 3.0, 0.15)
+		rotz = -3deg + loopseek(trotz, 6deg, 0)
+	}
+}
+
+state Power_Surveillance_Circle { // 11
+	code () {
+		zindex = 24
+		density = 40.0
+		statusb = FLAG_COLLIDABLE
+		trotx = 0
+		troty = 0
+		trotz = 0
+		trotz = abs(vecx)
+		if (vecx < 0) {
+			v0 = -180deg
+		}
+		else {
+			v0 = 180deg
+		}
+		if (vecy) {
+			trotx = vecy
+		}
+		else {
+			trotx = 0
+		}
+		if (vecz) {
+			creator = objectget(vecz)
+		}
+		else {
+			creator = 0
+		}
+		vecx = x
+		vecy = y
+		vecz = z
+		do {
+			if (rand(100) > 30) {
+				if (!rand(4)) {
+					sounddecay(0.25)
+					soundpitch(4.8 + rand(1.92))
+					soundplay([sv16A], 0.05V + rand(0.03V))
+				}
+				else {
+					sounddecay(0.25)
+					soundpitch(4.8 + rand(1.92))
+					soundplay([sv26A], 0.05V + rand(0.03V))
+				}
+			}
+			playframes(POWER_SURVEILLANCE, 0, 14.0)
+			if (!rand(3)) {
+				playanim(1, POWER_SURVEILLANCE, 1s)
+			}
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Power_Robot_Fling, e == EventSpinHit)
+		rejevret(e == EventJumpedOn || e == EventSpinHit)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (creator) {
+				vecx = creator->x
+				vecy = creator->y
+				vecz = creator->z
+			}
+			vectransf2(vvec, vtrans, 0, 0, 2m)
+			trotx = spd(trotx, v0)
+			PowerSurveillanceLookAtPlayer()
+			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+		}
+	}
+}
+
+sub PowerSurveillanceLookAtPlayer () {
+	save (vecx, vecy, vecz) {
+		vecx = player->x + 0
+		vecy = player->y + 1m
+		vecz = player->z + 0
+		roty = spd(roty, 180deg)
+		rotx = degseek(rotx, atan2_3d(self, vec) + 90deg, 90deg)
+		rotz = degseek(rotz, atan2(player->trans), 180deg)
+	}
+}
+
+inline sub PowerSurveillanceMovePath() {
+	var t = time(PowerSurvCycleTime, PowerSurvCycleOffset)
+	calcpath(abs((t - PowerSurvCycleTime / 2) * PowerSurvSpeed))
+	if (t >= PowerSurvCycleTime / 2) {
+		statusa |= 0x4
+	}
+}
+
+state Power_Surveillance_Path { // 12
+	code () {
+		statusb = FLAG_COLLIDABLE
+		zindex = 24
+		if (vecx) {
+			PowerSurvCycleTime = vecx >> 8
+		}
+		else {
+			PowerSurvCycleTime = 127
+		}
+		PowerSurvSpeed = (pathlen * 2) / (PowerSurvCycleTime + 1)
+		PowerSurvCycleOffset = vecy * (PowerSurvCycleTime + 1) >> 16
+		PowerSurveillanceMovePath()
+		density = 40.0
+		do {
+			if (!rand(3)) {
+				if (!rand(3)) {
+					sounddecay(0.25)
+					soundpitch(5.44 + rand(0.64))
+					soundplay([sv16A], 0.05V + rand(0.15V))
+				}
+				else {
+					sounddecay(0.25)
+					soundpitch(5.44 + rand(0.64))
+					soundplay([sv26A], 0.05V + rand(0.15V))
+				}
+			}
+			playframes(POWER_SURVEILLANCE, 0, 14.0)
+			if (!rand(3)) {
+				playanim(1, POWER_SURVEILLANCE, 1s)
+			}
+		} while (1)
+	}
+	event => state Power_Surveillance_Circle
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			PowerSurveillanceMovePath()
+			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+			PowerSurveillanceLookAtPlayer()
+		}
+	}
+}
+
+state Bubble_Spawner { // 13
+	stateflag 0x80
+	statusc 0x22
+	code () {
+		statusb = FLAG_INVISIBLE
+		v0 = rand(2s)
+		sleepanim(0, BUBBLE)
+	}
+	trans {
+		if (!time(2.15s, v0) && FRAMETIME < 30) {
+			if (FRAMETIME < 27 && !rand(2)) {
+				spawn(PoRoC, S_BUBBLE)
+			}
+		}
+	}
+}
+
+state Bubble { // 14
+	stateflag 0x80
+	statusc 0x22
+	code () {
+		scalex = 0.3S + rand(0.4S)
+		scaley = scalex
+		rotx = 0
+		roty = 0
+		rotz = 0
+		zindex = 0
+		v0 = 3s + rand(2s)
+		statusb = FLAG_PHYSICS_ENGINE
+		velx = randi(-0.4m, 0.4m)
+		vely = 1m + rand(1.5m)
+		velz = randi(-0.2m, 0.2m)
+		WaitFrame(0, BUBBLE, v0)
+		playframest(BUBBLE, 0, 16.0, 0.1s)
+	}
+}
+
+state Smoke_Spawner { // 15
+	stateflag 0x80
+	statusc 0x22
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, BUBBLE)
+	}
+	trans {
+		if (!time(4) && FRAMETIME < 28) {
+			spawn(BoxsC, BoxsC_S_SMOKE, 1, -1.0)
+		}
+	}
+}
+
+state State_16 { // 16
+	statusc 0x12
+	code () {
+		scalex = 1.5S
+		scaley = 0.75S
+		scalez = 0.75S
+		spawn(PoRoC, S_SHOCK_EFFECT)
+		do {
+			if (!rand(5)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, SHOCK_START, 0.1s)
+				if (!rand(2)) {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp23A], 0.5V + rand(0.2V))
+				}
+				else {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp13A], 0.5V + rand(0.2V))
+				}
+			}
+			statusb = 0
+			rotz = rand(360deg)
+			playframes(SHOCK_LOOP, 0, 8.0)
+		} while (1)
+	}
+}
+
+state LabAss_Shock { // 17
+	stateflag 0x80001
+	statusc 0x12
+	code (vert) {
+		v0 = vert
+		scalex = 1.5S
+		scaley = 0.75S
+		scalez = 0.75S
+		do (var start = frametime) {
+			if (!rand(5)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, SHOCK_START, 0.1s)
+				if (!rand(2)) {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp23A], 0.5V + rand(0.1V))
+				}
+				else {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp13A], 0.5V + rand(0.1V))
+				}
+			}
+			statusb = 0
+			rotz = rand(360deg)
+			playframes(SHOCK_LOOP, 0, 8.0)
+		} while (frametime - start < 0.55s)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			getvert(vtrans, creator, v0)
+		}
+	}
+}
+
+state Willy_Shock { // 18
+	stateflag 0x80001
+	statusc 0x12
+	code (vert1, vert2) {
+		v0 = vert1
+		field_61 = vert2
+		pathprog = randi(-0.99, 0.99)
+		zindex = 40
+		rotx = 0
+		roty = 0
+		scalex = 1.3S
+		scaley = 0.5S
+		scalez = 0.5S
+		sounddecay(0.375)
+		soundpitch(6.4 + rand(3.2))
+		soundplay([sp13A], 0.3V + rand(0.3V))
+		do (var start = frametime) {
+			if (!rand(5)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, SHOCK_START, 0.1s)
+				if (!rand(2)) {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp23A], 0.3V + rand(0.3V))
+				}
+				else {
+					sounddecay(0.375)
+					soundpitch(6.4 + rand(3.2))
+					soundplay([sp13A], 0.3V + rand(0.3V))
+				}
+			}
+			statusb = 0
+			rotz = rand(360deg)
+			playframes(SHOCK_LOOP, 0, 8.0)
+		} while (frametime - start < 2s)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			null = loopseek(pathprog, 1.0, 0.05)
+			getvert(vtrans, creator, v0)
+			getvert(vvec, creator, field_61)
+			x += (vecx - x) * abs(pathprog) >> 8
+			y += (vecy - y) * abs(pathprog) >> 8
+			z += (vecz - z) * abs(pathprog) >> 8
+		}
+	}
+}
+

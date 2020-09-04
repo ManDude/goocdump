@@ -1,0 +1,496 @@
+#gool LabAC 54 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim LABASS_VIAL_THROW [LW1EV] 24
+#anim LABASS_VIAL_MIX [LW2EV] 30
+#anim LABASS_WALK [LW1FV] 24
+#anim LABASS_START_WALK [LW3FV] 6
+#anim LABASS_PUSHED [LW2FV] 30
+#anim VIAL [Vi1KV] 1
+
+#spawn S_LABASS_2D                LabAss_2D_Spawn
+#spawn S_LABASS_WALKER            LabAss_Walker_Spawn
+#spawn S_FLASK_2D                 Flask_2D
+#spawn S_LABASS_3D                LabAss_3D_Spawn
+#spawn S_FLASK_3D                 Flask_3D
+
+var LabAssMinPathProg, LabAssActiveZ, LabAssSideTrack, IsShock, ThrowCycleDur, ThrowCycleOff, FlaskLifespan, LabAssWalkState, mem9
+
+event EventJumpedOn      => state LabAss_Die
+event EventHit           => state LabAss_Die
+event EventHitInvincible => state LabAss_Fling
+event EventFling         => state LabAss_Die
+
+#include "PoRoC.gooh"
+#include "BoxsC.gooh"
+
+state LabAss_Walker_Spawn { // 0
+	code () {
+		zindex = 24
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		pathprog = 9.0
+		LabAssMinPathProg = 8.0
+		trotx = 360deg
+		density = 0.1m
+		LabAssSideTrack = 0
+		calcpath()
+		LabAssActiveZ = z + 4m
+		pathdist = 2m
+		IsShock = false
+		LabAssWalkState = 0
+		changestate(LabAss_Stand)
+	}
+}
+
+inline sub EnableShock() {
+	IsShock = true
+	spawn(PoRoC, PoRoC_S_LABASS_SHOCK, 1, 0)
+	spawn(PoRoC, PoRoC_S_LABASS_SHOCK, 1, 1.0)
+}
+
+inline sub DisableShock() {	
+	IsShock = false
+	SetColor(0xFF, 0xFF, 0xFF)
+}
+
+inline sub CheckShock() {	
+	if ((frametime - statetime) % 2s == 1s && !IsShock) {
+		EnableShock()
+	}
+}
+
+inline sub SetShockColor() {
+	if (!rand(5)) {
+		SetColor(0xFF, 0xFF, 0xFF)
+	}
+	else {
+		SetColor(2.0, 2.0, 2.0)
+	}
+}
+
+inline sub SetShockEffect() {
+	sendevent(Event44, collider, 0)
+	SetShockColor()
+	if ((frametime - statetime) % 2s > 1.5s) {
+		DisableShock()
+	}
+}
+
+state LabAss_Stand { // 1
+	statusc 0
+	code () {
+		LabAssWalkState = 0
+		sleepanim(0, LABASS_START_WALK)
+	}
+	event => state LabAss_Walk
+	trans {
+		CheckShock()
+		if (IsShock) {
+			SetShockEffect()
+		}
+		else {
+			sendevent(EventHit, collider, 0)
+		}
+		changestateif(LabAss_Walk, player->z < LabAssActiveZ && !(player->stateflag \ 0x20))
+	}
+}
+
+inline sub LabAssTrackPath() {	
+	var path_rot, deg_to_player
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(LabAssSideTrack)
+	}
+	x += velx
+	z += velz
+	path_rot = troty
+	if (abs(LabAssSideTrack - vecy) > 0.1m) {
+		deg_to_player = degdist(troty, atan2(player->trans))
+		if (deg_to_player < -512deg) {
+			deg_to_player = -512deg
+		}
+		else if (deg_to_player > 512deg) {
+			deg_to_player = 512deg
+		}
+		troty += deg_to_player
+	}
+	LabAssSideTrack = seek(LabAssSideTrack, vecy, spd(2m))
+	if (LabAssSideTrack < -pathdist) {
+		troty = path_rot
+		LabAssSideTrack = -pathdist
+	}
+	else if (LabAssSideTrack > pathdist) {
+		troty = path_rot
+		LabAssSideTrack = pathdist
+	}
+}
+
+state LabAss_Walk { // 2
+	statusc 0
+	code () {
+		if (LabAssWalkState == 0) {
+			playframes(LABASS_START_WALK, 0, 5.0)
+			animframe = 5.0
+		}
+		else {
+			animframe = 7.0
+		}
+		setanim(LABASS_WALK)
+		LabAssWalkState = 1
+		do {
+			animframe = (animframe + 1.0) % 24.0
+			playframe()
+		} while (1)
+	}
+	event (e, a) {
+		rejevret(e == EventJumpedOn)
+		if (IsShock) {
+			accevcstate(LabAss_Pushed, e == EventHitInvincible)
+			rejevret()
+		}
+		else {
+			accevcstate(LabAss_Pushed, e == EventSpinHit || e == EventHitInvincible || e == EventFling)
+		}
+	}
+	trans {
+		if (frametime - statetime >= 0.25s) {
+			if (player->z > z) {
+				pathprog = spd(pathprog, 3.0)
+			}
+			else {
+				pathprog = seek(pathprog, 0, spd(3.0))
+			}
+			if (pathprog > pathlen - 1.0) {
+				pathprog = pathlen - 1.0
+			}
+			if (pathprog >= LabAssMinPathProg + 4.0) {
+				LabAssMinPathProg += 4.0
+			}
+			calcpath()
+			z -= 0.5m
+			LabAssTrackPath()
+		}
+		CheckShock()
+		if (IsShock) {
+			sendevent(Event44, collider, 0)
+			changestateif(LabAss_Stand, eventaccepted)
+			SetShockColor()
+			if ((frametime - statetime) % 2s > 1.5s) {
+				DisableShock()
+			}
+		}
+		else {
+			sendevent(EventHit, collider, 0)
+			changestateif(LabAss_Stand, eventaccepted)
+		}
+	}
+}
+
+state LabAss_Pushed { // 3
+	stateflag 0x3
+	statusc 0
+	code () {
+		IsShock = false
+		sleepanim(0, LABASS_PUSHED)
+	}
+	event (e, a) {
+		rejevret(e == EventJumpedOn)
+	}
+	trans {
+		once {
+			LabAssMinPathProg -= 4.0
+		}
+		pathprog = spd(pathprog, -18.0)
+		if (pathprog < 0) {
+			pathprog = 0
+		}
+		calcpath()
+		if (pathprog <= LabAssMinPathProg || pathprog == 0) {
+			if (LabAssMinPathProg > 0) {
+				pathprog = LabAssMinPathProg
+			}
+			else {
+				pathprog = 0
+			}
+			changestate(LabAss_Shrug_Shock)
+		}
+		LabAssTrackPath()
+		EnemyHitPlayerGround()
+	}
+}
+
+state LabAss_Shrug_Shock { // 4
+	stateflag 0x3
+	statusc 0
+	code () {
+		EnableShock()
+		playframes(LABASS_PUSHED, 1.0, 29.0)
+		LabAssWalkState = 1
+		DisableShock()
+		changestate(LabAss_Walk)
+	}
+	event => state LabAss_Walk
+	trans {
+		once {
+			changestateif(LabAss_Fall, LabAssMinPathProg < 0)
+		}
+		calcpath()
+		LabAssTrackPath()
+		sendevent(Event44, collider, 0)
+		changestateif(LabAss_Stand, eventaccepted)
+		SetShockColor()
+	}
+}
+
+state LabAss_Fall { // 5
+	stateflag 0x21
+	code () {
+		KillEntity()
+		SetColor(0xFF, 0xFF, 0xFF)
+		velx = 0
+		vely = 8.94427m
+		velz = -0.5m
+		roty = 0
+		statusb = FLAG_GRAVITY | FLAG_PHYSICS_ENGINE
+		soundpitch(3.36 + rand(0.16))
+		soundplay([falFA], 0.3V + rand(0.2V))
+		soundsetup(0, voice, 5)
+		playanim(0, LABASS_PUSHED, 1s)
+	}
+	trans {
+		rotx -= 4deg
+		zindex -= 3
+	}
+}
+
+inline sub SetLabAssThrowParams(vx, vy, t) {
+	vecx = vx
+	vecy = vy
+	FlaskLifespan = t
+}
+
+state LabAss_2D_Spawn { // 6
+	code () {
+		if (vecx) ThrowCycleDur = vecx >> 8;
+		     else ThrowCycleDur = 4s;
+		ThrowCycleOff = vecy >> 8;
+		if (LEVEL == LEVEL_StormyAscent) {
+			if (vecz == 0) SetLabAssThrowParams(-9.3m, 10m, 0.9s);
+			else if (vecz == 1.0) SetLabAssThrowParams(6.6m, 14.6m, 0.98s);
+			else if (vecz == 2.0) SetLabAssThrowParams(-10.7m, 8.5m, 0.7s);
+			else if (vecz == 3.0) SetLabAssThrowParams(-13.6m, 13.6m, 0.98s);
+			else if (vecz == 4.0) SetLabAssThrowParams(-7.4m, 11.6m, 0.85s);
+			else if (vecz == 5.0) SetLabAssThrowParams(16.6m, 18.6m, 1.17s);
+			else SetLabAssThrowParams(-15m, 10m, 1s);
+		}
+		else {
+			if (vecz == 0) SetLabAssThrowParams(-6.2m, 8.2m, 0.7s);
+			else if (vecz == 1.0) SetLabAssThrowParams(-17m, 14.5m, 0.98s);
+			else if (vecz == 2.0) SetLabAssThrowParams(-10.9m, 2.3m, 0.47s);
+			else SetLabAssThrowParams(-15m, 10m, 2s);
+		}
+		zindex = 24
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		trotx = 360deg
+		density = 0.1m
+		if (vecx < 0) {
+			roty = -90deg
+		}
+		else {
+			roty = 90deg
+		}
+		var0 = false
+		mem9 = 0
+		setanim(LABASS_VIAL_THROW, 0)
+		changestate(LabAss_2D_Wait)
+	}
+}
+
+state LabAss_2D_Wait { // 7
+	statusc 0
+	code () {
+		sleepframes(LABASS_VIAL_MIX, 0, 29.0)
+	}
+	event (e, a) {
+		accevcstate(LabAss_Fling, e == EventSpinHit)
+	}
+	trans {
+		if (buttonpress(PAD_L1)) {
+			debugfunc(1)
+			var0 = !var0
+		}
+		EnemyHitPlayerGround()
+		changestateifn(LabAss_2D_Throw, time(ThrowCycleDur, ThrowCycleOff))
+	}
+}
+
+state LabAss_2D_Throw { // 8
+	statusc 0
+	code () {
+		playframes(LABASS_VIAL_THROW, 0, 23.0)
+		changestate(LabAss_2D_Wait)
+	}
+	event => state LabAss_2D_Wait
+	trans {
+		EnemyHitPlayerGround()
+		if (animframe == 12.0) {
+			spawn(LabAC, S_FLASK_2D, 1, vecx, vecy, FlaskLifespan)
+		}
+	}
+}
+
+inline sub SoundFlaskExplode() {
+	SoundPlayDefault([flerA], 0.7V)
+	soundsetup(0, voice, 5)
+}
+
+inline sub FlaskCheckExplode() {
+	sendeventif(EventExplode, player, collider || distance(player, DIST_EXACT) < 1.5m, 100.0)
+}
+
+state Flask_2D { // 9
+	statusc 0x32
+	code (vx, vy, t) {
+		FlaskLifespan = t
+		getvert(vtrans, parent, 0)
+		z -= 0.5m
+		velx = vx
+		vely = vy
+		velz = 0
+		rotx = 90deg
+		roty = 0
+		rotz = creator->roty
+		zindex = 48
+		statusb = FLAG_COLLIDABLE | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE
+		do {
+			playanim(0, VIAL)
+		} until (collider || frametime - statetime >= FlaskLifespan)
+		statusb &= ~(FLAG_PHYSICS_ENGINE | FLAG_GRAVITY)
+		SoundFlaskExplode()
+		y -= 0.25m
+		spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 2, 1)
+		spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 4, 0)
+		y += 0.25m
+		FlaskCheckExplode()
+		playanim(0, VIAL)
+	}
+	trans {
+		rotx += 20deg
+	}
+}
+
+state LabAss_Die { // 10
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDie(h)
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state LabAss_Fling { // 11
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFling(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+
+state LabAss_3D_Spawn { // 12
+	code () {
+		if (player->z < z) {
+			return
+		}
+		if (vecx) ThrowCycleDur = vecx >> 8;
+		     else ThrowCycleDur = 1s;
+		ThrowCycleOff = vecy >> 8
+		zindex = 24
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		trotx = 360deg
+		density = 0.1m
+		var0 = false
+		mem9 = 0
+		setanim(LABASS_VIAL_THROW, 8.0)
+		changestate(LabAss_3D_Wait)
+	}
+}
+
+state LabAss_3D_Wait { // 13
+	statusc 0
+	code () {
+		sleepframes(LABASS_VIAL_MIX, 0, 29.0)
+	}
+	event (e, a) {
+		accevcstate(LabAss_Fling, e == EventSpinHit)
+	}
+	trans {
+		troty = atan2(player->trans)
+		EnemyHitPlayerGround()
+		changestateif(LabAss_3D_Throw, !time(ThrowCycleDur, ThrowCycleOff) && abs(player->z - z) < 11m)
+	}
+}
+
+state LabAss_3D_Throw { // 14
+	statusc 0
+	code () {
+		playframes(LABASS_VIAL_THROW, 0, 23.0)
+		changestate(LabAss_3D_Wait)
+	}
+	event => state LabAss_Shrug_Shock
+	trans {
+		EnemyHitPlayerGround()
+		if (animframe == 12.0) {
+			spawn(LabAC, S_FLASK_3D)
+		}
+	}
+}
+
+inline sub Flask3DSeekPt() {
+	var s_x = x, s_z = z, t_x = vecx, t_y = vecy, t_z = vecz
+	troty = atan2(t_x)
+	setanim(VIAL)
+	do (var i = 1.0) {
+		x = s_x + (t_x - s_x)*(i >> 8) / 24
+		z = s_z + (t_z - s_z)*(i >> 8) / 24
+		playframe((i - 1.0) * 1 / 0.8s + 0)
+		i += 1.0
+	} while (i <= 24.0)
+}
+
+state Flask_3D { // 15
+	statusc 0x32
+	code () {
+		SetRot(90deg, atan2(player->trans), roty)
+		zindex = 24
+		getvert(vtrans, creator, 0)
+		statusb = 0x4000 | FLAG_COLLIDABLE | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE
+		groundy = player->y
+		SetVel(0, 13m, 0)
+		SetVec(player->x, player->y, player->z)
+		Flask3DSeekPt()
+		do {
+			playframe()
+		} until (STATUS_GROUNDLAND || collider)
+		statusb = 0
+		SoundFlaskExplode()
+		spawn(BoxsC, BoxsC_S_POW_PARTICLE, 3, 1)
+		spawn(BoxsC, BoxsC_S_POW_PARTICLE, 5, 0)
+		FlaskCheckExplode()
+		playframe()
+	}
+	trans {
+		rotx += 20deg
+	}
+}
+

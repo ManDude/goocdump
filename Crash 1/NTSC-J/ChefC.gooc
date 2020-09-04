@@ -1,0 +1,392 @@
+#gool ChefC 20 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim CHIEF_ATTACK_PREPARE [ChA1V] 8
+#anim CHIEF_ATTACK_WHACK_1 [ChA2V] 18
+#anim CHIEF_ATTACK_WHACK_2 [ChA4V] 22
+#anim CHIEF_ATTACK_SWING [ChA3V] 18
+#anim CHIEF_HIT_1 [ChH1V] 20
+#anim CHIEF_HIT_2 [ChH2V] 20
+#anim CHIEF_HIT_3 [ChH3V] 20
+#anim CHIEF_HIT_4 [ChH4V] 18
+#anim CHIEF_DEAD_1 [ChD1V] 20
+#anim CHIEF_DEAD_2 [ChD2V] 20
+#anim CHIEF_DEAD_3 [ChD3V] 19
+#anim CHIEF_INTRO_SLEEP_1 [ChI7V] 15
+#anim CHIEF_INTRO_SLEEP_2 [ChI8V] 15
+#anim CHIEF_INTRO_1 [ChI1V] 14
+#anim CHIEF_INTRO_2 [ChI2V] 19
+#anim CHIEF_INTRO_3 [ChI3V] 12
+#anim CHIEF_INTRO_4 [ChI4V] 20
+#anim CHIEF_INTRO_5 [ChI5V] 20
+#anim CHIEF_INTRO_6 [ChI6V] 20
+
+#spawn S_CHIEF          Chief_Spawn
+
+var ChiefAnimSet, ChiefJumpKnockbackTime, ChiefJumpedTime, ChiefSpinnedTime
+
+event EventJumpedOn => state Chief_Hit
+event Event19 => sub DeloadAnims
+
+#include "ShadC.gooh"
+
+inline sub ChiefSpinKnockback(e) {
+	if (e == EventSpinHit && interrupter == player && frametime - ChiefSpinnedTime > 0.1s) {
+		SoundPitchDefault()
+		soundplay([sht0A], 0.4V)
+		ChiefSpinnedTime = frametime
+	}
+	SpinKnockback(e, 16m)
+}
+
+state Chief_Spawn {
+	stateflag 0x10001
+	code () {
+		ChiefSpinnedTime = 0
+		ChiefJumpKnockbackTime = 0
+		zindex = 24
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL | FLAG_ROT_Y2
+		health = 5.0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, health, 0) // health type 0: "health" -> health remaining
+		ChiefJumpedTime = 0
+		src21 = 0
+		src22 = 16.0
+		src23 = 0
+		if (GAMESTATE == GAME_STATE_CUTSCENE) {
+			ChiefAnimSet = 0
+			LoadAnim2([ChI7V], [Che2G])
+			LoadAnim2([ChI8V], [Che2G])
+			LoadAnim2([ChI1V], [Che2G])
+			LoadAnim2([ChI2V], [Che2G])
+			LoadAnim2([ChI3V], [Che2G])
+			LoadAnim2([ChI4V], [Che2G])
+			LoadAnim2([ChI5V], [Che2G])
+			LoadAnim2([ChI6V], [Che2G])
+			SoundPitchDefault()
+			sounddelay(1.0s/3)
+			soundfadev(0.15V)
+			soundplay([SnbaA], 0.02V)
+			playframest(CHIEF_INTRO_SLEEP_2, 0, 14.0, 2)
+			SoundPitchDefault()
+			soundplay([SnaaA], 0.1V)
+			playframest(CHIEF_INTRO_SLEEP_1, 0, 14.0, 2)
+			SoundPitchDefault()
+			soundplay([SnbaA], 0.06V)
+			playframest(CHIEF_INTRO_SLEEP_2, 0, 14.0, 2)
+			SoundPitchDefault()
+			soundplay([SnaaA], 0.1V)
+			playframest(CHIEF_INTRO_SLEEP_1, 0, 14.0, 2)
+			SoundPitchDefault()
+			soundplay([SnbaA], 0.06V)
+			playframest(CHIEF_INTRO_SLEEP_2, 0, 14.0, 2)
+			SoundPitchDefault()
+			soundplay([SntaA], 0.3V)
+			playframes(CHIEF_INTRO_1, 0, 13.0)
+			DeloadAnim([ChI7V], [Che2G])
+			DeloadAnim([ChI8V], [Che2G])
+			DeloadAnim([ChI1V], [Che2G])
+			LoadAnim([ChH1V], [Che1G])
+			LoadAnim([ChH2V], [Che1G])
+			LoadAnim([ChH3V], [Che1G])
+			LoadAnim([ChH4V], [Che1G])
+			ChiefAnimSet = 1.0
+			playframes(CHIEF_INTRO_2, 0, 18.0)
+			SoundPitchDefault()
+			soundplay([ShkaA], 0.3V)
+			playframes(CHIEF_INTRO_3, 0, 11.0)
+			do (var p = 0) {
+				calcpath(p)
+				if (p < 20.0) {
+					setanim(CHIEF_INTRO_4)
+					playframe(p)
+				}
+				else if (p < 40.0) {
+					setanim(CHIEF_INTRO_5)
+					playframe(p-20.0)
+				}
+				else {
+					setanim(CHIEF_INTRO_6) // typo?
+					playframe(p-40.0)
+				}
+				p += 1.0
+			} while (p < 60.0)
+			playframes(CHIEF_ATTACK_PREPARE, 0, 7.0)
+			DeloadAnim([ChI2V], [Che2G])
+			DeloadAnim([ChI3V], [Che2G])
+			DeloadAnim([ChI4V], [Che2G])
+			DeloadAnim([ChI5V], [Che2G])
+			DeloadAnim([ChI6V], [Che2G])
+		}
+		else {
+			LoadAnim([ChH1V], [Che1G])
+			LoadAnim([ChH2V], [Che1G])
+			LoadAnim([ChH3V], [Che1G])
+			LoadAnim([ChH4V], [Che1G])
+			calcpath(59.0)
+		}
+		ChiefAnimSet = 2.0
+		setanim(CHIEF_ATTACK_WHACK_2)
+		changestate(Chief_Attack)
+	}
+	event (e, a) {
+		ChiefSpinKnockback(e)
+	}
+}
+
+sub PlayAttackFrame () {
+	if (animframe == 9.0) {
+		playframe(0)
+	}
+	else {
+		playframe(animframe+1.0)
+	}
+}
+
+inline sub DoJumpKnockback() {
+	if (frametime == ChiefJumpKnockbackTime) {
+		save (velx, vely, velz, troty) {
+			troty = player->troty
+			player->speed = 10m
+			setvel(10m)
+			player->velx = velx
+			player->vely = vely
+			player->velz = velz
+			if (player->invincible != 5) {
+				player->statusb &= ~FLAG_DPAD_CONTROL
+				player->invincible = 6
+				player->invincibletime = frametime
+			}
+		}
+	}
+}
+
+inline sub RestoreLight() {	
+	colr2 = 0xff
+	colg2 = 0xff
+	colb2 = 0xff
+}
+
+inline sub DoLightEffect() {
+	if (statusc \ 0x2 && time(0.2s) < 0.1s) {
+		colr2 = 2.0
+		colg2 = 2.0
+		colb2 = 2.0
+	}
+	else {
+		RestoreLight()
+	}
+}
+
+inline sub CheckStaffClip() {
+	getvert(vvec, self, 0)
+	v0 = pointclip(vec, player)
+	getvert(vvec, self, 1.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 2.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 3.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 4.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 5.0)
+	v0 += pointclip(vec, player)
+	sendeventif(Event24, player, v0, 100.0)
+}
+
+state Chief_Attack {
+	stateflag 0x10081
+	code () {
+		var spin_dur, whack_staff
+		trotx = 270deg
+		if (health == 5.0) {
+			whack_staff = true
+		}
+		else {
+			whack_staff = false
+		}
+		do {
+			if (whack_staff) {
+				playframes(CHIEF_ATTACK_WHACK_1, 0, 17.0)
+				playframeslt(CHIEF_ATTACK_WHACK_2, 0, 2.0)
+				if (!SHAKEY) {
+					SHAKEY = 5.0
+				}
+				SoundPitchDefault()
+				soundplay([StWaA], 0.6V + rand(0.1V))
+				playframeslt(3.0, 21.0)
+				playframe(21.0, 0.9s)
+			}
+			if (health == 1.0) {
+				spin_dur = 1.3s*3-1
+				trotx = 270deg * 6 / 4
+			}
+			else if (health == 2.0) {
+				spin_dur = 1.3s*3-1
+				trotx = 270deg * 5 / 4
+			}
+			else if (health == 3.0) {
+				spin_dur = 1.3s*3-1
+			}
+			else if (health == 4.0) {
+				spin_dur = 1.3s*2
+			}
+			else if (health == 5.0) {
+				spin_dur = 1.3s
+			}
+			setanim(CHIEF_ATTACK_SWING, 9.0)
+			do (var start = frametime) {
+				troty = roty + 180deg
+				PlayAttackFrame()
+			} while (frametime - start < spin_dur)
+			do {
+				troty = atan2(player->trans) - 72deg
+				PlayAttackFrame()
+			} until (STATUS_REACHED_TROT)
+			troty = atan2(player->trans)
+			playframeslt(10.0, 17.0)
+			whack_staff = true
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn) {
+			if (player->y > y + 1.5m) {
+				ChiefJumpKnockbackTime = frametime + 2
+				ChiefJumpedTime = frametime
+				if (statusc \ 0x2) {
+					sendevent(EventHit, player, 100.0)
+				}
+				else {
+					accevcstate(Chief_Hit)
+				}
+			}
+			else {
+				rejevret()
+			}
+		}
+		ChiefSpinKnockback(e)
+	}
+	trans {
+		DoJumpKnockback()
+		eventaccepted = false
+		if (frametime - ChiefJumpedTime >= 1s && frametime - statetime >= 0.7s) {
+			CheckStaffClip()
+		}
+		DoLightEffect()
+		sendeventif(EventHit, collider, player->vely < 0 && frametime - ChiefJumpedTime >= 1s && !eventaccepted, 100.0)
+		if (frametime - statetime >= 1s) {
+			statusc &= ~0x2
+		}
+	}
+}
+
+state Chief_Hit {
+	stateflag 0x10002
+	code () {
+		statusb &= ~FLAG_ROT_Y2
+		GLOBALVAL += 1.0
+		health -= 1.0
+		if (health <= 0) {
+			RestoreLight()
+			changestate(Chief_Dead)
+		}
+		SoundPitchDefault()
+		sounddelay(0.4s)
+		soundplay([ShkaA], 0.3V)
+		playframes(CHIEF_HIT_1, 0, 19.0)
+		playframes(CHIEF_HIT_2, 0, 19.0)
+		SoundPitchDefault()
+		soundplay([YelaA], 0.2V)
+		playframes(CHIEF_HIT_3, 0, 19.0)
+		playframes(CHIEF_HIT_4, 0, 17.0)
+		if (ChiefAnimSet == 2.0) {
+			LoadAnim([ChD1V], [Che1G])
+			LoadAnim([ChD2V], [Che1G])
+			LoadAnim([ChD3V], [Che1G])
+			ChiefAnimSet = 3.0
+		}
+		statusb |= FLAG_ROT_Y2
+		changestate(Chief_Attack)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn) {
+			if (player->y > y + 5m) {
+				ChiefJumpKnockbackTime = frametime + 2
+				ChiefJumpedTime = frametime
+				accevret()
+			}
+		}
+		ChiefSpinKnockback(e)
+	}
+	trans {
+		DoJumpKnockback()
+		DoLightEffect()
+		sendeventif(EventHit, collider, player->vely <= 0 && frametime - ChiefJumpedTime >= 1s && player->statusa \ FLAG_GROUNDLAND, 100.0)
+	}
+}
+
+state Chief_Dead {
+	stateflag 0x10001
+	code () {
+		RestoreLight()
+		GLOBALVAL = 100.0
+		playframes(CHIEF_DEAD_1, 0, 19.0)
+		playframes(CHIEF_DEAD_2, 0, 19.0)
+		zindex = 70
+		playframeslt(CHIEF_DEAD_3, 0, 9.0)
+		if (!SHAKEY) SHAKEY = 15.0;
+		SoundPitchDefault()
+		soundplay([BSlaA], 1.0V)
+		playframeslt(10.0, 18.0)
+		health = -1
+		sendevent(EventWarp, player, 0)
+		playframe(18.0, 2s)
+		sleepframe(18.0)
+	}
+	trans {
+		if (frametime - ChiefJumpedTime >= 1s) {
+			CheckStaffClip()
+		}
+		sendeventif(EventHit, collider, frametime - statetime >= 1s && health >= 0, 100.0)
+	}
+}
+
+sub DeloadAnims () {
+	if (ChiefAnimSet == 0) {
+		DeloadAnim([ChI7V], [Che2G])
+		DeloadAnim([ChI8V], [Che2G])
+		DeloadAnim([ChI1V], [Che2G])
+		DeloadAnim([ChI2V], [Che2G])
+		DeloadAnim([ChI3V], [Che2G])
+		DeloadAnim([ChI4V], [Che2G])
+		DeloadAnim([ChI5V], [Che2G])
+		DeloadAnim([ChI6V], [Che2G])
+	}
+	else if (ChiefAnimSet == 1.0) {
+		DeloadAnim([ChI2V], [Che2G])
+		DeloadAnim([ChI3V], [Che2G])
+		DeloadAnim([ChI4V], [Che2G])
+		DeloadAnim([ChI5V], [Che2G])
+		DeloadAnim([ChI6V], [Che2G])
+		DeloadAnim([ChH1V], [Che1G])
+		DeloadAnim([ChH2V], [Che1G])
+		DeloadAnim([ChH3V], [Che1G])
+		DeloadAnim([ChH4V], [Che1G])
+	}
+	else if (ChiefAnimSet == 2.0) {
+		DeloadAnim([ChH1V], [Che1G])
+		DeloadAnim([ChH2V], [Che1G])
+		DeloadAnim([ChH3V], [Che1G])
+		DeloadAnim([ChH4V], [Che1G])
+	}
+	else if (ChiefAnimSet == 3.0) {
+		DeloadAnim([ChH1V], [Che1G])
+		DeloadAnim([ChH2V], [Che1G])
+		DeloadAnim([ChH3V], [Che1G])
+		DeloadAnim([ChH4V], [Che1G])
+		DeloadAnim([ChD1V], [Che1G])
+		DeloadAnim([ChD2V], [Che1G])
+		DeloadAnim([ChD3V], [Che1G])
+	}
+}
+

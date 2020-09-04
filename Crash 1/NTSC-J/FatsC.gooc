@@ -1,0 +1,138 @@
+#gool FatsC 17 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim FAT_STANDARD_1 [FaS1V] 30
+#anim FAT_STANDARD_2 [FaS2V] 30
+#anim FAT_STANDARD_3 [FaS3V] 15
+#anim FAT_DANGER_1 [FaD1V] 30
+#anim FAT_DANGER_2 [FaD2V] 30
+#anim FAT_DANGER_3 [FaD3V] 15
+
+#spawn S_FAT                 Fat_Wait
+
+event EventJumpedOn      => state Fat_Die
+event EventHit           => state Fat_Die
+event EventSpinHit       => state Fat_Fling
+event EventHitInvincible => state Fat_Fling
+event EventFling         => state Fat_Die
+
+#include "BaraC.gooh"
+
+state Fat_Wait {
+	code () {
+		zindex = 10
+		statusb = FLAG_INVISIBLE
+		do {
+			v0 = player->z - z
+			changestateifn(Fat_Attack, v0 > 90m || v0 < -1000m)
+			playanim(0, 0, 1s)
+		} while (1)
+	}
+}
+
+state Fat_Attack {
+	stateflag 0x81
+	statusc 0
+	code () {
+		statusb = FLAG_SOLID_SIDES | FLAG_COLLIDABLE
+		statetime = 0
+		do (var barrel_count, barrel_type) {
+			if (!vecx) {
+				barrel_type = 0
+			}
+			else if (vecx == 4.0 || (vecx == 3.0 && !(barrel_count % 3))) {
+				barrel_type = 1
+			}
+			else {
+				barrel_type = 2
+			}
+			if (!rand(3) && frametime - statetime >= 2s > 0) {
+				soundpitch(2.745 + rand(0.32))
+				soundplay([laf7A], 0.3V + rand(0.2V))
+				statetime = 0
+			}
+			if (barrel_type == 0 || barrel_type == 2) {
+				playframes(FAT_STANDARD_1, 0, 29.0)
+				playframes(FAT_STANDARD_2, 0, 29.0)
+				barrel_count += 1.0
+				spawn(BaraC, BaraC_S_BARREL)
+				scalex = -scalex
+				if (vecx == 3.0 && !(barrel_count % 3)) {
+					playframeslt(FAT_DANGER_3, 0, 14.0)
+				}
+				else {
+					playframeslt(FAT_STANDARD_3, 0, 14.0)
+				}
+			}
+			else {
+				playframes(FAT_DANGER_1, 0, 29.0)
+				playframes(FAT_DANGER_2, 0, 29.0)
+				barrel_count += 1.0
+				if (barrel_type == 1) {
+					spawn(BaraC, BaraC_S_BARREL_BOUNCY)
+				}
+				else {
+					spawn(BaraC, BaraC_S_BARREL_NO_RAND_BOB)
+				}
+				scalex = -scalex
+				if (vecx == 3.0) {
+					playframeslt(FAT_STANDARD_3, 0, 14.0)
+				}
+				else {
+					playframeslt(FAT_DANGER_3, 0, 14.0)
+				}
+				if (barrel_type == 1) {
+					wait(1s)
+				}
+			}
+		} while (1)
+	}
+	event (e, a) {
+		rejevret(e == EventJumpedOn && player->y < y)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		v0 = player->z - z
+		changestateif(Fat_Wait, v0 > 90m || v0 < -1000m)
+	}
+}
+
+state Fat_Die {
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDie(h)
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state Fat_Fling {
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		entitysetspawn(0)
+		health = h + 1.0
+		sendevent(EventCombo, player, h)
+		soundpitch(3.6 + rand(0.8))
+		soundplay([fli0A], 0.17V + rand(0.05V))
+		troty = 180deg
+		vely = 0
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		while (abs(scalex) > 0 && scaley > 0 && scalez > 0) {
+			playframe()
+		}
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			nop()
+		}
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+

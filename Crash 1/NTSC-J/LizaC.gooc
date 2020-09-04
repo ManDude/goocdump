@@ -1,0 +1,321 @@
+#gool LizaC 47 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim LIZARD_RED [LizrV] 53
+#anim LIZARD_GREEN [LizgV] 53
+
+#spawn S_LIZARD                   Lizard_Spawn
+#spawn S_LIZARD_GREEN             Lizard_Spawn
+#spawn S_LIZARD_RED               Lizard_Spawn
+
+var mem1, SpawnX, SpawnY, SpawnZ, JumpHeight, mem6, LizardJumpTime, LizardJumpCooldown, LizardJumpOffset, ActiveRange, BaseZ, LizardSpinTime, LizardMaxJumpDist
+
+event EventJumpedOn      => state Lizard_Die
+event EventHit           => state Lizard_Die
+event EventHitInvincible => state Lizard_Die
+event EventFling         => state Lizard_Die
+
+#include "ShadC.gooh"
+
+inline sub SoundLizardJump() {	
+	sounddecay(0.125)
+	SoundPlayDefault([jmp0A], 0.1V)
+}
+
+inline sub SoundLizardLand() {	
+	sounddecay(0.125)
+	SoundPlayDefault([ld10A], 0.2V)
+}
+
+inline sub LizardSetJumpVel(frame_count) {
+	vely = (-JumpHeight * ((frame_count>>8)+1) / 2s << 8) * 400
+}
+
+inline sub LizardSeekPtTurnAnim(anim, start_frame, end_frame, frame_count, frame_off) {
+	var start_x = x, start_z = z, t_x = vecx, t_y = vecy, t_z = vecz
+	troty = atan2(t_x)
+	setanim(anim)
+	do (var i = start_frame) {
+		x = start_x + (t_x - start_x)*(i >> 8) / (frame_count>>8)
+		vely = spd(vely, (JumpHeight << 8) * 400)
+		playframe((i - start_frame) * ((frame_count>>8)+1) / (frame_count>>8) + frame_off)
+		i += 1.0
+	} while (i <= end_frame)
+}
+
+sub LizardJump (target_point) {
+	if (spawn == S_LIZARD) {
+		playframes(LIZARD_GREEN, 0, 9.0)
+		SoundLizardJump()
+		LizardSetJumpVel(29.0)
+		statusb |= FLAG_PHYSICS_ENGINE
+		setanim(LIZARD_GREEN, 9.0)
+		do {
+			animframe += 1.0
+			vely = spd(vely, (JumpHeight << 8) * 400)
+			playframe()
+		} while (animframe + 1.0 <= 38.0)
+		SoundLizardLand()
+		y = groundy
+		statusb &= ~FLAG_PHYSICS_ENGINE
+		playframes(LIZARD_GREEN, 39.0, 52.0)
+	}
+	else if (spawn == S_LIZARD_GREEN) {
+		playframes(LIZARD_GREEN, 0, 9.0)
+		calcpath(target_point, vvec)
+		SoundLizardJump()
+		LizardSetJumpVel(29.0)
+		statusb |= FLAG_PHYSICS_ENGINE
+		LizardSeekPtTurnAnim(LIZARD_GREEN, 1.0, 28.0, 28.0, 10.0)
+		y = groundy
+		statusb &= ~FLAG_PHYSICS_ENGINE
+		SoundLizardLand()
+		playframes(LIZARD_GREEN, 39.0, 52.0)
+	}
+	else if (spawn == S_LIZARD_RED) {
+		var player_dist_to_target
+		playframes(LIZARD_RED, 0, 9.0)
+		calcpath(target_point, vvec)
+		player_dist_to_target = player->x - vecx
+		if (player_dist_to_target < 0) {
+			if (player_dist_to_target < -1m) {
+				player_dist_to_target = -1m
+			}
+		}
+		else {
+			if (player_dist_to_target > 1m) {
+				player_dist_to_target = 1m
+			}
+		}
+		vecx += player_dist_to_target
+		SoundLizardJump()
+		LizardSetJumpVel(29.0)
+		statusb |= FLAG_PHYSICS_ENGINE
+		LizardSeekPtTurnAnim(LIZARD_RED, 1.0, 28.0, 28.0, 10.0)
+		y = groundy
+		statusb &= ~FLAG_PHYSICS_ENGINE
+		SoundLizardLand()
+		playframes(LIZARD_RED, 39.0, 52.0)
+	}
+}
+
+state Lizard_Spawn {
+	statusc 0x12
+	code () {
+		if (spawn == S_LIZARD_RED) {
+			if (vecx) JumpHeight = -(vecx >> 8);
+			     else JumpHeight = -12;
+		}
+		else {
+			if (vecx) JumpHeight = -(vecx >> 8);
+			     else JumpHeight = -25;
+		}
+		if (vecy) LizardMaxJumpDist = vecy/100 * 400;
+		     else LizardMaxJumpDist = 4.5m;
+		if (vecz) ActiveRange = vecz/100 * 400;
+		     else ActiveRange = 8m;
+		LizardJumpCooldown = 0
+		LizardJumpOffset = 0
+		LizardJumpTime = (frametime - LizardJumpCooldown) + LizardJumpOffset
+		roty = 90deg
+		density = 0.02m
+		zindex = 24
+		LizardSpinTime = 0
+		spawn(ShadC, ShadC_S_SHADOW_GROUND, 1, y+0.05m, 2.0S, 26)
+		if (spawn == S_LIZARD_RED) {
+			setanim(LIZARD_RED)
+		}
+		else {
+			setanim(LIZARD_GREEN)
+		}
+		animframe = 0
+		if (var start_dist = 0, v4 = 0; ZONEFLAGS & 0x800) {
+			calcpath(0, vvec)
+			start_dist = distance(vec, player, DIST_EXACT)
+			calcpath(pathlen-1.0, vvec)
+			v4 = distance(vec, player, DIST_EXACT)
+			if (spawn == S_LIZARD_RED) {
+				if (start_dist > v4) {
+					pathprog = 0
+				}
+				else {
+					pathprog = pathlen - 1.0
+				}
+			}
+			else {
+				if (start_dist < v4) {
+					pathprog = 0
+				}
+				else {
+					pathprog = pathlen - 1.0
+				}
+			}
+		}
+		else {
+			pathprog = 0
+		}
+		calcpath()
+		SpawnX = x
+		SpawnY = y
+		SpawnZ = z
+		BaseZ = z
+		groundy = y
+		changestate(Lizard_Wait)
+	}
+}
+
+inline sub LizardCheckSpin(e) {
+	if (e == EventSpinHit && interrupter == player && frametime - LizardSpinTime > 0.1s) {
+		sounddecay(0.625)
+		SoundPlayDefault([sht0A], 0.4V)
+		LizardSpinTime = frametime
+	}
+}
+
+inline sub LizardCheckBounce(e) {	
+	if (e == EventJumpedOn && interrupter == player) {
+		sounddecay(0.625)
+		SoundPlayDefault([bnk0A], 0.4V)
+		sendevent(EventBounce, interrupter, 12.64912m)
+		rejevcstate(Lizard_Die, eventaccepted)
+	}
+}
+
+state Lizard_Wait {
+	stateflag 0x5
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE | 0x4000 | FLAG_SOLID_SIDES
+		velx = 0
+		vely = 0
+		velz = 0
+		trotx = 270deg
+		roty = atan2(player->trans)
+		troty = roty
+		do {
+			if (spawn == S_LIZARD_RED) {
+				playanim(0, LIZARD_RED)
+			}
+			else {
+				playframe(40.0)
+			}
+			if (spawn == S_LIZARD_RED) {
+				changestateif(Lizard_Jump, abs(player->x - x) < ActiveRange)
+			}
+			else {
+				changestateif(Lizard_Jump, distance(trans, player, DIST_EXACT | DIST_NO_Y) < ActiveRange)
+			}
+		} while (1)
+	}
+	event (e, a) {
+		LizardCheckSpin(e)
+		SpinKnockbackDie(e, 15m, Lizard_Die)
+		LizardCheckBounce(e)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		if (spawn == S_LIZARD) {
+			troty = atan2(player->trans)
+		}
+	}
+}
+
+inline sub LizardRedGetTargetPoint() {	
+	var shortest_dist = 999m, new_point = -1, player_dist
+	do (var i = 0) {
+		calcpath(i, vvec)
+		player_dist = distance(vec, player, DIST_EXACT)
+		if (abs(x-vecx) < LizardMaxJumpDist) {
+			if (new_point == -1 || player_dist < shortest_dist) {
+				shortest_dist = player_dist
+				new_point = i
+			}
+		}
+		i += 1.0
+	} while (i < pathlen)
+	if (new_point != -1) {
+		misc = new_point
+	}
+	else {
+		misc = pathprog
+	}
+}
+
+state Lizard_Jump {
+	stateflag 0x5
+	statusc 0
+	code () {
+		if (spawn == S_LIZARD_RED) {
+			wait(1s/6)
+		}
+		else {
+			playframes(LIZARD_GREEN, 40.0, 52.0)
+		}
+		statusb |= FLAG_ROT_Y
+		do {
+			if (frametime - LizardJumpTime >= LizardJumpCooldown) {
+				if (spawn == S_LIZARD) {
+					LizardJump(0)
+				}
+				else if (spawn == S_LIZARD_GREEN) {
+					LizardJump(loopseek(pathprog, pathlen))
+				}
+				else {
+					LizardRedGetTargetPoint()
+					LizardJump(misc)
+				}
+				LizardJumpTime = frametime
+			}
+			playframe()
+		} while (1)
+	}
+	event (e, a) {
+		LizardCheckSpin(e)
+		SpinKnockbackDie(e, 15m, Lizard_Die)
+		LizardCheckBounce(e)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		if (spawn == S_LIZARD) {
+			troty = atan2(player->trans)
+		}
+		if (y != groundy) {
+			z = seek(z, player->z, spd(5m))
+			if (z - BaseZ > 1m) {
+				z = BaseZ + 1m
+			}
+			if (BaseZ - z > 1m) {
+				z = BaseZ - 1m
+			}
+		}
+	}
+}
+
+inline sub LizardDieWaitScale() {
+	while (scalex > 0.04S) {
+		if (spawn == S_LIZARD_RED) {
+			playanim(9, LIZARD_RED)
+		}
+		else {
+			playanim(9, LIZARD_GREEN)
+		}
+	}
+}
+
+state Lizard_Die {
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		if (eventreceived == EventHitInvincible) {
+			sounddecay(0.625)
+			SoundPlayDefault([sht0A], 0.4V)
+		}
+		EnemyDieCombo(h)
+		LizardDieWaitScale()
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+

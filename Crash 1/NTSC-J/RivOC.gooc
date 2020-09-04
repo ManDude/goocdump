@@ -1,0 +1,646 @@
+#gool RivOC 28 6
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim RIVER_BRANCH [RB1fV] 29
+#anim RIVER_TREE [RD1fV] 16
+#anim RIVER_FISH [RF1fV] 23
+
+#sprite WATER_DROP [Ju4fT]
+#tex 0x646464 0 1 2 0 0 4 16 16
+
+#sprite WATER_SPLASH [Ju3fT]
+#tex 0x646464 0 1 3 4 84 24 32 32
+#tex 0x646464 0 1 3 4 84 16 32 32
+#tex 0x646464 0 1 3 4 84 8 32 32
+#tex 0x646464 0 1 3 4 88 24 32 32
+#tex 0x646464 0 1 3 4 88 16 32 32
+#tex 0x646464 0 1 3 4 88 8 32 32
+#tex 0x646464 0 1 3 4 92 24 32 32
+#tex 0x646464 0 1 3 4 92 16 32 32
+#tex 0x646464 0 1 3 4 92 8 32 32
+#tex 0x646464 0 1 3 4 96 24 32 32
+#tex 0x646464 0 1 3 4 96 16 32 32
+#tex 0x646464 0 1 3 4 96 8 32 32
+#tex 0x646464 0 1 3 4 100 24 32 32
+#tex 0x646464 0 1 3 4 100 16 32 32
+#tex 0x646464 0 1 3 4 100 8 32 32
+#tex 0x646464 0 1 3 4 104 24 32 32
+#tex 0x646464 0 1 3 4 104 16 32 32
+#tex 0x646464 0 1 3 4 104 8 32 32
+#tex 0x646464 0 1 3 4 108 24 32 32
+#tex 0x646464 0 1 3 4 108 16 32 32
+#tex 0x646464 0 1 3 4 108 8 32 32
+#tex 0x646464 0 1 3 4 112 24 32 32
+#tex 0x646464 0 1 3 4 112 16 32 32
+#tex 0x646464 0 1 3 4 112 8 32 32
+#tex 0x646464 0 1 3 4 116 24 32 32
+#tex 0x646464 0 1 3 4 116 16 32 32
+#tex 0x646464 0 1 3 4 116 8 32 32
+#tex 0x646464 0 1 3 4 120 24 32 32
+#tex 0x646464 0 1 3 4 120 16 32 32
+#tex 0x646464 0 1 3 4 120 8 32 32
+#tex 0x646464 0 1 3 4 124 24 32 32
+#tex 0x646464 0 1 3 4 124 16 32 32
+
+#anim RIVER_LEAF [Rl1fV] 63
+#anim RIVER_LEAF_TOUCHED [Rl2fV] 18
+#anim RIVER_LOG [RL1fV] 1
+#anim RIVER_TURTLE [RT1fV] 1
+#anim RIVER_VENUS1_WAIT [RV1fV] 17
+#anim RIVER_VENUS1_CHOMP [RV2fV] 4
+#anim RIVER_VENUS1_EAT [RV3fV] 48
+#anim RIVER_VENUS1_OPEN [RV4fV] 18
+#anim RIVER_VENUS2_WAIT [Rv1fV] 17
+#anim RIVER_VENUS2_CHOMP [Rv2fV] 4
+#anim RIVER_VENUS2_EAT [Rv3fV] 48
+#anim RIVER_VENUS2_OPEN [Rv4fV] 18
+
+#spawn S_0                        __s_0
+#spawn S_RIVER_LEAF               Leaf_Spawn
+#spawn S_RIVER_BRANCH             Branch_Spawn
+#spawn S_3                        __s_3
+#spawn S_4                        __s_4
+#spawn S_FISH                     Fish_Spawn
+#spawn S_VENUS_CONSTANT           Venus_Wait
+#spawn S_VENUS_TRAP               Venus_Wait
+#spawn S_8                        __s_8
+#spawn S_MOSS                     Slippery_Moss
+#spawn S_WATER                    River_Water
+#spawn S_11                       __s_11
+#spawn S_RIVER_AMBIENCE           River_Ambience
+#spawn S_WATERFALL_SOUND          Waterfall_Sound
+
+var RiverObjVar1, RiverObjVar2, RiverObjVar3, BranchCycleTime, BranchCycleOff,
+BranchPathSpeed, RiverObjBaseY, LeafHitVel, LeafFloatY, WaterY,
+FishSplashed, RiverVoice, BranchWaitRange, BranchTimeBase, BranchNoTimeBase
+
+event EventDespawn => sub KillVoice
+
+#include "ShadC.gooh"
+#include "WateC.gooh"
+
+state Waterfall_Sound { // 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		soundpitch(4.0)
+		soundfadet(5s)
+		soundfadev(0.2V, 0, 2)
+		soundplay([WflfA], 0V)
+		RiverVoice = voice
+		sleepanim(0, RIVER_VENUS1_WAIT)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			accev()
+			voice = RiverVoice
+			soundsetup(0, voice, 5)
+			voice = RiverVoice
+			soundfadet(1s, voice)
+			soundfadev(0, voice, 3)
+		}
+	}
+}
+
+sub KillVoice () {
+	voice = -1
+	soundfadet(0.3s, voice)
+	soundfadev(0, voice, 3)
+	voice = -1
+	soundsetup(0, voice, 5)
+}
+
+state River_Ambience { // 1
+	code () {
+		loadfile([RivOC])
+		statusb = FLAG_INVISIBLE | FLAG_2D
+		soundpitch(4.0)
+		soundfadet(0.5s)
+		soundfadev(0.1V, 0, 2)
+		sounddecay(0.945, 0, 2)
+		soundplay([RivfA], 0)
+		sleepanim(0, RIVER_VENUS1_WAIT)
+	}
+}
+
+state Venus_Wait { // 2
+	code () {
+		scalex = 1.1S
+		scaley = 1.0S
+		scalez = 1.1S
+		if (spawn == S_VENUS_CONSTANT) {
+			roty = 60deg
+		}
+		zindex = 40
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP | 0x80000000
+		if (spawn == S_VENUS_TRAP) {
+			sleepframes(RIVER_VENUS1_WAIT, 0, 16.0)
+		}
+		else {
+			sleepframes(RIVER_VENUS2_WAIT, 0, 16.0)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (spawn == S_VENUS_TRAP) {
+				changestateif(Venus_Trap_Chomp, collider)
+			}
+			else if (spawn == S_VENUS_CONSTANT) {
+				changestateif(Venus_Constant_Chomp, frametime - statetime >= 1.67s)
+			}
+		}
+	}
+}
+
+inline sub CheckVenusClip() {	
+	getvert(vvec, self, 0)
+	v0 = pointclip(vec, player)
+	getvert(vvec, self, 1.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 2.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 3.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 4.0)
+	v0 += pointclip(vec, player)
+	getvert(vvec, self, 5.0)
+	v0 += pointclip(vec, player)
+	sendeventif(EventEat, player, v0, 100.0)
+	if (eventaccepted) RiverObjVar1 += 1.0;
+}
+
+inline sub VenusEatCollider() {
+	sendevent(EventEat, collider, 100.0)
+	if (eventaccepted) RiverObjVar1 += 1.0;
+}
+
+state Venus_Trap_Chomp { // 3
+	code () {
+		field_61 = false
+		RiverObjVar1 = 0
+		do {
+			animframe = (animframe+1.0) % 17.0
+			playframe()
+		} until (player->vely <= 0 && frametime - statetime >= 0.67s && player->y < y + 1m)
+		field_61 = true
+		SoundPitchDefault()
+		soundplay([VStfA], 0.3V)
+		playframes(RIVER_VENUS1_CHOMP, 0, 3.0)
+		do (var start = frametime) {
+			playanim(3, RIVER_VENUS1_CHOMP)
+			changestateif(Venus_Eat, self->RiverObjVar1)
+		} while (frametime - start < 0.2s)
+		RiverObjVar1 += 1.0
+		playframes(RIVER_VENUS1_OPEN, 0, 17.0)
+		if (RiverObjVar1 > 1.0) {
+			SoundPitchDefault()
+			soundplay([VStfA], 0.3V)
+			playframes(RIVER_VENUS1_CHOMP, 0, 3.0)
+			changestate(Venus_Eat)
+		}
+		changestate(Venus_Wait)
+	}
+	trans {
+		if (frametime - statetime >= 0.5s && RiverObjVar1 < 2.0) {
+			CheckVenusClip()
+		}
+		if (collider && field_61 && !STATUS_FIRSTFRAME) {
+			VenusEatCollider()
+		}
+	}
+}
+
+state Venus_Eat { // 4
+	code () {
+		sounddelay(1s/3)
+		SoundPitchDefault()
+		soundplay([VWifA], 0.5V)
+		if (spawn == S_VENUS_TRAP) {
+			playframes(RIVER_VENUS1_EAT, 0, 47.0)
+			playframes(RIVER_VENUS1_OPEN, 0, 17.0)
+		}
+		else {
+			playframes(RIVER_VENUS2_EAT, 0, 47.0)
+			playframes(RIVER_VENUS2_OPEN, 0, 17.0)
+		}
+		changestate(Venus_Wait)
+	}
+}
+
+state Venus_Constant_Chomp { // 5
+	code () {
+		RiverObjVar1 = 0
+		SoundPitchDefault()
+		soundplay([VStfA], 0.3V)
+		playframes(RIVER_VENUS2_CHOMP, 0, 3.0)
+		do (var start = frametime) {
+			playanim(3, RIVER_VENUS2_CHOMP)
+			changestateif(Venus_Eat, self->RiverObjVar1)
+		} while (frametime - start < 0.2s)
+		RiverObjVar1 += 1.0
+		playframes(RIVER_VENUS2_OPEN, 0, 17.0)
+		if (RiverObjVar1 >= 2.0) {
+			SoundPitchDefault()
+			soundplay([VStfA], 0.3V)
+			playframes(RIVER_VENUS2_CHOMP, 0, 3.0)
+			changestate(Venus_Eat)
+		}
+		changestate(Venus_Wait)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (!RiverObjVar1) {
+				CheckVenusClip()
+			}
+			if (!(frametime - statetime >= 0.75s)) {
+				VenusEatCollider()
+			}
+		}
+	}
+}
+
+state Fish_Spawn { // 6
+	code () {
+		pathprog = (vecx - 128.0) * pathlen >> 15
+		WaterY = y + 3m
+		setanim(RIVER_FISH)
+		yzapproach = 500deg
+		trotz = -90deg
+		statusb = FLAG_COLLIDABLE | 0x2000 // missing FLAG_HAS_SHADOW!
+		spawn(ShadC, ShadC_S_SHADOW, 1, 0, 1.0S, 0)
+		changestate(Fish_Wait)
+	}
+	trans {
+		RiverObjVar2 = y
+	}
+}
+
+expr GetUnderwaterColor = 0x40 + ((y - WaterY - 0.96m) >> 9)
+
+inline sub SetUnderwaterColor(color) {
+	colra = color
+	colga = color
+	colr1 = color
+	colg1 = color
+	colr2 = color
+	colg2 = color
+	colr3 = color
+	colg3 = color
+}
+
+inline sub SetUnderwaterColorDefault() {
+	if (y >= WaterY) {
+		SetUnderwaterColor(0xff)
+	}
+	else {
+		var color = 0x40
+		if (y > WaterY - 0.96m) {
+			color = GetUnderwaterColor
+		}
+		SetUnderwaterColor(color)
+	}
+}
+
+state Fish_Wait { // 7
+	code () {
+		do {
+			while (animframe < 23.0) {
+				playframe()
+				animframe += 1.0
+			}
+			animframe = 0
+		} while (1)
+	}
+	trans {
+		changestateifn(Fish_Move, STATUS_FIRSTFRAME)
+		RiverObjVar2 = y
+		SetUnderwaterColorDefault()
+	}
+}
+
+state Fish_Move { // 8
+	code => state Fish_Wait
+	event (e, a) {
+		accevcstate(Fish_Fling, e == EventSpinHit || e ==  EventHitInvincible || e == EventFling)
+	}
+	trans {
+		once {
+			FishSplashed = 0
+		}
+		roty += 5deg
+		calcpath(loopseek(pathprog, pathlen + spd(4.0) + -1.0, spd(4.0)))
+		unless (STATUS_FIRSTFRAME) {
+			sendevent(EventHit, collider, 100.0)
+			if (RiverObjVar2 <= y) {
+				trotz = 0
+			}
+			else {
+				if (!trotz) {
+					FishSplashed = 0
+				}
+				trotz = 180deg
+			}
+		}
+		if (STATUS_PATH_END) FishSplashed = 0;
+		if (y >= WaterY) {
+			if (!rand(6) && RiverObjVar2 <= y && y < WaterY + 2.5m) {
+				spawn(RivOC, S_WATER, 1, WaterY, -0.3m)
+			}
+			SetUnderwaterColor(0xff)
+		}
+		else {
+			var color = 0x40
+			if (y > WaterY - 0.96m) {
+				if (!FishSplashed) {
+					FishSplashed = true
+					if (RiverObjVar2 <= y && y < WaterY + 2.5m) {
+						spawn(WateC, WateC_S_SPLASH, 1, -0.3m)
+						SoundPitchDefault()
+						soundplay([FJufA], 0.07V)
+					}
+					else {
+						spawn(WateC, WateC_S_DROP, 8, 0.3m, -0.3m)
+						spawn(WateC, WateC_S_SPLASH, 1, -0.3m)
+						SoundPitchDefault()
+						soundplay([FSpfA], 0.11V)
+					}
+				}
+				color = GetUnderwaterColor
+			}
+			SetUnderwaterColor(color)
+		}
+		RiverObjVar2 = y
+	}
+}
+
+inline sub LoopBranchAnim() {
+	setanim(RIVER_BRANCH)
+	do { playframe(loopseek(v0, 29.0)) } while (1)
+}
+
+inline sub BranchStartPath() {
+	var startdist, enddist
+	calcpath(0, vvec)
+	startdist = abs(player->z - z)
+	calcpath(pathlen - 1.0, vvec)
+	enddist = abs(player->z - z)
+	if (startdist < enddist) {
+		pathprog = 0
+	}
+	else {
+		pathprog = pathlen - 1.0
+	}
+}
+
+state Branch_Spawn { // 9
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP | 0x80000000
+		statusb |= FLAG_INVISIBLE
+		roty = rand(360deg)
+		zindex = -20
+		RiverObjBaseY = 1m
+		RiverObjVar1 = x
+		RiverObjVar2 = y
+		RiverObjVar3 = z
+		scalex = 1.2S
+		scaley = 1.0S
+		scalez = 1.2S
+		if (vecx) BranchCycleTime = vecx >> 8;
+		else BranchCycleTime = 6.67s;
+		BranchPathSpeed = pathlen * 2 / (BranchCycleTime + 1)
+		BranchCycleOff = vecy * (BranchCycleTime + 1) >> 16
+		BranchNoTimeBase = false
+		BranchWaitRange = 0
+		if (vecz == 1.0) {
+			BranchNoTimeBase = true
+		}
+		else if (vecz) {
+			BranchWaitRange = vecz / 100 * 400
+		}
+		BranchStartPath()
+		calcpath()
+		if (!BranchWaitRange) {
+			changestate(Branch_Move)
+		}
+		else {
+			LoopBranchAnim()
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Branch_Move, abs(player->z - z) < BranchWaitRange)
+		}
+	}
+}
+
+inline sub CalcBranchPath() {
+	var t = ((GAMETICK - BranchTimeBase) + BranchCycleOff) % BranchCycleTime
+	calcpath(abs((t - BranchCycleTime / 2) * BranchPathSpeed))
+	if (t >= BranchCycleTime / 2) {
+		statusa |= 0x4
+	}
+}
+
+inline sub CarryCollider() {
+	CarryCollider(RiverObjVar1, RiverObjVar2, RiverObjVar3)
+}
+
+state Branch_Move { // 10
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		if (BranchNoTimeBase) {
+			BranchTimeBase = 0
+		}
+		else {
+			BranchTimeBase = GAMETICK
+		}
+		CalcBranchPath()
+		y += RiverObjBaseY
+		LoopBranchAnim()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			CalcBranchPath()
+			y += RiverObjBaseY
+			roty = spd(roty, 60deg) & 0xfff
+			if (collider && player->y - y> -0.5m && !(player->stateflag \ 0x8000)) {
+				save (vecx, vecy, vecz, troty) {
+					CarryCollider()
+					player->troty = spd(player->troty, 60deg)
+					troty = spd(60deg)
+					vectransf2(vtrans, vvec, (player->z - z) * 0.985 >> 8, (player->x - x) * 0.985 >> 8, 0)
+					player->x = vecx
+					player->z = vecz
+				}
+			}
+			RiverObjVar1 = x
+			RiverObjVar2 = y
+			RiverObjVar3 = z
+		}
+	}
+}
+
+state Leaf_Spawn { // 11
+	code () {
+		roty += 180deg
+		y += 0.4m
+		WaterY = y
+		RiverObjBaseY = y
+		zindex = 0
+		scalex = 1.3S
+		scaley = 1.0S
+		scalez = 1.3S
+		if (vecx) RiverObjVar3 = vecx * 400;
+		else RiverObjVar3 = 7m;
+		if (RiverObjBaseY - RiverObjVar3 > 15m) {
+			RiverObjVar3 = RiverObjBaseY - 15m
+		}
+		if (vecy) trotz = vecy * 400;
+		else trotz = 5m;
+		RiverObjVar1 = 1s
+		RiverObjVar2 = 0
+		setanim(RIVER_LEAF)
+		if (vecz && !entitygetstate(2)) {
+			statusb = FLAG_INVISIBLE
+			sleepanim(0, RIVER_LEAF)
+		}
+		changestate(Leaf_Float)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			accev()
+			if (vecz != 1.0) {
+				interrupter = objectget(vecz)
+				sendevent(EventTriggered, interrupter)
+			}
+			accevcstate(Leaf_Float)
+		}
+	}
+}
+
+state Leaf_Float { // 12
+	statusc 0
+	code () {
+		entitysetstate(1)
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		velx = 0
+		vely = 100m
+		velz = 0
+		do { playframes(RIVER_LEAF, 0, 62.0) } while (1)
+	}
+	trans {
+		if (collider) {
+			if (collider->y > y - 0.2m && collider->vely <= 0) {
+				LeafFloatY = y
+				changestate(Leaf_Touch)
+			}
+		}
+		if (RiverObjBaseY - y > 1m) {
+			y = spd(y, 8m)
+		}
+		else {
+			y = spd(y, 2m)
+		}
+		if (y > RiverObjBaseY) y = RiverObjBaseY;
+	}
+}
+
+state Leaf_Touch { // 13
+	statusc 0
+	code () {
+		LeafHitVel = player->groundvel / 4
+		if (LeafHitVel < -4.5m) LeafHitVel = -4.5m;
+		vely = LeafHitVel
+		SoundPitchDefault()
+		soundplay([LPlfA], 0.15V)
+		playframes(RIVER_LEAF_TOUCHED, 0, 17.0)
+		playanim(16, RIVER_LEAF_TOUCHED)
+		playanim(15, RIVER_LEAF_TOUCHED)
+		playanim(14, RIVER_LEAF_TOUCHED)
+		playanim(13, RIVER_LEAF_TOUCHED)
+		playanim(12, RIVER_LEAF_TOUCHED)
+		playframeslt(11.0, 17.0)
+		changestate(Leaf_Fall)
+	}
+	trans {
+		y = spd(y, vely)
+		if (y > LeafFloatY) y = LeafFloatY;
+		if (vely < 10m) vely = spd(vely, 15m);
+		SetUnderwaterColorDefault()
+	}
+}
+
+state Leaf_Fall { // 14
+	statusc 0
+	code () {
+		statusb |= FLAG_PHYSICS_ENGINE
+		vely = 0
+		setanim(RIVER_LEAF, 0)
+		do (var start = frametime) {
+			animframe = (animframe + 1.0) % 63.0
+			playframe()
+		} while (frametime - start < RiverObjVar1)
+		SoundPitchDefault()
+		soundplay([LPdfA], 0.12V)
+		while (y > RiverObjVar3) {
+			y = spd(y, -5m)
+			animframe = (animframe + 1.0) % 63.0
+			playframe()
+		}
+		while (y < LeafFloatY) {
+			y = spd(y, 5m)
+			animframe = (animframe + 1.0) % 63.0
+			playframe()
+		}
+		y = LeafFloatY
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		changestate(Leaf_Float)
+	}
+	trans {
+		SetUnderwaterColorDefault()
+	}
+}
+
+state Slippery_Moss { // 15
+	statusc 0
+	code () {
+		SlipperyObjCode(RIVER_FISH, 1.5m)
+	}
+	trans {
+		SlipperyObjTrans(2m, 4m)
+	}
+}
+
+state Fish_Fling { // 16
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFling(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+
+state River_Water { // 17
+	stateflag 0x10
+	statusc 0x2
+	code (water_y, yoff) {
+		x += randi(-0.25m, 0.25m)
+		y += yoff
+		z += randi(-0.25m, 0.25m)
+		rotx = 0
+		roty = 0
+		rotz = 0
+		scalex = 0.2S + rand(0.2S)
+		scaley = 0.2S + rand(0.2S)
+		scalez = 0.2S + rand(0.2S)
+		y += yoff
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		while (y > water_y - 0.3m) {
+			playanim(0, WATER_DROP)
+		}
+	}
+}
+
+

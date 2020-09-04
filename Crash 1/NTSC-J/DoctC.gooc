@@ -1,0 +1,931 @@
+#gool DoctC 5 1
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim WITCH_DOCTOR #iflev EG [WD1EV] #else [WD10V] #endif 1
+#anim WITCH_DOCTOR_GOLD [WD30V] 1
+#anim WITCH_DOCTOR_FEATHER [WD20V] 16
+
+#sprite WITCH_DOCTOR_OLD [WillT]
+#tex 0x808080 0 2 6 0 108 4 8 8
+#tex 0x808080 0 1 6 0 108 4 8 8
+#tex 0x0080FF 0 1 6 0 108 4 8 8
+#tex 0x0000FF 0 1 6 0 108 4 8 8
+#tex 0x00FF00 0 1 6 0 108 4 8 8
+
+#sprite DOCTOR_SPARKLE_BLUE [WillT]
+#tex 0xFF1700 0 1 11 9 112 24 32 32
+#tex 0xCC1200 0 1 11 9 112 24 32 32
+#tex 0x990E00 0 1 11 9 112 24 32 32
+#tex 0x660900 0 1 11 9 112 24 32 32
+#tex 0x330400 0 1 11 9 112 24 32 32
+
+#sprite DOCTOR_SPARKLE_YELLOW [WillT]
+#tex 0x00E6FF 0 1 11 9 112 24 32 32
+#tex 0x00B8CC 0 1 11 9 112 24 32 32
+#tex 0x008A99 0 1 11 9 112 24 32 32
+#tex 0x005C66 0 1 11 9 112 24 32 32
+#tex 0x002E33 0 1 11 9 112 24 32 32
+
+#sprite DOCTOR_SPARKLE_RED [WillT]
+#tex 0x0023FF 0 1 11 9 112 24 32 32
+#tex 0x001CCC 0 1 11 9 112 24 32 32
+#tex 0x001599 0 1 11 9 112 24 32 32
+#tex 0x000E66 0 1 11 9 112 24 32 32
+#tex 0x000733 0 1 11 9 112 24 32 32
+
+#sprite DOCTOR_SPARKLE_VIOLET [WillT]
+#tex 0xEB00B4 0 1 11 9 112 24 32 32
+#tex 0xBC0090 0 1 11 9 112 24 32 32
+#tex 0x8D006C 0 1 11 9 112 24 32 32
+#tex 0x5E0048 0 1 11 9 112 24 32 32
+#tex 0x2F0024 0 1 11 9 112 24 32 32
+
+#sprite DOCTOR_SPARKLE_GREEN [WillT]
+#tex 0x00BE00 0 1 11 9 112 24 32 32
+#tex 0x009800 0 1 11 9 112 24 32 32
+#tex 0x007200 0 1 11 9 112 24 32 32
+#tex 0x004C00 0 1 11 9 112 24 32 32
+#tex 0x002600 0 1 11 9 112 24 32 32
+
+#sprite DOCTOR_SPARKLE_WHITE [WillT]
+#tex 0xFFFFFF 0 1 11 9 112 24 32 32
+
+#font DOCTOR_HELP_FONT [WillT]
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 //  
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // !
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // "
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // #
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // %
+#char 0x1E1E1E 0 2 7 0 16 3 4 4 400 0 // &
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // (
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // )
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // *
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // +
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ,
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // -
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // .
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // /
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // 0
+#char 0x808080 0 0 5 0 76 24 32 32 450 0 // 1
+#char 0x808080 0 0 5 0 76 16 32 32 500 0 // 2
+#char 0x808080 0 0 5 0 76 8 32 32 500 0 // 3
+
+#text DOCTOR_HELP_TEXT DOCTOR_HELP_FONT [1021I]
+#iflev 9
+"わしは　アクアク、このしまを~nまもっておる　まじゅつし　じゃ。~nコルテックスの　たくらみで、~nしまは　ひどいことに　なっておる。~nタウナも　つかまっておるぞ。~nさあ　たすけに　いそぐんじゃ。"
+"わしが　ついているときは、いちど~nてきから　みを　まもってやるぞ。~n２まい　あつめると　キラキラ~nひかって　とても　かっこいいぞ。~nわしを　３まいあつめると、しんぴ~nの　パワーが　ばくはつじゃっ"
+"きばこや　てきは　ジャンプして~nこわすことが　できるのを　しって~nおるかの。~nジャンプしてみると　いいことも~nあるぞよ。いつも　スピンばかり~nでは　めが　まわるしの。"
+"わしを　とばすとは　なにごとじゃ！~nおまえのスピンは　いきおいが　あり~nすぎて　アイテムを　ふきとばして~nしまうのじゃ。だいじなものは~nやさしく　あつかわねば　ならんぞ。"
+"&"
+#eliflev c
+"えんばんいわは　タイミングが~nすべてじゃ。いわの　うごきを~nよーくみて、おもいきって　いけ。~nペシャンコに　ならぬようにな。"
+"タウナのプレートを　さんまい~nあつめると、タウナの　こころが~nつくりだした　せかいに　はいれる~nのじゃ。うまく　タウナのところへ~nいけたなら、セーブができるぞよ。~nでも　おちたら　しっぱいじゃ。"
+"&"
+"&"
+"&"
+#eliflev i
+"げんじゅうみんは　へいわを　あい~nする　ものたちだから、おまえを~nきずつける　ことは　しないぞよ。~nもし　くるしめられると　すれば、~nおまえの　スピンが　ちょっと　きに~nいらないの　だろうて。"
+"タウナの　セーブは　せいこう　した~nかの？　セーブしたゲームで　はじめ~nる　ときは、セーブしたステージから~nはじめるときと、つぎのステージから~nはじめるときが　ある。３まいめの~nプレートの　ばしょに　よるのじゃ。"
+"&"
+"&"
+"&"
+#eliflev f
+"きのうえは　すべりやすいから、~nさらなる　ちゅういが　ひつよう~nじゃ。おちついて　いけば　かならず　　~nすすめるぞよ。~nそうそう、さかなは　スピンに~nよわいことを　しってるおるかの。"
+"おまえに　もうひとつ、だいじな~nことを　おしえてやろう。はこを~nぜんぶ　こわして　ゴールしてみよ。~nうつくしい　ダイヤが　てにはいる~nぞよ。チェックポイント　から~nスタートした　ときは　だめじゃぞ。"
+"&"
+"&"
+"&"
+#eliflev l
+"この　ステージの　どこかに、ブリオ~nの　かおが　かくされておる。３つ~nあつめると、ブリオのつくりだした~nちょーむずかしい　ボーナス~nステージに　ちょうせんできるぞよ。~nじしんが　あるなら　いってみよ。"
+"そうそう、みちの　とちゅうで~nおまえが　ちかづくと　きえてしまう~nダイヤが　あったで　あろう。~nあれは　カラーダイヤで　ひらく~nひみつの　つうろ　なのじゃ。~nイノシシ　ダッシュで　ゲットせよ。"
+"&"
+"&"
+"&"
+#eliflev q
+"すべての　はこを　こわした　つもり~nなのに、パーフェクトに　ならない~nことが　あるじゃろ。それは　きえて~nしまう　カラーダイヤに　ひみつが~nあるのじゃ。イノシシでグリーンを~nとっていれば、ジャングルへ　いけ。"
+"よくぞ　わしを　てにいれたの。~nほうびに　ちょっとした　ひみつの~nじゅもんを　おしえてやろう。~n「とりでの　たかいところ、さきのない　くい。」~nなんのことか　さっぱり　じゃのう。"
+"&"
+"&"
+"&"
+#eliflev o
+"このステージを　ぬければ　ボスの~nリパールーと　たいけつじゃ。~nいつも　とびまわっている　イカレた~nやつじゃが、その　とびかたには~nきそくが　ある。ああみえても~nきまじめな　せいかく　なのじゃ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev w
+"ここは　おおむかしに　ぶんめいが~nあった　ところじゃ。いまは~nどうぶつしか　すんでおらんがの。~nところで、コウモリが　きらいなら~nかべのやつを　たおしてみよ。~nりょうほう　わすれずにな。"
+"ふぉっふぉっふぉ。よくみつけたの。~nほうびに、１まいめの　ブリオの~nとりかたを　おしえてやろう。~nリンゴが　たくさん　とれるはこが~nあったじゃろ。そこで　おもいきり~nとびはねるのじゃ。どうじゃ。"
+"&"
+"&"
+"&"
+#eliflev s
+"この　しんでんは、ないぶが　とても~nふくざつな　しくみに　なっておる。~nもし、すすむべき　ほうこうが~nわからなくなったら、たしかめる~nたしかな　ほうほうが　ある。~nリンゴを　おいかける　ことじゃ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev k
+"ここはあしばが　よわいから、~nテンポよく　すすまねばならぬ。~nじぶんのかげを　よくみるのじゃ。~nおおきなジャンプと　ちいさな~nジャンプのくみあわせじゃ。~nイノシシは　なかまでは　ないぞよ。"
+"ふぉっふぉっふぉ。ここが~nみつけられるとはの。おぬしも~nかなり　できるのう。ほうびに、~nとっておきの　やつを　おしえて~nやろう。ゴールのむこうがわじゃ。~nふつうは　いかない　ところじゃの。"
+"&"
+"&"
+"&"
+#eliflev K
+"２ばんめの　しまも　おおづめじゃ。~nしろを　のぼっていくと、ふたりの~nけんきゅういんが　おるじゃろう。~nコルテックスの　ようさいが~nひろがって　きているようじゃ。~nクラッシュよ、いそぐのじゃ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev 6
+"いよいよ　ここから　コルテックスの~nほんきょちに　とつにゅうじゃ。~nくうちゅうに　うかぶ　ロボットで~nトゲの　ついたやつは　おまえには~nたおせないぞよ。へんなところに~nうかんでいるのは　なぜかのう。"
+"&"
+"&"
+"&"
+"&"
+#eliflev 3
+"どうじゃな、この　してんは。~nかがくようえきの　みぞの　はばが~nみやすいように　しておいたぞよ。~nトゲの　ロボットは　おまえよりも~nたかいところに　うかんでおる。~nしたを　くぐりぬけられるのじゃ。"
+"スイッチを　みつけて　おさないと~nさいごの　はこの　はしは　かんせい~nしないぞよ。~nとちゅうで　やられて　しまったら、~nまた　もどって　スイッチを　おすの~nじゃ。２ばい　たのしいのう。"
+"&"
+"&"
+"&"
+#eliflev 5
+"コルテックスの　かおが　うつって~nおる　モニターが　あったじゃろ。~nそのうえに　とびのれる　ことに~nきづいたかの。~nコルテックスを　ふみつけている~nみたいで　きぶんが　いいぞよ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev 7
+"さて、ゲームの　こらいから　ながく~nたのしまれておる、ドラムかん~nジャンプじゃ。むずかしい？~nフィーリングで　すすむのじゃ。~nハネるやつが　にがてな　ばあいは~nよこに　さけるのも　ためすがよい。"
+"ここをぬけると、ピンストライプの~nへやに　はいるぞよ。~nやつが　じゅうを　うってるときは~nむてきだから、ひたすら　かくれて~nがまんじゃ。たまの　いれかえの~nタイミングも　チャンスじゃぞ。"
+"&"
+"&"
+"&"
+#eliflev m
+"きほんを　おぼえているか？~nじぶんの　カゲをみて、ちいさな~nジャンプと　おおきな　ジャンプの~nくみあわせじゃ。~nイノシシは　さゆうの　はじでまって~nいると　さけやすく　なるぞよ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev z
+"さて、ここには　コルテックスの~nかおが　かくされて　いるぞよ。~n３つ　あつめてみよ。コルテックス~nチャレンジに　とつにゅうじゃ。~nみごと　とけたら、ひみつのカギが~nてにはいるぞよ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev E
+"このステージは　まっくらじゃから~nわしが　あかりに　なってやろう。~nじかんが　たつと　ちからがなくなる~nので　いそいで　ゆくがよい。~nわしも　わかいころは　もっと~nながもち　したものじゃがのう。"
+"&"
+"ふみだいに　タイミングが　あわない~nときは、よこに　とびのって　ひなん~nできるのじゃ。~nきんきゅう　ひなんにしか　ならない~nがのう。"
+"&"
+"このステージを　きわめたものは、~nわしの　ちからを　たよらずして~nクリアできる　そうじゃ。~nくらくなっても　あきらめずに、~nこころの　めで　すすんでみよ。"
+#eliflev t
+"また　しんでんに　やってきたな。~nこだいの　ぶんめいは　おおくの~nひみつを　のこしておる。~nおぼえているか？　まよったら~nリンゴに　いくさきを　きくのじゃ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev T
+"ちゃんと　こちらに　すすんできた~nおまえには、ブリオのたおしかたを~nおしえてやろう。~nブリオが　なげる　やくひんは~nブリオの　わるい　たましいじゃ。~nジャンプして　たおしてみよ。"
+"&"
+"&"
+"&"
+"&"
+#eliflev F
+"ビリビリたのしい、コルテックスの~nけんきゅうしょじゃ。~nここをぬけると、なにもないような~nステージがある。パーフェクトを~nつみかさねた　ものだけに　~nそのひみつが　あかされるという。"
+"&"
+"&"
+"&"
+"&"
+#else
+"&"
+"&"
+"&"
+"&"
+"&"
+#endif
+
+#spawn S_WITCH_DOCTOR             Witch_Doctor_Spawn
+#spawn S_1                        State_5
+#spawn S_DOCTOR_FEATHER           Doctor_Feather
+#spawn S_DOCTOR_SPARKLE           Doctor_Sparkle
+#spawn S_DOCTOR_PARTICLE          Doctor_Particle
+#spawn S_DOCTOR_PARTICLE_DECEL    Doctor_Particle
+#spawn S_DOCTOR_HELP_TEXT         Doctor_Help_Text
+#spawn S_7                        __s_7
+
+var
+mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10,
+DoctorHealth, DoctorFloatOffset, DoctorFollowing, DoctorFaceDirOffset, DoctorXDistance, DoctorSize, DoctorLookTime, DoctorLightTimeLeft
+
+event EventStatus => sub DoctorStatus
+event Event19 => sub KillDoctor
+
+inline sub PlayDoctorSound() {
+	soundpitch(4.0)
+	sounddecay(0.9375)
+	soundplay([WD10A], 1.0V)
+}
+
+inline sub PlayHitSound() {
+	soundpitch(4.0)
+	sounddelay(5)
+	sounddecay(0.9375)
+	soundplay([WD20A], 1.0V)
+}
+
+inline sub SeekScale() {
+	if (scalex != DoctorSize) {
+		scalex = seek(scalex, DoctorSize, 0.1S)
+		scaley = seek(scaley, DoctorSize, 0.1S)
+		scalez = seek(scalez, DoctorSize, 0.1S)
+	}
+}
+
+sub FollowTarget () { // 0
+	/* Target position is in "vec" vector. */
+	v0 = distance(vec, self, 0)
+	if (DoctorHealth == 3.0) {
+		x = seek(x, vecx, spd(20m))
+		y = seek(y, vecy, spd(20m))
+		z = seek(z, vecz, spd(20m))
+		changestateif(Witch_Doctor_On_Willy, x == vecx && y == vecy && z == vecz)
+	}
+	else {
+		if (abs(v0) > 30m) {
+			x = avg(x, vecx)
+			y = avg(y, vecy)
+			z = avg(z, vecz)
+		}
+		else if (DoctorFollowing) {
+			trotz = (abs(v0) >> 0) + 1m
+			velx = spd(velx, (vecx-x) << 5)
+			vely = spd(vely, (vecy-y) << 5)
+			velz = spd(velz, (vecz-z) << 5)
+			DoctorXDistance = 1.5m
+			if (v0 < 0.75m) {
+				DoctorLookTime = frametime
+				DoctorFollowing = false
+			}
+		}
+		else {
+			trotz = (abs(v0) >> 3) + 0.2m
+			velx = spd(velx, (vecx-x) << 2)
+			vely = spd(vely, (vecy-y) << 6)
+			velz = spd(velz, (vecz-z) << 2)
+			if (v0 > 1m) {
+				DoctorFollowing = true
+			}
+			DoctorXDistance = 1m
+			if (frametime - 15s >= DoctorLookTime) {
+				DoctorLookTime = frametime
+			}
+		}
+	}
+	if (trotz > 4.5m) {
+		trotz = 4.5m
+	}
+}
+
+sub SetTargetPosition () { // 88
+	if (DoctorHealth == 1.0 || DoctorHealth == 2.0) {
+		save (trotx, troty, trotz) {
+			vecx = collider->x
+			vecy = collider->y
+			vecz = collider->z
+			trotx = 0
+			troty = collider->troty + DoctorFaceDirOffset
+			trotz = 0
+			vectransf2(vvec, player, 0, DoctorXDistance, 1.3m + sin(abs(DoctorFloatOffset), 0.3m))
+		}
+	}
+	else if (DoctorHealth == 3.0) {
+		getvert(vvec, collider, 0.0)
+	}
+}
+
+state Witch_Doctor_Spawn { // 0
+	code (health) {
+		collider = player
+		collider->creator = self
+		DOCTOR = self
+		zindex = 15
+		trotx = 4m
+		troty = 4m
+		trotz = 4m
+		DoctorFloatOffset = 0
+		trotx = 200deg
+		DoctorFollowing = 0
+		DoctorSize = 1.0S
+		DoctorLookTime = frametime
+		DoctorXDistance = 1.5m
+		if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
+			DoctorLightTimeLeft = 0
+			GLOBAL_54 = 0
+		}
+		if (health == 1.0) {
+			DoctorHealth = 1.0
+			seqplay(DoctorHealth)
+			statusb = FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | 0x400 | 0x1000
+			x = player->x
+			y = player->y + 3m
+			z = player->z
+			changestate(Witch_Doctor)
+		}
+		else if (health == 2.0 || health == 3.0) {
+			DoctorHealth = 2.0
+			seqplay(DoctorHealth)
+			statusb = FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | 0x400 | 0x1000
+			DoctorSize = 1.3S
+			x = CAMTRANSX
+			y = CAMTRANSY
+			z = CAMTRANSZ - 2m
+			changestate(Witch_Doctor)
+		}
+		else {
+			changestate(Witch_Doctor_Dead)
+		}
+	}
+}
+
+state Witch_Doctor { // 1
+	stateflag 0x20009
+	statusc 0
+	code () {
+		do {
+			if (DoctorHealth == 1.0) {
+				playanim(0, WITCH_DOCTOR)
+			}
+			else {
+				playanim(0, WITCH_DOCTOR_GOLD)
+			}
+		} while (1)
+	}
+	event (e, a) {
+		if (e == Event6) {
+			rejevret(DoctorHealth >= 3.0)
+			if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
+				PlayDoctorSound()
+				accevcstate(Witch_Doctor_Help)
+			}
+			if (interrupter->spawn != 13) {
+				sendevent(Event40, collider, a[0])
+				rejevret(!eventaccepted)
+			}
+			DoctorHealth += 1.0
+			seqplay(DoctorHealth)
+			unless (LEVEL == LEVEL_PapuPapu || LEVEL == LEVEL_DrNBrio) {
+				PlayDoctorSound()
+			}
+			spawn(DoctC, S_DOCTOR_PARTICLE_DECEL, 10)
+			if (DoctorHealth >= 3.0) {
+				sendevent(Event6, collider, a[0])
+				SetInvincible(5)
+				accevret()
+			}
+			else {
+				DoctorSize = 1.3S
+				scalex = 2.0S
+				scaley = 2.0S
+				scalez = 2.0S
+			}
+			accevcstate(Witch_Doctor_Help)
+		}
+		if (e == EventHit) {
+			creator = collider->interrupter
+			sendevent(EventHitInvincible, creator, 0)
+			creator = collider->collider
+			broadcastevent(Event43, 0, 0)
+			if (DoctorHealth >= 3.0) {
+				accevret()
+			}
+			if (DoctorHealth == 2.0) {
+				PlayHitSound()
+				spawn(DoctC, S_DOCTOR_FEATHER, 1, 0x00, 0x17, 0xFF)
+				spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xFF, 0xE6, 0x00)
+				spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xFF, 0x23, 0x00)
+				spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xB4, 0x00, 0xEB)
+				spawn(DoctC, S_DOCTOR_FEATHER, 1, 0x00, 0xBE, 0x00)
+				SetInvincible(4)
+				DoctorSize = 1.0S
+				scalex = 1.5S
+				scaley = 1.5S
+				scalez = 1.5S
+				DoctorHealth -= 1.0
+				seqplay(DoctorHealth)
+				accevret()
+			}
+			accevcstate(Witch_Doctor_Die)
+		}
+	}
+	trans {
+		if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
+			if (DoctorLightTimeLeft) {
+				colra = 2.0
+				colga = 2.0
+				colba = 2.0
+				colr1 = 2.0
+				colg1 = 2.0
+				colb1 = 2.0
+				colr2 = 2.0
+				colg2 = 2.0
+				colb2 = 2.0
+				colr3 = 2.0
+				colg3 = 2.0
+				colb3 = 2.0
+				DoctorLightTimeLeft -= 1
+				GLOBAL_54 = self
+			}
+			else {
+				colra = 1.0
+				colga = 1.0
+				colba = 1.0
+				colr1 = 1.0
+				colg1 = 1.0
+				colb1 = 1.0
+				colr2 = 1.0
+				colg2 = 1.0
+				colb2 = 1.0
+				colr3 = 1.0
+				colg3 = 1.0
+				colb3 = 1.0
+				GLOBAL_54 = 0
+			}
+		}
+		if (DoctorHealth == 2.0) {
+			if (FRAMETIME < 27) {
+				if (!time(0.15s)) {
+					spawn(DoctC, S_DOCTOR_SPARKLE, 1, 34.0, self, 0.3s)
+				}
+			}
+			else {
+				if (!time(0.55s)) {
+					spawn(DoctC, S_DOCTOR_SPARKLE, 1, 34.0, self, 0.3s)
+				}
+			}
+		}
+		if (abs(degdist(collider->roty + 120deg, GAMEDIR)) < 80deg) {
+			if (DoctorFollowing) {
+				DoctorFaceDirOffset = 200deg
+			}
+			else {
+				DoctorFaceDirOffset = 150deg
+			}
+		}
+		else {
+			if (DoctorFollowing) {
+				DoctorFaceDirOffset = -20deg
+			}
+			else {
+				DoctorFaceDirOffset = 20deg
+			}
+		}
+		if (!DoctorFollowing && frametime - DoctorLookTime >= 1s && !(frametime - DoctorLookTime >= 6s)) {
+			trotx = 60deg
+			troty = GAMEDIR
+		}
+		else {
+			trotx = 200deg
+			troty = collider->roty + (abs(DoctorFloatOffset >> 6) + -abs(DoctorFloatOffset >> 7))
+		}
+		null = loopseek(DoctorFloatOffset, 0.3m, 0.3m / 2s) // deliberate stack overflow
+		rotz = roty
+		rotx = abs(DoctorFloatOffset >> 7)
+		SeekScale()
+		zindex = player->zindex - 9
+		SetTargetPosition()
+		FollowTarget()
+	}
+	
+}
+
+state Witch_Doctor_On_Willy { // 2
+	stateflag 0x9
+	statusc 0
+	code () {
+		statusb &= ~FLAG_ROT_Y
+		DoctorSize = 1.5S
+		while (collider->invincible) {
+			playanim(0, WITCH_DOCTOR_GOLD)
+		}
+		PlayHitSound()
+		DoctorHealth -= 1.0
+		seqplay(DoctorHealth)
+		DoctorSize = 1.0S
+		statusb |= FLAG_ROT_Y
+		changestate(Witch_Doctor)
+	}
+	event => state Witch_Doctor
+	trans {
+		if (!time(0.1s)) {
+			spawn(DoctC, S_DOCTOR_SPARKLE, 1, 350.0, collider, 0.2s+6)
+		}
+		if (!time(1s / 6)) {
+			spawn(DoctC, S_DOCTOR_SPARKLE, 1, 34.0, self, 0.3s)
+		}
+		zindex = player->zindex + 1
+		roty = collider->roty
+		rotz = roty
+		getvert(vtrans, collider, 0.0)
+		rotx = collider->field_60 >> 8
+		creator = collider->collider
+		sendevent(EventHitInvincible, creator, 0)
+		if (eventaccepted) {
+			spawn(DoctC, S_DOCTOR_PARTICLE, 10)
+		}
+		trotx = 1m
+		troty = 3m
+		trotz = 1m
+		broadcastevent(EventHitInvincible, 5, 0)
+		if (eventaccepted) {
+			spawn(DoctC, S_DOCTOR_PARTICLE, 10)
+		}
+		SeekScale()
+	}
+}
+
+state Witch_Doctor_Die { // 3
+	stateflag 0xB
+	statusc 0
+	code () {
+		statusb &= ~(FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | FLAG_GRAVITY)
+		PlayHitSound()
+		spawn(DoctC, S_DOCTOR_FEATHER, 1, 0x00, 0x17, 0xFF)
+		spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xFF, 0xE6, 0x00)
+		spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xFF, 0x23, 0x00)
+		spawn(DoctC, S_DOCTOR_FEATHER, 1, 0xB4, 0x00, 0xEB)
+		spawn(DoctC, S_DOCTOR_FEATHER, 1, 0x00, 0xBE, 0x00)
+		while (scalex > 0.04S) {
+			playanim(0, WITCH_DOCTOR)
+		}
+		changestate(Witch_Doctor_Dead)
+	}
+	event => state Witch_Doctor_Dead
+	trans {
+		once {
+			DoctorHealth = 0
+			seqplay(DoctorHealth)
+			v0 = 1.0S
+		}
+		scalex = loopseek(v0, 1.2S, 0.2S)
+		scaley = scalex
+		scalez = scalex
+	}
+}
+
+state Witch_Doctor_Dead { // 4
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		DoctorHealth = 0
+		seqplay(DoctorHealth)
+		if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
+			GLOBAL_54 = 0
+			do {
+				x = player->x
+				y = player->y
+				z = player->z
+				playnull()
+			} while (1)
+		}
+		sleepanim(0, WITCH_DOCTOR_OLD)
+	}
+	event (e, a) {
+		if (e == Event6) {
+			if (interrupter->spawn != 13) {
+				sendevent(Event40, collider, a[0])
+				if (!eventaccepted) {
+					rejevret()
+				}
+			}
+			DoctorHealth = 1.0
+			seqplay(DoctorHealth)
+			creator = a[0]
+			x = creator->x
+			velx = 0
+			rotx = 0
+			y = creator->y
+			vely = 0
+			roty = 0
+			z = creator->z
+			velz = 0
+			rotz = 0
+			DoctorFloatOffset = 0
+			trotx = 200deg
+			DoctorFollowing = false
+			DoctorXDistance = 1.5m
+			unless (LEVEL == LEVEL_PapuPapu || LEVEL == LEVEL_DrNBrio) {
+				PlayDoctorSound()
+			}
+			spawn(DoctC, S_DOCTOR_PARTICLE_DECEL, 10)
+			scalex = 1.0S
+			scaley = 1.0S
+			scalez = 1.0S
+			DoctorSize = 1.0S
+			statusb = FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | 0x400 | 0x1000
+			accevcstate(Witch_Doctor_Help)
+		}
+	}
+}
+
+state State_5 { // 5
+	statusc 0
+	code (v) {
+		statusb = 0x2000000
+		v0 = v
+		scalex = 0.5S
+		scaley = 0.5S
+		scalez = 0.5S
+		sleepanim(1, WITCH_DOCTOR_OLD)
+	}
+	trans {
+		getvert(vtrans, parent, v0)
+	}
+}
+
+state Doctor_Sparkle { // 6
+	stateflag 0xA0001
+	code (verts, obj, dur) {
+		player = obj
+		zindex = 24
+		SetRot(0)
+		SetScale(0)
+		var1 = dur - 0.2s
+		getvert(vtrans, player, rand(verts))
+		do (var start = frametime) {
+			playanim(0, DOCTOR_SPARKLE_YELLOW)
+		} while (frametime - start < dur)
+	}
+	trans {
+		once {
+			v0 = 0.3S
+		}
+		unless (STATUS_FIRSTFRAME) {
+			scalex = seek(scalex, v0, 0.06S)
+			scaley = seek(scaley, v0, 0.06S)
+			scalez = seek(scalez, v0, 0.06S)
+			if (frametime - statetime >= var1) {
+				v0 = 0
+			}
+		}
+	}
+}
+
+sub DoctorParticleAnim () { // 596
+	playanim(4, DOCTOR_SPARKLE_YELLOW)
+	playframe(3.0)
+	playframe(4.0)
+	playframe(2.0)
+	playframe(1.0)
+	playframe(0, 0.1s)
+	save (animseq) {
+		playanim(0, DOCTOR_SPARKLE_WHITE)
+	}
+	playframe(0)
+	playframe(1.0, 2)
+	playframe(2.0, 2)
+	save (animseq) {
+		playanim(0, DOCTOR_SPARKLE_WHITE)
+	}
+	playframe(3.0, 2)
+	playframe(4.0, 2)
+}
+
+state Kill { // 7
+	stateflag 0x20
+	statusc 0
+	code () {}
+}
+
+state Doctor_Feather { // 8
+	stateflag 0x80
+	code (r, g, b) {
+		scalex = 1.5S
+		scaley = 1.5S
+		scalez = 1.5S
+		DoctorFloatOffset = y
+		v0 = -(10m + rand(0))
+		colra = r << 1
+		colga = g << 1
+		colba = b << 1
+		colr1 = r << 1
+		colg1 = g << 1
+		colb1 = b << 1
+		colr2 = r << 1
+		colg2 = g << 1
+		colb2 = b << 1
+		colr3 = r << 1
+		colg3 = g << 1
+		colb3 = b << 1
+		x += rand(-0.2m, 0.2m+1)
+		z += rand(-0.2m, 0.2m+1)
+		y += 0.2m
+		zindex = 25
+		rotx = 0
+		roty = rand(360deg)
+		rotz = 0
+		if (!rand(2)) {
+			velx = 1m + rand(1m)
+		}
+		else {
+			velx = -(1m + rand(1m))
+		}
+		vely = 3.5m + rand(1.5m)
+		if (!rand(2)) {
+			velz = 1m + rand(1m)
+		}
+		else {
+			velz = -(1m + rand(1m))
+		}
+		statusb = FLAG_PHYSICS_ENGINE | 0x400
+		setanim(WITCH_DOCTOR_FEATHER, rand(16.0))
+		do {
+			playframe((animframe + 1.0) % 16.0, 2)
+		} until(vely < 0)
+		vely = -0.2m
+		v0 /= 16
+		while (scalex > 0.1S) {
+			velx >>= 1
+			velz >>= 1
+			playframe((animframe + 1.0) % 16.0, 2)
+		}
+	}
+	event (e, a) {
+		accevcstate(Kill, e == EventRespawn)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			vely = spd(vely, v0)
+			roty += 2deg
+			if (y < DoctorFloatOffset - 2m) {
+				scalex -= 0.2S
+				scaley -= 0.2S
+				scalez -= 0.2S
+			}
+		}
+	}
+}
+
+state Doctor_Particle { // 9
+	stateflag 0xA0080
+	code () {
+		movetolist(3.0)
+		zindex = 100
+		rotx = 0
+		roty = 0
+		rotz = rand(360deg)
+		y += 0.75m
+		velx = rand(-10m, 10m+1)
+		vely = rand(-10m, 10m+1)
+		velz = rand(-10m, 10m+1)
+		statusb = FLAG_PHYSICS_ENGINE
+		scalex = 0.4S
+		scaley = 0.4S
+		scalez = 0.4S
+		DoctorParticleAnim()
+	}
+	trans {
+		rotz += 10deg
+		if (frametime - statetime >= 1 && spawn == S_DOCTOR_PARTICLE_DECEL) {
+			velx = velx * 0.7 >> 8
+			vely = vely * 0.7 >> 8
+			velz = velz * 0.7 >> 8
+		}
+	}
+}
+
+sub DoctorStatus (t) { // 769
+	if (interrupter) {
+		if (t == DOCTOR_STATUS_GET_HEALTH) {
+			interrupter->v0 = DoctorHealth
+		}
+		else if (t == DOCTOR_STATUS_SET_LIGHT) {
+			DoctorLightTimeLeft = interrupter->v0
+		}
+	}
+}
+
+sub KillDoctor () { // 780
+	changestate(Witch_Doctor_Dead)
+}
+
+sub DoctorGetHelpAmount () { // 782
+	if (var level = LEVEL; level == LEVEL_PapuPapu || level == LEVEL_RipperRoo || level == LEVEL_DrNBrio || level == LEVEL_DrNeoCortex || level == LEVEL_KoalaKong || level == LEVEL_Pinstripe) {
+		misc = 0
+	}
+	else if (level == LEVEL_NSanityBeach) {
+		misc = 3.0
+	}
+	else if (level == LEVEL_JungleRollers || level == LEVEL_RollingStones || level == LEVEL_CortexPower || level == LEVEL_ToxicWaste) {
+		misc = 2.0
+	}
+	else if (level == LEVEL_LightsOut) {
+		misc = 5.0
+	}
+	else if (level == LEVEL_NativeFortress || level == LEVEL_RoadToNowhere || level == LEVEL_TheLostCity) {
+		misc = 7.0
+	}
+	else if (level == LEVEL_UpTheCreek || level == LEVEL_TempleRuins || level == LEVEL_SlipperyClimb || level == LEVEL_GeneratorRoom || level == LEVEL_TheHighRoad || level == LEVEL_SunsetVista || level == LEVEL_HeavyMachinery || level == LEVEL_JawsOfDarkness || level == LEVEL_CastleMachinery || level == LEVEL_TheLab) {
+		misc = 1.0
+	}
+	else if (level == LEVEL_TheGreatGate || level == LEVEL_Upstream) {
+		misc = 2.0
+	}
+	else {
+		misc = 0
+	}
+}
+
+state Witch_Doctor_Help {
+	stateflag 0x2000B
+	statusc 0
+	code () {
+		DOCTORHELPCOUNT += 1.0
+		changestateif(Witch_Doctor, (misc == 7.0 && DOCTORHELPCOUNT > 1.0 && DOCTORHELPCOUNT < 7.0) || (LEVEL == LEVEL_LightsOut && (DOCTORHELPCOUNT == 2.0 || DOCTORHELPCOUNT == 4.0)))
+		save (GAMEFLAGS) {
+			unkget(field_61)
+			GAMEFLAGS &= ~0x14A2
+			spawn(DoctC, S_DOCTOR_HELP_TEXT)
+			do {
+				if (DoctorHealth == 1.0) {
+					playanim(0, WITCH_DOCTOR)
+				}
+				else {
+					playanim(0, WITCH_DOCTOR_GOLD)
+				}
+			} until (buttonpress(PAD_X) || buttonpress(PAD_CIRCLE))
+		}
+		unkset(field_61)
+		cascadeevent(Event12, self)
+		changestate(Witch_Doctor)
+	}
+	trans {
+		once {
+			DoctorGetHelpAmount()
+			changestateif(Witch_Doctor, DOCTORHELPCOUNT >= misc)
+			troty = GAMEDIR - 30deg
+		}
+		rotz = roty
+		rotx = CAMROTX + 20deg
+		SeekScale()
+		save (trotx, troty, trotz) {
+			save (rotx, roty, rotz, vecx, vecy, vecz) {
+				rotx = CAMROTX
+				roty = CAMROTY
+				rotz = 0
+				vecx = CAMTRANSX
+				vecy = CAMTRANSY
+				vecz = CAMTRANSZ
+				vectransf(vvec, vtrot, -1.4m, 0.5m, -0.3m)
+			}
+			vecx = trotx
+			vecy = troty
+			vecz = trotz
+		}
+		FollowTarget()
+	}
+}
+
+state Doctor_Help_Text {
+	stateflag 0x2000B
+	statusc 0
+	code () {
+		zindex = 100
+		rotx = 0
+		roty = 0
+		rotz = 0
+		statusb = FLAG_2D | 0x4000000
+		scalex = 0.64
+		scaley = 1.015
+		scalez = 256.0
+		colr1 = 0x1FF
+		colg1 = 0x1FF
+		colb1 = 0x1FF
+		colr2 = 0x1FF
+		colg2 = 0x1FF
+		colb2 = 0x1FF
+		colr3 = 0xFF
+		colg3 = 0xFF
+		colb3 = 0xFF
+		colr4 = 0xFF
+		colg4 = 0xFF
+		colb4 = 0xFF
+		x = -220.0
+		y = 90.0
+		z = -220.0
+		setanim(DOCTOR_HELP_TEXT)
+		if (DOCTORHELPCOUNT == 7.0) {
+			sleepframe(1.0)
+		}
+		do {
+			playframe(DOCTORHELPCOUNT - 1.0, 2.1s)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Kill, e == Event12)
+	}
+}
+

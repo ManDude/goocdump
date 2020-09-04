@@ -1,0 +1,430 @@
+#gool KonOC 30 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim KONG_ROCK [KR1xV] 1
+#anim KONG_CART [KC1xV] 1
+#anim KONG_CART_EXPLODE [KC2xV] 12
+
+#sprite EXPLOSION_PARTICLE [WillT]
+#tex 0x888888 1 2 0 3 0 4 32 16
+#tex 0x888888 1 2 0 3 8 4 32 16
+#tex 0x888888 1 2 0 3 16 4 32 16
+#tex 0x888888 1 2 0 3 24 4 32 16
+#tex 0x888888 1 2 0 3 32 4 32 16
+#tex 0x888888 1 2 0 3 40 4 32 16
+#tex 0x888888 1 2 0 3 48 4 32 16
+#tex 0x888888 1 2 0 3 56 20 32 16
+#tex 0x888888 0 2 5 8 96 24 32 32
+#tex 0x7E7E7E 0 2 5 8 96 24 32 32
+#tex 0x747474 0 2 5 8 96 24 32 32
+#tex 0x606060 0 2 5 8 96 24 32 32
+#tex 0x4C4C4C 0 2 5 8 96 24 32 32
+#tex 0x383838 0 2 5 8 96 24 32 32
+#tex 0x242424 0 2 5 8 96 24 32 32
+#tex 0x1A1A1A 0 2 5 8 96 24 32 32
+#tex 0x101010 0 2 5 8 96 24 32 32
+#tex 0x060606 0 2 5 8 96 24 32 32
+
+#sprite CART_EXPLOSION_PARTICLE [Ko3xT]
+#tex 0x888888 1 1 0 6 80 16 32 32
+#tex 0x888888 1 1 0 6 80 8 32 32
+#tex 0x888888 1 1 0 6 88 24 32 32
+#tex 0x888888 1 1 0 6 88 16 32 32
+#tex 0x888888 1 1 0 6 88 8 32 32
+#tex 0x888888 1 1 0 6 96 24 32 32
+#tex 0x888888 1 1 0 6 96 16 32 32
+#tex 0x888888 1 1 0 6 96 8 32 32
+#tex 0x888888 1 1 0 6 104 24 32 32
+#tex 0x7E7E7E 1 1 0 6 104 24 32 32
+#tex 0x747474 1 1 0 6 104 24 32 32
+#tex 0x606060 1 1 0 6 104 24 32 32
+#tex 0x4C4C4C 1 1 0 6 104 24 32 32
+#tex 0x383838 1 1 0 6 104 24 32 32
+#tex 0x242424 1 1 0 6 104 24 32 32
+#tex 0x1A1A1A 1 1 0 6 104 24 32 32
+#tex 0x101010 1 1 0 6 104 24 32 32
+#tex 0x060606 1 1 0 6 104 24 32 32
+
+#sprite COAL_LUMP [Ko3xT]
+#tex 0x808080 1 0 0 7 104 16 32 32
+#tex 0x808080 1 0 0 7 104 8 32 32
+#tex 0x808080 1 0 0 7 112 24 32 32
+#tex 0x808080 1 0 0 7 112 16 32 32
+
+#sprite COAL_BLOCK [Ko1xT]
+#tex 0x808080 1 0 0 22 80 28 32 16
+#tex 0x808080 1 3 0 23 72 8 32 32
+
+#spawn S_ROCK_HEAVY_PATH          Rock_Path
+#spawn S_ROCK_PATH                Rock_Path
+#spawn S_ROCK                     Rock_Spawn
+#spawn S_MINECART_PATH            Minecart_Path
+#spawn S_MINECART                 Minecart
+#spawn S_PARTICLE_EXPLOSION       Particle_Explosion
+#spawn S_PARTICLE_EXPLOSION2      Particle_Explosion
+#spawn S_PARTICLE_COAL_LUMP       Particle_Coal
+#spawn S_PARTICLE_COAL_BLOCK      Particle_Coal
+#spawn S_9                        __s_9
+
+var RockPathSpeed, mem2, RockState
+
+state Rock_Path { // 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, KONG_ROCK)
+	}
+	event (e, a) {
+		if (e == Event27) {
+			accev()
+			spawn(KonOC, S_ROCK, 1, a[0], a[1], a[2])
+		}
+	}
+}
+
+state Rock_Spawn { // 1
+	code (sx, sy, is_heavy) {
+		var0 = is_heavy
+		density = 0.2m
+		CopyCreatorPath()
+		x = sx
+		if (var0) {
+			velx = (player->x-sx)*1s / 1s
+			RockPathSpeed = 20.0
+		}
+		else {
+			velx = (player->x-sx)*1s / 0.5s
+			RockPathSpeed = 30.0
+		}
+		zindex = 15
+		statusb = FLAG_COLLIDABLE
+		RockState = 0
+		changestate(Rock_Throw)
+	}
+}
+
+inline sub RockDoPathProg(path_spd) {	
+	pathprog += spd(path_spd)
+	calcpath(pathprog, vvec)
+	y = vecy
+	z = vecz
+}
+
+state Rock_Throw { // 2
+	code () {
+		sleepanim(0, KONG_ROCK)
+	}
+	event => state Rock_Land
+	trans {
+		if (pathprog > 13.0 && RockState == 0) {
+			SoundPlayDefault([brprA], 0.3V + rand(0.2V))
+			soundsetup(0, voice, 5)
+			RockState = 1
+		}
+		else if (pathprog > 20.0 && RockState == 1) {
+			SoundPlayDefault([brprA], 0.15V + rand(0.1V))
+			soundsetup(0, voice, 5)
+			RockState = 2
+		}
+		changestateif(Rock_Land, pathprog >= 35.0)
+		sendevent(EventHit, collider, 100.0)
+		RockDoPathProg(RockPathSpeed)
+		if (pathprog <= 20.0) {
+			x = spd(x, velx)
+		}
+		rotx = vecx >> 7
+	}
+}
+
+sub RockGetPushed () {
+	if (collider) {
+		if (collider->y < y+1m && abs(collider->speed)/4) {
+			var collider_ang = atan2(collider->trans)
+			if (collider_ang > 30deg && collider_ang < 150deg) {
+				x = spd(x, -1m)
+				if (x < -10m) {
+					x = -10m
+				}
+			}
+			else if (collider_ang > 210deg && collider_ang < 330deg) {
+				x = spd(x, 1m)
+				if (x > 10m) {
+					x = 10m
+				}
+			}
+		}
+	}
+}
+
+state Rock_Land { // 3
+	statusc 0
+	code () {
+		statusb &= ~FLAG_PHYSICS_ENGINE
+		statusb |= FLAG_SOLID_ALL
+		sleepanim(0, KONG_ROCK)
+	}
+	event (e, a) {
+		if (var0) {
+			accevcstate(Rock_Fling, e == EventSpinHit)
+		}
+		else {
+			accevcstate(Rock_Break, e == EventSpinHit)
+		}
+	}
+	trans {
+		changestateif(Rock_Fall, frametime - statetime >= 5s || !var0)
+		RockGetPushed()
+	}
+}
+
+state Rock_Fall { // 4
+	code () {
+		do {
+			playanim(0, KONG_ROCK)
+		} until (STATUS_PATH_END)
+	}
+	event => state Rock_Land
+	trans {
+		RockDoPathProg(5.0)
+		rotx = vecx >> 7
+		if (!(frametime - statetime >= 1s)) {
+			RockGetPushed()
+		}
+	}
+}
+
+state Rock_Fling { // 5
+	stateflag 0x30
+	statusc 0x12
+	code () {
+		interrupter = GLOBALOBJ
+		troty = atan2(interrupter->trans)
+		EnemyFlingSetVel(2m)
+		do {
+			playframe()
+		} until (frametime - statetime >= 1s)
+		interrupter = objectget(10.0)
+		sendeventif(EventTriggered, interrupter, interrupter)
+	}
+	event (e, a) {
+		accevcstate(Rock_Break, e == EventHit)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			EnemyFlingTransSendEv(2.5m, EventHit)
+			EnemyFlingAccel()
+		}
+	}
+}
+
+state Rock_Break { // 6
+	stateflag 0x20
+	statusc 0
+	code (a) {
+		if (a != 2) {
+			spawn(KonOC, S_PARTICLE_COAL_LUMP, 6)
+		}
+		spawn(KonOC, S_PARTICLE_EXPLOSION2, 2, 1, 0)
+		spawn(KonOC, S_PARTICLE_EXPLOSION2, 1, 1, 1)
+		spawn(KonOC, S_PARTICLE_EXPLOSION2, 5, 0, 0)
+		playframe()
+	}
+}
+
+inline sub KongCartSpawn() {
+	spawn(KonOC, S_MINECART)
+}
+
+inline sub KongCartWait(t) {
+	playanim(0, KONG_CART, t)
+}
+
+state Minecart_Path { // 7
+	code () {
+		statusb = FLAG_INVISIBLE
+		do {
+			if (var boss_phase = GLOBALVAL; boss_phase == 1.0) {
+				KongCartSpawn()
+				KongCartWait(2s)
+				KongCartWait(2s)
+			}
+			else if (boss_phase == 2.0) {
+				KongCartSpawn()
+				KongCartWait(1.2s)
+				KongCartSpawn()
+				KongCartWait(2s)
+				KongCartWait(2s)
+			}
+			else if (boss_phase == 3.0) {
+				KongCartSpawn()
+				KongCartWait(2s)
+				KongCartWait(1s)
+			}
+			else if (boss_phase == 4.0) {
+				do (var i = 0) {
+					KongCartSpawn()
+					KongCartWait(2s)
+					i += 1.0
+				} while (i < 3.0)
+				KongCartWait(2s)
+				KongCartWait(2s)
+				KongCartWait(2s)
+			}
+			else if (boss_phase == 5.0) {
+				do (var i = 0) {
+					KongCartSpawn()
+					KongCartWait(1.2s)
+					i += 1.0
+				} while (i < 4.0)
+				KongCartWait(2s)
+				KongCartWait(2s)
+				KongCartWait(2s)
+			}
+			else {
+				KongCartSpawn()
+				KongCartWait(2s)
+				KongCartWait(2s)
+				KongCartWait(2s)
+			}
+		} while (1)
+	}
+}
+
+state Minecart { // 8
+	statusc 0
+	code () {
+		movetolist(4.0)
+		pathprog = 0
+		CopyCreatorPath()
+		rotz = 90deg
+		mem2 = 0
+		sounddecay(0.25)
+		SoundPitchDefault()
+		soundfadet(0.25s)
+		soundfadev(0.12V, 0, 2)
+		soundplay([mcrxA], 0)
+		do {
+			playanim(0, KONG_CART)
+		} until (STATUS_PATH_END)
+		soundsetup(0, voice, 5)
+		soundfadet(1s, voice)
+		soundfadev(0, voice, 3)
+	}
+	event (e, a) {
+		accevcstate(Minecart_Explode, e == EventHit)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			pathprog = spd(pathprog, 1.0 + loopseek(mem2, 1.0, 0.02))
+			calcpath()
+			rotx = -((abs(mem2)-0.5)/2)
+		}
+	}
+}
+
+state Minecart_Explode { // 9
+	stateflag 0x3
+	code () {
+		sendevent(EventHit, interrupter, 2)
+		spawn(KonOC, S_PARTICLE_COAL_BLOCK, 8)
+		spawn(KonOC, S_PARTICLE_EXPLOSION, 3, 1)
+		spawn(KonOC, S_PARTICLE_EXPLOSION, 5, 0)
+		sounddecay(0.5625)
+		SoundPlayDefault([mccxA], 0.7V + rand(0.2V))
+		playanim(0, KONG_CART_EXPLODE)
+		spawn(KonOC, S_PARTICLE_EXPLOSION, 2, 1)
+		spawn(KonOC, S_PARTICLE_EXPLOSION, 3, 0)
+		playanim(1, KONG_CART_EXPLODE)
+		spawn(KonOC, S_PARTICLE_EXPLOSION, 1, 1)
+		interrupter = objectget(10.0)
+		sendeventif(EventTriggered, interrupter, interrupter)
+		playframes(2.0, 11.0)
+		soundsetup(0, voice, 5)
+	}
+}
+
+inline sub SoundMinecartExplode() {	
+	sounddecay(0.5625)
+	SoundPitchDefault()
+	soundfadet(0.3s)
+	soundfadev(0.2V, 0, 2)
+	soundplay([mcxxA], 0.7V)
+	soundsetup(0, voice, 5)
+}
+
+state Particle_Explosion { // 10
+	stateflag 0x80
+	code (t, s) {
+		movetolist(3.0)
+		zindex = 50
+		rotx = 0
+		roty = 0
+		rotz = rand(360deg)
+		y += 0.75m
+		statusb = FLAG_PHYSICS_ENGINE
+		if (t == 0) { // small particle
+			SetScale(0.5S)
+			animframe = 0
+			ExplodeParticleSetSpeed(10m, 5m, 0, 10m)
+			if (spawn == S_PARTICLE_EXPLOSION) {
+				playframes(EXPLOSION_PARTICLE, 0, 17.0)
+			}
+			else {
+				if (s) {
+					SoundMinecartExplode()
+				}
+				playframes(CART_EXPLOSION_PARTICLE, 0, 17.0)
+			}
+		}
+		else if (t == 1) { // big explosion
+			SetScale(2.0S)
+			x += rand(-0.5m, 0.5m + 1)
+			z += rand(-0.5m, 0.5m + 1)
+			ExplodeParticleSetSpeed(0, 2m, 2m, 5m)
+			if (spawn == S_PARTICLE_EXPLOSION) {
+				animframe = 0 + (rand(3) << 8)
+				setanim(EXPLOSION_PARTICLE)
+			}
+			else {
+				animframe = 0 + (rand(3) << 8)
+				setanim(CART_EXPLOSION_PARTICLE)
+			}
+			if (s) {
+				SoundMinecartExplode()
+			}
+			while (animframe < 17.0) {
+				playframe()
+				animframe += 1.0
+			}
+		}
+	}
+	trans {
+		rotz += 10deg
+		scalex += 0.02S
+		scaley += 0.02S
+	}
+}
+
+state Particle_Coal { // 11
+	code () {
+		movetolist(3.0)
+		zindex = 20
+		SetScale(0.7S)
+		SetRot(0)
+		statusb = FLAG_GRAVITY | FLAG_PHYSICS_ENGINE
+		ExplodeParticleSetSpeed(4m, 3m, 0, 15m)
+		FlipRand()
+		if (spawn == S_PARTICLE_COAL_BLOCK) {
+			setanim(COAL_BLOCK, 0+rand(2.0))
+		}
+		else if (spawn == S_PARTICLE_COAL_LUMP) {
+			setanim(COAL_LUMP, 0+rand(4.0))
+		}
+		wait(2s)
+		wait(2s)
+	}
+	trans {
+		rotz += 5deg
+	}
+}
+

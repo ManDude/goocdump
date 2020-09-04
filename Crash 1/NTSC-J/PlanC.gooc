@@ -1,0 +1,201 @@
+#gool PlanC 25 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev cl
+#anim JUNGLE_PLANT_STAND [JuPcV] 26
+#anim JUNGLE_PLANT_ATTACK [JupcV] 39
+#eliflev d
+#anim JUNGLE_PLANT_STAND [JuPdV] 26
+#anim JUNGLE_PLANT_ATTACK [JupdV] 39
+#eliflev ej
+#anim JUNGLE_PLANT_STAND [JuPeV] 26
+#anim JUNGLE_PLANT_ATTACK [JupeV] 39
+#eliflev iq
+#anim JUNGLE_PLANT_STAND [JuPiV] 26
+#anim JUNGLE_PLANT_ATTACK [JupiV] 39
+#eliflev st
+#anim JUNGLE_PLANT_STAND [JuPsV] 26
+#anim JUNGLE_PLANT_ATTACK [JupsV] 39
+#endif
+
+#spawn S_PLANT               Plant_Spawn
+#spawn S_PLANT_CLOSE         Plant_Spawn
+
+var PlantShowRange, PlantAttackRange, PlantSize, PlantCanEat
+
+event EventJumpedOn      => state Plant_Die
+event EventHit           => state Plant_Die
+event EventSpinHit       => state Plant_Fling
+event EventHitInvincible => state Plant_Fling
+event EventFling         => state Plant_Die
+
+state Plant_Spawn {
+	code () {
+		if (spawn == S_PLANT) {
+			PlantAttackRange = 3.3m
+			PlantShowRange = 12m
+		}
+		else if (spawn == S_PLANT_CLOSE) {
+			PlantAttackRange = 2.9m
+			PlantShowRange = 5m
+		}
+		if (distance(player, 3) < PlantAttackRange) {
+			entitysetspawn(0)
+			return
+		}
+		zindex = 24
+		density = 120.0
+		scalex = 0
+		scaley = 0
+		scalez = 0
+		if (var level = LEVEL; level == LEVEL_TheGreatGate || level == LEVEL_NativeFortress) {
+			PlantSize = 1.2S
+		}
+		else {
+			PlantSize = 1.6S
+		}
+		statusb = FLAG_INVISIBLE
+		changestate(Plant_Hide)
+	}
+}
+
+inline sub SeekScale(target) {
+	scalex = seek(scalex, target, 0.16S)
+	scaley = seek(scaley, target, 0.10S)
+	scalez = seek(scalez, target, 0.16S)
+}
+
+state Plant_Hide {
+	statusc 0
+	code () {
+		while (scalex || scaley || scalez) {
+			SeekScale(0)
+			playanim(0, JUNGLE_PLANT_STAND)
+		}
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, JUNGLE_PLANT_STAND)
+	}
+	trans {
+		changestateif(Plant_Show, distance(player, 0) < PlantShowRange)
+	}
+}
+
+state Plant_Show {
+	statusc 0
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		trotx = 360deg
+		setanim(JUNGLE_PLANT_STAND)
+		if (spawn == S_PLANT) {
+			do {
+				playframes(JUNGLE_PLANT_STAND, 0, 25.0)
+				if (rand(6)) {
+					playframesbacklt(24.0, 1.0)
+				}
+			} while (1)
+		}
+		else if (spawn == S_PLANT_CLOSE) {
+			playanim(0, JUNGLE_PLANT_STAND)
+			playanim(1, JUNGLE_PLANT_STAND)
+			playanim(2, JUNGLE_PLANT_STAND)
+			playanim(3, JUNGLE_PLANT_STAND)
+			playanim(4, JUNGLE_PLANT_STAND)
+			playanim(5, JUNGLE_PLANT_STAND)
+			playanim(6, JUNGLE_PLANT_STAND)
+			do {
+				playframeslt(7.0, 25.0)
+				playframesbacklt(24.0, 8.0)
+			} while (1)
+		}
+	}
+	trans {
+		if (distance(player, 0) < PlantShowRange + 1m) {
+			SeekScale(PlantSize)
+			troty = atan2(player->trans)
+			changestateif(Plant_Attack, player->y > y - 2m && player->y < y + 3m && !(player->stateflag \ 0x20) && distance(player, 3) < PlantAttackRange)
+			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+		}
+		else {
+			changestate(Plant_Hide)
+		}
+	}
+}
+
+state Plant_Attack {
+	stateflag 0x81
+	statusc 0
+	code () {
+		trotx = 360deg*2
+		statusb &= ~FLAG_ROT_Y
+		setanim(JUNGLE_PLANT_ATTACK)
+		PlantCanEat = true
+		playframeslt(0, 7.0)
+		PlantCanEat = true
+		soundpitch(4.0)
+		soundplay([MsmcA], 0.5V)
+		playframeslt(8.0, 13.0)
+		statusb &= ~FLAG_ROT_Y
+		playframeslt(14.0, 38.0)
+		statusb |= FLAG_ROT_Y
+		changestate(Plant_Show)
+	}
+	trans {
+		once {
+			PlantCanEat = false
+		}
+		SeekScale(PlantSize)
+		roty = atan2(player->trans)
+		sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+		if (PlantCanEat) {
+			getvert(vvec, self, 0)
+			v0 = pointclip(vec, player)
+			getvert(vvec, self, 1.0)
+			v0 += pointclip(vec, player)
+			getvert(vvec, self, 2.0)
+			v0 += pointclip(vec, player)
+			getvert(vvec, self, 3.0)
+			v0 += pointclip(vec, player)
+			getvert(vvec, self, 4.0)
+			v0 += pointclip(vec, player)
+			getvert(vvec, self, 5.0)
+			v0 += pointclip(vec, player)
+			getvert(vvec, self, 6.0)
+			v0 += pointclip(vec, player)
+			sendeventif(EventHit, player, v0, 100.0)
+		}
+	}
+}
+
+state Plant_Die {
+	stateflag 0x3
+	statusc 0x12
+	code (h) {
+		EnemyDieCombo(h)
+		while (scalex > 0.04S) {
+			playanim(0, JUNGLE_PLANT_STAND)
+		}
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state Plant_Fling {
+	stateflag 0x10
+	statusc 0x12
+	code (h) {
+		EnemyFlingCombo(h)
+		EnemyFlingSetDir()
+		vely = 3m
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		while (scalex > 0 && scaley > 0 && scalez > 0) {
+			playanim(0, JUNGLE_PLANT_STAND)
+		}
+	}
+	trans {
+		EnemyFlingTrans(3m)
+	}
+}
+

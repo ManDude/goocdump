@@ -1,0 +1,2511 @@
+#gool WillC 0 1
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim WILLY_WARTHOG_RUN_1 [WH1hV] 11
+#anim WILLY_WARTHOG_RUN_2 [WH2hV] 6
+#anim WILLY_WARTHOG_INTRO_1 [WH5hV] 16
+#anim WILLY_WARTHOG_INTRO_2 [WH6hV] 16
+#anim WILLY_WARTHOG_INTRO_3 [WH7hV] 12
+#anim WILLY_WARTHOG_DIE_1 [WHahV] 16
+#anim WILLY_WARTHOG_DIE_2 [WHbhV] 16
+#anim WILLY_SHOCK [WS10V] 3
+#anim WILLY_WARP_OUT1_1 [WW10V] 20
+#anim WILLY_WARP_OUT1_2 [WW20V] 20
+#anim WILLY_WARP_OUT1_3 [WW30V] 20
+#anim WILLY_WARP_OUT2_1 [WW40V] 16
+#anim WILLY_WARP_OUT2_2 [WW50V] 20
+#anim WILLY_WARP_OUT2_3 [WW60V] 20
+#anim WILLY_TNT_1 [WT10V] 23
+#anim WILLY_TNT_2 [WT20V] 23
+#anim WILLY_FIRE_1 [WF10V] 10
+#anim WILLY_FIRE_2 [WF20V] 10
+#anim WILLY_FIRE_3 [WF30V] 10
+#anim WILLY_FIRE_4 [WF40V] 10
+#anim WILLY_FIRE_5 [WF50V] 8
+
+#sprite WILLY_EFFECT [WillT]
+#tex 0x00FFFF 0 1 5 8 96 24 32 32
+#tex 0x00B4FF 0 1 5 8 96 24 32 32
+#tex 0x0082FF 0 1 5 8 96 24 32 32
+
+#anim WILLY_WARP_IN [Ww10V] 21
+#anim WILLY_BLOW [WiBlV] 8
+#anim WILLY_FRUIT [WiFrV] 11
+#anim WILLY_INTRO_1 [WiI1V] 27
+#anim WILLY_INTRO_2 [WiI2V] 16
+#anim WILLY_INTRO_3 [WiI3V] 27
+#anim WILLY_INTRO_4 [WiI4V] 25
+#anim WILLY_INTRO_5 [WiI5V] 25
+#anim WILLY_INTRO_6 [WiI6V] 15
+#anim WILLY_DUCK [WiD1V] 14
+#anim WILLY_STANCE1 [WiS1V] 13
+#anim WILLY_STANCE2_1 [WiS2V] 26
+#anim WILLY_STANCE2_2 [WiS3V] 26
+#anim WILLY_STANCE3_1 [WiS4V] 25
+#anim WILLY_STANCE3_2 [WiS5V] 25
+#anim WILLY_STANCE3_3 [WiS6V] 20
+#anim WILLY_WALK [WiWaV] 10
+#anim WILLY_FLIP [WiF1V] 4
+#anim WILLY_JUMP [WiJuV] 17
+#anim WILLY_TERRAIN_STANCE [WiTSV] 5
+#anim WILLY_JUMP_STANCE [WiJSV] 6
+#anim WILLY_JUMP_CONTINUE [WiC0V] 5
+#anim WILLY_SPIN_END [WiGSV] 6
+#anim WILLY_DOCTOR [WiDPV] 8
+#anim WILLY_KILLED_1 [WiK1V] 6
+#anim WILLY_KILLED_2 [WiK2V] 20
+#anim WILLY_KILLED_3 [WiK3V] 10
+#anim WILLY_KILLED_4 [WiK4V] 8
+#anim WILLY_FLAT [WiF2V] 13
+
+#spawn S_WILLY                    Willy_Spawn
+#spawn S_WILLY_EFFECT             Willy_Effect_Stance
+#spawn S_2                        __s_2
+#spawn S_WILLY_INTRO_DOCTOR       Willy_Intro_Give_Doctor
+
+var FruitCount, LifeCount, mem3, mem4, mem5, mem6, PickupCortexCount, PickupBrioCount,
+PickupTawnaCount, ShadowY, SpinTime, SpinRotSpeed, mem13, SpinCooldownTime, SpinCooldownDuration, SpinAirCount,
+ComboBounce, ComboSpin, WillyAnimSet, WarthogVoice
+
+event Event2             => sub AddFruit
+event EventHit           => state Willy_Death_Spin
+event Event5             => sub AddLives
+event Event6             => sub AddDoctor
+event Event7             => state Willy_Death_Spin
+event EventFallKill      => state Willy_Death_Fall
+event Event12            => state Willy_Death_Fast
+event Event14            => state Willy_Death_Flat
+event EventStatus        => sub DoStatus
+event EventCombo         => sub DoComboReward
+event Event17            => sub AddLives
+event Event19            => state Willy_Warp_In
+event EventEat           => state Willy_Death_Eat
+event EventBounce        => state Willy_Bounce
+event EventWarp          => state Willy_Warp_Out
+event Event24            => state Willy_Death_Spin
+event EventSquash        => state Willy_Death_Flat
+event EventExplode       => state Willy_Death_TNT
+event EventBurn          => state Willy_Death_Fire
+event Event32            => state Willy_Slip
+event EventDrown         => state Willy_Death_Eat
+event Event34            => state Willy_Stuck
+event Event35            => state Willy_Death_Shock
+event Event36            => sub AddFruit
+event EventBoulderSquash => state Willy_Death_Flat
+event Event38            => state Willy_Death_Spin
+event Event39            => state Willy_Success
+event Event40            => sub AddDoctor
+event Event42            => sub AddFruit
+event Event44            => state Willy_Death_Shock_H
+
+#include "DoctC.gooh"
+#include "ShadC.gooh"
+#include "FruiC.gooh"
+#include "BoxsC.gooh"
+#include "PoRoC.gooh"
+#include "WateC.gooh"
+
+#iflev wz
+expr SoundFootstep1 = [fs60A]
+expr SoundFootstep2 = [fs70A]
+expr SoundLand = [ld30A]
+#eliflev iq
+expr SoundFootstep1 = [fs20A]
+expr SoundFootstep2 = [fs30A]
+expr SoundLand = [ld10A]
+#else
+expr SoundFootstep1 = [fs00A]
+expr SoundFootstep2 = [fs10A]
+expr SoundLand = [ld00A]
+#endif
+
+sub SetGameState (new_state) {
+	GAMESTATE = new_state
+	if (new_state == GAME_STATE_GAMEOVER) {
+		GAMESCREEN = 12
+	}
+	if (var temp = new_state; temp == GAME_STATE_GAMEOVER) {
+		LIFECOUNT = 0
+		FRUITCOUNT = 0
+		HEALTH = 0
+		CORTEXCOUNT = 0
+		BRIOCOUNT = 0
+		TAWNACOUNT = 0
+	}
+	else if (temp == GAME_STATE_CONTINUE || temp == 4.0 || temp == GAME_STATE_PLAYING || temp == GAME_STATE_NEW_GEM) {
+		LIFECOUNT = LifeCount
+		FRUITCOUNT = FruitCount
+		if (var level = LEVEL; level == LEVEL_PapuPapu || level == LEVEL_Pinstripe || level == LEVEL_RipperRoo || level == LEVEL_DrNBrio || level == LEVEL_DrNeoCortex || level == LEVEL_KoalaKong) {
+			HEALTH = 0
+		}
+		else {
+			sendevent(EventStatus, creator, DOCTOR_STATUS_GET_HEALTH)
+			HEALTH = var0
+		}
+		CORTEXCOUNT = PickupCortexCount
+		BRIOCOUNT = PickupTawnaCount
+		TAWNACOUNT = PickupBrioCount
+	}
+}
+
+inline sub WillyResetStats() {
+	SpinAirCount = 0
+	ComboBounce = 0
+	ComboSpin = 0
+	SpinTime = 0
+}
+
+state Willy_Spawn { // 0
+	statusc 0x9002
+	code () {
+		WillyAnimSet = 7.0
+		FruitCount = FRUITCOUNT
+		health = 100.0
+		LifeCount = LIFECOUNT
+		PickupCortexCount = CORTEXCOUNT
+		PickupBrioCount = BRIOCOUNT
+		PickupTawnaCount = TAWNACOUNT
+		SpinCooldownTime = 0
+		mem3 = 0
+		mem4 = 2.5s
+		SpinCooldownDuration = 10s
+		SpinTime = 0
+		WillyResetStats()
+		WillySetPlayableParams()
+		if (var level = LEVEL; level == LEVEL_PapuPapu || level == LEVEL_Pinstripe || level == LEVEL_DrNBrio || level == LEVEL_RipperRoo || level == LEVEL_KoalaKong || level == LEVEL_DrNeoCortex) {
+			HEALTH = 2.0
+		}
+		else if (level == LEVEL_HogWild || level == LEVEL_WholeHog) {
+			HEALTH = 0
+		}
+		else if (level == LEVEL_NSanityBeach) {
+			if (HEALTH >= 2.0) {
+				HEALTH = 1.0
+			}
+		}
+		spawn(DoctC, DoctC_S_WITCH_DOCTOR, 1, HEALTH)
+		spawn(ShadC, ShadC_S_SHADOW, 1, 0, 1.0S, 0)
+		statusc &= ~0x8000
+		if (var level = LEVEL; level == LEVEL_NSanityBeach) {
+			changestate(Willy_Intro)
+		}
+		else {
+			changestate(Willy_Warp_In)
+		}
+	}
+}
+
+sub WillySetPlayableParams () {
+	GAMEFLAGS = 0xFFFF
+	statusb = FLAG_PHYSICS_FULL | FLAG_DPAD_CONTROL | FLAG_ROT_Y | 0x2000 | 0x40000 | FLAG_HAS_SHADOW
+	collider = 0
+	SetVel(0, 0, 0)
+	rotx = 0
+	rotz = 0
+	mem13 = 30deg
+	troty = roty
+	trotx = 720deg
+	yzapproach = 75deg
+	camdist = 0
+	field_60 = 4.0
+	SetScale(1.0S)
+	if (invincible == 6) {
+		SetInvincible(0)
+	}
+}
+
+sub WillySetPlayableParamsInvinc () {
+	WillySetPlayableParams()
+	ComboBounce = 0
+	if (!invincible) {
+		SetInvincible(4)
+	}
+}
+
+sub WillySetPlayableParamsKeepRot () {
+	save (troty, vely) {
+		WillySetPlayableParams()
+	}
+	roty = troty
+}
+
+sub WillyEndStance () {
+	if (var temp = WillyAnimSet; temp == 7.0) {
+		return
+	}
+	else if (temp == 16.0) {
+		DeloadAnim([WiS4V], [WillG])
+		DeloadAnim([WiS5V], [WillG])
+	}
+	else if (temp == 17.0) {
+		DeloadAnim([WiS4V], [WillG])
+		DeloadAnim([WiS5V], [WillG])
+		sendevent(Event12, child)
+	}
+	else if (temp == 18.0) {
+		DeloadAnim([WiS5V], [WillG])
+		DeloadAnim([WiS6V], [WillG])
+		sendevent(Event12, child)
+	}
+	else if (temp == 19.0) {
+		DeloadAnim([WiS6V], [WillG])
+		DeloadAnim([WiFrV], [WiFrG])
+		sendevent(Event12, child)
+	}
+	if (WillyAnimSet == 15.0) {
+		DeloadAnim([WiS2V], [WillG])
+		DeloadAnim([WiS3V], [WillG])
+	}
+	WillyAnimSet = 7.0
+	setanim(WILLY_STANCE1, 0)
+	statusb |= FLAG_ROT_Y
+}
+
+inline sub AnimWillySpin (spin_duration) {
+	soundpitch(4.0)
+	sounddecay(.625)
+	soundplay([spn0A], .25V)
+	do (var spin_frame = 0
+		setanim(WILLY_BLOW)) {
+		roty += SpinRotSpeed
+		playframe(loopseek(spin_frame, 7.0))
+	} until (frametime - SpinTime >= spin_duration)
+}
+
+inline sub AnimWillySpinNoRot (spin_duration) {
+	soundpitch(4.0)
+	sounddecay(.625)
+	soundplay([spn0A], .25V)
+	do (var spin_frame = 0
+		setanim(WILLY_BLOW)) {
+		playframe(loopseek(spin_frame, 7.0))
+	} until (frametime - SpinTime >= spin_duration)
+}
+
+sub WillyStanceSpin () {
+	statusc |= 0x1002
+	SpinTime = frametime
+	statusb &= ~FLAG_ROT_Y
+	if (scalex < 0) {
+		SpinRotSpeed = 40deg
+	}
+	else {
+		SpinRotSpeed = -40deg
+	}
+	AnimWillySpin(.4s)
+	roty = GAMEDIR
+	troty = roty
+	statusc &= ~0x1002
+}
+
+inline sub WillyFruitWaitFruit () {
+	do (var i = 0) {
+		playanim(14, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(15, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(16, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(17, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(18, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(19, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(18, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(17, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(16, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+		playanim(15, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
+	} while ({i += 1.0}; i < 50.0)
+	soundpitch(5.92+rand(1.12))
+	soundplay([!sp0A], .12V)
+}
+
+inline sub WillyCheckSpin (spin_state) {
+	if (buttonbuffer(PAD_SQUARE|PAD_O)) {
+		if (frametime - SpinCooldownTime >= 2s) {
+			changestate(spin_state)
+		}
+		else {
+			SoundPitchDefault()
+			sounddecay(.5625)
+			soundplay([!sp0A], .1V)
+		}
+	}
+}
+
+inline sub WillyCheckSpin () {
+	WillyCheckSpin(Willy_Spin_Adjust_Time)
+}
+
+inline sub WillyCheckFall (grace_time) {
+	if (!STATUS_GROUNDLAND && frametime - groundtime >= grace_time && ShadowY < y-1m) {
+		groundtime = frametime
+		if (vely <= 0) {
+			changestate(Willy_Jump_Stand)
+		}
+		else {
+			changestate(Willy_Fall_Jump)
+		}
+	}
+}
+
+sub WillyDoStance () {
+	WillyResetStats()
+	playanim(11, WILLY_STANCE1, 1s)
+	do {
+		playanim(11, WILLY_STANCE1)
+		if (!rand(4)) {
+			playanim(12, WILLY_STANCE1, .1s)
+			playanim(11, WILLY_STANCE1, .1s)
+			playanim(12, WILLY_STANCE1, .1s)
+			playanim(11, WILLY_STANCE1, .2s)
+		}
+		if (!rand(4)) {
+			playanim(11, WILLY_STANCE1, 1s)
+		}
+		sendevent(EventStatus, creator, DOCTOR_STATUS_GET_HEALTH)
+		if (var0 < 3.0) {
+			scalex = -scalex
+			playanim(0, WILLY_STANCE1)
+			playanim(1, WILLY_STANCE1)
+			playanim(2, WILLY_STANCE1)
+			playanim(3, WILLY_STANCE1)
+			playanim(4, WILLY_STANCE1)
+			do {
+				playanim(5, WILLY_STANCE1, 1s)
+				playanim(6, WILLY_STANCE1)
+				playanim(7, WILLY_STANCE1)
+				playanim(8, WILLY_STANCE1)
+				if (!rand(8)) {
+					playanim(7, WILLY_STANCE1)
+					playanim(6, WILLY_STANCE1)
+				}
+				else break;
+			} while (1)
+			playanim(9, WILLY_STANCE1)
+			playanim(10, WILLY_STANCE1)
+			if (var temp = WillyAnimSet; temp == 7.0) {
+				if (var level = LEVEL; level == LEVEL_PapuPapu || level == LEVEL_Pinstripe || level == LEVEL_RipperRoo || level == LEVEL_DrNBrio || level == LEVEL_DrNeoCortex || level == LEVEL_KoalaKong) {
+					nop() //dbg(0,0)
+				}
+				else if (statusa \ 0x40000) {
+					if (!rand(50)) {
+						if (!rand(2)) {
+							if (ntry5(&[WiS4V], &[WillG], &[WiS5V], &[WillG]) <= ntry4() && ntry5(&[WiS5V], &[WillG], &[WiS6V], &[WillG]) <= ntry4() && ntry5(&[WiS6V], &[WillG], &[WiFrV], &[WiFrG]) <= ntry4()) {
+								onstateexit(WillyEndStance)
+								LoadAnim([WiS4V], [WillG])
+								LoadAnim([WiS5V], [WillG])
+								WillyAnimSet = 16.0
+							}
+						}
+						else {
+							if (ntry5(&[WiS2V], &[WillG], &[WiS3V], &[WillG]) <= ntry4()) {
+								onstateexit(WillyEndStance)
+								LoadAnim([WiS2V], [WillG])
+								LoadAnim([WiS3V], [WillG])
+								WillyAnimSet = 15.0
+							}
+						}
+					}
+				}
+			}
+			else if (temp == 15.0) {
+				WillyStanceSpin()
+				playframes(WILLY_STANCE2_1, 0, 11.0)
+				playanim(11, WILLY_STANCE2_1, .5s)
+				playanim(12, WILLY_STANCE2_1, 2)
+				playanim(11, WILLY_STANCE2_1, 2)
+				playanim(12, WILLY_STANCE2_1, 2)
+				playanim(11, WILLY_STANCE2_1, 1s/6)
+				playanim(12, WILLY_STANCE2_1)
+				playanim(13, WILLY_STANCE2_1)
+				playanim(14, WILLY_STANCE2_1)
+				playanim(15, WILLY_STANCE2_1)
+				playanim(16, WILLY_STANCE2_1)
+				playanim(17, WILLY_STANCE2_1)
+				playanim(18, WILLY_STANCE2_1)
+				playanim(19, WILLY_STANCE2_1)
+				playanim(20, WILLY_STANCE2_1)
+				playanim(21, WILLY_STANCE2_1)
+				playanim(22, WILLY_STANCE2_1)
+				playanim(23, WILLY_STANCE2_1)
+				playanim(24, WILLY_STANCE2_1)
+				playanim(25, WILLY_STANCE2_1)
+				playanim(0, WILLY_STANCE2_2)
+				playanim(1, WILLY_STANCE2_2)
+				playanim(2, WILLY_STANCE2_2, 2)
+				playanim(1, WILLY_STANCE2_2)
+				playanim(0, WILLY_STANCE2_2)
+				playanim(25, WILLY_STANCE2_1)
+				playanim(24, WILLY_STANCE2_1)
+				playanim(23, WILLY_STANCE2_1)
+				playanim(22, WILLY_STANCE2_1)
+				playanim(21, WILLY_STANCE2_1)
+				playanim(20, WILLY_STANCE2_1)
+				playanim(19, WILLY_STANCE2_1, 2)
+				playanim(20, WILLY_STANCE2_1)
+				playanim(21, WILLY_STANCE2_1)
+				playanim(22, WILLY_STANCE2_1)
+				playanim(23, WILLY_STANCE2_1)
+				playanim(24, WILLY_STANCE2_1)
+				playanim(25, WILLY_STANCE2_1)
+				playanim(0, WILLY_STANCE2_2)
+				playanim(1, WILLY_STANCE2_2)
+				playanim(2, WILLY_STANCE2_2, 2)
+				playanim(3, WILLY_STANCE2_2)
+				playanim(4, WILLY_STANCE2_2)
+				playanim(5, WILLY_STANCE2_2)
+				playanim(6, WILLY_STANCE2_2)
+				playanim(7, WILLY_STANCE2_2)
+				playanim(8, WILLY_STANCE2_2, 1.3s)
+				SoundPitchDefault()
+				sounddelay(0.25s)
+				soundplay(SoundFootstep2, .06V)
+				SoundPitchDefault()
+				sounddelay(0.4s)
+				soundplay(SoundFootstep1, .06V)
+				playframes(9.0, 24.0)
+				do (var i = 0) {
+					playanim(12, WILLY_STANCE1, .1s)
+					playanim(11, WILLY_STANCE1, .1s)
+					playanim(12, WILLY_STANCE1, .1s)
+					playanim(11, WILLY_STANCE1, .2s)
+				} while ({i+=1.0}; i < 3.0)
+				WillyEndStance()
+			}
+			else if (temp == 16.0) {
+				playframes(WILLY_STANCE3_1, 0, 8.0)
+				playanim(9, WILLY_STANCE3_1, .2s)
+				playframes(10.0, 20.0)
+				statusa &= ~0x400000
+				spawn(FruiC, FruiC_S_WUMPA_IDLEANIM, 1, 1.0, 1.58s)
+				WillyAnimSet = 17.0
+				playframes(21.0, 24.0)
+				DeloadAnim([WiS4V], [WillG])
+				LoadAnim([WiS6V], [WillG])
+				WillyAnimSet = 18.0
+				playframes(WILLY_STANCE3_2, 0, 3.0)
+				playanim(4, WILLY_STANCE3_2, 1s)
+				SoundPitchDefault()
+				sounddecay(.25)
+				sounddelay(.3s)
+				soundplay([jmp0A], .1V)
+				playframes(5.0, 23.0)
+				playanim(24, WILLY_STANCE3_2, 1.5s)
+				DeloadAnim([WiS5V], [WillG])
+				LoadAnim([WiFrV], [WiFrG])
+				WillyAnimSet = 19.0
+				playframes(WILLY_STANCE3_3, 0, 8.0)
+				playanim(9, WILLY_STANCE3_3, 1s)
+				playframes(10.0, 13.0)
+				WillyFruitWaitFruit()
+				playframes(14.0, 18.0)
+				playanim(0, WILLY_FRUIT, .5s)
+				playframes(1.0, 8.0)
+				playanim(9, WILLY_FRUIT, .3s)
+				playanim(10, WILLY_FRUIT, 2)
+				playanim(9, WILLY_FRUIT, 2)
+				playanim(10, WILLY_FRUIT, 2)
+				playanim(9, WILLY_FRUIT, .3s)
+				WillyStanceSpin()
+				WillyEndStance()
+			}
+		}
+	} while (1)
+}
+
+state Willy_Stance { // 1
+	stateflag 0x5
+	statusc 0
+	code => sub WillyDoStance
+	event (e, a) {
+		if (collider == interrupter && (e == EventHit || e == Event14)) {
+			rejevret(vely < 0 && statusa \ 0x4000 && collider->y < y)
+		}
+		accevcstate(Willy_Duck, e == Event13)
+	}
+	trans {
+		if (GAMESTATE != GAME_STATE_CUTSCENE) {
+			changestateif(Willy_Jump_Still, buttonbuffer(PAD_X))
+			WillyCheckSpin()
+			changestateifn(Willy_Walk, !(abs(speed)>>2))
+		}
+		WillyCheckFall(.2s)
+		if (DEBUG) {
+			if (buttonhold(PAD_L1) && buttonhold(PAD_R1)) {
+				SetInvincible(2)
+			}
+			sendeventif(Event6, creator, buttonhold(PAD_L1) && buttonpress(PAD_R2), self)
+			if (buttonhold(PAD_L1) && buttonpress(PAD_L2)) {
+				debugfunc(1)
+				ITEMPOOL2 = 0xFFFFFFFF
+				ITEMPOOL1 = 0xFFFFFFFF
+			}
+		}
+	}
+}
+
+inline sub WillyPlayMoveFrame(face_ang, frame_num, anim, duration) {
+	field_60 = face_ang<<8
+	playanim(frame_num, anim, duration)
+}
+
+inline sub WillyPlayMoveFrame(face_ang, frame_num, anim) {
+	WillyPlayMoveFrame(face_ang, frame_num, anim, 1)
+}
+
+inline sub WillyPlaySleepFrame(face_ang, frame_num) {
+	do {
+		field_60 = face_ang<<8
+		playframe(frame_num<<8, 2.1s)
+	} while (1)
+}
+
+inline sub WillyPlayMoveFrame(face_ang, frame_num) {
+	field_60 = face_ang<<8
+	playframe(frame_num<<8)
+}
+
+inline sub WillyPlayMoveFrame(face_ang) {
+	field_60 = face_ang<<8
+	playframe()
+}
+
+inline sub WillyPlayMoveFrame_NM(face_ang, frame_num, anim) {
+	field_60 = face_ang<<8
+	playanim_nm(frame_num, anim)
+}
+
+inline sub WillyPlayMoveFrame_M(face_ang, frame_num, anim) {
+	field_60 = face_ang<<8
+	playanim_m(frame_num, anim)
+}
+
+sub AnimWillyWalk () {
+	do {
+		WillyResetStats()
+		WillyPlayMoveFrame_NM(0, 0, WILLY_WALK)
+		WillyPlayMoveFrame_NM(1, 1, WILLY_WALK)
+		WillyPlayMoveFrame_NM(2, 2, WILLY_WALK)
+		WillyPlayMoveFrame_NM(3, 3, WILLY_WALK)
+		WillyPlayMoveFrame_NM(4, 4, WILLY_WALK)
+		WillyPlayMoveFrame_NM(5, 5, WILLY_WALK)
+		WillyPlayMoveFrame_NM(6, 6, WILLY_WALK)
+		WillyPlayMoveFrame_NM(7, 7, WILLY_WALK)
+		WillyPlayMoveFrame_NM(8, 8, WILLY_WALK)
+		WillyPlayMoveFrame_NM(9, 9, WILLY_WALK)
+		SoundPitchDefault()
+		sounddecay(.3125)
+		soundplay(SoundFootstep2, .1V)
+		WillyPlayMoveFrame_M(0, 0, WILLY_WALK)
+		WillyPlayMoveFrame_M(1, 1, WILLY_WALK)
+		WillyPlayMoveFrame_M(2, 2, WILLY_WALK)
+		WillyPlayMoveFrame_M(3, 3, WILLY_WALK)
+		WillyPlayMoveFrame_M(4, 4, WILLY_WALK)
+		WillyPlayMoveFrame_M(5, 5, WILLY_WALK)
+		WillyPlayMoveFrame_M(6, 6, WILLY_WALK)
+		WillyPlayMoveFrame_M(7, 7, WILLY_WALK)
+		WillyPlayMoveFrame_M(8, 8, WILLY_WALK)
+		WillyPlayMoveFrame_M(9, 9, WILLY_WALK)
+		SoundPitchDefault()
+		sounddecay(.3125)
+		soundplay(SoundFootstep1, .1V)
+	} while (1)
+}
+
+state Willy_Walk { // 2
+	stateflag 0x5
+	statusc 0
+	code () {
+		onstateexit(WillyResetShadow)
+		AnimWillyWalk()
+	}
+	event (e, a) {
+		if (collider == interrupter && (e == EventHit || e == Event14)) {
+			rejevret(vely < 0 && statusa \ 0x4000 && collider->y < y)
+		}
+		rejevret((e == EventHit || e == Event14) && eventreceived == Event13)
+	}
+	trans {
+		changestateif(Willy_Jump, buttonbuffer(PAD_X))
+		WillyCheckSpin()
+		changestateifn(Willy_Stance, abs(speed)>>2)
+		WillyCheckFall(.2s)
+	}
+}
+
+sub WillyResetShadow () {
+	field_60 = 4.0
+}
+
+inline sub WillyJumpHangBoost () {	
+	if (buttonhold(PAD_X)) {
+		vely = spd(vely, 5454.0)
+	}
+}
+
+inline sub WillyJumpHangBoostNoFall () {	
+	if (buttonhold(PAD_X) && vely > 0) {
+		vely = spd(vely, 5454.0)
+	}
+}
+
+inline sub SoundWillyJump () {	
+	SoundPitchDefault()
+	sounddecay(.25)
+	soundplay([jmp0A], .1V)
+}
+
+state Willy_Jump { // 3
+	stateflag 0x9
+	statusc 0x1
+	code () {
+		SoundWillyJump()
+		scalex = -scalex
+		vely = 10.5m
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(0, 0, WILLY_FLIP)
+		WillyPlayMoveFrame(-8deg, 1, WILLY_FLIP)
+		WillyPlayMoveFrame(-8deg, 2, WILLY_FLIP)
+		WillyPlayMoveFrame(-8deg, 3, WILLY_FLIP)
+		statusc &= ~0x1
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	trans {
+		changestateif(Willy_Land, STATUS_GROUNDLAND)
+		WillyCheckSpin(Willy_Spin_Air_Adjust_Time)
+		WillyJumpHangBoost()
+		changestateif(Willy_Jump_Flip, vely < 5m)
+	}
+}
+
+inline sub WillyJumpCheckFlip() {
+	if (!dirhold(PAD_NONE)) {
+		var0 = true
+	}
+	if (var0) {
+		changestateif(Willy_Jump_Flip, vely < 5m)
+	}
+	else {
+		changestateif(Willy_Jump_Stand, vely < 5m)
+	}
+}
+
+state Willy_Jump_Still { // 4
+	stateflag 0x9
+	statusc 0x1
+	code () {
+		SoundWillyJump()
+		vely = 10.5m
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP)
+		statusc &= ~(0x1 | 0x3)
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	trans {
+		once {
+			var0 = false
+		}
+		WillyCheckSpin(Willy_Spin_Air_Adjust_Time)
+		changestateif(Willy_Land, STATUS_GROUNDLAND)
+		WillyJumpHangBoost()
+		WillyJumpCheckFlip()
+	}
+}
+
+state Willy_Fall_Jump { // 5
+	stateflag 0x9
+	statusc 0
+	code () {
+		onstateexit(WillyResetShadow)
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	trans => state Willy_Jump_Still
+}
+
+state Willy_Bounce { // 6
+	stateflag 0x2408
+	statusc 0x2001
+	code (propulsion) {
+		ComboBounce += 1.0
+		vely = propulsion
+		SoundWillyJump()
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP)
+		statusc &= ~(0x1 | 0x2)
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	event (e, a) {
+		rejevret(vely > 0 && e == EventBounce)
+	}
+	trans => state Willy_Jump_Still
+}
+
+state Willy_Slip { // 7
+	stateflag 0x2005
+	statusc 0x2000
+	code (angle, velocity) {
+		onstateexit(WillySetPlayableParams)
+		speed = velocity
+		troty = angle
+		statusb &= ~FLAG_DPAD_CONTROL
+		setvel()
+		AnimWillyWalk()
+	}
+	event (e, a) {
+		accevcstate(Willy_Stance, e == EventBounce)
+	}
+}
+
+state Willy_Stuck { // 8
+	stateflag 0x2005
+	statusc 0x2000
+	code () {
+		onstateexit(WillySetPlayableParams)
+		speed = 0
+		SetVel(0, 0, 0)
+		statusb &= ~FLAG_DPAD_CONTROL
+		WillyDoStance()
+	}
+	event (e, a) {
+		accevcstate(Willy_Stance, e == EventBounce)
+	}
+}
+
+state Willy_Hurt { // 9
+	stateflag 0x9
+	statusc 0x1003
+	code () {
+		SoundPitchDefault()
+		sounddecay(.625)
+		soundplay([Yip0A], .55V)
+		SoundWillyJump()
+		unless (statusa \ 0x80) {
+			vely = 12.64912m
+		}
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP)
+		statusc &= ~0x1
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	event (e, a) {
+		if (invincible == 5) {
+			rejevret(e == EventHit)
+			rejevret(e == EventExplode)
+			rejevret(e == Event14)
+			rejevret(e == EventSquash)
+			rejevret(e == Event24)
+			rejevret(e == EventHitFence)
+		}
+	}
+	trans => state Willy_Jump_Still
+}
+
+state Willy_Jump_Flip { // 10
+	stateflag 0x9
+	statusc 0
+	code () {
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP)
+		WillyPlayMoveFrame(-8deg, 1, WILLY_JUMP)
+		WillyPlayMoveFrame(20deg, 2, WILLY_JUMP)
+		WillyPlayMoveFrame(40deg, 3, WILLY_JUMP)
+		WillyPlayMoveFrame(65deg, 4, WILLY_JUMP)
+		WillyPlayMoveFrame(90deg, 5, WILLY_JUMP)
+		WillyPlayMoveFrame(112deg, 6, WILLY_JUMP)
+		WillyPlayMoveFrame(138deg, 7, WILLY_JUMP)
+		WillyPlayMoveFrame(181deg, 8, WILLY_JUMP)
+		WillyPlayMoveFrame(225deg, 9, WILLY_JUMP)
+		WillyPlayMoveFrame(272deg, 10, WILLY_JUMP)
+		WillyPlayMoveFrame(301deg, 11, WILLY_JUMP)
+		WillyPlayMoveFrame(327deg, 12, WILLY_JUMP)
+		WillyPlayMoveFrame(340deg, 13, WILLY_JUMP)
+		WillyPlayMoveFrame(350deg, 14, WILLY_JUMP)
+		WillyPlayMoveFrame(355deg, 15, WILLY_JUMP)
+		WillyPlayMoveFrame(0, 16, WILLY_JUMP)
+		onstateexit(WillyDeloadFallAnim)
+		if (ntry5(&[WiC0V], &[WillG]) <= ntry4() && GLOBAL_105 == 0) {
+			LoadAnim([WiC0V], [WillG])
+			WillyAnimSet = 9.0
+			do {
+				WillyPlayMoveFrame(355deg, 16, WILLY_JUMP)
+			} until (tryload([WillG]) && tryload([WiC0V]))
+			playanim(15, WILLY_JUMP)
+			do {
+				playframes(WILLY_JUMP_CONTINUE, 0, 4.0)
+				playanim(15, WILLY_JUMP)
+			} while (1)
+		}
+		else {
+			WillyPlaySleepFrame(355deg, 16)
+		}
+	}
+	event (e, a) {
+		if (interrupter) {
+			rejevret(vely < 0 && (e == EventHit || e == Event14) && !(interrupter->statusc \ 0x2))
+		}
+		if (e == EventRespawn) {
+			rejevret(LEVEL == LEVEL_HogWild || LEVEL == LEVEL_WholeHog)
+		}
+	}
+	trans {
+		if (collider && vely <= 0) {
+			if (y > collider->y - .2m) {
+				sendevent(EventJumpedOn, collider, ComboBounce)
+				if (eventaccepted) {
+					ComboBounce += 1.0
+					changestate(Willy_Bonk_Jump)
+				}
+			}
+		}
+		changestateif(Willy_Land, STATUS_GROUNDLAND)
+		WillyCheckSpin(Willy_Spin_Air_Adjust_Time)
+		WillyJumpHangBoost()
+	}
+}
+
+sub WillyDeloadFallAnim () {
+	if (WillyAnimSet == 9.0) {
+		DeloadAnim([WiC0V], [WillG])
+		WillyAnimSet = 7.0
+	}
+	WillyResetShadow()
+}
+
+state Willy_Jump_Stand { // 11
+	stateflag 0x9
+	statusc 0
+	code () {
+		playframes(WILLY_JUMP_STANCE, 0, 5.0)
+		onstateexit(WillyDeloadFallAnim)
+		if (ntry5(&[WiC0V], &[WillG]) <= ntry4()) {
+			WillyAnimSet = 9.0
+			LoadAnim([WiC0V], [WillG])
+			do {
+				WillyPlayMoveFrame(355deg, 15, WILLY_JUMP)
+			} until (tryload([WillG]) && tryload([WiC0V]))
+			do {
+				playframes(WILLY_JUMP_CONTINUE, 0, 4.0)
+				playanim(15, WILLY_JUMP)
+			} while (1)
+			
+		}
+		else {
+			do {
+				WillyPlayMoveFrame(355deg, 15, WILLY_JUMP, 2.1s)
+			} while (1)
+		}
+	}
+	event => state Willy_Jump_Flip
+	trans => state Willy_Jump_Flip
+}
+
+state Willy_Force_Fall { // 12
+	stateflag 0x9
+	statusc 0
+	code () {
+		onstateexit(WillySetPlayableParams)
+		statusb &= ~FLAG_DPAD_CONTROL
+		playframes(WILLY_JUMP_STANCE, 0, 5.0)
+		do {
+			WillyPlayMoveFrame(355deg, 15, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	event => state Willy_Jump_Flip
+	trans {
+		changestateif(Willy_Land, !STATUS_FIRSTFRAME && STATUS_GROUNDLAND)
+	}
+}
+
+state Willy_Land { // 13
+	stateflag 0x5
+	statusc 0
+	code () {
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(5deg, 0, WILLY_TERRAIN_STANCE, 2)
+		WillyPlayMoveFrame(4deg, 1, WILLY_TERRAIN_STANCE, 2)
+		WillyPlayMoveFrame(88deg, 2, WILLY_TERRAIN_STANCE, 2)
+		WillyPlayMoveFrame(77deg, 3, WILLY_TERRAIN_STANCE, 2)
+		WillyPlayMoveFrame(35deg, 4, WILLY_TERRAIN_STANCE, 2)
+		changestate(Willy_Stance)
+	}
+	trans {
+		once {
+			if (collider && vely < 0 && statusa \ 0x4000) {
+				if (y > collider->y - .2m && !(statusa \ 0x40000)) {
+					sendevent(EventJumpedOn, collider, 100)
+					changestateif(Willy_Bonk_Jump, eventaccepted)
+				}
+			}
+			WillyResetStats()
+			SoundPitchDefault()
+			sounddecay(.5625)
+			soundplay(SoundLand, .2V)
+		}
+		changestateif(Willy_Jump_Still, buttonbuffer(PAD_X))
+		WillyCheckSpin()
+		changestateifn(Willy_Walk, dirhold(PAD_NONE))
+		WillyCheckFall(1s/3)
+		speed = 0
+	}
+}
+
+inline sub SoundCombo (sound, combo_amount) {
+	sounddecay(.5625)
+	soundpitch(3.6+rand(0.8)+(.4 * combo_amount >> 8))
+	soundplay(sound, .4V)
+}
+
+state Willy_Bonk_Jump { // 14
+	stateflag 0x9
+	statusc 0x3
+	code () {
+		SoundWillyJump()
+		vely = 10.5m
+		onstateexit(WillyResetShadow)
+		WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP)
+		statusc &= ~(0x1 | 0x2)
+		do {
+			WillyPlayMoveFrame(-8deg, 0, WILLY_JUMP, 2.1s)
+		} while (1)
+	}
+	trans {
+		once {
+			var0 = false
+			SoundCombo([bnk0A], ComboBounce-1.0)
+		}
+		WillyCheckSpin(Willy_Spin_Air_Adjust_Time)
+		changestateif(Willy_Land, STATUS_GROUNDLAND)
+		WillyJumpHangBoost()
+		WillyJumpCheckFlip()
+	}
+}
+
+state Willy_Spin_Adjust_Time { // 15
+	stateflag 0x84
+	statusc 0
+	code () {
+		SpinTime = frametime
+		if (frametime - SpinCooldownTime >= SpinCooldownDuration) {
+			SpinCooldownTime = frametime - SpinCooldownDuration - 2s
+		}
+		else {
+			SpinCooldownTime += 2s
+		}
+		changestate(Willy_Spin)
+	}
+}
+
+state Willy_Spin_Air_Adjust_Time { // 16
+	stateflag 0x98
+	code () {
+		SpinTime = frametime
+		if (frametime - SpinCooldownTime >= SpinCooldownDuration) {
+			SpinCooldownTime = frametime - SpinCooldownDuration - 2s
+		}
+		else {
+			SpinCooldownTime += 2s
+		}
+		changestate(Willy_Spin_Air)
+	}
+	event => state Willy_Spin
+}
+
+state Willy_Spin { // 17
+	stateflag 0x90
+	code () {
+		onstateexit(WillySetPlayableParamsKeepRot)
+		statusb |= FLAG_DPAD_CONTROL | 0x2000
+		statusb &= ~FLAG_ROT_Y
+		AnimWillySpinNoRot(.4s)
+		changestate(Willy_Spin_End)
+	}
+	event (e, a) {
+		if (e == Event42) {
+			rejev()
+			sendevent(EventSpinHit, interrupter, 1)
+		}
+		if (e == Event40) {
+			rejev()
+			save (interrupter) {
+				interrupter = a[0]
+				sendevent(EventSpinHit, interrupter, 1)
+			}
+		}
+	}
+	trans {
+		sendevent(EventSpinHit, collider, ComboSpin)
+		if (eventaccepted) {
+			SoundCombo([sht0A], ComboSpin)
+			ComboSpin += 1.0
+		}
+		if (buttonbuffer(PAD_X)) {
+			hpc = 0
+			changestate(Willy_Spin_Air)
+		}
+		if (STATUS_FIRSTFRAME) {
+			if (scalex < 0) {
+				SpinRotSpeed = 40deg
+			}
+			else {
+				SpinRotSpeed = -40deg
+			}
+		}
+		roty += SpinRotSpeed
+	}
+}
+
+state Willy_Spin_Air { // 18
+	stateflag 0x98
+	statusc 0x83
+	code () {
+		if (STATUS_GROUNDLAND) {
+			vely = 10.5m
+			playanim(0, WILLY_BLOW)
+		}
+		statusc &= ~(0x80 | 0x1)
+		AnimWillySpinNoRot(.25s)
+		changestate(Willy_Spin_Air_End)
+	}
+	event => state Willy_Spin
+	trans {
+		once {
+			onstateexit(WillySetPlayableParamsKeepRot)
+			statusb |= FLAG_DPAD_CONTROL | 0x2000
+			statusb &= ~FLAG_ROT_Y
+			SpinAirCount += 1.0
+		}
+		sendevent(EventSpinHit, collider, ComboSpin)
+		if (eventaccepted) {
+			SoundCombo([sht0A], ComboSpin)
+			ComboSpin += 1.0
+		}
+		changestateif(Willy_Spin, frametime - statetime >= 0.08s && STATUS_GROUNDLAND)
+		if (STATUS_FIRSTFRAME) {
+			if (scalex < 0) {
+				SpinRotSpeed = 60deg
+			}
+			else {
+				SpinRotSpeed = -60deg
+			}
+		}
+		roty += SpinRotSpeed
+		WillyJumpHangBoostNoFall()
+	}
+}
+
+state Willy_Spin_End { // 19
+	statusc 0
+	code () {
+		if (dirhold(PAD_NONE) && STATUS_GROUNDLAND) {
+			velx = 0
+			velz = 0
+			speed = 0
+		}
+		playframeslt(WILLY_SPIN_END, 0, 5.0)
+		changestate(Willy_Stance)
+	}
+	trans {
+		once {
+			ComboSpin = 0
+		}
+		changestateif(Willy_Jump_Still, buttonbuffer(PAD_X))
+	}
+}
+
+state Willy_Spin_Air_End { // 20
+	stateflag 0x9
+	statusc 0
+	code () {
+		changestate(Willy_Jump_Stand)
+	}
+	trans {
+		once {
+			ComboSpin = 0
+			onstateexit(WillySetPlayableParamsKeepRot)
+		}
+	}
+}
+
+sub AddFruit (fruit_count) {
+	var fruitcount = fruit_count
+	FruitCount += fruit_count
+	if (FruitCount >= 100.0) {
+		interrupter = FRUITDISPLAY
+		sendevent(Event17, interrupter, 1.0)
+		FruitCount -= 100.0
+	}
+}
+
+sub AddLives (life_count) {
+	LifeCount += life_count
+	if (LifeCount > 99.0) {
+		LifeCount = 99.0
+	}
+}
+
+sub AddDoctor () {
+	sendevent(EventStatus, creator, DOCTOR_STATUS_GET_HEALTH)
+	if (var0 >= 3.0) {
+		SetInvincible(5)
+		changestate(Willy_Success)
+	}
+}
+
+sub AnimWillySuccess (air_time) {
+	onstateexit(WillySetPlayableParams)
+	var0 = 10.0
+	statusb &= ~(FLAG_DPAD_CONTROL | FLAG_ROT_Y)
+	statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+	SoundWillyJump()
+	velx = 0
+	velz = 0
+	speed = 0
+	vely = 12.64912m
+	playframes(WILLY_DOCTOR, 0, 7.0)
+	while (vely > 0) {
+		do (var i = 0) {
+			spawn(DoctC, DoctC_S_DOCTOR_PARTICLE)
+		} while ({i += 1.0}; i < var0/2)
+		var0 -= 1.0
+		playframe(7.0)
+	}
+	statusb &= ~(FLAG_PHYSICS_ENGINE | FLAG_GRAVITY)
+	do (var start = frametime) {
+		do (var i = 0) {
+			spawn(DoctC, DoctC_S_DOCTOR_PARTICLE)
+		} while ({i += 1.0}; i < var0/2)
+		if (var0 > 5.0) {
+			var0 -= 1.0
+		}
+		else {
+			var0 = 0
+		}
+		playframe(7.0)
+	} while (frametime - start < air_time)
+}
+
+state Willy_Success { // 21
+	stateflag 0x48
+	statusc 0x1022
+	code () {
+		if (eventreceived == Event39) {
+			soundpitch(4.0)
+			sounddecay(.625)
+			soundplay([Wpe0A], .8V)
+			var1 = true
+		}
+		else {
+			var1 = false
+		}
+		AnimWillySuccess(.7s)
+		if (var1) {
+			sleep()
+		}
+		vely = 0
+		statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		changestate(Willy_Force_Fall)
+	}
+	event (e, a) {
+		rejevret(e == Event6 || e == Event40)
+	}
+}
+
+sub DoComboReward (combo) {
+	if (var temp = combo; temp == 1.0) {
+		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 76.0, 0)
+		child->x = interrupter->x
+		child->y = interrupter->y
+		child->z = interrupter->z
+	}
+	else if (temp == 2.0) {
+		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 94.0, 0)
+		child->x = interrupter->x
+		child->y = interrupter->y
+		child->z = interrupter->z
+	}
+	else if (temp == 3.0) {
+		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 92.0, 0)
+		child->x = interrupter->x
+		child->y = interrupter->y
+		child->z = interrupter->z
+	}
+	else if (temp == 4.0) {
+		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 97.0, 0)
+		child->x = interrupter->x
+		child->y = interrupter->y
+		child->z = interrupter->z
+	}
+	else if (temp == 105.0) {
+		PickupTawnaCount += 1.0
+	}
+	else if (temp == 103.0) {
+		PickupCortexCount += 1.0
+	}
+	else if (temp == 104.0) {
+		PickupBrioCount += 1.0
+	}
+}
+
+sub DoStatus (status) {
+	if (interrupter) {
+		if (var temp = status; temp == 0) {
+			interrupter->var0 = mem4
+		}
+		else if (temp == 1.0) {
+			interrupter->var0 = 0
+		}
+		else if (temp == 3.0) {
+			if (ComboBounce > 0) {
+				ComboBounce -= 1.0
+			}
+		}
+		else if (temp == 8.0) {
+			ComboBounce = 0
+		}
+		else if (temp == 5.0) {
+			SetGameState(GAME_STATE_PLAYING)
+		}
+		else if (temp == 6.0) {
+			SetGameState(4.0)
+		}
+	}
+}
+
+sub TakeDamage (damage) {
+	onstateexit(WillySetPlayableParamsInvinc)
+	if (eventreceived != Event38) {
+		sendevent(EventHit, creator, damage)
+		changestateif(Willy_Hurt, eventaccepted)
+	}
+	health -= damage
+	statusb &= ~(FLAG_ROT_Y | FLAG_PHYSICS_FULL | FLAG_DPAD_CONTROL)
+	velx = 0
+	velz = 0
+	speed = 0
+	GAMEFLAGS &= ~0x2
+	sendevent(Event28, interrupter, 0)
+}
+
+sub WillyDoKill () {
+	if (ZONEFLAGS & 0x2000) {
+		health = 100.0
+		SetGameState(GAME_STATE_PLAYING)
+	}
+	else if (self->LifeCount) {
+		LifeCount -= 1.0
+	}
+	else {
+		GAMEFLAGS = 0x20
+		SetGameState(GAME_STATE_GAMEOVER)
+	}
+	if (DEBUG && buttonhold(PAD_L1)) {
+		FADECONTROL = 0
+		changestate(Willy_Hurt)
+	}
+}
+
+inline sub WillyDeathDoRespawn() {
+	WillyDoKill()
+	loadcheckpoint()
+	changestate(Willy_Warp_In)
+}
+
+inline sub WillyDeathDoRespawnEat() {
+	WillyDoKill()
+	loadcheckpoint()
+	statusc &= ~0x8
+	changestate(Willy_Warp_In)
+}
+
+state Willy_Death_Fall { // 22
+	stateflag 0x4009
+	statusc 0x7002
+	code (h) {
+		onstateexit(WillySetPlayableParamsInvinc)
+		stateflag |= 0x20
+		GAMEFLAGS &= ~0x2
+		statusb &= ~(FLAG_HAS_SHADOW | FLAG_DPAD_CONTROL | FLAG_PHYSICS_TEST)
+		sounddecay(.75)
+		SoundPitchDefault()
+		soundplay([fal0A], .4V)
+		soundsetup(0, voice, 5)
+		if (var level = LEVEL; level == LEVEL_HogWild || level == LEVEL_WholeHog) {
+			FadeToBlack()
+			do {
+				WillyPlayMoveFrame(355deg)
+			} until (FADECONTROL == -1)
+		}
+		else {
+			playframes(WILLY_JUMP_STANCE, 0, 5.0)
+			FadeToBlack()
+			do {
+				WillyPlayMoveFrame(355deg, 15, WILLY_JUMP)
+			} until (FADECONTROL == -1)
+		}
+		WillyDeathDoRespawn()
+	}
+	trans {
+		if (var level = LEVEL; level == LEVEL_TempleRuins || level == LEVEL_JawsOfDarkness || level == LEVEL_GeneratorRoom || level == LEVEL_LightsOut || level == LEVEL_FumblingInTheDark) {
+			colra = seek(colra, 0, 50)
+			colga = seek(colga, 0, 50)
+			colba = seek(colba, 0, 50)
+			SetColor(colra, colga, colba)
+		}
+	}
+}
+
+inline sub SoundWillyArgument() {
+	SoundPitchDefault()
+	sounddecay(.75)
+	soundplay([Arg0A], .5V)
+}
+
+state Willy_Death_Spin { // 23
+	stateflag 0x22
+	statusc 0x7022
+	code (h) {
+		TakeDamage(h)
+		statusb &= ~0x2000
+		rotx = 0
+		if (var level = LEVEL; level == LEVEL_Pinstripe || level == LEVEL_DrNeoCortex || level == LEVEL_RipperRoo || level == LEVEL_DrNBrio || level == LEVEL_PapuPapu || level == LEVEL_KoalaKong) {
+			statusb |= FLAG_PHYSICS_FULL
+			GAMEFLAGS |= 0x2
+			velx = 0
+			velz = 0
+		}
+		else {
+			GLOBAL_10 = 0
+			CAMSPINOBJ = self
+			CAMSPINOBJVERT = 1.0
+			CAMSPINDISTSPD = 25.0
+			CAMSPINLOOKSPD = -30deg
+			GAMEFLAGS = 0x5C73C
+			statusb &= ~(FLAG_PHYSICS_FULL)
+			statusb |= FLAG_HAS_SHADOW
+		}
+		if (ntry5(&[WiK2V], &[WillG], &[WiK3V], &[WillG], &[WiK4V], &[WillG]) <= ntry4()) {
+			LoadAnim([WiK2V], [WillG])
+			LoadAnim([WiK3V], [WillG])
+			LoadAnim([WiK4V], [WillG])
+			WillyAnimSet = 8.0
+		}
+		SoundWillyArgument()
+		soundpitch(2.88+rand(.448))
+		sounddecay(.75)
+		soundplay([ds10A], .3V)
+		playframes(WILLY_KILLED_1, 0, 5.0)
+		if (scalex < 0) {
+			var0 = 32.5deg
+		}
+		else {
+			var0 = -32.5deg
+		}
+		roty += var0
+		playframe(5.0)
+		do {
+			do (var i = 0) {
+				roty += var0
+				playframe(5.0)
+			} while ({i += 1.0}; i < 19.0)
+		} until (WillyAnimSet != 8.0 || (tryload([WillG]) && tryload([WiK2V])))
+		if (scalex < 0) {
+			rotz = roty + 110deg
+		}
+		else {
+			rotz = roty - 110deg
+		}
+		if (WillyAnimSet == 8.0) {
+			playframes(WILLY_KILLED_2, 0, 19.0)
+			do (var i = 0) {
+				rotx -= 8deg
+				playframe(19.0)
+			} while ({i += 1.0}; i < 9.0)
+			SoundPitchDefault()
+			sounddecay(.75)
+			soundplay([d1a0A], .8V)
+			playframes(WILLY_KILLED_3, 0, 9.0)
+			playframe(9.0, .4s)
+			playframes(WILLY_KILLED_4, 0, 7.0)
+			SoundPitchDefault()
+			sounddecay(.75)
+			soundplay([d1b0A], .65V)
+			playframe(7.0, .7s)
+			FadeToBlack()
+			WaitFadeFrame(7.0)
+			DeloadAnim([WiK2V], [WillG])
+			DeloadAnim([WiK3V], [WillG])
+			DeloadAnim([WiK4V], [WillG])
+			WillyAnimSet = 7.0
+		}
+		statusc &= ~0x8
+		WillyDeathDoRespawn()
+	}
+}
+
+inline sub SoundWillyExplodeLand(volume, delay) {
+	soundpitch(4.4 + rand(0.8))
+	sounddelay(delay)
+	sounddecay(.75)
+	soundplay([ld10A], volume)
+}
+
+state Willy_Death_TNT { // 24
+	stateflag 0x1020
+	statusc 0x7022
+	code (h) {
+		TakeDamage(h)
+		var1 = false
+		statusb |= FLAG_INVISIBLE | FLAG_PHYSICS_FULL
+		statusb &= ~(FLAG_ROT_Y | 0x2000)
+		SoundWillyArgument()
+		if (ntry5(&[WT10V], &[WT10G], &[WT20V], &[WT10G]) <= ntry4()) {
+			LoadAnim([WT10V], [WT10G])
+			LoadAnim([WT20V], [WT10G])
+			var1 = true
+		}
+		rotx = 0
+		rotz = 0
+		playanim(0, WILLY_KILLED_1, .7s)
+		if (var1) {
+			do {
+				playanim(0, WILLY_KILLED_1)
+			} until (tryload([WT10G]) && tryload([WT10V]))
+			SetScale(1.4S)
+			statusb &= ~(FLAG_INVISIBLE | FLAG_GRAVITY | FLAG_PHYSICS_TEST)
+			statusb |= FLAG_PHYSICS_ENGINE | FLAG_SOLID_GROUND
+			SetVel(0, -8.4m, 0) // 3360.0
+			var0 = true
+			groundy = y
+			y += 10m
+			do {
+				playanim(0, WILLY_TNT_1)
+			} until (STATUS_GROUNDLAND || y <= groundy)
+			SoundWillyExplodeLand(.4V, .2s)
+			SoundWillyExplodeLand(.05V, .4s)
+			playframes(WILLY_TNT_1, 1.0, 22.0)
+			DeloadAnim([WT10V], [WT10G])
+			SoundWillyExplodeLand(.6V, .1s)
+			SoundWillyExplodeLand(.1V, .2s)
+			playframes(WILLY_TNT_2, 0, 22.0)
+			wait(.6s)
+			FadeToBlack()
+			wait(.3s)
+			var0 = false
+			WaitFadeFrame()
+			DeloadAnim([WT20V], [WT10G])
+		}
+		WillyDeathDoRespawn()
+	}
+	trans {
+		once {
+			var0 = false
+		}
+		roty = GAMEDIR
+		if (var0) {
+			if (!rand(4)) {
+				spawn(BoxsC, BoxsC_S_SMOKE, 1, 0)
+			}
+			if (!rand(4)) {
+				spawn(BoxsC, BoxsC_S_SMOKE, 1, 1.0)
+			}
+		}
+	}
+}
+
+state Willy_Death_Shock_H { // 25
+	stateflag 0x1020
+	statusc 0
+	code (h) {
+		changestate(Willy_Death_Shock)
+	}
+}
+
+state Willy_Death_Shock { // 26
+	stateflag 0x22
+	statusc 0x3022
+	code (h) {
+		TakeDamage(h)
+		statusb &= ~(FLAG_HAS_SHADOW | 0x2000 | FLAG_ROT_Y | FLAG_PHYSICS_FULL | FLAG_DPAD_CONTROL)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 3, 0, 1.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 2.0, 3.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 4.0, 5.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 6.0, 7.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 8.0, 9.0)
+		if (var level = LEVEL; level == LEVEL_GeneratorRoom) {
+			var0 = 3.0
+		}
+		else {
+			var0 = 10.0
+		}
+		do (var i = 0) {
+			if (i == var0 - 2.0) {
+				FadeToBlack()
+			}
+			SetColor(0xFF, 0xFF, 0xFF)
+			playanim(0, WILLY_SHOCK)
+			SetColor(2.0, 2.0, 2.0)
+			playanim(1, WILLY_SHOCK)
+			playanim(2, WILLY_SHOCK)
+			SetColor(50, 50, 50)
+			playanim(0, WILLY_SHOCK)
+			playanim(1, WILLY_SHOCK)
+			playanim(2, WILLY_SHOCK)
+		} while ({i+=1.0}; i < var0)
+		WillyDeathDoRespawn()
+	}
+}
+
+inline sub SoundWillyBurnSizzle() {	
+	sounddecay(.75)
+	SoundPitchDefault()
+	soundplay([BDA0A], .5V)
+}
+
+inline sub SoundWillyBurnStart() {	
+	sounddecay(.75)
+	soundpitch(4.48 + rand(.8))
+	soundfadet(1.5s)
+	soundfadev(0, 0, 2)
+	soundplay([BDC0A], .75V)
+}
+
+inline sub SoundWillyBlink(volume, pitch) {	
+	sounddecay(.75)
+	soundpitch(pitch + rand(.32))
+	soundplay([BLI0A], volume)
+}
+
+state Willy_Death_Fire { // 27
+	stateflag 0x1020
+	statusc 0x3022
+	code (h) {
+		TakeDamage(h)
+		statusb &= ~(FLAG_HAS_SHADOW | FLAG_ROT_Y)
+		GAMEFLAGS &= ~0x2
+		statusb |= FLAG_ROT_Y
+		if (ntry4() >= 3) {
+			var1 = true
+			LoadAnim([WF10V], [WF10G])
+		}
+		else {
+			var1 = false
+		}
+		SoundWillyArgument()
+		SoundWillyBurnStart()
+		playanim(11, WILLY_STANCE1, 1s)
+		SoundWillyBlink(.4V, 3.68)
+		playanim(12, WILLY_STANCE1, 2)
+		playanim(11, WILLY_STANCE1, .2s)
+		do {
+			SoundWillyBlink(.35V, 4.16)
+			playanim(12, WILLY_STANCE1, 2)
+			playanim(11, WILLY_STANCE1, .2s)
+		} until (!var1, tryload([WF10G]) && tryload([WF10V]))
+		if (var1) {
+			LoadAnim([WF20V], [WF10G])
+		}
+		playanim(12, WILLY_STANCE1, 2)
+		if (var1) {
+			var0 = true
+			soundfadet(.15s, voice)
+			soundfadev(0, voice, 2)
+			SoundWillyBurnSizzle()
+			playframes(WILLY_FIRE_1, 0, 9.0)
+			DeloadAnim([WF10V], [WF10G])
+			LoadAnim([WF30V], [WF10G])
+			playframes(WILLY_FIRE_2, 0, 9.0)
+			DeloadAnim([WF20V], [WF10G])
+			LoadAnim([WF40V], [WF10G])
+			playframes(WILLY_FIRE_3, 0, 9.0)
+			DeloadAnim([WF30V], [WF10G])
+			LoadAnim([WF50V], [WF10G])
+			playframes(WILLY_FIRE_4, 0, 9.0)
+			DeloadAnim([WF40V], [WF10G])
+			playframes(WILLY_FIRE_5, 0, 7.0)
+			wait(1.6s)
+			FadeToBlack()
+			WaitFadeFrame()
+			DeloadAnim([WF50V], [WF10G])
+		}
+		WillyDeathDoRespawn()
+	}
+	trans {
+		once {
+			trotx = 720deg
+			var0 = false
+		}
+		colra = seek(colra, 0, 40)
+		colga = seek(colga, 0, 40)
+		colba = seek(colba, 0, 40)
+		SetColor(colra, colga, colba)
+		troty = GAMEDIR
+		if (var0) {
+			if (!rand(3)) {
+				spawn(BoxsC, BoxsC_S_SMOKE, 1, 0)
+			}
+		}
+	}
+}
+
+state Willy_Death_Eat { // 28
+	stateflag 0x4020
+	statusc 0x7002
+	code (h) {
+		onstateexit(WillySetPlayableParamsInvinc)
+		statusb &= ~FLAG_HAS_SHADOW
+		health -= h
+		statusb &= ~(FLAG_ROT_Y | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | FLAG_DPAD_CONTROL)
+		GAMEFLAGS &= ~0x2
+		sendevent(Event28, interrupter, 0)
+		SoundWillyArgument()
+		scalex = abs(scalex)
+		if (eventreceived == EventDrown) {
+			sounddecay(.75)
+			SoundPitchDefault()
+			soundplay([BSpnA], .3V)
+			soundsetup(0, voice, 5)
+			spawn(WateC, WateC_S_SPLASH, 1, h)
+			spawn(WateC, WateC_S_DROP, 25, 0, h)
+			scalex -= .2S
+			scaley = scalex
+			scalez = scalex
+			playanim(15, WILLY_JUMP)
+			spawn(WateC, WateC_S_DROP, 25/2, 0, h)
+		}
+		while (scalex > .2S) {
+			scalex -= .2S
+			scaley = scalex
+			scalez = scalex
+			playanim(15, WILLY_JUMP)
+		}
+		statusb |= FLAG_INVISIBLE
+		playnull(.6s)
+		FadeToBlack()
+		WaitFadeNull()
+		WillyDeathDoRespawnEat()
+	}
+}
+
+state Willy_Death_Fast { // 29
+	stateflag 0x21
+	statusc 0x3002
+	code () {
+		onstateexit(WillySetPlayableParamsInvinc)
+		WillyDeathDoRespawn()
+	}
+}
+
+state Willy_Duck { // 30
+	stateflag 0x5
+	code () {
+		sounddelay(.1s)
+		SoundPitchDefault()
+		soundplay([duc0A], .1V)
+		playframeslt(WILLY_DUCK, 0, 7.0)
+		do {
+			playanim(8, WILLY_DUCK, 1s)
+			if (!rand(2)) {
+				playanim(9, WILLY_DUCK)
+				playanim(10, WILLY_DUCK)
+				playanim(11, WILLY_DUCK)
+				playanim(12, WILLY_DUCK)
+				if (!rand(2)) {
+					playanim(13, WILLY_DUCK, .5s)
+				}
+				playanim(13, WILLY_DUCK)
+				playanim(12, WILLY_DUCK)
+				playanim(11, WILLY_DUCK)
+				playanim(10, WILLY_DUCK)
+				playanim(9, WILLY_DUCK)
+			}
+		} while (1)
+	}
+	trans {
+		changestateif(Willy_Jump_Still, buttonbuffer(PAD_X))
+		WillyCheckSpin()
+		changestateifn(Willy_Walk, !(abs(speed)>>2))
+		WillyCheckFall(1s/3)
+	}
+}
+
+inline sub SoundWillyBarrel(volume) {	
+	sounddecay(.75)
+	SoundPitchDefault()
+	soundplay([bad7A], volume)
+}
+
+state Willy_Death_Flat { // 31
+	stateflag 0x1033
+	statusc 0x1002
+	code (h) {
+		onstateexit(WillySetPlayableParamsInvinc)
+		if (eventreceived != EventBoulderSquash) {
+			sendevent(EventHit, creator, h)
+			changestateif(Willy_Hurt, eventaccepted)
+		}
+		zindex = 10
+		roty = 180deg
+		statusb &= ~(FLAG_ROT_Y | FLAG_DPAD_CONTROL)
+		velx = 0
+		vely = 0
+		velz = 0
+		SoundWillyArgument()
+		if (LEVEL == LEVEL_ToxicWaste) {
+			SoundWillyBarrel(1V)
+		}
+		else {
+			SoundWillyBarrel(.7V)
+		}
+		playanim(0, WILLY_FLAT)
+		playanim(1, WILLY_FLAT)
+		playanim(2, WILLY_FLAT)
+		playanim(3, WILLY_FLAT)
+		playanim(4, WILLY_FLAT, 1.3s)
+		playanim(5, WILLY_FLAT)
+		playanim(6, WILLY_FLAT)
+		playanim(7, WILLY_FLAT)
+		playanim(8, WILLY_FLAT)
+		playanim(9, WILLY_FLAT)
+		playanim(10, WILLY_FLAT)
+		playanim(11, WILLY_FLAT)
+		playanim(12, WILLY_FLAT, .5s)
+		playanim(12, WILLY_FLAT)
+		playanim(9, WILLY_FLAT)
+		playanim(6, WILLY_FLAT)
+		playanim(4, WILLY_FLAT, .6s)
+		FadeToBlack()
+		WaitFadeFrame(4, WILLY_FLAT)
+		WillyDeathDoRespawn()
+	}
+	trans {
+		unless (LEVEL == LEVEL_Boulders || LEVEL == LEVEL_BoulderDash) {
+			if (camdist < 2m) {
+				camdist += 0.1m
+			}
+		}
+	}
+}
+
+sub DeloadWarpAnims () {
+	if (var set = WillyAnimSet; set == 10.0) {
+		DeloadAnim([WW20V], [WiWoG])
+	}
+	else if (set == 11.0) {
+		DeloadAnim([WW20V], [WiWoG])
+		DeloadAnim([WW30V], [WiWoG])
+	}
+	else if (set == 12.0) {
+		DeloadAnim([WW50V], [WiWoG])
+	}
+	else if (set == 13.0) {
+		DeloadAnim([WW50V], [WiWoG])
+		DeloadAnim([WW60V], [WiWoG])
+	}
+	WillyAnimSet = 7.0
+	WillySetPlayableParamsInvinc()
+}
+
+inline sub SoundWillyLevelEnd(sound, volume) {	
+	soundpitch(4.0)
+	sounddelay(.3s)
+	sounddecay(.625)
+	soundplay(sound, volume)
+}
+
+inline sub SoundWillyWarpOutLose() {	
+	soundpitch(4.0)
+	sounddecay(.75)
+	sounddelay(.15s)
+	soundplay([WOt0A], .5V)
+}
+
+inline sub SoundWillyWarpOutWin() {	
+	soundpitch(4.0)
+	sounddelay(.15s)
+	sounddecay(.75)
+	soundplay([WOt0A], .5V)
+}
+
+inline sub AnimWillyWarpOut () {	
+	do (var start = frametime) {
+		vely = spd(vely, 30m)
+		y = spd(y, vely)
+		playframe(19.0)
+	} while (frametime - start < 1s)
+	playframe(19.0, .1s)
+}
+
+sub AnimWillyWarpOut1 () {
+	if (ntry5(&[WW20V], &[WiWoG], &[WW30V], &[WiWoG]) <= ntry4()) {
+		LoadAnim([WW20V], [WiWoG])
+		WillyAnimSet = 10.0
+		playframes(WILLY_WARP_OUT1_1, 0, 19.0)
+		LoadAnim([WW30V], [WiWoG])
+		WillyAnimSet = 11.0
+		SoundWillyLevelEnd([Phw0A], .3V)
+		playframes(WILLY_WARP_OUT1_2, 0, 19.0)
+		SoundWillyWarpOutLose()
+		soundstop()
+		playframes(WILLY_WARP_OUT1_3, 0, 19.0)
+		vely = 20m
+		unless (ZONEFLAGS & 0x2000) {
+			gamefunc10(LEVEL_Map)
+		}
+		AnimWillyWarpOut()
+	}
+}
+
+inline sub GetLevelGem() {	
+	if (CURRENTLEVEL >= 32) {
+		misc = ITEMPOOL2 & 1<<CURRENTLEVEL-32
+	}
+	else {
+		misc = ITEMPOOL1 & 1<<CURRENTLEVEL
+	}
+}
+
+sub AnimWillyWarpOut2 (warp_out) {
+	if (ntry5(&[WW50V], &[WiWoG], &[WW60V], &[WiWoG]) <= ntry4()) {
+		LoadAnim([WW50V], [WiWoG])
+		WillyAnimSet = 12.0
+		SoundWillyLevelEnd([Wpe0A], .7V)
+		playframes(WILLY_WARP_OUT2_1, 0, 15.0)
+		LoadAnim([WW60V], [WiWoG])
+		WillyAnimSet = 13.0
+		playframes(WILLY_WARP_OUT2_2, 0, 19.0)
+		if (warp_out) {
+			SoundWillyWarpOutWin()
+			soundstop()
+			playframes(WILLY_WARP_OUT2_3, 0, 19.0)
+			vely = 20m
+			GetLevelGem()
+			if (misc) {
+				gamefunc10(LEVEL_Map)
+			}
+			else {
+				gamefunc10(LEVEL_LevelEnd)
+			}
+			AnimWillyWarpOut()
+		}
+	}
+}
+
+state Willy_Warp_Out { // 32
+	stateflag 0x20
+	statusc 0x1022
+	code (a) {
+		onstateexit(DeloadWarpAnims)
+		statusb = FLAG_HAS_SHADOW
+		unless (ZONEFLAGS & 0x2000 || CURRENTLEVEL >= 32) {
+			if (CURRENTLEVEL+1 > LEVELSUNLOCKED) {
+				LEVELSUNLOCKED = CURRENTLEVEL+1
+			}
+		}
+		if (var level = LEVEL; level == LEVEL_KoalaKong || level == LEVEL_DrNBrio || level == LEVEL_RipperRoo || level == LEVEL_DrNeoCortex || level == LEVEL_Pinstripe || level == LEVEL_PapuPapu) {
+			eventreceived = 0
+			soundpitch(4.0)
+			sounddecay(.945)
+			soundplay([Yeh0A], .7V)
+			AnimWillySuccess(2.6s)
+			soundstop()
+		}
+		else {
+			if (ZONEFLAGS & 0x2000 || LEVEL == LEVEL_TheGreatHall) {
+				if (a == 2.0) {
+					AnimWillyWarpOut2(false)
+					changestate(Willy_Win_Wait)
+				}
+				AnimWillyWarpOut1()
+				if (!GLOBAL_109) {
+					if (var level_temp = LEVEL; level_temp == LEVEL_BonusTawna1 || level_temp == LEVEL_BonusTawna2) {
+						statusb |= FLAG_INVISIBLE
+						SAVETYPE = SAVE_TYPE_LEVEL
+						GLOBALVAL = 9
+						spawn2(57, 0) // CardC-0
+						do {
+							playnull()
+						} until (GLOBALVAL == 0)
+					}
+					else if (level_temp == LEVEL_BonusCortex) {
+						if (LEVEL == LEVEL_BonusCortex && GLOBALVAL != 0) {
+							spawn2(57, 0) // CardC-0
+							do {
+								playnull()
+							} until (GLOBALVAL == 0)
+						}
+					}
+				}
+			}
+			else {
+				if (DEATHCOUNT) {
+					AnimWillyWarpOut1()
+				}
+				else {
+					AnimWillyWarpOut2(true)
+				}
+				GetLevelGem()
+				if (!misc) {
+					SetGameState(GAME_STATE_NEW_GEM)
+					PREVLEVEL = LEVEL
+					PREVBOXCOUNT = BOXCOUNT
+					loadlevel(LEVEL_LevelEnd)
+					sleep()
+				}
+			}
+		}
+		SetGameState(GAME_STATE_CONTINUE)
+		if (ZONEFLAGS & 0x2000) {
+			loadcheckpoint()
+		}
+		else {
+			loadlevel(LEVEL_Map)
+		}
+		sleep()
+	}
+}
+
+state Willy_Win_Wait { // 33
+	stateflag 0
+	statusc 0
+	code () {
+		do {
+			statusb = FLAG_HAS_SHADOW
+			do {
+				playframe()
+			} until (GAMESTATE == GAME_STATE_CUTSCENE)
+			playnull()
+		} while (1)
+	}
+	trans {
+		camdist = -10m
+		GEMTIME = frametime
+	}
+}
+
+#module [Wil9C]
+state Willy_Intro { // 34
+	stateflag 0x8001
+	statusc 0x1022
+	code () {
+		onstateexit(WillySetPlayableParams)
+		LoadAnim([WiI1V], [WillG])
+		WillyAnimSet = 0
+		var0 = true
+		statusb &= ~FLAG_DPAD_CONTROL
+		playanim(0, WILLY_INTRO_1)
+		LoadAnim([WiI2V], [WillG])
+		WillyAnimSet = 1.0
+		playframes(WILLY_INTRO_1, 0, 26.0)
+		DeloadAnim([WiI1V], [WillG])
+		LoadAnim([WiI3V], [WillG])
+		WillyAnimSet = 2.0
+		playframes(WILLY_INTRO_2, 0, 15.0)
+		DeloadAnim([WiI2V], [WillG])
+		LoadAnim([WiI4V], [WillG])
+		WillyAnimSet = 3.0
+		playanim(0, WILLY_INTRO_3, 1s/3)
+		playframes(WILLY_INTRO_3, 0, 26.0)
+		DeloadAnim([WiI3V], [WillG])
+		LoadAnim([WiI5V], [WillG])
+		WillyAnimSet = 4.0
+		playframes(WILLY_INTRO_4, 0, 24.0)
+		wait(.4s)
+		DeloadAnim([WiI4V], [WillG])
+		LoadAnim([WiI6V], [WillG])
+		WillyAnimSet = 5.0
+		playframes(WILLY_INTRO_5, 0, 24.0)
+		DeloadAnim([WiI5V], [WillG])
+		WillyAnimSet = 6.0
+		do (var i = 0) {
+			playframeslt(WILLY_INTRO_6, 0, 4.0)
+			playframesback(4.0, 0)
+		} while ({i+=1.0}; i < 3.0)
+		playframes(WILLY_INTRO_6, 0, 14.0)
+		var0 = false
+		wait(1s/3)
+		roty += 180deg
+		DeloadAnim([WiI6V], [WillG])
+		WillyAnimSet = 7.0
+		spawn(WillC, S_WILLY_INTRO_DOCTOR)
+		changestate(Willy_Spin_Adjust_Time)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (GAMESTATE == GAME_STATE_PLAYING && var0) {
+				if (var set = WillyAnimSet; set == 0) {
+					DeloadAnim([WiI1V], [WillG])
+				}
+				else if (set == 1.0) {
+					DeloadAnim([WiI1V], [WillG])
+					DeloadAnim([WiI2V], [WillG])
+				}
+				else if (set == 2.0) {
+					DeloadAnim([WiI2V], [WillG])
+					DeloadAnim([WiI3V], [WillG])
+				}
+				else if (set == 3.0) {
+					DeloadAnim([WiI3V], [WillG])
+					DeloadAnim([WiI4V], [WillG])
+				}
+				else if (set == 4.0) {
+					DeloadAnim([WiI4V], [WillG])
+					DeloadAnim([WiI5V], [WillG])
+				}
+				else if (set == 5.0) {
+					DeloadAnim([WiI5V], [WillG])
+					DeloadAnim([WiI6V], [WillG])
+				}
+				else if (set == 6.0) {
+					DeloadAnim([WiI6V], [WillG])
+				}
+				WillyAnimSet = 7.0
+				sendevent(Event6, creator, parent)
+				changestate(Willy_Stance)
+			}
+		}
+	}
+}
+
+state Willy_Intro_Give_Doctor { // 35
+	stateflag 0x8001
+	statusc 0
+	code () {
+		playnull()
+		playnull(.6s)
+		creator = parent->creator
+		sendevent(Event6, creator, parent)
+	}
+}
+#module default
+
+#module [WilhC]
+state Willy_Warthog_Spawn { // 36
+	statusc 0x8000
+	code () {
+		roty = 180deg
+		troty = 180deg
+		ComboBounce = 0
+		if (var level = LEVEL; level == LEVEL_HogWild) {
+			if (z < -40m) {
+				pathprog = 138.0
+			}
+			else if (z < 130m) {
+				pathprog = 73.0
+			}
+			else {
+				pathprog = 0
+			}
+		}
+		else if (level == LEVEL_WholeHog) {
+			if (z < -40m) {
+				pathprog = 116.0
+			}
+			else if (z < 130m) {
+				pathprog = 51.0
+			}
+			else {
+				pathprog = 0
+			}
+		}
+		trotx = 360deg
+		yzapproach = 180deg
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_PHYSICS_FULL | 0x800 | 0x2000 | 0x40000 | FLAG_HAS_SHADOW
+		calcpath()
+		if (ntry5(&[WH5hV], &[WH1hG], &[WH6hV], &[WH1hG], &[WH7hV], &[WH1hG]) <= ntry4()) {
+			LoadAnim2([WH5hV], [WH1hG])
+			LoadAnim2([WH6hV], [WH1hG])
+			LoadAnim2([WH7hV], [WH1hG])
+			camdist = 4m
+			do (var i = 0) {
+				playframes(WILLY_WARTHOG_INTRO_1, 0, 15.0)
+				playframeslt(WILLY_WARTHOG_INTRO_2, 0, 3.0)
+			} while ({i += 1.0}; i < 3.0)
+			playframes(WILLY_WARTHOG_INTRO_1, 0, 15.0)
+			DeloadAnim([WH5hV], [WH1hG])
+			playframes(WILLY_WARTHOG_INTRO_2, 0, 15.0)
+			DeloadAnim([WH6hV], [WH1hG])
+			playframes(WILLY_WARTHOG_INTRO_3, 0, 11.0)
+			DeloadAnim([WH7hV], [WH1hG])
+			camdist = 0
+		}
+		SoundPlayDefault([HBShA], .75V)
+		WarthogVoice = 0
+		changestate(Willy_Warthog_Run_Start)
+	}
+}
+
+inline sub SoundHogSqueal(sound) {
+	SoundPitchDefault()
+	soundplay(sound, .2V + rand(.3V))
+}
+
+inline sub WillyWarthogHandleSoundEv(e) {	
+	if ((e == EventFallKill || e == EventWarp) && WarthogVoice) {
+		voice = WarthogVoice
+		soundfadet(0.175s, voice)
+		soundfadev(0, voice, 3)
+	}
+}
+
+inline sub WillyWarthogMoveLeft(move_speed) {
+	ComboBounce = spd(ComboBounce, -move_speed)
+	if (ComboBounce < -480.0) {
+		ComboBounce = -480.0
+	}
+}
+
+inline sub WillyWarthogMoveRight(move_speed) {
+	ComboBounce = spd(ComboBounce, move_speed)
+	if (ComboBounce > 480.0) {
+		ComboBounce = 480.0
+	}
+}
+
+inline sub WillyWarthogMovePath() {	
+	pathprog = spd(pathprog, 4.0)
+	if (pathprog >= pathlen) {
+		pathprog = pathlen-1
+	}
+	calcpath(pathprog, vvec)
+	x = vecx
+	z = vecz
+}
+
+inline sub WillyWarthogTransPath(turn_speed) {
+	save (trotx, troty, trotz, vecx, vecy, vecz) {
+		trotx = 0
+		trotz = 0
+		vecx = x
+		vecy = y
+		vecz = z
+		vectransf(vvec, vtrans, 0, -ComboBounce, 0)
+	}
+	if (dirhold(PAD_LEFT)) {
+		troty += turn_speed
+	}
+	if (dirhold(PAD_RIGHT)) {
+		troty -= turn_speed
+	}
+}
+
+state Willy_Warthog_Run { // 37
+	statusc 0x8000
+	code () {
+		do {
+			playframes(WILLY_WARTHOG_RUN_2, 0, 5.0)
+			playframes(WILLY_WARTHOG_RUN_1, 0, 10.0)
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventBounce) {
+			rejevret(!buttonhold(PAD_X) && frametime - statetime >= 0.08s)
+			vely = a[0]
+			accevcstate(Willy_Warthog_Jump)
+		}
+		accevcstate(Willy_Death_Warthog, e == EventHit || e == Event24 || e == Event7 || e == Event14 || e == EventSquash)
+		WillyWarthogHandleSoundEv(e)
+		if (e == EventFallKill) {
+			GAMEFLAGS &= ~0x2
+			speed = 0
+			velx = 0
+			velz = 0
+		}
+	}
+	trans {
+		once {
+			if (!WarthogVoice) {
+				soundpitch(4.0)
+				sounddecay(.75)
+				soundplay([WHGhA], .25V)
+				WarthogVoice = voice
+			}
+			else {
+				voice = WarthogVoice
+				soundfadet(1s/3, voice)
+				soundfadev(.25V, voice, 2)
+			}
+		}
+		unless (STATUS_FIRSTFRAME) {
+			if (dirhold(PAD_LEFT)) {
+				WillyWarthogMoveLeft(1440.0)
+				if (dirpress(PAD_LEFT)) {
+					if (!rand(3)) {
+						SoundHogSqueal([HS3hA])
+					}
+					else {
+						SoundHogSqueal([HS1hA])
+					}
+				}
+			}
+			if (dirhold(PAD_RIGHT)) {
+				WillyWarthogMoveRight(1440.0)
+				if (dirpress(PAD_RIGHT)) {
+					if (!rand(3)) {
+						SoundHogSqueal([HS4hA])
+					}
+					else {
+						SoundHogSqueal([HS2hA])
+					}
+				}
+			}
+			WillyWarthogMovePath()
+			if (!STATUS_GROUNDLAND) {
+				trotz = 0
+			}
+			WillyWarthogTransPath(15deg)
+			if (frametime - statetime >= 0.1s && !(frametime - groundtime >= 0.275s)) {
+				changestateif(Willy_Warthog_Jump, buttonbuffer(PAD_X))
+			}
+			sendevent(EventHitInvincible, collider, 0)
+		}
+	}
+}
+
+state Willy_Warthog_Run_Start { // 38
+	statusc 0x8000
+	code () {
+		do {
+			playframes(WILLY_WARTHOG_RUN_1, 0, 10.0)
+			playframes(WILLY_WARTHOG_RUN_2, 0, 5.0)
+		} while (1)
+	}
+	event => state Willy_Warthog_Run
+	trans => state Willy_Warthog_Run
+}
+
+state Willy_Warthog_Jump { // 39
+	statusc 0x8000
+	code () {
+		save (voice) {
+			if (var r = rand(4); r == 0 || r == 1) {
+				SoundHogSqueal([HJuhA])
+			}
+			else if (r == 2) {
+				SoundHogSqueal([HS2hA])
+			}
+			else if (r == 3) {
+				SoundHogSqueal([HS3hA])
+			}
+		}
+		if (vely <= 0) {
+			vely = 12.32883m
+		}
+		if (animseq == getanim(WILLY_WARTHOG_RUN_1) && animframe < 10.0) {
+			do (var f = animframe + 1.0) {
+				playframe(f)
+			} while ({f+=1.0}; f < 10.0)
+		}
+		else if (animseq == getanim(WILLY_WARTHOG_RUN_2) && animframe < 5.0) {
+			do (var f = animframe + 1.0) {
+				playframe(f)
+			} while ({f+=1.0}; f < 5.0)
+			playframes(WILLY_WARTHOG_RUN_1, 0, 10.0)
+		}
+		else if (animseq == getanim(WILLY_WARTHOG_RUN_2)) {
+			playframes(WILLY_WARTHOG_RUN_1, 0, 10.0)
+		}
+		setanim(WILLY_WARTHOG_RUN_1)
+		sleepframe(10.0)
+	}
+	event (e, a) {
+		if (e == EventBounce && vely <= 0) {
+			vely = a[0]
+			accevret()
+		}
+		rejevret(e == EventBounce)
+		accevcstate(Willy_Death_Warthog, e == EventHit || e == Event24 || e == Event7 || e == Event14 || e == EventSquash)
+		WillyWarthogHandleSoundEv(e)
+	}
+	trans {
+		once {
+			voice = WarthogVoice
+			soundfadet(1s/3, voice)
+			soundfadev(0, voice, 2)
+		}
+		unless (STATUS_FIRSTFRAME) {
+			if (dirhold(PAD_LEFT)) {
+				WillyWarthogMoveLeft(480.0)
+			}
+			if (dirhold(PAD_RIGHT)) {
+				WillyWarthogMoveRight(480.0)
+			}
+			if (buttonhold(PAD_X)) {
+				vely = spd(vely, 12.95325m)
+			}
+			WillyWarthogMovePath()
+			trotz = 0
+			WillyWarthogTransPath(7deg)
+			if (frametime - statetime >= 0.08s && STATUS_GROUNDLAND) {
+				sounddecay(.625)
+				SoundPitchDefault()
+				soundplay(SoundLand, .25V + rand(.1V))
+				changestate(Willy_Warthog_Run)
+			}
+			sendevent(EventHitInvincible, collider, 0)
+		}
+	}
+}
+
+state Willy_Death_Warthog { // 40
+	stateflag 0x4021
+	statusc 0xF002
+	code () {
+		onstateexit(WillySetPlayableParamsInvinc)
+		if (WarthogVoice) {
+			voice = WarthogVoice
+			soundsetup(0, voice, 15)
+		}
+		GAMEFLAGS &= ~0x2
+		statusb |= FLAG_PHYSICS_FULL
+		statusb &= ~(FLAG_HAS_SHADOW | FLAG_DPAD_CONTROL)
+		if (ntry5(&[WHbhV], &[WH1hG]) <= ntry4()) {
+			LoadAnim([WHbhV], [WH1hG])
+			sounddecay(.625)
+			SoundPitchDefault()
+			soundplay([HSLhA], 1V)
+			SoundPitchDefault()
+			sounddelay(.45s)
+			soundplay([jmp0A], .15V)
+			playframes(WILLY_WARTHOG_DIE_1, 0, 15.0)
+			soundpitch(2.8 + rand(.8)) sounddelay(.2s) soundplay([hit0A], .5V)
+			soundpitch(2.4 + rand(.8)) sounddelay(.275s) soundplay(SoundFootstep1, 1V)
+			soundpitch(2.4 + rand(.8)) sounddelay(.4s) soundplay(SoundFootstep2, .5V)
+			soundpitch(2.4 + rand(.8)) sounddelay(.55s) soundplay(SoundFootstep1, .25V)
+			playframes(WILLY_WARTHOG_DIE_2, 0, 15.0)
+			wait(.6s)
+			FadeToBlack()
+			WaitFadeFrame()
+			DeloadAnim([WHbhV], [WH1hG])
+		}
+		changestate(Willy_Death_Fast)
+	}
+}
+#module default
+
+state Willy_Warp_In { // 41
+	stateflag 0x8001
+	statusc 0x1022
+	code () {
+		zindex = 24
+		SpinCooldownTime = 0
+		SpinCooldownDuration = 10s
+		SpinTime = 0
+		invincible = 0
+		if (LEVEL == LEVEL_HogWild || LEVEL == LEVEL_WholeHog) {
+			soundpitch(4.0)
+			sounddelay(2)
+			sounddecay(.625)
+			soundplay([WIn0A], .5V)
+			changestate(Willy_Warthog_Spawn)
+		}
+		if (LEVEL == LEVEL_KoalaKong || LEVEL == LEVEL_DrNeoCortex || LEVEL == LEVEL_RipperRoo || LEVEL == LEVEL_DrNBrio || LEVEL == LEVEL_Pinstripe || LEVEL == LEVEL_PapuPapu) {
+			if (RESPAWNCOUNT) {
+				sendevent(Event6, creator, self)
+				sendevent(Event6, creator, self)
+			}
+		}
+		changestateif(Willy_Force_Fall, !(ntry5(&[Ww10V], &[Ww10G]) <= ntry4()) || LEVEL == LEVEL_Pinstripe || LEVEL == LEVEL_KoalaKong)
+		onstateexit(WillySetPlayableParams)
+		if (GLOBAL_105 == 0) {
+			LoadAnim([Ww10V], [Ww10G])
+		}
+		else {
+			LoadAnim2([Ww10V], [Ww10G])
+		}
+		WillyAnimSet = 14.0
+		statusb &= ~(FLAG_HAS_SHADOW | FLAG_DPAD_CONTROL)
+		statusb |= FLAG_INVISIBLE
+		do {
+			playanim(0, WILLY_STANCE1)
+		} until (tryload([Ww10G]) && tryload([Ww10V]))
+		playanim(0, WILLY_STANCE1, 1s/3)
+		spawn(WillC, S_WILLY_EFFECT, 1, .4m, 1.4S)
+		spawn(WillC, S_WILLY_EFFECT, 1, .2m, 1.6S)
+		spawn(WillC, S_WILLY_EFFECT, 1, -.2m, 0.8S)
+		spawn(WillC, S_WILLY_EFFECT, 1, -.4m, 1.2S)
+		statusb &= ~FLAG_INVISIBLE
+		soundpitch(4.0)
+		sounddecay(.625)
+		soundplay([WIn0A], .5V)
+		settrans(WillyWarpInMakeParticles)
+		statusb |= FLAG_HAS_SHADOW
+		playframesback(WILLY_WARP_IN, 20.0, 0)
+		DeloadAnim([Ww10V], [Ww10G])
+		WillyAnimSet = 7.0
+		changestateif(Willy_Stance, STATUS_GROUNDLAND)
+		changestate(Willy_Force_Fall)
+	}
+	event (e, a) {
+		if (e == EventRespawn && WillyAnimSet == 14.0) {
+			DeloadAnim([Ww10V], [Ww10G])
+			WillyAnimSet = 7.0
+		}
+	}
+}
+
+sub WillyWarpInMakeParticles () {
+	unless (STATUS_FIRSTFRAME) {
+		if (FRAMETIME < 33) {
+			spawn(DoctC, DoctC_S_DOCTOR_SPARKLE, 1, 250.0, self, .6s)
+		}
+		if (FRAMETIME < 30) {
+			spawn(DoctC, DoctC_S_DOCTOR_SPARKLE, 1, 250.0, self, .6s)
+		}
+	}
+}
+
+state Willy_Effect_Stance { // 42
+	statusc 0x22
+	code (offset, size) {
+		zindex = 48
+		SetScale(size)
+		if (!rand(2)) {
+			trotz = 15deg+rand(5deg)
+		}
+		else {
+			trotz = -(15deg+rand(5deg))
+		}
+		var0 = rand(.5s)
+		SetVel(0, 0, offset)
+		SetVec(randi(-.5m, .5m), rand(.5m), offset)
+		playnull()
+		setanim(WILLY_EFFECT, rand(3.0))
+		while (scalex > 0) {
+			playframe()
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			save (trotx, troty, trotz) {
+				getvert(vtrot, creator, 0)
+				x = trotx+velx
+				y = troty+vely
+				z = trotz+velz
+			}
+			velx = seek(velx, vecx, 8.0)
+			vely = seek(vely, vecy, 8.0)
+			velz = seek(velz, vecz, 8.0)
+			if (!time(.5s, var0)) {
+				vecx = randi(-.8m, .8m)
+				vecy = randi(-.4m, .4m)
+				vecz = randi(-.8m, .8m)
+			}
+			rotz += trotz
+			unless (creator->stateflag \ 0x8000) {
+				scalex -= .2S
+			}
+			scaley = scalex
+		}
+	}
+}
+

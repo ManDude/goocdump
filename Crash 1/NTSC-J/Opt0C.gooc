@@ -1,0 +1,282 @@
+#gool Opt0C 48 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim SFX_VOL_OFF [oo1pV] 1
+#anim SFX_VOL_ON [oo2pV] 1
+#anim MUS_VOL_OFF [oo3pV] 1
+#anim MUS_VOL_ON [oo4pV] 1
+#anim MONO_ON [oo5pV] 8
+#anim STEREO_ON [oo6pV] 8
+#anim CHANNELS_OFF [ooapV] 8
+#anim RETURN_OFF [oo7pV] 1
+#anim RETURN_ON [oo8pV] 1
+#anim VOL_SLIDER [oo9pV] 1
+
+#spawn S_OPTION_SFX_VOL           Option_Init
+#spawn S_OPTION_MUS_VOL           Option
+#spawn S_OPTION_AUDIO_CHANNELS    Option
+#spawn S_OPTION_RETURN            Option
+#spawn S_OPTIONS_MENU             Options_Menu
+#spawn S_VOLUME_SLIDER            Volume_Slider
+
+var MenuSelectedIndex, MenuIndex, VolumeAmt, AudioChannelsAnimDir, TargetFrame, SlideVoice
+
+inline sub SoundMenuButton() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddelay(1)
+	sounddecay(0.9375)
+	soundplay([Mb1iA], 0.5V)
+	statusb &= ~FLAG_2D
+}
+
+inline sub SoundMenuSelect() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddecay(0.9375)
+	soundplay([selpA], 0.8V)
+	statusb &= ~FLAG_2D
+}
+
+state Options_Menu {
+	statusc 0
+	code () {
+		GLOBALOBJ = self
+		MenuSelectedIndex = 1
+		statusb = FLAG_INVISIBLE
+		sleepnull()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (dirpress(PAD_UP)) {
+				if (MenuSelectedIndex > 1) {
+					SoundMenuButton()
+					if (MenuSelectedIndex == 10) {
+						MenuSelectedIndex -= 9
+					}
+					else {
+						MenuSelectedIndex -= 1
+					}
+				}
+			}
+			if (dirpress(PAD_DOWN)) {
+				if (MenuSelectedIndex < 12) {
+					SoundMenuButton()
+					if (MenuSelectedIndex == 1) {
+						MenuSelectedIndex += 9
+					}
+					else {
+						MenuSelectedIndex += 1
+					}
+				}
+			}
+		}
+	}
+}
+
+state Option_Init {
+	statusc 0
+	code () {
+		spawn(Opt0C, S_OPTIONS_MENU)
+		changestate(Option)
+	}
+}
+
+inline sub SoundMenuSlide() {	
+	if (SlideVoice) {
+		voice = SlideVoice
+		soundsetup(0, voice, 15)
+		SlideVoice = 0
+	}
+	statusb |= FLAG_2D
+	soundpitch(3.84+rand(0.32))
+	soundplay([sldpA], 0.2V)
+	statusb &= ~FLAG_2D
+	SlideVoice = voice
+}
+
+state Option {
+	statusc 0
+	code () {
+		if (spawn == S_OPTION_SFX_VOL) {
+			VolumeAmt = SFXVOL
+			spawn(Opt0C, S_VOLUME_SLIDER)
+			playanim(0, SFX_VOL_ON)
+		}
+		else if (spawn == S_OPTION_MUS_VOL) {
+			VolumeAmt = MUSVOL
+			spawn(Opt0C, S_VOLUME_SLIDER)
+			scaley = 1.05S
+			playanim(0, MUS_VOL_OFF)
+		}
+		else if (spawn == S_OPTION_AUDIO_CHANNELS) {
+			scaley = 1.02S
+			playanim(0, CHANNELS_OFF)
+		}
+		else if (spawn == S_OPTION_RETURN) {
+			playanim(0, RETURN_OFF)
+		}
+		interrupter = GLOBALOBJ
+		animframe = 0
+		TargetFrame = 0
+		SlideVoice = 0
+		if (spawn == S_OPTION_SFX_VOL || spawn == S_OPTION_MUS_VOL) {
+			if (spawn == S_OPTION_SFX_VOL) {
+				MenuIndex = 1
+				VolumeAmt = SFXVOL
+			}
+			else {
+				MenuIndex = 10
+				VolumeAmt = MUSVOL
+			}
+			do {
+				if (spawn == S_OPTION_SFX_VOL) {
+					if (MenuIndex == interrupter->MenuSelectedIndex) {
+						playanim(0, SFX_VOL_ON)
+					}
+					else {
+						playanim(0, SFX_VOL_OFF)
+					}
+				}
+				else {
+					if (MenuIndex == interrupter->MenuSelectedIndex) {
+						playanim(0, MUS_VOL_ON)
+					}
+					else {
+						playanim(0, MUS_VOL_OFF)
+					}
+				}
+			} while (1)
+		}
+		else if (spawn == S_OPTION_AUDIO_CHANNELS) {
+			MenuIndex = 11
+			do { playframe(seek(animframe, TargetFrame, AudioChannelsAnimDir << 8)) } while (1)
+		}
+		else if (spawn == S_OPTION_RETURN) {
+			MenuIndex = 12
+			do {
+				if (MenuIndex == interrupter->MenuSelectedIndex) {
+					playanim(0, RETURN_ON)
+					if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+						SoundMenuSelect()
+						GAMESCREEN = 5
+						sleepanim(0, RETURN_ON)
+					}
+				}
+				else {
+					playanim(0, RETURN_OFF)
+				}
+			} while (1)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (MenuIndex == interrupter->MenuSelectedIndex) {
+				if (spawn == S_OPTION_SFX_VOL || spawn == S_OPTION_MUS_VOL) {
+					if (dirhold(PAD_W)) {
+						if (spawn == S_OPTION_MUS_VOL) {
+							if (VolumeAmt > 0) {
+								OPTIONSCHANGED = true
+								VolumeAmt = seek(VolumeAmt, 0, 8)
+								MUSVOL = VolumeAmt
+							}
+						}
+						else if (spawn == S_OPTION_SFX_VOL) {
+							if (VolumeAmt > 0) {
+								VolumeAmt = seek(VolumeAmt, 0, 8)
+								SFXVOL = VolumeAmt
+								OPTIONSCHANGED = true
+								if (frametime - statetime >= 0.25s) {
+									SoundMenuSelect()
+									statetime = frametime
+								}
+							}
+						}
+					}
+					if (dirhold(PAD_E)) {
+						if (spawn == S_OPTION_MUS_VOL) {
+							if (VolumeAmt < 0xFF) {
+								OPTIONSCHANGED = true
+								VolumeAmt = seek(VolumeAmt, 0xFF, 8)
+								MUSVOL = VolumeAmt
+							}
+						}
+						else if (spawn == S_OPTION_SFX_VOL) {
+							if (VolumeAmt <= 0xFF) {
+								VolumeAmt = seek(VolumeAmt, 0xFF, 8)
+								SFXVOL = VolumeAmt
+								OPTIONSCHANGED = true
+								if (frametime - statetime >= 0.25s) {
+									SoundMenuSelect()
+									statetime = frametime
+								}
+							}
+						}
+					}
+				}
+				else if (spawn == S_OPTION_AUDIO_CHANNELS) {
+					if (GLOBAL_33) {
+						setanim(MONO_ON)
+					}
+					else {
+						setanim(STEREO_ON)
+					}
+					if (dirpress(PAD_LEFT)) {
+						if (GLOBAL_33 == 0) {
+							SoundMenuSelect()
+							OPTIONSCHANGED = true
+							SoundMenuSlide()
+						}
+						setanim(MONO_ON)
+						TargetFrame = 7.0
+						GLOBAL_33 = 1.0
+						AudioChannelsAnimDir = -1
+					}
+					if (dirpress(PAD_RIGHT)) {
+						if (GLOBAL_33) {
+							SoundMenuSelect()
+							OPTIONSCHANGED = true
+							SoundMenuSlide()
+						}
+						setanim(STEREO_ON)
+						TargetFrame = 0.0
+						GLOBAL_33 = 0
+						AudioChannelsAnimDir = 1
+					}
+				}
+			}
+			else if (spawn == S_OPTION_AUDIO_CHANNELS) {
+				setanim(CHANNELS_OFF)
+				if (GLOBAL_33) {
+					TargetFrame = 7.0
+				}
+				else {
+					TargetFrame = 0
+				}
+			}
+		}
+	}
+}
+
+state Volume_Slider {
+	statusc 0
+	code () {
+		SetRot(0)
+		SetScale(0.5S, 0.6S, 0.5S)
+		zindex = 40
+		sleepanim(0, VOL_SLIDER)
+	}
+	trans {
+		getvert(vtrans, parent, 0)
+		getvert(vvel, parent, 1.0)
+		x += (velx-x)*parent->VolumeAmt >> 8
+		y += (vely-y)*parent->VolumeAmt >> 8
+		z += (velz-z)*parent->VolumeAmt >> 8
+		y -= 0.1m
+	}
+}
+

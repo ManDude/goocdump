@@ -1,0 +1,1781 @@
+#gool WinGC 61 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim CORTEX_RUN [Co1UV] 24
+
+#sprite SHOCK_STRAIGHT [In1UT]
+#tex 0x505050 0 1 8 0 56 8 64 32
+#tex 0x505050 0 1 8 0 64 8 64 32
+#tex 0x505050 0 1 8 0 72 8 64 32
+#tex 0x505050 0 1 8 0 80 24 64 32
+
+#sprite CORTEX_VORTEX_LIGHT [CoLtT]
+#tex 0x606060 1 1 0 1 0 16 64 64
+#tex 0x606060 1 1 0 2 16 16 64 64
+#tex 0x606060 1 1 0 3 32 16 64 64
+#tex 0x606060 1 1 0 4 48 16 64 64
+#tex 0x606060 1 1 0 5 64 16 64 64
+#tex 0x606060 1 1 0 6 80 16 64 64
+#tex 0x606060 1 1 0 7 96 16 64 64
+#tex 0x606060 1 1 0 8 112 16 64 64
+
+#anim WILLY_FALL_1 [WF1UV] 27
+#anim WILLY_FALL_2 [WF2UV] 27
+#anim WILLY_FALL_3 [WF3UV] 6
+#anim TAWNA_PRISONER_1 [TP1UV] 10
+#anim TAWNA_PRISONER_2 [TP2UV] 10
+#anim SHARD_1 [SH1UV] 1
+#anim SHARD_2 [SH2UV] 1
+#anim BRIO_LEVER [Br1UV] 15
+#anim WILLY_CHAIR [WC1UV] 1
+#anim CHAIR [WC2UV] 1
+#anim WILLY_STANCE_1 [WiS1V] 13
+#anim WILLY_WALK [WiWaV] 10
+#anim WILLY_SHOCK [WS10V] 3
+#anim CORTEX_SHOUT [Cs1UV] 20
+#anim TAWNA_END_1 [Ta1VV] 11
+#anim TAWNA_END_2 [Ta2VV] 11
+#anim TAWNA_END_3 [Ta3VV] 11
+#anim BLIMP [Bl1VV] 1
+#anim BACKGROUND [Obg0V] 1
+#anim CORTEX_INTRO_1 [CI1IV] 20
+#anim CORTEX_INTRO_2 [CI2IV] 20
+#anim CORTEX_INTRO_3 [CI3IV] 20
+#anim CORTEX_INTRO_4 [CI4IV] 20
+#anim CORTEX_INTRO_5 [CI5IV] 20
+#anim CORTEX_INTRO_6 [CI6IV] 20
+#anim CORTEX_INTRO_7 [CI7IV] 20
+#anim CORTEX_INTRO_8 [CI8IV] 10
+#anim PINSTRIPE_GUN [PiGIV] 24
+#anim ROO_STANCE [RS1IV] 26
+#anim CHIEF_ATTACK_1 [ChA2V] 18
+#anim CHIEF_ATTACK_2 [ChA4V] 22
+#anim CHIEF_ATTACK_3 [ChA3V] 18
+#anim BRIO_PREPARE_1 [BP1IV] 16
+#anim BRIO_PREPARE_2 [BP2IV] 16
+#anim BRIO_PREPARE_3 [BP3IV] 28
+#anim BRIO_PREPARE_4 [BP4IV] 27
+#anim BRIO_LOOK_1 [BL1IV] 29
+#anim BRIO_LOOK_2 [BL2IV] 20
+#anim BRIO_LOOK_3 [BL3IV] 11
+#anim TAWNA_BIRD_1 [TB1IV] 9
+#anim TAWNA_BIRD_2 [TB2IV] 10
+#anim TAWNA_BIRD_WAIT [TB5IV] 12
+#anim CURTAIN [Cu1IV] 22
+#anim KONG_STANCE_1 [KS1IV] 24
+#anim KONG_STANCE_2 [KS2IV] 21
+#anim KONG_STANCE_3 [KS3IV] 8
+#anim KONG_STANCE_4 [KS4IV] 23
+#anim KONG_STANCE_5 [KS5IV] 25
+#anim KONG_STANCE_6 [KS6IV] 15
+#anim KONG_STANCE_7 [KS7IV] 21
+#anim KONG_STANCE_8 [KS8IV] 10
+
+#font FONT [Fon0T]
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 //  
+#char 0x808080 0 0 1 0 80 4 16 16 410 0 // !
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // "
+#char 0x808080 1 0 0 1 24 4 32 16 410 0 // #
+#char 0x808080 0 0 1 0 90 20 16 16 410 0 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // %
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // &
+#char 0x808080 0 0 1 0 90 8 16 16 300 0 // '
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // (
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // )
+#char 0x808080 1 0 0 1 16 4 32 16 410 0 // *
+#char 0x808080 1 0 0 1 32 4 32 16 410 0 // +
+#char 0x808080 0 0 1 0 90 4 16 16 300 0 // ,
+#char 0x808080 0 0 1 0 90 16 16 16 410 0 // -
+#char 0x808080 0 0 1 0 90 12 16 16 250 0 // .
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // /
+#char 0x808080 0 0 1 0 68 4 16 16 410 0 // 0
+#char 0x808080 0 0 1 0 70 4 16 16 410 0 // 1
+#char 0x808080 0 0 1 0 72 4 16 16 410 0 // 2
+#char 0x808080 0 0 1 0 74 4 16 16 410 0 // 3
+#char 0x808080 0 0 1 0 76 4 16 16 410 0 // 4
+#char 0x808080 0 0 1 0 78 12 16 16 410 0 // 5
+#char 0x808080 0 0 1 0 78 8 16 16 410 0 // 6
+#char 0x808080 0 0 1 0 78 4 16 16 410 0 // 7
+#char 0x808080 0 0 1 0 80 12 16 16 410 0 // 8
+#char 0x808080 0 0 1 0 80 8 16 16 410 0 // 9
+#char 0x808080 0 0 1 0 92 28 16 16 300 0 // :
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ;
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // <
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // =
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // >
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ?
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // @
+#char 0x808080 0 0 1 0 82 12 16 16 410 0 // A
+#char 0x808080 0 0 1 0 82 8 16 16 410 0 // B
+#char 0x808080 0 0 1 0 82 4 16 16 410 0 // C
+#char 0x808080 0 0 1 0 84 28 16 16 410 0 // D
+#char 0x808080 0 0 1 0 84 24 16 16 410 0 // E
+#char 0x808080 0 0 1 0 84 20 16 16 410 0 // F
+#char 0x808080 0 0 1 0 84 16 16 16 410 0 // G
+#char 0x808080 0 0 1 0 84 12 16 16 410 0 // H
+#char 0x808080 0 0 1 0 84 8 16 16 410 0 // I
+#char 0x808080 0 0 1 0 84 4 16 16 410 0 // J
+#char 0x808080 0 0 1 0 86 28 16 16 410 0 // K
+#char 0x808080 0 0 1 0 86 24 16 16 410 0 // L
+#char 0x808080 0 0 1 0 86 20 16 16 410 0 // M
+#char 0x808080 0 0 1 0 86 16 16 16 410 0 // N
+#char 0x808080 0 0 1 0 86 12 16 16 410 0 // O
+#char 0x808080 0 0 1 0 86 8 16 16 410 0 // P
+#char 0x808080 0 0 1 0 86 4 16 16 410 0 // Q
+#char 0x808080 0 0 1 0 88 28 16 16 410 0 // R
+#char 0x808080 0 0 1 0 88 24 16 16 410 0 // S
+#char 0x808080 0 0 1 0 88 20 16 16 410 0 // T
+#char 0x808080 0 0 1 0 88 16 16 16 410 0 // U
+#char 0x808080 0 0 1 0 88 12 16 16 410 0 // V
+#char 0x808080 0 0 1 0 88 8 16 16 410 0 // W
+#char 0x808080 0 0 1 0 88 4 16 16 410 0 // X
+#char 0x808080 0 0 1 0 90 28 16 16 410 0 // Y
+#char 0x808080 0 0 1 0 90 24 16 16 410 0 // Z
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // [
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // \
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ]
+#char 0x808080 1 0 0 1 40 4 32 16 410 0 // ^
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // _
+
+#font FONT_SMALL [Op2pT]
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 //  
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // !
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // "
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // #
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // %
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // &
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // '
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // (
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // )
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // *
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // +
+#char 0x808080 0 3 6 0 50 6 16 8 100 0 // ,
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // -
+#char 0x808080 0 3 6 0 50 4 16 8 150 0 // .
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // /
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 0
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 1
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 2
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 3
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 4
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 5
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 6
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 7
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 8
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // 9
+#char 0x808080 0 3 6 0 52 6 16 8 100 0 // :
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // ;
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // <
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // =
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // >
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // ?
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // @
+#char 0x808080 0 3 6 0 24 6 16 8 250 0 // A
+#char 0x808080 0 3 6 0 24 4 16 8 250 0 // B
+#char 0x808080 0 3 6 0 26 6 16 8 250 0 // C
+#char 0x808080 0 3 6 0 26 4 16 8 250 0 // D
+#char 0x808080 0 3 6 0 28 6 16 8 250 0 // E
+#char 0x808080 0 3 6 0 28 4 16 8 250 0 // F
+#char 0x808080 0 3 6 0 30 6 16 8 250 0 // G
+#char 0x808080 0 3 6 0 30 4 16 8 250 0 // H
+#char 0x808080 0 3 6 0 32 6 16 8 160 0 // I
+#char 0x808080 0 3 6 0 32 4 16 8 250 0 // J
+#char 0x808080 0 3 6 0 34 6 16 8 250 0 // K
+#char 0x808080 0 3 6 0 34 4 16 8 250 0 // L
+#char 0x808080 0 3 6 0 36 6 16 8 260 0 // M
+#char 0x808080 0 3 6 0 36 4 16 8 250 0 // N
+#char 0x808080 0 3 6 0 38 6 16 8 250 0 // O
+#char 0x808080 0 3 6 0 38 4 16 8 260 0 // P
+#char 0x808080 0 3 6 0 40 6 16 8 250 0 // Q
+#char 0x808080 0 3 6 0 40 4 16 8 250 0 // R
+#char 0x808080 0 3 6 0 42 6 16 8 250 0 // S
+#char 0x808080 0 3 6 0 42 4 16 8 250 0 // T
+#char 0x808080 0 3 6 0 44 6 16 8 250 0 // U
+#char 0x808080 0 3 6 0 44 4 16 8 250 0 // V
+#char 0x808080 0 3 6 0 46 6 16 8 260 0 // W
+#char 0x808080 0 3 6 0 46 4 16 8 260 0 // X
+#char 0x808080 0 3 6 0 48 6 16 8 250 0 // Y
+#char 0x808080 0 3 6 0 48 4 16 8 250 0 // Z
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // [
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // \
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // ]
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // ^
+#char 0x000000 0 0 0 0 0 0 4 4 400 300 // _
+
+#text TEXT FONT [1118I]
+"CRASH BANDICOOT..."
+"CREATED AND DEVELOPED BY"
+"NAUGHTY DOG"
+"ANDY GAVIN    JASON RUBIN"
+"DAVE BAGGETT"
+"BOB RAFEI"
+"TAYLOR KUROSAKI"
+"DAN KOLLMORGEN"
+"JUSTIN MONAST"
+"CHARLOTTE FRANCIS"
+"MORGAN"
+"IN ASSOCIATION WITH"
+"UNIVERSAL INTERACTIVE STUDIOS"
+"EXECUTIVE PRODUCER:"
+"MARK CERNY"
+"PRODUCER:"
+"DAVE SILLER"
+"QUALITY ASSURANCE:"
+"CRAIG PERKINS"
+"PUBLISHED BY"
+"SONY COMPUTER"
+"ENTERTAINMENT INC."
+"SHUHEI YOSHIDA"
+"ASSISTANT PRODUCER:"
+"YASUSHI TAKI"
+"PRODUCT MANAGER:"
+"MEGUMI HOSOYA"
+"JAPANESE TEXT DESIGN:"
+"EIICHI ABE"
+"TAKESHI YOKOUCHI"
+"HIDEKAZU SAITO"
+"VOICE CAST:"
+"CRASH: KAPPEI YAMAGUCHI"
+"CORTEX: SHOUZOU IIZUKA"
+"BRIO: MITSURU OGATA"
+"VOICE DIRECTOR:"
+"ERIKO KIMURA"
+"PRODUCTION COORDINATOR:"
+"KAYO ISHIKAWA"
+"SOUND DIRECTOR:"
+"TAKAFUMI FUJISAWA"
+"QUALITY ASSURANCE MANAGER:"
+"AKIRA KOIKE"
+"LEAD ANALYST:"
+"YUICHI IMAI"
+"TESTERS:"
+"KAZUNARI MIKAWA"
+"MASARU SUZUKI"
+"TAKAAKI MURAMATSU"
+"MASAYUKI MIZUNO"
+"MIKI SATO"
+"SAYUKI KOIKE"
+"TOMOKAZU MURASE"
+"JUNICHI AKATSUKA"
+"EIICHI MATSUI"
+"YURIE YAMAMOTO"
+"KAZUTOSHI NISHIO"
+"EITARO NAGANO"
+"KEI SHIMO"
+"KENTARO MOTOMURA"
+"YUJI WATANABE"
+"MEGUMI OHKUBO"
+"SHUNSUKE SAITO"
+"MASAKAZU YAMADA"
+"MIKA ENDO"
+"MASAKI HIYOSHI"
+"AKIKO OKAMOTO"
+"YOSHINORI ISHII"
+"AKIHIRO KASAHARA"
+"KAZUAKI HIGASIZIMA"
+"KIICHIROU WATANABE"
+"THANKS:"
+"HIROSHI TAMAKI"
+"PLAYSTATION MONITOR MEMBERS"
+"SONY COMPUTER ENTERTAINMENT"
+"AMERICA"
+"ALLAN BECKER"
+"SENIOR PRODUCER:"
+"CONNIE BOOTH"
+"DAVID GRACIA"
+"AMI BLAIRE"
+"QA MANAGER:"
+"MARK PENTEK"
+"SCOTT MORRIS"
+"ASSISTANT LEAD ANALYST:"
+"DONOVAN SOTO"
+"CHRIS JOHNSON"
+"MARCUS MONTGOMERY"
+"PETER MAYBERRY"
+"VICTOR QUIMSON"
+"STEVE DREO"
+"TOMASI AKIMETA"
+"CHARLES DELAY"
+"LEIGHTON CHIN"
+"JO ARAGONES"
+"BRETT MULBERG"
+"BRUCE COCHRANE"
+"EUROPE"
+"JOHN ROBERTS"
+"JAMES DILLON"
+"CAROLINE STOKES"
+"TONY BOURNE"
+"LEAD ANALYSTS:"
+"JOHN CORCORAN"
+"ANDY ROBERTS"
+"SCEE QA, LIVERPOOL"
+"SHUJI UTSUMI"
+"WRITING:"
+"ANDY GAVIN"
+"JASON RUBIN"
+"JOE PEARSON"
+"CHARACTER DESIGN"
+"AND ART DIRECTION:"
+"CHARLES ZEMBILLAS"
+"PRODUCTION DESIGN:"
+"AMERICAN EXITUS, INC."
+"SOUNDTRACK:"
+"MUTATO MUZIKA"
+"MARK MOTHERSBAUGH"
+"JOSH MANCELL"
+"SOUND DESIGN:"
+"UNIVERSAL STUDIOS"
+"SOUND FACILITIES"
+"MICHAEL GOLLOM"
+"RON HORWITZ"
+"KEVIN SPEARS"
+"SKIP PAUL"
+"ALIAS/WAVEFRONT"
+"SILICON GRAPHICS"
+"ANGUS GUSCHWAN"
+"TOM BOYD"
+"DAN BURNASH"
+"KOJIRO UMEMURA"
+"KEVAN NORR"
+"IN MEMORY OF"
+"TAE MIN KIM"
+"COPYRIGHT 1996 UNIVERSAL"
+"INTERACTIVE STUDIOS, INC."
+"SOURCE CODE COPYRIGHT 1996"
+"NAUGHTY DOG, INC."
+"TM UNIVERSAL INTERACTIVE"
+"STUDIOS, INC."
+"PAPU PAPU:"
+"パプパプは　コルテックスが　さって"
+"また　しまを　おさめています。"
+"コルテックスじょうを　かんこうち"
+"に　してはと　さそいがありますが、"
+"パプとしては　きが　のりません。"
+"BRIO"
+"TEXT"
+"ニトラス　ブリオは、コルテックス"
+"から　はなれて　はじめて　じゆうに"
+"けんきゅう　しています。"
+"おかねを　かせぐために　はじめた"
+"バーテンダーの　しごとも"
+"けっこう　きどうに　のっています。"
+"コルテックスと　いっきうち"
+"クラッシュに　やぶれさったあと、"
+"コルテックスの　すがたを　みた"
+"ひとは　ひとりも　いません。"
+"でも、ビッグ　エヌは、そう"
+"かんたんに　たおせる　あいてでは"
+"ありませんよね、、、"
+"ROO"
+"リパールーは　ちりょうを　うけて"
+"みるみる　かしこく　なりました。"
+"さいきん　だいがくの　けんきゅうで"
+"ろんぶんを　はっぴょう　しました。"
+"「ボルテックス　しんかろん　"
+"わたしが　てんさいに　なったわけ」"
+"クールな　ピンストライプ"
+"ピンストライプは　あこがれのまち"
+"シカゴに　うつりすみました。"
+"しかし、アメリカで　マシンガンが"
+"きんし　されてから、することが"
+"なくなって　ぼんやり　しています。"
+"KONG"
+"コアラコングは　ハリウッドから"
+"スカウトされ、ユニバーサルの"
+"えいがで　しゅやくに　なりました。"
+"いまでは、コングが　3ぷん"
+"えいがに　でるだけで、しまが"
+"かえるほど　おかねが　はいります。"
+
+#spawn S_WIN_TAWNA                Tawna_Stance
+#spawn S_WIN_MASTER               Win_Master_Wait_Camera
+#spawn S_WIN_CURTAIN              Curtain_Stance
+#spawn S_CREDIT_LINE              Credit_Line_Stance
+#spawn S_CREDITS_MASTER           Credits_Master
+#spawn S_TAWNA_END                End_Master_Tawna_Stance
+#spawn S_BLIMP_END                Blimp_End_Wait_Scene
+#spawn S_INTRO_MASTER             Intro_Master_Stance
+#spawn S_WILLY_CHAIR              Willy_Chair_Stance
+#spawn S_INTRO_WILLY              Intro_Willy_Stance
+#spawn S_INTRO_BRIO               Intro_Brio_Stance
+#spawn S_INTRO_CORTEX             Intro_Cortex_Stance
+#spawn S_BRIO_LEVER               Brio_Lever_Stance
+#spawn S_INTRO_GLASS              Intro_Glass
+#spawn S_WILLY_GLASS              Willy_Glass_Stance
+#spawn S_WILLY_ESCAPE             Willy_Escape_Wait
+#spawn S_CORTEX_ESCAPE            Cortex_Escape_Stance
+#spawn S_SHOCK_BEAM               Shock_Beam_Stance
+#spawn S_GLASS_SHARD              Glass_Shard_Stance
+#spawn S_INTRO_TAWNA              Intro_Tawna_Stance
+#spawn S_SHOCK                    Shock_Stance
+#spawn S_CORTEX_VORTEX_LIGHT      Cortex_Vortex_Light_Stance
+#spawn S_CHAIR_WILLY              Chair_Willy_Stance
+#spawn S_BACKGROUND               Background_Stance
+
+var OldX, OldY, OldZ, PinstripeVoice, EvolveVoice, CortexVortexVoice, BuzzState
+
+event Event12 => state Die_Fast
+
+#include "DispC.gooh"
+#include "PoRoC.gooh"
+
+inline sub TawnaWinWaitBlink () {
+	var times = 3.0 + rand(4.0)
+	do (var i = 0) {
+		playanim(0, TAWNA_BIRD_WAIT, 0.8s)
+		playanim(11, TAWNA_BIRD_WAIT, 2)
+		i += 1.0
+	} while (i < times)
+}
+
+state Tawna_Stance { // 0
+	code () {
+		zindex = 24
+		var0 = false
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		do {
+			TawnaWinWaitBlink()
+			playframes(0, 10.0)
+			wait(1s)
+			playframesback(9.0, 1.0)
+		} while (1)
+	}
+	trans {
+		if (distance(player) < 4m && !var0 && player->statusa \ FLAG_GROUNDLAND) {
+			sendevent(EventWarp, player, 2.0)
+			var0 = true
+			statetime = frametime
+		}
+		if (var0 && frametime - statetime >= 1.2s) {
+			statetime = frametime + 10s
+			FadeToBlack()
+		}
+		changestateif(Die_Fast, GEMTIME == frametime && var0)
+	}
+}
+
+state Die_Fast { // 1
+	stateflag 0x22
+	statusc 0
+	code () {}
+}
+
+state Curtain_Stance { // 2
+	code () {
+		zindex = -20
+		sleepanim(0, CURTAIN)
+	}
+	trans {
+		changestateif(Curtain_Open, distance(player) < 4m)
+	}
+}
+
+state Curtain_Open { // 3
+	code () {
+		playframes(CURTAIN, 0, 21.0)
+		sleep()
+	}
+	trans {
+		changestateif(Curtain_Close, distance(player) > 8m)
+	}
+}
+
+state Curtain_Close { // 4
+	code () {
+		playframesback(CURTAIN, 21.0, 0)
+		changestate(Curtain_Stance)
+	}
+}
+
+state Win_Master_Wait_Camera { // 5
+	code () {
+		zindex = 2000
+		sleepnull()
+	}
+	trans {
+		changestateif(Win_Master_Bird_Stance, GAMESTATE == GAME_STATE_CUTSCENE)
+	}
+}
+
+inline sub SoundBirdFlap (vol) {
+	sounddecay(0.25)
+	SoundPitchDefault()
+	sounddelay(0.1s)
+	soundplay([bflyA], vol)
+}
+
+state Win_Master_Bird_Stance { // 6
+	code () {
+		SetRot(trotx, troty, trotz)
+		do {
+			SoundBirdFlap(.03V)
+			playframes(TAWNA_BIRD_1, 0, 8.0)
+			playframes(TAWNA_BIRD_2, 0, 9.0)
+		} while (1)
+	}
+	trans {
+		once {
+			statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | 0x800 | 0x2000 | 0x40000
+			troty = 0
+			roty = troty
+			trotx = 360deg
+			yzapproach = 90deg
+			pathprog = 0.5
+			FadeFromBlack()
+		}
+		pathprog += 0.25
+		if (pathprog >= pathlen) {
+			pathprog = pathlen - 1
+		}
+		changestateif(Win_Master_Epilogue, ZONEFLAGS & 0x10000)
+		if (!FADECONTROL && pathprog >= pathlen - 5.0) {
+			FadeToBlack()
+		}
+		calcpath()
+		movetozone(player)
+	}
+}
+
+state Win_Master_Bird_Credits { // 7
+	code () {
+		FadeFromBlack()
+		statusb = 0x40000
+		GAMEFLAGS = 0xFFFF
+		save (trotx, troty, trotz, vecx, vecy, vecz) {
+			SetTRot(0, CAMROTY, 0)
+			SetVec(CAMTRANSX, CAMTRANSY, CAMTRANSZ)
+			vectransf(vvec, vtrans, -1400.0, -520.0, 200.0)
+		}
+		SetRot(20deg, GAMEDIR - 70deg, GAMEDIR + 20deg)
+		spawn(WinGC, S_CREDITS_MASTER, 1, 0)
+		do {
+			SoundBirdFlap(.02V)
+			playframes(TAWNA_BIRD_1, 0, 8.0)
+			playframes(TAWNA_BIRD_2, 0, 9.0)
+		} while (1)
+	}
+}
+
+state Win_Master_Epilogue { // 8
+	statusc 0
+	code () {
+		statusb = 0x40000
+		GAMEFLAGS &= ~(0x2000 | 0x1 | 0x2)
+		OldX = x
+		OldY = y
+		OldZ = z
+		SetRot(0, 0, 0)
+		SetTrans(0, 0, 0)
+		movetozone(player)
+		spawn(WinGC, S_BACKGROUND)
+		EpilogueBossChief()
+		EpilogueBossRoo()
+		EpilogueBossKong()
+		EpilogueBossPinstripe()
+		EpilogueBossBrio()
+		EpilogueBossCortex()
+		cascadeevent(Event14, self)
+		playnull()
+		GAMEFLAGS = 0xFFFF
+		while (ZONEFLAGS & 0x10000) {
+			playnull()
+		}
+		changestate(Win_Master_Bird_Credits)
+	}
+}
+
+sub EpilogueBossBrio () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 2.0)
+	save (y, scalex, scaley, scalez) {
+		GAMEFLAGS |= 0x80000
+		GLOBAL_50 = 0
+		GLOBAL_51 = 8.0
+		GLOBAL_52 = 92.0
+		GLOBAL_53 = 132.0
+		SetScale(2.0S)
+		LoadAnim2([BP1IV], [BS1IG])
+		LoadAnim2([BP2IV], [BS1IG])
+		LoadAnim2([BP3IV], [BS1IG])
+		LoadAnim2([BP4IV], [BS1IG])
+		LoadAnim2([BL1IV], [BS1IG])
+		LoadAnim2([BL2IV], [BS1IG])
+		LoadAnim2([BL3IV], [BS1IG])
+		FadeFromBlack()
+		do (var i = 0) {
+			playframes(BRIO_PREPARE_1, 0, 15.0)
+			playframes(BRIO_PREPARE_2, 0, 15.0)
+			if (i == 4.0) {
+				FadeToBlack()
+			}
+			if (!rand(3)) {
+				playframes(BRIO_LOOK_1, 0, 28.0)
+				playframes(BRIO_LOOK_2, 0, 19.0)
+				playframes(BRIO_LOOK_3, 0, 10.0)
+			}
+			else {
+				playframes(BRIO_PREPARE_3, 0, 27.0)
+				playframes(BRIO_PREPARE_4, 0, 26.0)
+			}
+			i += 1.0
+		} while (i < 5.0)
+		playnull(2)
+		DeloadAnim([BP1IV], [BS1IG])
+		DeloadAnim([BP2IV], [BS1IG])
+		DeloadAnim([BP3IV], [BS1IG])
+		DeloadAnim([BP4IV], [BS1IG])
+		DeloadAnim([BL1IV], [BS1IG])
+		DeloadAnim([BL2IV], [BS1IG])
+		DeloadAnim([BL3IV], [BS1IG])
+	}
+	sendevent(Event12, child)
+}
+
+sub ChiefSpinPlayFrame () {
+	if (animframe == 9.0) {
+		playframe(0)
+	}
+	else {
+		playframe(animframe + 1.0)
+	}
+}
+
+sub EpilogueBossChief () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 5.0)
+	SetScale(1.2S)
+	GAMEFLAGS |= 0x80000
+	GLOBAL_50 = 0
+	GLOBAL_51 = 8.0
+	GLOBAL_52 = 92.0
+	GLOBAL_53 = 132.0
+	LoadAnim2([ChA3V], [CheIG])
+	LoadAnim2([ChA2V], [CheIG])
+	LoadAnim2([ChA4V], [CheIG])
+	FadeFromBlack()
+	statusb |= FLAG_ROT_Y2
+	trotx = 270deg
+	do (var i = 0) {
+		playframes(CHIEF_ATTACK_1, 0, 17.0)
+		SoundPlayDefault([YelaA], .2V)
+		playframeslt(CHIEF_ATTACK_2, 0, 2.0)
+		SoundPlayDefault([StWaA], .6V + rand(.1V))
+		playframeslt(2.0, 21.0)
+		playframe(21.0, 0.9s)
+		setanim(CHIEF_ATTACK_3, 9.0)
+		do (var start = frametime) {
+			troty = roty + 180deg
+			ChiefSpinPlayFrame()
+		} while (frametime - start < 1.3s)
+		do {
+			troty = atan2(player->trans) - 72deg
+			ChiefSpinPlayFrame()
+		} until (STATUS_REACHED_TROT)
+		troty = atan2(player->trans)
+		if (i == 2.0) {
+			FadeToBlack()
+		}
+		playframeslt(9.0, 17.0)
+		i += 1.0
+	} while (i < 3.0)
+	playnull(2)
+	statusb &= ~FLAG_ROT_Y2
+	sendevent(Event12, child)
+	DeloadAnim([ChA3V], [CheIG])
+	DeloadAnim([ChA2V], [CheIG])
+	DeloadAnim([ChA4V], [CheIG])
+}
+
+sub EpilogueBossRoo () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 4.0)
+	GAMEFLAGS |= 0x80000
+	GLOBAL_50 = 0
+	GLOBAL_51 = 8.0
+	GLOBAL_52 = 92.0
+	GLOBAL_53 = 132.0
+	save (statusb, scalex, scaley, scalez, y) {
+		SetScale(1.2S)
+		groundy = y
+		statusb = FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | 0x4000
+		LoadAnim2([RS1IV], [RS1IG])
+		FadeFromBlack()
+		do (var i = 0) {
+			vely = 17m
+			if (i == 11.0) {
+				FadeToBlack()
+			}
+			SoundPlayDefault([rjpnA], 0.2V + rand(0.1V))
+			playframes(ROO_STANCE, 0, 25.0)
+			do {
+				playframe()
+			} until (STATUS_GROUNDLAND)
+			i += 1.0
+		} while (i < 12.0)
+		playnull(2)
+	}
+	sendevent(Event12, child)
+	DeloadAnim([RS1IV], [RS1IG])
+}
+
+sub EpilogueBossKong () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 1.0)
+	save (vely) {
+		save (vely) {
+			LoadAnim2([KS1IV], [KS1IG])
+			LoadAnim2([KS2IV], [KS1IG])
+			LoadAnim2([KS3IV], [KS1IG])
+			LoadAnim2([KS4IV], [KS1IG])
+			LoadAnim2([KS5IV], [KS1IG])
+			LoadAnim2([KS6IV], [KS1IG])
+			LoadAnim2([KS7IV], [KS1IG])
+			LoadAnim2([KS8IV], [KS1IG])
+			FadeFromBlack()
+			do (var i = 0) {
+				playframes(KONG_STANCE_1, 0, 23.0)
+				wait(1s/3)
+				playframes(KONG_STANCE_2, 0, 20.0)
+				playframes(KONG_STANCE_3, 0, 7.0)
+				wait(1s/3)
+				playframes(KONG_STANCE_4, 0, 22.0)
+				playframes(KONG_STANCE_5, 0, 24.0)
+				playframes(KONG_STANCE_6, 0, 14.0)
+				wait(1s/3)
+				playframes(KONG_STANCE_7, 0, 20.0)
+				if (i == 2.0) {
+					FadeToBlack()
+				}
+				playframes(KONG_STANCE_8, 0, 9.0)
+				i += 1.0
+			} while (i < 3.0)
+		}
+		playnull(2)
+		sendevent(Event12, child)
+		DeloadAnim([KS1IV], [KS1IG])
+		DeloadAnim([KS2IV], [KS1IG])
+		DeloadAnim([KS3IV], [KS1IG])
+		DeloadAnim([KS4IV], [KS1IG])
+		DeloadAnim([KS5IV], [KS1IG])
+		DeloadAnim([KS6IV], [KS1IG])
+		DeloadAnim([KS7IV], [KS1IG])
+		DeloadAnim([KS8IV], [KS1IG])
+	}
+}
+
+sub EpilogueBossPinstripe () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 6.0)
+	GAMEFLAGS |= 0x80000
+	GLOBAL_50 = 0
+	GLOBAL_51 = 8.0
+	GLOBAL_52 = 92.0
+	GLOBAL_53 = 132.0
+	save (y, scalex, scaley, scalez) {
+		PinstripeVoice = 0
+		SetScale(1.5S)
+		LoadAnim2([PiGIV], [PinIG])
+		FadeFromBlack()
+		do (var i = 0) {
+			if (i == 15.0) {
+				FadeToBlack()
+			}
+			setanim(PINSTRIPE_GUN, -1.0)
+			do (var j = 0) {
+				animframe += 1.0
+				playframe()
+				if (PinstripeVoice) {
+					voice = PinstripeVoice
+					soundfadet(0.1s, voice)
+					soundfadev(0, voice, 3)
+				}
+				soundpitch(3.84+rand(0.32))
+				soundsetup(0, 9)
+				soundplay([MGn8A], 0.14V + rand(0.02V))
+				PinstripeVoice = voice
+				animframe += 1.0
+				playframe()
+				animframe += 1.0
+				playframe()
+				j += 1.0
+			} while (j < 8.0)
+			i += 1.
+		} while (i < 16.0)
+		playnull(2)
+		sendevent(Event12, child)
+		DeloadAnim([PiGIV], [PinIG])
+	}
+}
+
+sub EpilogueBossCortex () {
+	spawn(WinGC, S_CREDITS_MASTER, 1, 3.0)
+	GAMEFLAGS |= 0x80000
+	GLOBAL_50 = 0
+	GLOBAL_51 = 8.0
+	GLOBAL_52 = 92.0
+	GLOBAL_53 = 132.0
+	save (x, roty) {
+		y += 2.5m
+		z -= 1m
+		x -= 0.2m
+		roty = -2deg
+		LoadAnim2([CI1IV], [CS1IG])
+		LoadAnim2([CI2IV], [CS1IG])
+		LoadAnim2([CI3IV], [CS1IG])
+		LoadAnim2([CI4IV], [CS1IG])
+		LoadAnim2([CI5IV], [CS1IG])
+		LoadAnim2([CI6IV], [CS1IG])
+		LoadAnim2([CI7IV], [CS1IG])
+		LoadAnim2([CI8IV], [CS1IG])
+		FadeFromBlack()
+		SoundPitchDefault()
+		soundfadet(3s)
+		soundfadev(0.15V, 0, 2)
+		soundplay([sctvA], 0)
+		playframes(CORTEX_INTRO_1, 0, 19.0)
+		playframes(CORTEX_INTRO_2, 0, 19.0)
+		playframes(CORTEX_INTRO_3, 0, 19.0)
+		playframes(CORTEX_INTRO_4, 0, 19.0)
+		playframes(CORTEX_INTRO_5, 0, 19.0)
+		playframes(CORTEX_INTRO_6, 0, 19.0)
+		playframes(CORTEX_INTRO_7, 0, 19.0)
+		playframes(CORTEX_INTRO_8, 0, 9.0)
+		playframesback(CORTEX_INTRO_8, 8.0, 0)
+		playframesback(CORTEX_INTRO_7, 19.0, 0)
+		soundfadet(3s, voice)
+		soundfadev(0, voice, 3)
+		playframesback(CORTEX_INTRO_6, 19.0, 0)
+		playframesback(CORTEX_INTRO_5, 19.0, 0)
+		playframesback(CORTEX_INTRO_4, 19.0, 0)
+		playframesback(CORTEX_INTRO_3, 19.0, 0)
+		playframesback(CORTEX_INTRO_2, 19.0, 0)
+		FadeToBlack()
+		playframesback(CORTEX_INTRO_1, 19.0, 0)
+		playnull(2)
+		sendevent(Event12, child)
+		DeloadAnim([CI1IV], [CS1IG])
+		DeloadAnim([CI2IV], [CS1IG])
+		DeloadAnim([CI3IV], [CS1IG])
+		DeloadAnim([CI4IV], [CS1IG])
+		DeloadAnim([CI5IV], [CS1IG])
+		DeloadAnim([CI6IV], [CS1IG])
+		DeloadAnim([CI7IV], [CS1IG])
+		DeloadAnim([CI8IV], [CS1IG])
+	}
+}
+
+// https://all-things-andy-gavin.com/2011/03/12/making-crash-bandicoot-gool-part-9/
+expr CreditsLineHeight = G0x18
+state Credit_Line_Stance { // 9
+	statusc 0
+	code (text_frame, text_y, font) {
+		statusb = FLAG_INVISIBLE | FLAG_2D | 0x400
+		if (font == 1) {
+			invincible = FONT_SMALL
+			SetScale(0.64, 1.015/2, 256.0)
+			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF)
+		}
+		else if (font == 2) {
+			SetScale(0.64, 1.015, 256.0)
+			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF)
+		}
+		else {
+			zindex = 2000
+			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0xC8, 0xC8, 0xC8)
+			SetScale(0.64, 1.015, 256.0)
+		}
+		setanim(TEXT)
+		vely = text_y
+		y = parent->y - vely
+		sleepframe(text_frame)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			y = parent->y - vely
+			if (y > -140.0) {
+				statusb &= ~FLAG_INVISIBLE
+				changestateif(Die_Fast, y > 140.0)
+			}
+		}
+	}
+}
+
+inline sub SpawnCreditLine (frame_num, line) {
+	spawn(WinGC, S_CREDIT_LINE, 1, frame_num, line*CreditsLineHeight, 0)
+	playnull(0.5s)
+}
+
+sub SpawnCredits () {
+	SpawnCreditLine(0.0, 0)
+	SpawnCreditLine(1.0, 4)
+	SpawnCreditLine(2.0, 5)
+	SpawnCreditLine(3.0, 9)
+	SpawnCreditLine(4.0, 10)
+	SpawnCreditLine(5.0, 11)
+	SpawnCreditLine(6.0, 12)
+	SpawnCreditLine(7.0, 13)
+	SpawnCreditLine(8.0, 14)
+	SpawnCreditLine(9.0, 15)
+	SpawnCreditLine(10.0, 16)
+	SpawnCreditLine(11.0, 20)
+	SpawnCreditLine(12.0, 21)
+	SpawnCreditLine(13.0, 23)
+	SpawnCreditLine(14.0, 24)
+	SpawnCreditLine(15.0, 26)
+	SpawnCreditLine(16.0, 27)
+	SpawnCreditLine(17.0, 29)
+	SpawnCreditLine(18.0, 30)
+	SpawnCreditLine(19.0, 34)
+	SpawnCreditLine(20.0, 35)
+	SpawnCreditLine(21.0, 36)
+	SpawnCreditLine(15.0, 38)
+	SpawnCreditLine(22.0, 39)
+	SpawnCreditLine(23.0, 41)
+	SpawnCreditLine(24.0, 42)
+	SpawnCreditLine(25.0, 44)
+	SpawnCreditLine(26.0, 45)
+	SpawnCreditLine(27.0, 47)
+	SpawnCreditLine(28.0, 48)
+	SpawnCreditLine(29.0, 49)
+	SpawnCreditLine(30.0, 50)
+	SpawnCreditLine(31.0, 52)
+	SpawnCreditLine(32.0, 53)
+	SpawnCreditLine(33.0, 54)
+	SpawnCreditLine(34.0, 55)
+	SpawnCreditLine(35.0, 57)
+	SpawnCreditLine(36.0, 58)
+	SpawnCreditLine(37.0, 60)
+	SpawnCreditLine(38.0, 61)
+	SpawnCreditLine(39.0, 63)
+	SpawnCreditLine(40.0, 64)
+	SpawnCreditLine(41.0, 66)
+	SpawnCreditLine(42.0, 67)
+	SpawnCreditLine(43.0, 69)
+	SpawnCreditLine(44.0, 70)
+	SpawnCreditLine(45.0, 72)
+	SpawnCreditLine(46.0, 73)
+	SpawnCreditLine(47.0, 74)
+	SpawnCreditLine(48.0, 75)
+	SpawnCreditLine(49.0, 76)
+	SpawnCreditLine(50.0, 77)
+	SpawnCreditLine(51.0, 78)
+	SpawnCreditLine(52.0, 79)
+	SpawnCreditLine(53.0, 80)
+	SpawnCreditLine(54.0, 81)
+	SpawnCreditLine(55.0, 82)
+	SpawnCreditLine(56.0, 83)
+	SpawnCreditLine(57.0, 84)
+	SpawnCreditLine(58.0, 85)
+	SpawnCreditLine(59.0, 86)
+	SpawnCreditLine(60.0, 87)
+	SpawnCreditLine(61.0, 88)
+	SpawnCreditLine(62.0, 89)
+	SpawnCreditLine(63.0, 90)
+	SpawnCreditLine(64.0, 91)
+	SpawnCreditLine(65.0, 92)
+	SpawnCreditLine(66.0, 93)
+	SpawnCreditLine(67.0, 94)
+	SpawnCreditLine(68.0, 95)
+	SpawnCreditLine(69.0, 96)
+	SpawnCreditLine(70.0, 97)
+	SpawnCreditLine(71.0, 99)
+	SpawnCreditLine(72.0, 100)
+	SpawnCreditLine(73.0, 101)
+	SpawnCreditLine(74.0, 104)
+	SpawnCreditLine(75.0, 105)
+	SpawnCreditLine(13.0, 107)
+	SpawnCreditLine(76.0, 108)
+	SpawnCreditLine(77.0, 110)
+	SpawnCreditLine(78.0, 111)
+	SpawnCreditLine(23.0, 113)
+	SpawnCreditLine(79.0, 114)
+	SpawnCreditLine(25.0, 116)
+	SpawnCreditLine(80.0, 117)
+	SpawnCreditLine(81.0, 119)
+	SpawnCreditLine(82.0, 120)
+	SpawnCreditLine(43.0, 122)
+	SpawnCreditLine(83.0, 123)
+	SpawnCreditLine(84.0, 125)
+	SpawnCreditLine(85.0, 126)
+	SpawnCreditLine(45.0, 128)
+	SpawnCreditLine(86.0, 129)
+	SpawnCreditLine(87.0, 130)
+	SpawnCreditLine(88.0, 131)
+	SpawnCreditLine(89.0, 132)
+	SpawnCreditLine(90.0, 133)
+	SpawnCreditLine(91.0, 134)
+	SpawnCreditLine(92.0, 135)
+	SpawnCreditLine(93.0, 136)
+	SpawnCreditLine(94.0, 137)
+	SpawnCreditLine(95.0, 138)
+	SpawnCreditLine(96.0, 139)
+	SpawnCreditLine(74.0, 142)
+	SpawnCreditLine(97.0, 143)
+	SpawnCreditLine(77.0, 145)
+	SpawnCreditLine(98.0, 146)
+	SpawnCreditLine(23.0, 148)
+	SpawnCreditLine(99.0, 149)
+	SpawnCreditLine(25.0, 151)
+	SpawnCreditLine(100.0, 152)
+	SpawnCreditLine(41.0, 154)
+	SpawnCreditLine(101.0, 155)
+	SpawnCreditLine(102.0, 157)
+	SpawnCreditLine(103.0, 158)
+	SpawnCreditLine(104.0, 159)
+	SpawnCreditLine(45.0, 161)
+	SpawnCreditLine(105.0, 162)
+	SpawnCreditLine(71.0, 165)
+	SpawnCreditLine(106.0, 166)
+	SpawnCreditLine(107.0, 170)
+	SpawnCreditLine(108.0, 171)
+	SpawnCreditLine(109.0, 172)
+	SpawnCreditLine(4.0, 173)
+	SpawnCreditLine(5.0, 174)
+	SpawnCreditLine(6.0, 175)
+	SpawnCreditLine(7.0, 176)
+	SpawnCreditLine(8.0, 177)
+	SpawnCreditLine(9.0, 178)
+	SpawnCreditLine(14.0, 179)
+	SpawnCreditLine(16.0, 180)
+	SpawnCreditLine(110.0, 181)
+	SpawnCreditLine(111.0, 185)
+	SpawnCreditLine(112.0, 186)
+	SpawnCreditLine(113.0, 187)
+	SpawnCreditLine(110.0, 188)
+	SpawnCreditLine(114.0, 190)
+	SpawnCreditLine(115.0, 191)
+	SpawnCreditLine(116.0, 195)
+	SpawnCreditLine(117.0, 196)
+	SpawnCreditLine(118.0, 198)
+	SpawnCreditLine(119.0, 199)
+	SpawnCreditLine(120.0, 203)
+	SpawnCreditLine(121.0, 204)
+	SpawnCreditLine(122.0, 205)
+	SpawnCreditLine(123.0, 207)
+	SpawnCreditLine(124.0, 208)
+	SpawnCreditLine(125.0, 209)
+	SpawnCreditLine(71.0, 213)
+	SpawnCreditLine(126.0, 215)
+	SpawnCreditLine(127.0, 216)
+	SpawnCreditLine(128.0, 217)
+	SpawnCreditLine(129.0, 218)
+	SpawnCreditLine(130.0, 219)
+	SpawnCreditLine(131.0, 220)
+	SpawnCreditLine(132.0, 221)
+	SpawnCreditLine(133.0, 222)
+	SpawnCreditLine(134.0, 226)
+	SpawnCreditLine(135.0, 227)
+	SpawnCreditLine(136.0, 231)
+	SpawnCreditLine(137.0, 232)
+	SpawnCreditLine(138.0, 233)
+	SpawnCreditLine(139.0, 234)
+	SpawnCreditLine(140.0, 235)
+	SpawnCreditLine(141.0, 236)
+}
+
+expr EpilogueLineHeight = G0xE
+state Credits_Master { // 10
+	statusc 0
+	code (a) {
+		var0 = true
+		statusb = FLAG_INVISIBLE | FLAG_2D
+		SetTrans(0, -200.0, 0)
+		SetRot(0)
+		tpc = 0
+		if (a == 0) {
+			settrans(__Credits_Master_TRANS)
+			SpawnCredits()
+			var0 = false
+		}
+		else if (a == 5.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 142.0, -280.0+EpilogueLineHeight*0, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 143.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 144.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 145.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 146.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 147.0, -280.0+EpilogueLineHeight*4, 2)
+			}
+		}
+		else if (a == 2.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 148.0, -280.0+EpilogueLineHeight*0, 1)
+				spawn(WinGC, S_CREDIT_LINE, 1, 149.0, -280.0+EpilogueLineHeight*1, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 150.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 151.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 152.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 153.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 154.0, -280.0+EpilogueLineHeight*4, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 155.0, -280.0+EpilogueLineHeight*5, 2)
+			}
+		}
+		else if (a == 3.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 156.0, -280.0+EpilogueLineHeight*0, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 157.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 158.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 159.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 160.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 161.0, -280.0+EpilogueLineHeight*4, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 162.0, -280.0+EpilogueLineHeight*5, 2)
+			}
+		}
+		else if (a == 4.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 163.0, -280.0+EpilogueLineHeight*0, 1)
+				spawn(WinGC, S_CREDIT_LINE, 1, 149.0, -280.0+EpilogueLineHeight*2, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 164.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 165.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 166.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 167.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 168.0, -280.0+EpilogueLineHeight*4, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 169.0, -280.0+EpilogueLineHeight*5, 2)
+			}
+		}
+		else if (a == 6.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 170.0, -280.0+EpilogueLineHeight*0, 1)
+				spawn(WinGC, S_CREDIT_LINE, 1, 149.0, -280.0+EpilogueLineHeight*2, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 171.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 172.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 173.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 174.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 175.0, -280.0+EpilogueLineHeight*4, 2)
+			}
+		}
+		else if (a == 1.0) {
+			x = 100.0
+			if (LEVEL == LEVEL_GameWin) {
+				spawn(WinGC, S_CREDIT_LINE, 1, 176.0, -280.0+EpilogueLineHeight*0, 1)
+				spawn(WinGC, S_CREDIT_LINE, 1, 149.0, -280.0+EpilogueLineHeight*2, 1)
+			}
+			else {
+				spawn(WinGC, S_CREDIT_LINE, 1, 177.0, -280.0+EpilogueLineHeight*0, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 178.0, -280.0+EpilogueLineHeight*1, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 179.0, -280.0+EpilogueLineHeight*2, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 180.0, -280.0+EpilogueLineHeight*3, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 181.0, -280.0+EpilogueLineHeight*4, 2)
+				spawn(WinGC, S_CREDIT_LINE, 1, 182.0, -280.0+EpilogueLineHeight*5, 2)
+			}
+		}
+		sleepnull()
+	}
+	event (e, a) {
+		accevcstate(Die_Fast, e == Event12)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			y = spd(y, 50.0)
+			unless (child || var0) {
+				var0 = 2
+				FadeToBlack(0x10)
+				statetime = frametime
+			}
+			if (var0 == 2 && frametime - statetime >= 1s) {
+				GAMESTATE = GAME_STATE_TITLE
+				loadlevel(LEVEL_Map)
+				var0 = true
+			}
+		}
+	}
+}
+
+state End_Master_Tawna_Stance { // 11
+	statusc 0
+	code () {
+		playanim(0, TAWNA_END_1)
+		playanim(0, TAWNA_END_1)
+		do {
+			playanim(0, TAWNA_END_1, 2s)
+			playframes(1.0, 10.0)
+			playanim(0, TAWNA_END_2)
+			playanim(1, TAWNA_END_2)
+			playanim(2, TAWNA_END_2)
+			playanim(3, TAWNA_END_2)
+			playanim(4, TAWNA_END_2, 0.5s)
+			do (var i = 0) {
+				playanim(5, TAWNA_END_2, 0.1s)
+				playanim(4, TAWNA_END_2, 0.1s)
+				i += 1.0
+			} while (i < 3.0)
+			playanim(5, TAWNA_END_2, 0.1s)
+			playanim(6, TAWNA_END_2, 0.5s)
+			playanim(7, TAWNA_END_2)
+			playanim(8, TAWNA_END_2)
+			playanim(9, TAWNA_END_2)
+			playanim(10, TAWNA_END_2)
+			playframes(TAWNA_END_3, 0, 9.0)
+			playanim(10, TAWNA_END_3, 0.5s)
+			playframesback(9.0, 0)
+			playanim(10, TAWNA_END_2)
+			playanim(9, TAWNA_END_2)
+			playanim(8, TAWNA_END_2)
+			playanim(7, TAWNA_END_2)
+			playanim(6, TAWNA_END_2, 0.5s)
+			playanim(5, TAWNA_END_2, 0.1s)
+			do (var i = 0) {
+				playanim(4, TAWNA_END_2, 0.1s)
+				playanim(5, TAWNA_END_2, 0.1s)
+				i += 1.0
+			} while (i < 3.0)
+			playanim(4, TAWNA_END_2, 0.5s)
+			playanim(3, TAWNA_END_2)
+			playanim(2, TAWNA_END_2)
+			playanim(1, TAWNA_END_2)
+			playanim(0, TAWNA_END_2)
+			playframesback(TAWNA_END_1, 10.0, 1.0)
+		} while (1)
+	}
+	trans {
+		changestateif(End_Master_Credits, ZONEFLAGS & 0x10000)
+	}
+}
+
+state End_Master_Credits { // 12
+	statusc 0
+	code () {
+		statusb = 0x40000
+		FadeFromBlack()
+		sleepnull()
+	}
+}
+
+state Blimp_End_Wait_Scene { // 13
+	statusc 0
+	code () {
+		sleepnull()
+	}
+	trans {
+		changestateifn(Blimp_End_Stance, ZONEFLAGS & 0x10000)
+	}
+}
+
+state Blimp_End_Stance { // 14
+	statusc 0
+	code () {
+		spawn(WinGC, S_CREDITS_MASTER, 1, 0)
+		sleepanim(0, BLIMP)
+	}
+	trans {
+		once {
+			SetScale(1.2S)
+		}
+		pathprog += 0.5
+		if (pathprog >= pathlen) {
+			scalex = seek(scalex, 0, 0.005S)
+			scaley = seek(scaley, 0, 0.005S)
+			scalez = seek(scalez, 0, 0.005S)
+			pathprog = pathlen - 1
+		}
+		calcpath()
+		scalex -= .00275S
+		scaley -= .00275S
+		scalez -= .00275S
+	}
+}
+
+inline sub SoundIntroVoice(delay, sound, volume) {
+	soundpitch(4.0)
+	sounddelay(delay)
+	soundplay(sound, volume)
+}
+
+state Intro_Master_Stance { // 15
+	stateflag 0x40001
+	statusc 0
+	code () {
+		if (FADECONTROL == -1) {
+			FadeFromBlack()
+		}
+		statusb = FLAG_2D
+		SoundIntroVoice(1.75s, [B01UA], .7V)
+		SoundIntroVoice(4.65s, [C01UA],  1V)
+		SoundIntroVoice(16.75s,[C02UA],  1V)
+		SoundIntroVoice(21.25s,[B02UA], .65V)
+		SoundIntroVoice(27.7s, [C03UA],  1V)
+		do {
+			playnull()
+		} until (ZONEFLAGS & 0x10000)
+		while (ZONEFLAGS & 0x10000) {
+			playnull()
+		}
+		SoundIntroVoice(0.8s,  [C04UA], 1V)
+		playnull(2s)
+		playnull(1.5s)
+		FadeToBlack()
+		soundstop()
+		playnull(0.3s)
+		spawn(DispC, DispC_S_DEMO_TEXT, 1, 0, -91.0)
+		WaitFadeNull()
+		GAMESTATE = GAME_STATE_TITLE
+		loadlevel(LEVEL_Map)
+		sleepnull()
+	}
+	trans {
+		changestateif(Intro_Master_Skip, buttonbuffer(PAD_START) || buttonbuffer(PAD_SELECT))
+	}
+}
+
+state Intro_Master_Skip { // 16
+	stateflag 0x40001
+	statusc 0
+	code () {
+		spawn(DispC, DispC_S_DEMO_TEXT, 1, 0, -91.0)
+		playnull(0.1s)
+		GAMESTATE = GAME_STATE_TITLE
+		loadlevel(LEVEL_Map)
+		sleepnull()
+	}
+}
+
+state Intro_Willy_Stance { // 17
+	statusc 0
+	code () {
+		player = objectget(21.0)
+		SetScale(1.7S)
+		z += 600.0
+		y += 100.0
+		statusb = 0x40000
+		SetRot(-90deg, 180deg, 180deg)
+		playanim(11, WILLY_STANCE_1, 1s)
+		do (var i = 0) {
+			playanim(11, WILLY_STANCE_1, 0.15s)
+			scalex = -scalex
+			playanim(0, WILLY_STANCE_1)
+			playanim(1, WILLY_STANCE_1)
+			playanim(2, WILLY_STANCE_1)
+			playanim(3, WILLY_STANCE_1)
+			playanim(4, WILLY_STANCE_1)
+			if (i == 5.0) {
+				soundpitch(4.0)
+				sounddecay(0.75)
+				soundfadet(1s)
+				soundfadev(.15V)
+				soundplay([ev2UA], .03V)
+				EvolveVoice = voice
+				sendevent(EventTriggered, player)
+			}
+			playanim(5, WILLY_STANCE_1, 1s)
+			playanim(6, WILLY_STANCE_1)
+			playanim(7, WILLY_STANCE_1)
+			playanim(8, WILLY_STANCE_1)
+			playanim(9, WILLY_STANCE_1)
+			playanim(10, WILLY_STANCE_1)
+			i += 1.0
+		} while (i < 6.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 3, 0, 1.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 2.0, 3.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 4.0, 5.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 6.0, 7.0)
+		spawn(PoRoC, PoRoC_S_WILLY_SHOCK, 1, 8.0, 9.0)
+		var0 = 30.0
+		do {
+			SetColor(0xFF, 0xFF, 0xFF)
+			playanim(0, WILLY_SHOCK)
+			SetColor(2.0, 2.0, 2.0)
+			playanim(1, WILLY_SHOCK)
+			playanim(2, WILLY_SHOCK)
+			SetColor(50, 50, 50)
+			playanim(0, WILLY_SHOCK)
+			playanim(1, WILLY_SHOCK)
+			playanim(2, WILLY_SHOCK)
+			if (EvolveVoice) {
+				var0 -= 1.0
+				if (var0 <= 0) {
+					voice = EvolveVoice
+					soundfadet(0.1s, voice)
+					soundfadev(0, voice, 3)
+					EvolveVoice = 0
+				}
+			}
+		} while (1)
+	}
+}
+
+state Intro_Brio_Stance { // 18
+	statusc 0
+	code () {
+		zindex = -30
+		statusb = 0x40000
+		LoadAnim([BP1IV], [BS1IG])
+		LoadAnim([BP2IV], [BS1IG])
+		LoadAnim([BP3IV], [BS1IG])
+		LoadAnim([BP4IV], [BS1IG])
+		do {
+			playnull()
+		} until (tryload([BS1IG]) && tryload([BP4IV]) && tryload([BS1IG]) && tryload([BP3IV]) && tryload([BS1IG]) && tryload([BP2IV]) && tryload([BS1IG]) && tryload([BP1IV]))
+		x += 0.5m
+		y += 1m
+		z += 1m
+		roty = 90deg
+		do {
+			playframes(BRIO_PREPARE_1, 0, 15.0)
+			playframes(BRIO_PREPARE_2, 0, 15.0)
+			playframes(BRIO_PREPARE_3, 0, 27.0)
+			playframes(BRIO_PREPARE_4, 0, 26.0)
+		} while (1)
+	}
+}
+
+state Intro_Cortex_Stance { // 19
+	statusc 0
+	code () {
+		SetScale(1.1S)
+		x += -0.5m
+		y += 1.25m
+		playanim(0, CORTEX_SHOUT, 2s)
+		playanim(0, CORTEX_SHOUT, 2s)
+		playanim(0, CORTEX_SHOUT, 1s)
+		velz = 0.5m
+		z -= 2m
+		troty = -45deg
+		trotx = 7.5deg
+		zindex = 45
+		statusb = FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | 0x40000
+		sleepframes(CORTEX_SHOUT, 0, 19.0)
+	}
+}
+
+state Willy_Chair_Stance { // 20
+	statusc 0
+	code () {
+		statusb = 0x40000
+		zindex = -10
+		roty = 180deg
+		SetScale(0.7S)
+		spawn(WinGC, S_CHAIR_WILLY)
+		sleepanim(0, CHAIR)
+	}
+}
+
+state Chair_Willy_Stance { // 21
+	statusc 0
+	code () {
+		statusb = parent->statusb
+		zindex = parent->zindex
+		roty = parent->roty
+		scalex = parent->scalex
+		scaley = parent->scaley
+		scalez = parent->scalez
+		sleepanim(0, WILLY_CHAIR)
+	}
+	trans {
+		y = parent->y
+	}
+}
+
+state Brio_Lever_Stance { // 22
+	statusc 0
+	code () {
+		SetScale(1.25S)
+		roty = -60deg
+		statusb = 0x40000
+		player = objectget(20.0)
+		var0 = 0
+		do {
+			playframes(BRIO_LEVER, 0, 14.0)
+			sounddecay(0.5625)
+			soundpitch(3.84+rand(0.32))
+			soundplay([cc2UA], .15V)
+			do (var i = 0) {
+				if (var0 > 1.0) {
+					player->y += 0.05m
+				}
+				playframe()
+				i += 1.0
+			} while (i < 20.0)
+			playframesback(BRIO_LEVER, 13.0, 0)
+			playanim(0, BRIO_LEVER, .5s)
+			var0 += 1.0
+		} while (1)
+	}
+	trans {
+		once {
+			CortexVortexVoice = 0
+		}
+		if (frametime - statetime >= 11.4s && !CortexVortexVoice) {
+			soundpitch(4.0)
+			sounddecay(0.75)
+			soundplay([cvxUA], .6V)
+			CortexVortexVoice = voice
+		}
+		if (frametime - statetime >= 12.4s && !child) {
+			spawn(WinGC, S_CORTEX_VORTEX_LIGHT, 1, 0)
+		}
+	}
+}
+
+inline sub SoundBuzz() {
+	statusb |= FLAG_2D
+	if (BuzzState) {
+		soundpitch(4.0)
+		soundplay([buzUA], .15V)
+		BuzzState = 0
+	}
+	else {
+		soundpitch(4.0)
+		soundplay([buzUA], .03V)
+		BuzzState = 1
+	}
+	statusb &= ~FLAG_2D
+}
+
+inline sub BuzzTrans() {
+	if (!time(16)) {
+		SoundBuzz()
+	}
+}
+
+state Willy_Escape_Wait { // 23
+	statusc 0
+	code () {
+		playnull(1.5s)
+		changestate(Willy_Escape_Stance)
+	}
+	trans {
+		once {
+			BuzzState = 0
+		}
+		BuzzTrans()
+	}
+}
+
+inline sub AnimWillyWalk(vol) {
+	playanim_nm(0, WILLY_WALK)
+	playanim_nm(1, WILLY_WALK)
+	playanim_nm(2, WILLY_WALK)
+	playanim_nm(3, WILLY_WALK)
+	playanim_nm(4, WILLY_WALK)
+	playanim_nm(5, WILLY_WALK)
+	playanim_nm(6, WILLY_WALK)
+	playanim_nm(7, WILLY_WALK)
+	playanim_nm(8, WILLY_WALK)
+	playanim_nm(9, WILLY_WALK)
+	SoundPlayDefault([fs10A], vol)
+	playanim_m(0, WILLY_WALK)
+	playanim_m(1, WILLY_WALK)
+	playanim_m(2, WILLY_WALK)
+	playanim_m(3, WILLY_WALK)
+	playanim_m(4, WILLY_WALK)
+	playanim_m(5, WILLY_WALK)
+	playanim_m(6, WILLY_WALK)
+	playanim_m(7, WILLY_WALK)
+	playanim_m(8, WILLY_WALK)
+	playanim_m(9, WILLY_WALK)
+	SoundPlayDefault([fs00A], vol)
+}
+
+state Willy_Escape_Stance { // 24
+	statusc 0
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN
+		trotx = 360deg
+		spawn(WinGC, S_CORTEX_ESCAPE)
+		do {
+			AnimWillyWalk(.1V)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath()
+			pathprog += .1
+			changestateif(Willy_Escape_End, pathprog >= pathlen)
+			BuzzTrans()
+		}
+	}
+}
+
+state Willy_Escape_End { // 25
+	statusc 0
+	code () {
+		sleepnull()
+	}
+}
+
+state Cortex_Escape_Stance { // 26
+	code () {
+		statusb = parent->statusb
+		trotx = parent->trotx
+		pathlen = parent->pathlen
+		entity = parent->entity
+		playnull(0.6s)
+		settrans(__Willy_Escape_Stance_TRANS)
+		sleepframes(CORTEX_RUN, 0, 23.0)
+	}
+}
+
+state Willy_Glass_Stance { // 27
+	code () {
+		do {
+			playnull()
+		} until (ZONEFLAGS & 0x10000)
+		soundpitch(4.0)
+		soundplay([glsUA], 1V)
+		playframes(WILLY_FALL_1, 0, 26.0)
+		soundpitch(16000Hz)
+		sounddelay(2)
+		soundplay([UhoUA], .6V)
+		soundpitch(4.0)
+		sounddelay(.5s)
+		soundplay([fal0A], .4V)
+		playframes(WILLY_FALL_2, 0, 26.0)
+		playframes(WILLY_FALL_3, 0, 5.0)
+		sleep()
+	}
+}
+
+state Intro_Glass { // 28
+	code () {
+		do {
+			playnull()
+		} until (ZONEFLAGS & 0x10000)
+		spawn(WinGC, S_GLASS_SHARD, 63)
+		sleepnull()
+	}
+}
+
+state Glass_Shard_Stance { // 29
+	code () {
+		if (var r = rand(3); r == 0) {
+			SetColor(0xA4, 0xC9, 0xE3)
+		}
+		else if (r == 1) {
+			SetColor(0x6F, 0xA4, 0xAB)
+		}
+		else if (r == 2) {
+			SetColor(0xFF, 0x91, 0x50)
+		}
+		SetScale(.2S + rand(.3S), scalex, scalex)
+		if (!rand(2)) {
+			setanim(SHARD_1)
+		}
+		else {
+			setanim(SHARD_2)
+		}
+		x += randi(-2m, 2m)
+		y += randi(-2.5m, 2.5m)
+		velz = 0+rand(15m)
+		SetRot(rand(360deg), rand(360deg), rand(360deg))
+		SetTRot(rand(160deg), rand(160deg), 0)
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		playframe(0, 1s)
+	}
+	trans {
+		SetRot(spd(rotx, trotx), spd(roty, troty), spd(rotz, trotz))
+		invincible = 0
+		invincibletime = frametime
+		if (!rand(6)) {
+			SetInvincible(4)
+		}
+	}
+}
+
+state Intro_Tawna_Stance { // 30
+	code () {
+		SetScale(1.3S)
+		while (ZONEFLAGS & 0x10000) {
+			playnull()
+		}
+		statusb = 0x40000
+		playanim(0, TAWNA_PRISONER_1, .5s)
+		playframes(TAWNA_PRISONER_1, 0, 9.0)
+		playanim(0, TAWNA_PRISONER_2, .3s)
+		playframes(TAWNA_PRISONER_2, 0, 9.0)
+		sleep()
+	}
+}
+
+state Shock_Beam_Stance { // 31
+	code () {
+		sleepnull()
+	}
+	event (e, a) {
+		accevcstate(Shock_Beam_Enabled, e == EventTriggered)
+	}
+}
+
+state Shock_Beam_Enabled { // 32
+	code () {
+		do {
+			playnull(1s/3)
+			spawn(WinGC, S_SHOCK)
+		} while (1)
+	}
+}
+
+state Shock_Stance { // 33
+	statusc 0
+	code () {
+		CopyParentPath()
+		rotz = 90deg
+		zindex = 25
+		sleepframes(SHOCK_STRAIGHT, 0, 3.0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath()
+			pathprog += .15
+			changestateif(Die_Fast, pathprog >= pathlen)
+		}
+	}
+}
+
+state Cortex_Vortex_Light_Stance { // 34
+	statusc 0
+	code (a) {
+		statusb = FLAG_INVISIBLE
+		WaitNull(a)
+		x = 0
+		rotx = 0
+		y = 0
+		roty = 0
+		z = 0
+		rotz = 0
+		x += 32.0
+		statusb = FLAG_2D | 0x40000
+		zindex = 1000
+		SetScale(23.945, 15.215, 9600.0)
+		playanim(0, CORTEX_VORTEX_LIGHT)
+		playanim(1, CORTEX_VORTEX_LIGHT)
+		playanim(2, CORTEX_VORTEX_LIGHT)
+		playanim(3, CORTEX_VORTEX_LIGHT)
+		playanim(4, CORTEX_VORTEX_LIGHT)
+		playanim(5, CORTEX_VORTEX_LIGHT)
+		playanim(6, CORTEX_VORTEX_LIGHT)
+		playanim(7, CORTEX_VORTEX_LIGHT, 2s)
+		playnull(1s)
+	}
+}
+
+state Background_Stance { // 35
+	stateflag 0x60001
+	statusc 0x5000
+	code () {
+		LoadAnim2([Obg0V], [Obg0G])
+		SetTrans(0, 0, 0)
+		statusb = FLAG_2D
+		zindex = -1000
+		SetScale(.6S)
+		SetRot(randi(-25deg, 25deg), randi(-25deg, 25deg), 0)
+		sleepanim(0, BACKGROUND)
+	}
+	event (e, a) {
+		if (e == Event14) {
+			DeloadAnim([Obg0V], [Obg0G])
+			accevcstate(Die_Fast)
+		}
+	}
+}
+

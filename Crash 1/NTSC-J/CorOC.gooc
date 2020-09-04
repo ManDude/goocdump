@@ -1,0 +1,638 @@
+#gool CorOC 50 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim BLIMP [Bl1vV] 1
+#anim BLASTER_BULLET [Bb1cV] 1
+
+#sprite BLASTER_SHOCK_ORANGE [Cr2vT]
+#tex 0x803C00 1 1 0 6 0 16 64 64
+#tex 0x803C00 0 1 6 8 24 16 64 32
+#tex 0x803C00 0 1 7 8 24 8 64 32
+#tex 0x803C00 0 1 8 8 32 24 64 32
+#tex 0x803C00 0 1 9 8 32 16 64 32
+#tex 0x803C00 0 1 10 8 32 8 64 32
+#tex 0x803C00 0 1 11 8 40 24 64 32
+#tex 0x803C00 0 1 12 8 40 16 64 32
+#tex 0x803C00 0 1 13 8 40 8 64 32
+#tex 0x803C00 0 1 14 8 48 24 64 32
+
+#sprite BLASTER_SHOCK_BLUE [Cr2vT]
+#tex 0x001E80 1 1 0 6 0 16 64 64
+#tex 0x001E80 0 1 6 8 24 16 64 32
+#tex 0x001E80 0 1 7 8 24 8 64 32
+#tex 0x001E80 0 1 8 8 32 24 64 32
+#tex 0x001E80 0 1 9 8 32 16 64 32
+#tex 0x001E80 0 1 10 8 32 8 64 32
+#tex 0x001E80 0 1 11 8 40 24 64 32
+#tex 0x001E80 0 1 12 8 40 16 64 32
+#tex 0x001E80 0 1 13 8 40 8 64 32
+#tex 0x001E80 0 1 14 8 48 24 64 32
+
+#sprite BLASTER_SHOCK_GREEN [Cr2vT]
+#tex 0x006E00 1 1 0 6 0 16 64 64
+#tex 0x006E00 0 1 6 8 24 16 64 32
+#tex 0x006E00 0 1 7 8 24 8 64 32
+#tex 0x006E00 0 1 8 8 32 24 64 32
+#tex 0x006E00 0 1 9 8 32 16 64 32
+#tex 0x006E00 0 1 10 8 32 8 64 32
+#tex 0x006E00 0 1 11 8 40 24 64 32
+#tex 0x006E00 0 1 12 8 40 16 64 32
+#tex 0x006E00 0 1 13 8 40 8 64 32
+#tex 0x006E00 0 1 14 8 48 24 64 32
+
+#sprite BLASTER_SHOCK_PURPLE [Cr2vT]
+#tex 0x640064 1 1 0 6 0 16 64 64
+#tex 0x640064 0 1 6 8 24 16 64 32
+#tex 0x640064 0 1 7 8 24 8 64 32
+#tex 0x640064 0 1 8 8 32 24 64 32
+#tex 0x640064 0 1 9 8 32 16 64 32
+#tex 0x640064 0 1 10 8 32 8 64 32
+#tex 0x640064 0 1 11 8 40 24 64 32
+#tex 0x640064 0 1 12 8 40 16 64 32
+#tex 0x640064 0 1 13 8 40 8 64 32
+#tex 0x640064 0 1 14 8 48 24 64 32
+
+#sprite HOVERBOARD_SMOKE [Cr2vT]
+#tex 0x646464 1 2 0 6 48 16 32 32
+#tex 0x5A5A5A 1 2 0 6 48 16 32 32
+#tex 0x505050 1 2 0 6 48 16 32 32
+#tex 0x464646 1 2 0 6 48 16 32 32
+#tex 0x403C3C 1 2 0 6 48 16 32 32
+#tex 0x303030 1 2 0 6 48 16 32 32
+#tex 0x202020 1 2 0 6 48 16 32 32
+#tex 0x1C1C1C 1 2 0 6 48 16 32 32
+#tex 0x181818 1 2 0 6 48 16 32 32
+#tex 0x121212 1 2 0 6 48 16 32 32
+#tex 0x0C0C0C 1 2 0 6 48 16 32 32
+#tex 0x060606 1 2 0 6 48 16 32 32
+#tex 0x030303 1 2 0 6 48 16 32 32
+#tex 0x010101 1 2 0 6 48 16 32 32
+
+#sprite CASTLE_SMOKE [Cr2vT]
+#tex 0x646464 1 2 0 6 48 8 32 32
+#tex 0x5A5A5A 1 2 0 6 48 8 32 32
+#tex 0x505050 1 2 0 6 48 8 32 32
+#tex 0x464646 1 2 0 6 48 8 32 32
+#tex 0x403C3C 1 2 0 6 48 8 32 32
+#tex 0x303030 1 2 0 6 48 8 32 32
+#tex 0x202020 1 2 0 6 48 8 32 32
+#tex 0x1C1C1C 1 2 0 6 48 8 32 32
+#tex 0x181818 1 2 0 6 48 8 32 32
+#tex 0x121212 1 2 0 6 48 8 32 32
+#tex 0x0C0C0C 1 2 0 6 48 8 32 32
+#tex 0x060606 1 2 0 6 48 8 32 32
+#tex 0x030303 1 2 0 6 48 8 32 32
+#tex 0x010101 1 2 0 6 48 8 32 32
+
+#sprite EXPLOSION [WillT]
+#tex 0x9C9C9C 1 1 0 3 0 4 32 16
+#tex 0x9C9C9C 1 1 0 3 8 4 32 16
+#tex 0x9C9C9C 1 1 0 3 16 4 32 16
+#tex 0x9C9C9C 1 1 0 3 24 4 32 16
+#tex 0x9C9C9C 1 1 0 3 32 4 32 16
+#tex 0x9C9C9C 1 1 0 3 40 4 32 16
+#tex 0x9C9C9C 1 1 0 3 48 4 32 16
+#tex 0x9C9C9C 1 1 0 3 56 20 32 16
+#tex 0x9C9C9C 0 1 5 8 96 24 32 32
+#tex 0x888888 0 1 5 8 96 24 32 32
+#tex 0x747474 0 1 5 8 96 24 32 32
+#tex 0x606060 0 1 5 8 96 24 32 32
+#tex 0x4C4C4C 0 1 5 8 96 24 32 32
+#tex 0x383838 0 1 5 8 96 24 32 32
+#tex 0x242424 0 1 5 8 96 24 32 32
+#tex 0x1A1A1A 0 1 5 8 96 24 32 32
+#tex 0x101010 0 1 5 8 96 24 32 32
+#tex 0x060606 0 1 5 8 96 24 32 32
+
+#sprite CASTLE_FIRE [Cr2vT]
+#tex 0x808080 0 1 0 9 72 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 72 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 76 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 76 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 76 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 80 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 80 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 80 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 84 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 84 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 84 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 88 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 88 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 88 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 92 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 92 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 92 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 96 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 96 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 96 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 100 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 100 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 100 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 104 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 104 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 104 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 108 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 108 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 108 8 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 112 24 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 112 16 32 32 ! 2 1
+#tex 0x808080 0 1 0 9 112 8 32 32 ! 2 1
+
+#spawn S_BLIMP                    Blimp
+#spawn S_BULLET_PATH              Bullet_Path
+#spawn S_BULLET_GREEN             Bullet_Green
+#spawn S_BULLET_BLUE              Bullet_Blue
+#spawn S_BULLET_ORANGE            Bullet_Orange
+#spawn S_BULLET_PURPLE            Bullet_Green
+#spawn S_BULLET_SPARK             Bullet_Spark
+#spawn S_BULLET_SPARK_SMALL       Bullet_Spark_Small
+#spawn S_CASTLE_EXPLOSION         Castle_Explosion_Spawner
+#spawn S_HOVERBOARD_SMOKE         Hoverboard_Smoke
+#spawn S_CASTLE_SMOKE             Castle_Smoke
+#spawn S_CASTLE                   Castle_Master
+#spawn S_EXPLOSION_PARTICLE       Explosion_Particle
+#spawn S_BULLET_ORANGE_TARGET     Bullet_Orange
+
+var BulletPathSpeed, BulletSize, BulletShockType, BossHealth
+
+state Blimp { // 0
+	code () {
+		statusb = 0x40000
+		zindex = 24
+		sleepanim(0, BLIMP)
+	}
+}
+
+state Bullet_Path { // 1
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, BLASTER_BULLET)
+	}
+}
+
+inline sub SetBulletVel(tx, ty, tz, ts) {
+	velx = (tx-x) * 1s / ts
+	vely = (ty-y) * 1s / ts
+	velz = (tz-z) * 1s / ts
+}
+
+inline sub SetBulletVel(tx, ty, tz) {
+	SetBulletVel(tx, ty, tz, 1s)
+}
+
+inline sub SetBulletVel2(tx, ty, tz) {
+	SetBulletVel(tx, ty, tz, 0.5s)
+}
+
+inline sub SetBulletVel6(tx, ty, tz) {
+	SetBulletVel(tx, ty, tz, 1s/6)
+}
+
+inline sub BulletTransCommon() {
+	rotx += 30deg
+	rotz += 5deg
+}
+
+state Bullet_Orange { // 2
+	statusc 0
+	code (tx) {
+		getvert(vtrans, creator, 0)
+		density = 0.2m
+		SetColor(0xFF, 0, 0xFF)
+		if (spawn == S_BULLET_ORANGE_TARGET) {
+			SetBulletVel(tx, 8m, player->z)
+		}
+		else {
+			SetBulletVel(player->x, player->y+1m, player->z)
+			spawn(CorOC, S_BULLET_SPARK, 1, 3.0)
+		}
+		SetBulletVel(player->x, player->y+1m, player->z)
+		statusb = FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE
+		do (var start = frametime) {
+			if (!rand(3)) {
+				SetColor(0, 0, 0)
+			}
+			else {
+				SetColor(0xFF, 0, 0xFF)
+			}
+			playanim(0, BLASTER_BULLET)
+		} while (frametime - start < 1.5s)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			sendeventif(Event24, collider, distance(player, DIST_NO_Y) <= 0.4m, 100.0)
+			BulletTransCommon()
+		}
+	}
+}
+
+state Bullet_Blue { // 3
+	statusc 0
+	code (path_id, path_start) {
+		getvert(vtrans, creator, 0)
+		density = 0.2m
+		SetColor(0, 0x78, 0xFF)
+		spawn(CorOC, S_BULLET_SPARK, 1, 2.0)
+		interrupter = objectget(path_id)
+		if (interrupter) {
+			CopyInterrupterPath()
+			if (!path_start) {
+				BulletPathSpeed = -15.0
+				pathprog = pathlen-1
+			}
+			else {
+				pathprog = 0
+				BulletPathSpeed = 15.0
+			}
+			if (path_id <= 21.0) {
+				BulletPathSpeed /= 2
+			}
+			calcpath(pathprog, vvec)
+			SetBulletVel(vecx, vecy, player->z)
+			statusb = FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE
+			playanim(0, BLASTER_BULLET, 1s)
+			statetime = frametime
+			z = player->z
+			do {
+				pathprog = spd(pathprog, BulletPathSpeed)
+				calcpath(pathprog, vvec)
+				x = vecx
+				y = vecy
+				z = player->z
+				playanim(0, BLASTER_BULLET)
+			} until (frametime - statetime >= 0.334s && STATUS_PATH_END)
+			
+		}
+		else {
+			nop()
+		}
+	}
+	trans => state Bullet_Orange
+}
+
+state Bullet_Green { // 4
+	statusc 0
+	code (green_id, phase_health, tx) {
+		BossHealth = creator->health
+		getvert(vtrans, creator, 0)
+		density = 0.2m
+		if (spawn == S_BULLET_GREEN || spawn == S_BULLET_PURPLE) {
+			SetColor(0, 0xFF, 0)
+			spawn(CorOC, S_BULLET_SPARK, 1, 1.0)
+		}
+		else {
+			SetColor(0xFF, 0, 0xFF)
+			spawn(CorOC, S_BULLET_SPARK, 1, 3.0)
+		}
+		BulletSize = 1.0S
+		var0 = green_id
+		var1 = phase_health
+		if (!GLOBALOBJ) {
+			health = 1.0
+			GLOBALOBJ = self
+			GLOBALVAL = 0
+		}
+		SetBulletVel(tx, 8m, player->z)
+		statusb = FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE
+		playanim(0, BLASTER_BULLET, 1.5s)
+		if (GLOBALOBJ == self) {
+			GLOBALOBJ = 0
+		}
+	}
+	event (e, a) {
+		if (GLOBALOBJ && BossHealth == creator->health) {
+			accevcstate(Bullet_Green_Hit, e == EventSpinHit)
+		}
+		else {
+			accevcstate(Bullet_Green_Hit_Invalid, e == EventSpinHit)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			sendevent(EventHit, collider, 100.0)
+			BulletTransCommon()
+			if (!GLOBALOBJ) {
+				health = 1.0
+				GLOBALOBJ = self
+				GLOBALVAL = 0
+			}
+		}
+	}
+}
+
+inline sub BulletSeekScale() {	
+	if (scalex != BulletSize) {
+		scalex = seek(scalex, BulletSize, 0.1S)
+		scaley = seek(scaley, BulletSize, 0.1S)
+		scalez = seek(scalez, BulletSize, 0.1S)
+	}
+}
+
+state Bullet_Green_Hit { // 5
+	stateflag 0x3
+	statusc 0
+	code () {
+		if (GLOBALVAL == var1 - 1.0) {
+			creator = objectget(10.0)
+			sendevent(EventTriggered, creator)
+		}
+		if (GLOBALVAL) {
+			interrupter = GLOBALOBJ
+		}
+		else {
+			interrupter = objectget(10.0)
+		}
+		if (interrupter) {
+			if (GLOBALVAL) {
+				SetBulletVel2(interrupter->x, interrupter->y, interrupter->z)
+			}
+			else {
+				changestateif(Bullet_Green_Hit_Cortex, var1 == 1.0)
+				SetBulletVel2(0, 10m, 55m)
+			}
+			statusb = FLAG_PHYSICS_ENGINE
+			playanim(0, BLASTER_BULLET, 0.5s)
+		}
+		GLOBALVAL += 1.0
+		statusb = 0
+		if (self == GLOBALOBJ) {
+			do {
+				playanim(0, BLASTER_BULLET)
+			} until (GLOBALVAL == var1)
+			changestate(Bullet_Green_Hit_Cortex)
+		}
+		else {
+			interrupter = GLOBALOBJ
+			sendevent(EventTriggered, interrupter)
+		}
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			accev()
+			BulletSize += 2.0S
+		}
+	}
+	trans {
+		BulletSeekScale()
+		BulletTransCommon()
+	}
+}
+
+state Bullet_Green_Hit_Invalid { // 6
+	stateflag 0x3
+	statusc 0
+	code () {
+		if (GLOBALOBJ == self) {
+			GLOBALOBJ = 0
+		}
+		SetBulletVel(!rand(2) ? 10m+rand(1m) : -(10m+rand(1m)), y+2m, z-4m)
+		statusb = FLAG_PHYSICS_ENGINE
+		playanim(0, BLASTER_BULLET, 1.5s)
+	}
+	trans {
+		BulletTransCommon()
+	}
+}
+
+state Bullet_Green_Hit_Cortex { // 7
+	stateflag 0x81
+	statusc 0
+	code () {
+		v0 = scalex
+		creator = objectget(10.0)
+		SetVel(0, 0, 0)
+		trotz = 5m
+		statusb = FLAG_PHYSICS_ENGINE
+		SetBulletVel6(creator->x, creator->y+1m, creator->z)
+		playanim(0, BLASTER_BULLET, 1s/6)
+		sendevent(EventHit, creator, 0)
+		GLOBALOBJ = 0
+	}
+	trans {
+		/* STATUS_FIRSTFRAME */
+		BulletTransCommon()
+		BulletSeekScale()
+	}
+}
+
+state Bullet_Spark_Small { // 8
+	statusc 0
+	code () {
+		BulletShockType = creator->BulletShockType
+		SetScale(4.0S)
+		zindex = 100
+		if (BulletShockType == 0) {
+			playanim(0, BLASTER_SHOCK_BLUE)
+		}
+		else if (BulletShockType == 1.0) {
+			playanim(0, BLASTER_SHOCK_GREEN)
+		}
+		else if (BulletShockType == 2.0) {
+			playanim(0, BLASTER_SHOCK_ORANGE)
+		}
+		else if (BulletShockType == 3.0) {
+			playanim(0, BLASTER_SHOCK_PURPLE)
+		}
+		SetScale(0.8S, 0.4S, 0.4S)
+		zindex = creator->zindex
+		do {
+			rotz = creator->rotz + 90deg + randi(-20deg, 20deg)
+			if (BulletShockType == 0) {
+				playframes(BLASTER_SHOCK_BLUE, 1.0, 9.0)
+			}
+			else if (BulletShockType == 1.0) {
+				playframes(BLASTER_SHOCK_GREEN, 1.0, 9.0)
+			}
+			else if (BulletShockType == 2.0) {
+				playframes(BLASTER_SHOCK_ORANGE, 1.0, 9.0)
+			}
+			else if (BulletShockType == 3.0) {
+				playframes(BLASTER_SHOCK_PURPLE, 1.0, 9.0)
+			}
+			if (!rand(3)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, BLASTER_SHOCK_BLUE, 0.15s)
+				statusb = 0
+			}
+		} while (1)
+	}
+	trans {
+		x = creator->x
+		y = creator->y
+		z = creator->z
+	}
+}
+
+state Bullet_Spark { // 9
+	stateflag 0x81
+	statusc 0
+	code (t) {
+		BulletShockType = t
+		SetScale(1.3S, 0.7S, 0.7S)
+		zindex = 45
+		spawn(CorOC, S_BULLET_SPARK_SMALL)
+		do {
+			if (!rand(5)) {
+				statusb = FLAG_INVISIBLE
+				playanim(0, BLASTER_SHOCK_BLUE, 0.1s)
+			}
+			rotz = rand(360deg)
+			if (BulletShockType == 0) {
+				playframes(BLASTER_SHOCK_BLUE, 1.0, 9.0)
+			}
+			else if (BulletShockType == 1.0) {
+				playframes(BLASTER_SHOCK_GREEN, 1.0, 9.0)
+			}
+			else if (BulletShockType == 2.0) {
+				playframes(BLASTER_SHOCK_ORANGE, 1.0, 9.0)
+			}
+			else if (BulletShockType == 3.0) {
+				playframes(BLASTER_SHOCK_PURPLE, 1.0, 9.0)
+			}
+		} while (1)
+	}
+	trans => state Bullet_Spark_Small
+}
+
+inline sub SpawnCastleExplosion(sx, sy, sz, delay) {
+	x = sx
+	y = sy
+	z = sz
+	spawn(CorOC, S_CASTLE_EXPLOSION, 1, delay)
+}
+
+state Castle_Master { // 10
+	code () {
+		movetolist(3.0)
+		statusb = FLAG_INVISIBLE
+		SpawnCastleExplosion(0,   34m,   0, 0)
+		playanim(0, BLASTER_SHOCK_BLUE, 0.1s)
+		SpawnCastleExplosion(0,   22m, -3m, 6s)
+		playanim(0, BLASTER_SHOCK_BLUE, 0.1s)
+		SpawnCastleExplosion(-2m, 16m,  4m, 12s)
+		playanim(0, BLASTER_SHOCK_BLUE, 0.1s)
+		SpawnCastleExplosion(0,   23m,  2m, 18s)
+		playanim(0, BLASTER_SHOCK_BLUE, 0.1s)
+		SpawnCastleExplosion(-3m, 40m,  2m, 24s)
+		sleepanim(0, BLASTER_SHOCK_BLUE)
+	}
+}
+
+state Castle_Explosion_Spawner { // 11
+	code (d) {
+		SetRot(0, 0, 0)
+		v0 = d
+		statetime = frametime - 2s
+		statusb = FLAG_INVISIBLE
+		sleepnull()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME || GLOBAL_11) {
+			var1 = time(30s, v0)
+			if (var1 > 2s) {
+				if (!rand(5s)) {
+					spawn(CorOC, S_CASTLE_SMOKE)
+				}
+			}
+			else {
+				if (!var1) {
+					soundpitch(1.6 + rand(1.6))
+					soundplay([tnt0A], 0.5V + rand(0.5V))
+					spawn(CorOC, S_EXPLOSION_PARTICLE, 3, 1)
+					spawn(CorOC, S_EXPLOSION_PARTICLE, 5, 0)
+					statetime = frametime
+				}
+				if (!rand(0.667s)) {
+					spawn(CorOC, S_CASTLE_SMOKE)
+				}
+			}
+		}
+	}
+}
+
+state Hoverboard_Smoke { // 12
+	code () {
+		SetScale(0.3S)
+		SetRot(0, 0, rand(360deg))
+		zindex = 0
+		statusb = FLAG_PHYSICS_ENGINE
+		getvert(vtrans, creator, 1.0)
+		velx = rand(-0.8m)
+		if (!rand(2)) {
+			vely = 0.8m + rand(0.8m)
+		}
+		else {
+			vely = -(0.8m + rand(0.8m))
+		}
+		velz = randi(-0.4m, 0.4m)
+		playframesdur(HOVERBOARD_SMOKE, 0, 13.0, 1s/3)
+	}
+	trans {
+		rotz += 3deg
+		scalex += 0.04S
+		if (!time(1s/6)) {
+			zindex -= 1
+		}
+		scaley = scalex
+	}
+}
+
+state Castle_Smoke { // 13
+	code () {
+		SetScale(0.05S)
+		SetRot(0, 0, rand(360deg))
+		zindex = 100
+		statusb = FLAG_PHYSICS_ENGINE | 0x40000 | 0x200000
+		velx = rand(-0.4m)
+		vely = 3.5m + rand(0.5m)
+		velz = randi(-0.2m, 0.2m)
+		playframesdur(CASTLE_SMOKE, 0, 13.0, 1s/3)
+	}
+	trans {
+		rotz += 3deg
+		scalex += 0.2S
+		scaley = scalex
+	}
+}
+
+state Explosion_Particle { // 14
+	stateflag 0x80
+	code (t) {
+		movetolist(3.0)
+		zindex = 100
+		SetRot(0, 0, rand(360deg))
+		y += 0.75m
+		statusb = FLAG_PHYSICS_ENGINE | 0x40000 | 0x200000
+		var0 = t
+		if (t == 0) {
+			SetScale(2.0S)
+			FlipRand()
+			animframe = 0
+			ExplodeParticleSetSpeed(10m, 5m, 0, 10m)
+			playframes(EXPLOSION, 0, 17.0)
+		}
+		else if (t == 1) {
+			SetScale(8.0S)
+			FlipRand()
+			x += randi(-0.5m, 0.5m)
+			z += randi(-0.5m, 0.5m)
+			ExplodeParticleSetSpeed(0, 2m, 2m, 5m)
+			animframe = 0 + (rand(3) << 8)
+			setanim(EXPLOSION)
+			while (animframe < 17.0) {
+				playframe()
+				animframe += 1.0
+			}
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			rotz += 10deg
+		}
+	}
+}
+

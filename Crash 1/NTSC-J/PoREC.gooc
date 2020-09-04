@@ -1,0 +1,135 @@
+#gool PoREC 10 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim POWER_ROBOT_ENEMY_STAND [PRESV] 32
+#anim POWER_ROBOT_ENEMY_ATTACK [PREAV] 32
+
+#sprite STEAM [PoC1T]
+#tex 0x808080 1 1 0 11 96 16 32 32
+#tex 0x808080 1 1 0 11 96 8 32 32
+#tex 0x808080 1 1 0 11 104 24 32 32
+#tex 0x808080 1 1 0 11 104 16 32 32
+#tex 0x808080 1 1 0 11 104 8 32 32
+#tex 0x808080 1 1 0 11 112 24 32 32
+#tex 0x808080 1 1 0 11 112 16 32 32
+#tex 0x808080 1 1 0 11 112 8 32 32
+
+#spawn S_POWER_ROBOT_ENEMY        Power_Robot_Enemy_Spawn
+#spawn S_POWER_ROBOT_ENEMY_STEAM  Power_Robot_Enemy_Steam
+
+var PowerRobotEnemySpeed, mem2, PowerRobotEnemyWave, PowerRobotEnemyHeightOff
+
+event EventHitInvincible => state Power_Robot_Enemy_Die
+event EventDespawn => sub KillVoice
+
+sub KillVoice () {
+	voice = -1
+	soundfadet(0.25s, voice)
+	soundfadev(0, voice, 3)
+	voice = -1
+	soundsetup(0, voice, 5)
+}
+
+state Power_Robot_Enemy_Spawn { // 0
+	code () {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_TRACK_PATH_ROT | FLAG_COLLIDABLE | FLAG_SOLID_SIDES | FLAG_SOLID_TOP | 0x80000
+		PowerRobotEnemyWave = 0
+		PowerRobotEnemyHeightOff = 0
+		if (vecx) {
+			PowerRobotEnemySpeed = vecx >> 8
+		}
+		else {
+			PowerRobotEnemySpeed = 0.2
+		}
+		pathprog = (vecy * pathlen) >> 16
+		soundpitch(3.6 + rand(0.16))
+		soundfadet(0.25s)
+		soundfadev(0.04V, self, 2)
+		soundplay([R1H6A], 0)
+		changestate(Power_Robot_Enemy)
+	}
+}
+
+state Power_Robot_Enemy { // 1
+	stateflag 0x5
+	code () {
+		trotx = 360deg
+		do {
+			if (!rand(4)) {
+				setanim(POWER_ROBOT_ENEMY_ATTACK)
+				do (var i = 0) {
+					if (i >= 12.0 && i < 18.0) {
+						spawn(PoREC, S_POWER_ROBOT_ENEMY_STEAM, 1, -0.5m, roty)
+					}
+					playframe(i)
+					i += 1.0
+				} while (i < 32.0)
+			}
+			else {
+				playframes(POWER_ROBOT_ENEMY_STAND, 0, 31.0)
+			}
+		} while (1)
+	}
+	trans {
+		sendeventif(Event24, collider, collider, 100.0)
+		calcpath(loopseek(pathprog, pathlen + (PowerRobotEnemySpeed + -1.0), PowerRobotEnemySpeed))
+		if (vecz) {
+			y = groundy + PowerRobotEnemyHeightOff
+		}
+		else {
+			y = groundy + (PowerRobotEnemyHeightOff + sin(loopseek(PowerRobotEnemyWave, 0.25m, 0.02m), 0.23m))
+		}
+		if (!rand(1.35s)) {
+			spawn(PoREC, S_POWER_ROBOT_ENEMY_STEAM, 1, rand(-0.4m, 0.4m+1), rand(360deg))
+		}
+	}
+}
+
+state Power_Robot_Enemy_Die { // 2
+	stateflag 0x21
+	statusc 0x22
+	code () {
+		soundpitch(3.6 + rand(0.8))
+		soundplay([fli0A], 0.17V + rand(0.05V))
+		statusb &= ~(0x2000 | 0x80000)
+		velx = 0
+		velz = 0
+		playanim(0, POWER_ROBOT_ENEMY_STAND, 0.4s)
+		entitysetspawn(0)
+	}
+	trans {
+		once {
+			v0 = scalex
+		}
+		scalex = loopseek(v0, 1.2S, 0.1S)
+		scaley = scalex
+		scalez = scalex
+	}
+}
+
+state Power_Robot_Enemy_Steam { // 3
+	code (dist, dir) {
+		statusb = FLAG_PHYSICS_ENGINE
+		troty = dir
+		setvel(-rand(4m))
+		vely = rand(6m)
+		vectransf(vtrans, vtrans, dist, 0, 0.3m)
+		roty = 0
+		scalex = 0.25S
+		scaley = 0.25S
+		scalez = 0.25S
+		zindex = 20
+		setanim(STEAM)
+		animframe = -2.0
+		do {
+			playframe(animframe + 2.0)
+		} while (animframe + 2.0 < 7.0)
+	}
+	trans {
+		scalex += 0.1S
+		scaley = scalex
+	}
+}
+
+

@@ -1,0 +1,567 @@
+#gool PoPlC 11 6
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev 3
+#anim PLATFORM_PATH [PlP0V] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD0V] 2
+#eliflev 5
+#anim PLATFORM_PATH [PlP5V] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU5V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlDtV] 2
+#eliflev 6T
+#anim PLATFORM_PATH [PlP6V] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU6V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD6V] 2
+#eliflev 7
+#anim PLATFORM_PATH [PlP7V] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU7V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD7V] 2
+#eliflev e
+#anim PLATFORM_PATH [PlPeV] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlDeV] 2
+#eliflev j
+#anim PLATFORM_PATH [PlPeV] 1
+#anim POWER_PLATFORM [PlPeV] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD0V] 2
+#eliflev cl
+#anim PLATFORM_PATH [PlPcV] 1
+#anim POWER_PLATFORM [PlPcV] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlDcV] 2
+#eliflev st
+#anim PLATFORM_PATH [PlPsV] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlUsV] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlDsV] 2
+#eliflev yK
+#anim PLATFORM_PATH [PlPyV] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlUyV] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD0V] 2
+#eliflev EG
+#anim PLATFORM_PATH [PlPEV] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlDEV] 2
+#else
+#anim PLATFORM_PATH [PlP0V] 1
+#anim POWER_PLATFORM [PoP2V] 2
+#anim PLATFORM_UP [PlU0V] 1
+#anim PLATFORM_UP_2 [PlUTV] 1
+#anim PLATFORM_DROP [PlD0V] 2
+#endif
+
+#spawn S_PLATFORM_DROP            Power_Platform_Drop_Spawn
+#spawn S_PLATFORM_DROP_2          Power_Platform_Drop_Spawn
+#spawn S_PLATFORM_PATH_AUTO       Platform_Path_Auto
+#spawn S_PLATFORM_PATH            Platform_Path_Spawn
+#spawn S_PLATFORM_DROP_BIG        Power_Platform_Drop_Spawn
+#spawn S_PLATFORM_DROP_HIDDEN     Platform_Drop_Hidden
+#spawn S_PLATFORM_UP_AUTO         Platform_Path_Auto
+#spawn S_PLATFORM_UP              Platform_Path_Spawn
+
+var
+PlatformFallWait, PlatformTouchWait, PlatformKillY, PlatformMoveSpeed, PlatformMoveOffset, PlatformMoveFactor, PlatformTouchY, PlatformBaseY, PlatformTouchSpeed, PlatformRotSpeed,
+mem11, mem12, PlatformKillWait
+
+state Power_Platform_Drop_Spawn { // 0
+	code () {
+		mem12 = 0
+		PlatformBaseY = y
+		if (LEVEL == LEVEL_GeneratorRoom) {
+			if (vecx) {
+				PlatformKillY = vecx * 400
+			}
+			else {
+				PlatformKillY = -11.0 * 400
+			}
+			if (PlatformBaseY - PlatformKillY > 15m) {
+				PlatformKillY = PlatformBaseY - 15m
+			}
+		}
+		else {
+			if (vecx) {
+				PlatformKillY = PlatformBaseY - vecx * 400
+			}
+			else {
+				PlatformKillY = PlatformBaseY - 15m
+			}
+		}
+		if (vecy) {
+			trotz = vecy * 400
+		}
+		else {
+			trotz = 30m
+		}
+		if (vecz) {
+			PlatformKillWait = vecz >> 8
+		}
+		else {
+			PlatformKillWait = 1.8s
+		}
+		if (spawn == S_PLATFORM_DROP_BIG) {
+			PlatformFallWait = 0.7s
+			if (var level = LEVEL; level == LEVEL_RollingStones) {
+				PlatformTouchWait = 0
+				if (player->z < z) {
+					return
+				}
+			}
+			else if (level == LEVEL_GeneratorRoom) {
+				mem12 = 2
+				PlatformTouchWait = 8s
+			}
+			else if (level == LEVEL_Boulders || level == LEVEL_BoulderDash) {
+				PlatformTouchWait = 1.8s
+			}
+			else {
+				PlatformTouchWait = 3.8s
+			}
+			setanim(POWER_PLATFORM)
+		}
+		else {
+			if (LEVEL == LEVEL_CortexPower) {
+				PlatformFallWait = 5s
+			}
+			else {
+				PlatformFallWait = 0.5s
+			}
+			PlatformTouchWait = 0
+			setanim(PLATFORM_DROP)
+		}
+		changestate(Power_Platform_Drop)
+	}
+}
+
+sub PowerPlatformPlayFrame () {
+	if (animframe) {
+		if (!rand(5)) {
+			playframe(0)
+		}
+		else {
+			playframe(1.0)
+		}
+	}
+	else {
+		if (!rand(8)) {
+			playframe(1.0)
+		}
+		else {
+			playframe(0)
+		}
+	}
+}
+
+inline sub DoPowerPlatformAnim(dur) {	
+	do (var start = frametime) {
+		PowerPlatformPlayFrame()
+	} while (frametime - start < dur)
+}
+
+state Power_Platform_Drop { // 1
+	stateflag 0x801
+	statusc 0
+	code () {
+		statusb = FLAG_SOLID_ALL | FLAG_COLLIDABLE | 0x80000000
+		if (var level = LEVEL; level == LEVEL_GeneratorRoom || level == LEVEL_HeavyMachinery || level == LEVEL_LightsOut || level == LEVEL_FumblingInTheDark || level == LEVEL_CastleMachinery) {
+			statusb &= ~FLAG_SOLID_SIDES
+		}
+		else if (level == LEVEL_ToxicWaste) {
+			statusb |= FLAG_SOLID_BOTTOM
+		}
+		velx = 0
+		vely = 100m
+		velz = 0
+		do {
+			if (PlatformBaseY - y > 1m) {
+				playframe(0)
+			}
+			else {
+				DoPowerPlatformAnim(0)
+			}
+		} while (1)
+	}
+	trans {
+		if (collider) {
+			if (collider->y - y > -0.5m) {
+				PlatformTouchY = y
+				changestate(Power_Platform_Drop_Touched)
+			}
+		}
+		changestateif(Power_Platform_Drop_Fall, vecz && entitygetstate(vecz, 2))
+		if (PlatformBaseY - y > 1m) {
+			y = spd(y, 8m)
+		}
+		else if (animframe) {
+			y = spd(y, -0.5m)
+		}
+		else {
+			y = spd(y, 2m)
+		}
+		if (y > PlatformBaseY) {
+			y = PlatformBaseY
+		}
+	}
+}
+
+state Power_Platform_Drop_Touched { // 2
+	stateflag 0x801
+	statusc 0
+	code () {
+		if (spawn == S_PLATFORM_DROP_BIG) {
+			unless (var level = LEVEL; level == LEVEL_RollingStones || level == LEVEL_GeneratorRoom) {
+				entitysetspawn(0)
+			}
+			PlatformTouchSpeed = -5m
+			DoPowerPlatformAnim(PlatformTouchWait)
+		}
+		else {
+			PlatformTouchSpeed = player->groundvel / 2
+		}
+		statusb |= FLAG_PHYSICS_ENGINE
+		vely = PlatformTouchSpeed
+		sleepframe(0)
+	}
+	trans {
+		if (y > PlatformTouchY) {
+			y = PlatformTouchY
+			changestate(Power_Platform_Drop_Wait)
+		}
+		if (vely < 5m) {
+			vely = spd(vely, 60m)
+		}
+	}
+}
+
+state Power_Platform_Drop_Wait { // 3
+	stateflag 0x801
+	statusc 0
+	code () {
+		vely = PlatformTouchSpeed / 2
+		sleepframe(0)
+	}
+	trans {
+		if (y > PlatformTouchY) {
+			y = PlatformTouchY
+			changestate(Power_Platform_Drop_Fall)
+		}
+		if (vely < 5m) {
+			vely = spd(vely, 60m)
+		}
+	}
+}
+
+state Power_Platform_Drop_Fall { // 4
+	stateflag 0x801
+	statusc 0
+	code () {
+		vely = 0
+		do (var start = frametime) {
+			playframe(0)
+		} while (frametime - start < PlatformFallWait)
+		statusb |= FLAG_GRAVITY | 0x1000
+		while (y > PlatformKillY) {
+			playframe(1.0)
+		}
+		statusb = FLAG_INVISIBLE
+		if (mem12) {
+			if (mem12 == 1.0) {
+				entitysetspawn(0)
+			}
+			return
+		}
+		DoPowerPlatformAnim(PlatformKillWait)
+		changestateif(Power_Platform_Drop, entitygetstate(1) && !(LEVEL == LEVEL_RollingStones && spawn == S_PLATFORM_DROP_BIG && ITEM_GEM_BLUE))
+	}
+}
+
+state Platform_Path_Spawn { // 5
+	code () {
+		mem12 = 0
+		v0 = 0
+		statusb = FLAG_SOLID_ALL | FLAG_COLLIDABLE | 0x80000000
+		PlatformRotSpeed = 0
+		if (var level = LEVEL; level == LEVEL_BoulderDash) {
+			zindex = -32
+		}
+		else if (level == LEVEL_HeavyMachinery || level == LEVEL_CastleMachinery) {
+			zindex = 20
+			mem12 = 1.0
+		}
+		else if (level == LEVEL_GeneratorRoom || level == LEVEL_StormyAscent || level == LEVEL_SlipperyClimb) {
+			zindex = -10
+			mem12 = 1.0
+		}
+		else {
+			zindex = -10
+		}
+		if (spawn == S_PLATFORM_UP) {
+			setanim(PLATFORM_UP)
+		}
+		else {
+			setanim(PLATFORM_PATH)
+		}
+		if (vecx) {
+			PlatformMoveSpeed = vecx * 0.12 >> 8
+		}
+		else {
+			PlatformMoveSpeed = 6.0
+		}
+		calcpath(loopseek(pathprog, pathlen + spd(PlatformMoveSpeed) + -1.0, spd(PlatformMoveSpeed)))
+		roty = vecz >> 8
+		changestate(Platform_Path_Wait)
+	}
+}
+
+state Platform_Path_Wait { // 6
+	stateflag 0x801
+	code => state Platform_Path_Active
+	trans {
+		once {
+			PlatformRotSpeed = 0
+			if (LEVEL == LEVEL_TempleRuins || LEVEL == LEVEL_JawsOfDarkness) {
+				field_62 = 55
+			}
+		}
+		if (!collider) {
+			statetime = frametime
+		}
+		if ((collider || v0) && frametime - statetime >= 0.8s) {
+			if (LEVEL == LEVEL_TempleRuins || LEVEL == LEVEL_JawsOfDarkness) {
+				PlatformRotSpeed = 70deg
+			}
+			changestate(Platform_Path_Active)
+		}
+	}
+	
+}
+
+state Platform_Path_Active { // 7
+	stateflag 0x801
+	code () {
+		sleepframe(0)
+	}
+	event (e, a) {
+		if (e == EventPlayerDamage && LEVEL == LEVEL_CastleMachinery && spawn == S_PLATFORM_UP) {
+			accev()
+			if (statusa \ 0x4) {
+				statusa &= ~0x4
+			}
+			else {
+				statusa |= 0x4
+			}
+			pathprog = -pathprog
+		}
+	}
+	trans {
+		once {
+			v0 = 1.0
+		}
+		PlatformFallWait = x
+		PlatformTouchWait = y
+		PlatformKillY = z
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + spd(PlatformMoveSpeed) + -1.0, spd(PlatformMoveSpeed)))
+			if (PlatformRotSpeed) {
+				roty = spd(roty, PlatformRotSpeed) & 0xFFF
+				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+					save (vecx, vecy, vecz, troty) {
+						player->troty = spd(player->troty, PlatformRotSpeed)
+						troty = spd(PlatformRotSpeed)
+						vectransf2(vtrans, vvec, (player->z - z) * 0.985 >> 8, (player->x - x) * 0.985 >> 8, 0)
+						player->x = vecx
+						player->z = vecz
+					}
+				}
+			}
+			if (mem12 || (collider && player->y - y > -0.4m)) {
+				statetime = frametime
+				if (collider) {
+					collider->statusa |= FLAG_GROUNDLAND
+					collider->groundtime = collider->frametime
+					if (collider->vely < 0) {
+						collider->groundvel = collider->vely
+					}
+					collider->x += x - PlatformFallWait
+					collider->y += y - PlatformTouchWait
+					collider->z += z - PlatformKillY
+				}
+			}
+			else if (frametime - statetime >= 1s && pathprog > 0) {
+				if (statusa \ 0x4) {
+					statusa &= ~0x4
+				}
+				else {
+					statusa |= 0x4
+				}
+				pathprog = -pathprog
+			}
+			changestateif(Platform_Path_Wait, !mem12 && STATUS_PATH_END)
+		}
+	}
+}
+
+state Platform_Path_Auto { // 8
+	stateflag 0x801
+	code () {
+		mem12 = 0
+		statusb = FLAG_SOLID_ALL | FLAG_COLLIDABLE | 0x80000000
+		PlatformRotSpeed = 0
+		if (var level = LEVEL; level == LEVEL_BoulderDash) {
+			zindex = -32
+		}
+		else if (level == LEVEL_HeavyMachinery) {
+			zindex = 20
+		}
+		else if (level == LEVEL_CastleMachinery) {
+			zindex = 20
+			statusb &= ~FLAG_SOLID_SIDES
+		}
+		else if (level == LEVEL_ToxicWaste) {
+			zindex = -10
+			statusb |= FLAG_SOLID_BOTTOM
+		}
+		else {
+			zindex = -10
+		}
+		if (spawn == S_PLATFORM_UP_AUTO) {
+			if (LEVEL == LEVEL_CastleMachinery) {
+				setanim(PLATFORM_UP_2)
+			}
+			else {
+				setanim(PLATFORM_UP)
+			}
+		}
+		else if (spawn == S_PLATFORM_UP) {
+			setanim(PLATFORM_UP)
+		}
+		else {
+			setanim(PLATFORM_PATH)
+		}
+		if (spawn == S_PLATFORM_UP_AUTO || spawn == S_PLATFORM_PATH_AUTO) {
+			if (vecx != 0) {
+				PlatformMoveSpeed = abs(vecx) >> 8
+			}
+			else {
+				PlatformMoveSpeed = 0.5-1
+			}
+			PlatformMoveFactor = (pathlen * 2) / (PlatformMoveSpeed + 1)
+			PlatformMoveOffset = vecy * (PlatformMoveSpeed + 1) >> 16
+			var v1 = time(PlatformMoveSpeed, PlatformMoveOffset)
+			calcpath(abs((v1 - (PlatformMoveSpeed >> 1)) * PlatformMoveFactor))
+			if (v1 >= PlatformMoveSpeed >> 1) {
+				statusa |= 0x4
+			}
+		}
+		else {
+			if (vecx) {
+				PlatformMoveSpeed = abs(vecx) >> 8
+			}
+			else {
+				PlatformMoveSpeed = 6.0
+			}
+			calcpath(loopseek(pathprog, pathlen + PlatformMoveSpeed + -1.0, PlatformMoveSpeed))
+		}
+		roty = vecz >> 8
+		sleepframe(0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			var v1 = time(PlatformMoveSpeed, PlatformMoveOffset)
+			calcpath(abs((v1 - (PlatformMoveSpeed >> 1)) * PlatformMoveFactor))
+			if (v1 >= PlatformMoveSpeed >> 1) {
+				statusa |= 0x4
+			}
+			if (collider && player->y - y > -0.2m) {
+				collider->statusa |= FLAG_GROUNDLAND
+				collider->groundtime = collider->frametime
+				if (collider->vely < 0) {
+					collider->groundvel = collider->vely
+				}
+				collider->x += x - PlatformFallWait // old x
+				collider->y += y - PlatformTouchWait // old y
+				collider->z += z - PlatformKillY // old z
+			}
+		}
+		PlatformFallWait = x
+		PlatformTouchWait = y
+		PlatformKillY = z
+	}
+}
+
+state Platform_Drop_Hidden { // 9
+	code () {
+		PlatformBaseY = y
+		if (vecx) {
+			PlatformKillY = vecx * 400
+		}
+		else {
+			PlatformKillY = -11m
+		}
+		if (vecy) {
+			mem12 = 1.0
+		}
+		else {
+			mem12 = 0
+		}
+		if (vecz) {
+			scalex = (vecz << 4) / 100
+			scaley = (vecz << 4) / 100
+			scalez = (vecz << 4) / 100
+		}
+		else {
+			scalex = 1.0S
+			scaley = 1.0S
+			scalez = 1.0S
+		}
+		trotz = 30m
+		PlatformFallWait = 0.5s
+		statusb = FLAG_INVISIBLE | FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		sleepanim(0, PLATFORM_DROP)
+	}
+	trans {
+		if (collider) {
+			PlatformTouchY = y
+			statusb &= ~FLAG_INVISIBLE
+			changestate(Power_Platform_Drop_Touched)
+		}
+	}
+}
+
+state State_10 { // 10
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP | FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		changestateif(State_11, collider)
+	}
+}
+
+state State_11 { // 11
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+}
+

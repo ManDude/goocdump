@@ -1,0 +1,645 @@
+#gool DispC 4 2
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite FRUIT_WUMPA [WillT]
+#tex 0x808080 1 0 0 4 8 16 32 32
+#tex 0x808080 1 0 0 4 8 8 32 32
+#tex 0x808080 1 0 0 4 16 24 32 32
+#tex 0x808080 1 0 0 4 16 16 32 32
+#tex 0x808080 1 0 0 4 16 8 32 32
+#tex 0x808080 1 0 0 4 24 24 32 32
+#tex 0x808080 1 0 0 4 24 16 32 32
+#tex 0x808080 1 0 0 4 24 8 32 32
+#tex 0x808080 1 0 0 4 32 24 32 32
+#tex 0x808080 1 0 0 4 32 16 32 32
+#tex 0x808080 1 0 0 4 32 8 32 32
+#tex 0x808080 1 0 0 4 40 24 32 32
+#tex 0x808080 1 0 0 4 40 16 32 32
+#tex 0x808080 1 0 0 4 40 8 32 32
+
+#sprite PICKUP_WILLY [WillT]
+#tex 0x808080 0 0 3 0 0 24 64 32
+
+#fraganim DEMO_LOGO [Dem2T] 3
+#frag 0x808080 1 0 0 1 0 16 64 64 -500 -270 -100 130
+#frag 0x808080 1 0 0 1 16 16 64 64 -100 -270 300 130
+#frag 0x808080 1 0 0 1 32 16 32 64 300 -270 500 130
+#fraganim DEMO_PRESS_START [Dem2T] 2
+#frag 0x808080 0 3 1 0 0 12 64 16 -300 -100 100 0
+#frag 0x808080 0 3 1 0 0 8 64 16 100 -100 500 0
+#fraganim DEMO_LOADING [Dem2T] 1
+#frag 0x808080 0 3 2 0 0 4 64 16 -200 -100 200 0
+
+#sprite PICKUP_CORTEX [Ru6wT]
+#tex 0x808080 0 0 5 0 80 8 64 32
+#sprite PICKUP_BRIO [Ru6wT]
+#tex 0x808080 0 0 4 0 8 16 64 64
+#sprite PICKUP_TAWNA [WillT]
+#tex 0x808080 0 3 6 8 8 24 64 32
+
+#font FONT_NUMBERS [WillT]
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ' '
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '!'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '"'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '#'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '$'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '%'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '&'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '''
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '('
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ')'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '*'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '+'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ','
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '-'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '.'
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // '/'
+#char 0x808080 0 0 5 0 72 8 32 32 400 0 // '0'
+#char 0x808080 0 0 5 0 76 24 32 32 350 0 // '1'
+#char 0x808080 0 0 5 0 76 16 32 32 400 0 // '2'
+#char 0x808080 0 0 5 0 76 8 32 32 400 0 // '3'
+#char 0x808080 0 0 5 0 80 24 32 32 400 0 // '4'
+#char 0x808080 0 0 5 0 80 16 32 32 400 0 // '5'
+#char 0x808080 0 0 5 0 80 8 32 32 400 0 // '6'
+#char 0x808080 0 0 5 0 84 24 32 32 400 0 // '7'
+#char 0x808080 0 0 5 0 84 16 32 32 400 0 // '8'
+#char 0x808080 0 0 5 0 84 8 32 32 400 0 // '9'
+
+#fraganim PAUSE_TEXT [WillT] 5
+#frag 0x808080 0 0 4 9 48 16 64 32 -400 0 0 200
+#frag 0x808080 0 0 4 9 48 8 64 32 0 0 400 200
+#frag 0x808080 0 3 5 9 56 16 64 16 -470 -120 -470 -20
+#frag 0x808080 0 3 5 9 56 12 64 16 -70 -120 -70 -20
+#frag 0x808080 0 3 5 9 88 4 32 16 330 -120 330 -20
+
+#frag 0x808080 0 0 4 9 48 16 64 32 -400 0 0 200
+#frag 0x808080 0 0 4 9 48 8 64 32 0 0 400 200
+#frag 0x808080 0 3 5 9 56 16 64 16 -460 -20 -60 -20
+#frag 0x808080 0 3 5 9 56 12 64 16 -60 -20 340 -20
+#frag 0x808080 0 3 5 9 88 4 32 16 340 -20 740 -20
+
+#frag 0x808080 0 0 4 9 48 16 64 32 -400 0 0 200
+#frag 0x808080 0 0 4 9 48 8 64 32 0 0 400 200
+#frag 0x808080 0 3 5 9 56 16 64 16 -600 -20 -200 -20
+#frag 0x808080 0 3 5 9 56 8 64 16 -200 -20 200 -20
+#frag 0x808080 0 3 5 9 56 4 64 16 200 -20 600 -20
+
+#text TEXT FONT_NUMBERS [1018I]
+"%d"
+"セレクトボタンでゲームがおわる"
+"セレクトボタンでマップにもどる"
+/* "%d~n~n" */
+
+#include "..\\GOOL_FruiC.gooh"
+
+var DisplayFruit, DisplayLife, mem3, mem4, mem5, mem6, DisplayCortex, DisplayBrio,
+DisplayTawna, DisplayFrame, DisplayVarField, DisplayStatus, DisplayFruitReward, DisplayParentID, BonusLevel, DisplayIconsLeft
+
+#spawn S_LIFE_DISPLAY             Life_Display
+#spawn S_FRUIT_DISPLAY            Fruit_Display
+#spawn S_2                        __s_2
+#spawn S_3                        __s_3
+#spawn S_PAUSE_MENU               Pause_Menu
+#spawn S_PICKUP_DISPLAY           Pickup_Display
+#spawn S_PICKUP_DISPLAY_SLAVE     Pickup_Display_Slave
+#spawn S_PAUSE_TEXT               Pause_Text
+#spawn S_DEMO_LOGO                Demo_Logo
+#spawn S_DEMO_TEXT                Demo_Text
+#spawn S_VARIABLE_DISPLAY         Variable_Display
+#spawn S_PICKUP_ICON              Pickup_Icon
+
+inline sub DisplaySleep() {
+	if (spawn == S_FRUIT_DISPLAY) {
+		do {
+			playframe((animframe + 1.0) % 14.0)
+		} while (1)
+	}
+	else {
+		sleepframe(DisplayFrame)
+	}
+}
+
+#ifreg "pal"
+expr DISPLAY_BOUND_Y = 190.0
+expr DISPLAY_BOUND_LOWER_Y = 102.0
+expr DISPLAY_DEMO_LOGO_X = -101.0
+#else
+expr DISPLAY_BOUND_Y = 176.0
+expr DISPLAY_BOUND_LOWER_Y = 88.0
+expr DISPLAY_DEMO_LOGO_X = -91.0
+#endif
+
+state Life_Display { // 0
+	code () {
+		LIFEICONTRANSX = 100.0
+		statusb = FLAG_INVISIBLE | FLAG_2D | 0x40000
+		SetScale(3.2, 2.0, 2.0)
+		x = 130.0
+		y = DISPLAY_BOUND_Y
+		z = 0
+		DisplayFrame = 0
+		DisplayVarField = 65.0
+		DisplayStatus = 0
+		spawn(DispC, S_VARIABLE_DISPLAY)
+		playanim(0, PICKUP_WILLY, 1s/6)
+		setfield(self, DisplayVarField, getfield(player, DisplayVarField)) // player->mem2
+		changestate(Display_Hidden)
+	}
+}
+
+state Fruit_Display { // 1
+	code () {
+		statusb = FLAG_INVISIBLE | FLAG_2D | 0x40000
+		SetScale(1.6, 2.0, 2.0)
+		x = -200.0
+		y = DISPLAY_BOUND_Y
+		z = 0
+		DisplayFrame = 0
+		DisplayVarField = 64.0
+		DisplayStatus = 0
+		spawn(DispC, S_VARIABLE_DISPLAY)
+		playanim(0, FRUIT_WUMPA, 1s/6)
+		setfield(self, DisplayVarField, getfield(player, DisplayVarField)) // player->mem1
+		changestate(Display_Hidden)
+	}
+}
+
+state Display_Hidden { // 2
+	statusc 0
+	code () {
+		statusb |= FLAG_INVISIBLE
+		DisplaySleep()
+	}
+	event (e, a) {
+		if (e == Event3 || e == Event32 || e == Event17) {
+			if (DisplayStatus != 1) {
+				DisplayStatus = 2
+			}
+			statetime = frametime
+			if (e == Event17) {
+				DisplayStatus = 1
+			}
+		}
+	}
+	trans {
+		v0 = getfield(player, DisplayVarField)
+		changestateif(Display_Show, v0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
+	}
+}
+
+state Display_Show { // 3
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		DisplaySleep()
+	}
+	event => state Display_Hidden
+	trans {
+		changestateif(Display_Hide, frametime - statetime >= 1.5s)
+		y = seek(y, DISPLAY_BOUND_LOWER_Y, 10.0)
+		if (y == DISPLAY_BOUND_LOWER_Y) {
+			if (getfield(player, DisplayVarField) > getfield(self, DisplayVarField)) {
+				if (!time(0.15s)) {
+					statetime = frametime
+					if (spawn == S_FRUIT_DISPLAY) {
+						soundpitch(4.0)
+						soundsetup(0, 0, 11)
+						sounddecay(0.25)
+						soundplay([tal0A], 0.2V)
+					}
+					setfield(self, DisplayVarField, getfield(self, DisplayVarField) + 1.0)
+				}
+			}
+			else {
+				setfield(self, DisplayVarField, getfield(player, DisplayVarField))
+			}
+			if (DisplayStatus == 1) {
+				interrupter = child
+				spawn2(FruiC, FruiC_S_1UP_GOTO_HUD)
+				if (interrupter == child) {
+					setfield(player, 65.0, getfield(player, 65.0) + 1.0)
+				}
+				DisplayStatus = 0
+			}
+			else {
+				DisplayStatus = 0
+			}
+		}
+	}
+}
+
+state Display_Hide { // 4
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		DisplaySleep()
+	}
+	event => state Display_Hidden
+	trans {
+		v0 = getfield(player, DisplayVarField)
+		changestateif(Display_Show, v0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
+		if (y < DISPLAY_BOUND_Y) {
+			y += 4.0
+		}
+		else {
+			changestate(Display_Hidden)
+		}
+	}
+}
+
+state Variable_Display { // 5
+	code () {
+		playnull()
+		statusb = parent->statusb
+		SetScale(2.0)
+		velx = 28.0
+		z = parent->z
+		do {
+			statusb = parent->statusb
+			x = parent->x + velx
+			y = parent->y + 16.0
+			playtext(0, TEXT, getfield(parent, getfield(parent, 74.0)) >> 8)
+		} while (true)
+	}
+}
+
+state Pause_Menu { // 6
+	stateflag 0x100001
+	code () {
+		loadfile2([WillT])
+		SetScale(2.552, 4.055, 1024.0)
+		x = 0
+		#ifreg "pal"
+		y = -88.888
+		#else
+		y = -75.0
+		#endif
+		zindex = 1000
+		setanim(PAUSE_TEXT)
+		if (LEVEL == LEVEL_Map) {
+			spawn2(DispC, S_PAUSE_TEXT)
+			animframe = 2.0
+		}
+		else if (player->stateflag \ 0x20 || ZONEFLAGS & 0x2000 || !(player->statusa \ FLAG_GROUNDLAND || player->stateflag \ 0x8000)) {
+			animframe = 1.0
+		}
+		else {
+			spawn2(DispC, S_PAUSE_TEXT)
+			animframe = 0
+		}
+		do {
+			statusb = 0x40000 | FLAG_2D
+			wait(0.5s)
+			statusb = 0x40000 | FLAG_2D | FLAG_INVISIBLE
+			wait(0.5s)
+		} while (true)
+	}
+	event (e, a) {
+		accepteventandchangestate(Pause_Menu_Unpause, e == Event12)
+	}
+	trans {
+		if (LEVEL == LEVEL_Map) {
+			if (buttonpress(PAD_SELECT)) {
+				TITLEPAUSESTATE = 0
+				GAMESCREEN = 5
+			}
+		}
+		else {
+			if (buttonpress(PAD_SELECT) && !(player->stateflag & 0x20) && !(ZONEFLAGS & 0x2000) && (player->statusa \ FLAG_GROUNDLAND || player->stateflag \ 0x8000)) {
+				sendevent(EventStatus, player, 6.0)
+				loadlevel(LEVEL_Map)
+			}
+		}
+	}
+}
+
+state Pause_Menu_Unpause { // 7
+	stateflag 0x100001
+	code () {
+		deloadfile([WillT])
+		PAUSEMENU = 0
+	}
+}
+
+state Pause_Text { // 8
+	stateflag 0x100001
+	code () {
+		x = parent->x
+		y = parent->y - 6.0
+		SetScale(0.64, 1.015, 256.0)
+		SetTextColor(0x1FF, 0x1FF, 0x1FF, 0xFF, 0xFF, 0xFF)
+		if (LEVEL == LEVEL_Map) {
+			sleepanim(1, TEXT)
+		}
+		else {
+			sleepanim(2, TEXT)
+		}
+	}
+	trans {
+		statusb = parent->statusb
+		statusb |= 0x400
+	}
+}
+
+sub SetPickupDisplay(r) { // 231
+	DisplayFruitReward = r
+	if (r == 103.0) {
+		SetScale(3.2, 2.0, 2.0)
+		setanim(PICKUP_CORTEX)
+		DisplayFrame = 0
+		DisplayVarField = 70.0
+	}
+	else if (r == 104.0) {
+		SetScale(3.2, 4.0, 2.0)
+		setanim(PICKUP_BRIO)
+		DisplayFrame = 0
+		DisplayVarField = 71.0
+	}
+	else if (r == 105.0) {
+		SetScale(3.2, 2.0, 2.0)
+		setanim(PICKUP_TAWNA)
+		DisplayFrame = 0
+		DisplayVarField = 72.0
+	}
+}
+
+state Pickup_Icon { // 8
+	statusc 0
+	code (r, tx) {
+		statusb = FLAG_2D
+		SetPickupDisplay(r)
+		v0 = getfield(player, DisplayVarField)
+		x = tx
+		y = -DISPLAY_BOUND_Y
+		changestate(Pickup_Icon_Show)
+	}
+}
+
+state Pickup_Icon_Show { // 9
+	statusc 0
+	code () {
+		sleepframe(DisplayFrame)
+	}
+	trans {
+		changestateif(Pickup_Icon_Hide, v0 != getfield(player, DisplayVarField) || frametime - statetime >= 1.5s)
+		y = seek(y, -DISPLAY_BOUND_LOWER_Y, 10.0)
+	}
+}
+
+state Pickup_Icon_Hide { // 10
+	statusc 0
+	code () {
+		do {
+			y = seek(y, -DISPLAY_BOUND_Y, 4.0)
+			playframe(DisplayFrame)
+		} until (y == -DISPLAY_BOUND_Y)
+		sendevent(Event1, parent)
+	}
+	trans {
+		changestateif(Pickup_Icon_Show, buttonhold(PAD_TRIANGLE) && v0 == getfield(player, DisplayVarField))
+	}
+}
+
+sub MakePickupIcons(r, p) {
+	var iconcount = 0, child_temp = child
+	if (r == 103.0) {
+		iconcount = getfield(player, 70.0) //player->mem7
+	}
+	else if (r == 104.0) {
+		iconcount = getfield(player, 71.0) //player->mem8
+	}
+	else if (r == 105.0) {
+		iconcount = getfield(player, 72.0) //player->mem9
+	}
+	if (iconcount == 1.0) {
+		spawn2(DispC, S_PICKUP_ICON, 1, r, p)
+		if (child_temp != child) {
+			DisplayIconsLeft += 1.0
+		}
+	}
+	else if (iconcount == 2.0) {
+		spawn2(DispC, S_PICKUP_ICON, 1, r, p - 32.0)
+		if (child_temp != child) {
+			DisplayIconsLeft += 1.0
+		}
+		spawn2(DispC, S_PICKUP_ICON, 1, r, p + 32.0)
+		if (child_temp != child) {
+			DisplayIconsLeft += 1.0
+		}
+	}
+	/* while (var i = 0, iconx = (iconcount-1.0) * -32; i < iconcount) {
+		spawn2(DispC, S_PICKUP_ICON, 1, r, p + iconx)
+		if (child_temp != child) {
+			DisplayIconsLeft += 1.0
+			child_temp = child
+		}
+		iconx += 64.0
+		i += 1.0
+	} */
+}
+
+state Pickup_Display { // 11
+	code () {
+		statusb = 0x40000 | FLAG_2D | FLAG_INVISIBLE
+		x = 0
+		z = 0
+		DisplayStatus = 0
+		DisplayIconsLeft = 0
+		SetPickupDisplay(105.0)
+		playframe(DisplayFrame, 1s/6)
+		spawn2(DispC, S_PICKUP_DISPLAY_SLAVE, 1, -80.0, 1.0)
+		spawn2(DispC, S_PICKUP_DISPLAY_SLAVE, 1, 80.0, 2.0)
+		changestate(Pickup_Display_Hidden)
+	}
+}
+
+state Pickup_Display_Hidden { // 12
+	code () {
+		statusb |= FLAG_INVISIBLE
+		y = DISPLAY_BOUND_Y
+		sleepframe(DisplayFrame)
+	}
+	event (e, a) {
+		if (e == Event32) {
+			DisplayFruitReward = a[0]
+			DisplayParentID = a[1]
+			accevcstate(Pickup_Display_Show)
+		}
+		if (e == Event1) {
+			DisplayIconsLeft -= 1.0
+		}
+	}
+	trans {
+		if (buttonhold(PAD_TRIANGLE)) {
+			if (DisplayIconsLeft == 0 && !(ZONEFLAGS & 0x2000)) {
+				MakePickupIcons(105.0, 0)
+				MakePickupIcons(104.0, -170.0)
+				MakePickupIcons(103.0, +170.0)
+			}
+		}
+	}
+}
+
+inline sub BonusRoundParams(l, b) {
+	BONUSROUND = b
+	BonusLevel = l
+}
+
+sub SelectBonusRound() { // 392
+	if (DisplayFruitReward == 105.0) {
+		if (var level = LEVEL;
+				 level == LEVEL_JungleRollers)   BonusRoundParams(LEVEL_BonusTawna1, 0);
+		else if (level == LEVEL_TheGreatGate)    BonusRoundParams(LEVEL_BonusTawna2, 4);
+		else if (level == LEVEL_Upstream)        BonusRoundParams(LEVEL_BonusTawna1, 10);
+		else if (level == LEVEL_RollingStones)   BonusRoundParams(LEVEL_BonusTawna2, 8);
+		else if (level == LEVEL_NativeFortress)  BonusRoundParams(LEVEL_BonusTawna1, 1);
+		else if (level == LEVEL_UpTheCreek)      BonusRoundParams(LEVEL_BonusTawna2, 11);
+		else if (level == LEVEL_TheLostCity)     BonusRoundParams(LEVEL_BonusTawna1, 12);
+		else if (level == LEVEL_TempleRuins)     BonusRoundParams(LEVEL_BonusTawna1, 28);
+		else if (level == LEVEL_RoadToNowhere)   BonusRoundParams(LEVEL_BonusTawna2, 13);
+		else if (level == LEVEL_SunsetVista)     BonusRoundParams(LEVEL_BonusTawna1, 5);
+		else if (level == LEVEL_HeavyMachinery)  BonusRoundParams(LEVEL_BonusTawna1, 18);
+		else if (level == LEVEL_CortexPower)     BonusRoundParams(LEVEL_BonusTawna1, 27);
+		else if (level == LEVEL_GeneratorRoom)   BonusRoundParams(LEVEL_BonusTawna1, 2);
+		else if (level == LEVEL_ToxicWaste)      BonusRoundParams(LEVEL_BonusTawna1, 6);
+		else if (level == LEVEL_TheHighRoad)     BonusRoundParams(LEVEL_BonusTawna2, 3);
+		else if (level == LEVEL_SlipperyClimb)   BonusRoundParams(LEVEL_BonusTawna1, 29);
+		else if (level == LEVEL_LightsOut)       BonusRoundParams(LEVEL_BonusTawna2, 16);
+		else if (level == LEVEL_JawsOfDarkness)  BonusRoundParams(LEVEL_BonusTawna2, 17);
+		else if (level == LEVEL_CastleMachinery) BonusRoundParams(LEVEL_BonusTawna1, 26);
+		else if (level == LEVEL_TheLab)          BonusRoundParams(LEVEL_BonusTawna1, 19);
+		else                                     BonusRoundParams(LEVEL_BonusTawna1, 0);
+	}
+	else if (DisplayFruitReward == 103.0) {
+		if (var level = LEVEL;
+		         level == LEVEL_SunsetVista)    BonusRoundParams(LEVEL_BonusCortex, 9);
+		else if (level == LEVEL_JawsOfDarkness) BonusRoundParams(LEVEL_BonusCortex, 15);
+	}
+	else if (DisplayFruitReward == 104.0) {
+		if (var level = LEVEL;
+		         level == LEVEL_RollingStones)  BonusRoundParams(LEVEL_BonusBrio, 14);
+		else if (level == LEVEL_TheLostCity)    BonusRoundParams(LEVEL_BonusBrio, 7);
+		else if (level == LEVEL_HeavyMachinery) BonusRoundParams(LEVEL_BonusBrio, 21);
+		else if (level == LEVEL_SlipperyClimb)  BonusRoundParams(LEVEL_BonusBrio, 20);
+	}
+}
+
+state Pickup_Display_Show { // 13
+	code () {
+		SetPickupDisplay(DisplayFruitReward)
+		setfield(self, DisplayVarField, getfield(player, DisplayVarField))
+		statusb &= ~FLAG_INVISIBLE
+		if (getfield(self, DisplayVarField) >= 2.0) {
+			player->invincible = 4
+			player->invincibletime = frametime
+			savecheckpoint()
+			CHECKPOINTID = DisplayParentID
+		}
+		do {
+			playframe(DisplayFrame)
+		} until (getfield(player, DisplayVarField) > getfield(self, DisplayVarField))
+		if (getfield(player, DisplayVarField) == 3.0) {
+			sendevent(Event39, player, 0)
+			SelectBonusRound()
+		}
+		do (var flickers = 0) {
+			playframe(DisplayFrame, 0.1s)
+			x += 300.0
+			playframe(DisplayFrame, 0.1s)
+			x -= 300.0
+			flickers += 1.0
+		} while (flickers < 6.0)
+		playframe(DisplayFrame)
+		if (getfield(player, DisplayVarField) == 3.0) {
+			soundstop()
+			playframe(DisplayFrame, 0.5s)
+			setfield(player, DisplayVarField, 0)
+			sendevent(EventStatus, player, 5.0)
+			loadlevel(BonusLevel)
+		}
+		while (y < DISPLAY_BOUND_Y) {
+			y += 4.0
+			playframe(DisplayFrame)
+		}
+		changestate(Pickup_Display_Hidden)
+	}
+	event (e, a) {
+		accevcstate(Pickup_Display_Hidden, e == EventRespawn)
+		if (e == Event1) {
+			DisplayIconsLeft -= 1.0
+		}
+	}
+	trans {
+		unless (frametime - statetime >= 0.5s) {
+			y = seek(y, DISPLAY_BOUND_LOWER_Y, 10.0)
+		}
+	}
+}
+
+state Pickup_Display_Slave { // 14
+	code (sx, i) {
+		v0 = i
+		x += sx
+		sleep()
+	}
+	trans {
+		statusb = parent->statusb
+		y = parent->y
+		animseq = parent->animseq
+		animframe = parent->animframe
+		DisplayVarField = getfield(parent, 74.0) //parent->DisplayVarField
+		scalex = parent->scalex
+		scaley = parent->scaley
+		if (getfield(parent, DisplayVarField) < v0) {
+			statusb |= FLAG_INVISIBLE
+		}
+	}
+}
+
+state Demo_Logo { // 15
+	code (sx, sy) {
+		loadfile2([Dem2T])
+		if (LEVEL != LEVEL_Map) {
+			spawn2(DispC, S_DEMO_TEXT, 1, 0, DISPLAY_DEMO_LOGO_X)
+		}
+		statusb = FLAG_2D
+		zindex = 1000
+		SetTrans(sx, sy, 0)
+		SetScale(2.552, 4.055, 1024.0)
+		sleepanim(0, DEMO_LOGO)
+	}
+}
+
+state Demo_Text { // 16
+	code (sx, sy) {
+		zindex = 1000
+		SetTrans(sx, sy, 0)
+		SetScale(2.552, 4.055, 1024.0)
+		ISLANDTEXTOBJ = self
+		changestateif(Demo_Loading_Text, LEVEL == LEVEL_Map || LEVEL == LEVEL_Intro)
+		loadfile2([Dem2T])
+		do {
+			statusb = FLAG_2D
+			playanim(0, DEMO_PRESS_START, 1s)
+			statusb = FLAG_2D | FLAG_INVISIBLE
+			playanim(0, DEMO_PRESS_START, 1s)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Demo_Loading_Text, e == Event14)
+	}
+}
+
+state Demo_Loading_Text { // 17
+	code () {
+		statusb = FLAG_2D
+		if (LEVEL == LEVEL_Map || LEVEL == LEVEL_Intro) {
+			sleepanim(0, DEMO_LOADING)
+		}
+		playanim(0, DEMO_LOADING, 2)
+		GAMESTATE = GAME_STATE_TITLE
+		loadlevel(LEVEL_Map)
+		sleepanim(0, DEMO_LOADING)
+	}
+}

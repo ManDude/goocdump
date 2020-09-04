@@ -1,0 +1,787 @@
+#gool RWaOC 46 6
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev wz
+#anim PUSHER [Rp1wV] 10
+#anim PUSHER_TOP [Rp7wV] 10
+#anim SLIDE_PLAT [Rw1wV] 10
+#anim SLIDE_PLAT_LONG [Rw3wV] 10
+#anim WIGGLE_PLAT [Rw2wV] 10
+#anim WIGGLE_PLAT_LONG [Rw4wV] 10
+#anim WALL_PLAT [Rp3wV] 1
+#anim PLAT_LARGE [Rp2wV] 1
+#anim PLAT_SMALL [Rp4wV] 1
+#anim PLAT_TORCH [Rp5wV] 1
+#anim PLAT_ORIGIN [1035I] 1
+#anim IGUANA [Ig1wV] 20
+#anim LIZARD [Li1wV] 1
+#eliflev yK
+#anim PUSHER [1001I] 10
+#anim PUSHER_TOP [1005I] 10
+#anim SLIDE_PLAT [Rw1yV] 10
+#anim SLIDE_PLAT_LONG [1013I] 10
+#anim WIGGLE_PLAT [1016I] 10
+#anim WIGGLE_PLAT_LONG [1020I] 10
+#anim WALL_PLAT [Rp3yV] 1
+#anim PLAT_LARGE [1026I] 1
+#anim PLAT_SMALL [Rp4yV] 1
+#anim PLAT_TORCH [1032I] 1
+#anim PLAT_ORIGIN [Rp6yV] 1
+#anim IGUANA [1038I] 20
+#anim LIZARD [1042I] 1
+#endif
+
+var OldX, OldY, OldZ, mem4,
+PlatCount, PlatFlipRot, PlatOriginRot, PlatDist, PlatMaxDist,
+PlatRotOffset, PlatCycleIsOffset, PlatNoRotSync, PlatTouchStatus,
+PlatDecay, PlatFriction, PlatIsRightSide, PlatIndexTouched,
+PlatOrbitRot, PlatSpeed, PlatAccel, PlatForce, PlatIndex,
+PlatOrbitNewRot, PlatBaseY, PlatLastCollider, PlatMakeSound,
+PlatRotCycleDur, PlatRotCycleOff, PlatRotSpeed, PlatCycleDur, PlatCycleOff,
+SlidePlatWaitDur,
+WallPlatPathSpeed,
+IguanaSideTrack,
+WigglePlatIsLong, WigglePlatWiggleDur, WigglePlatWaitDur,
+IguanaSpinTime,
+PusherHasTop
+
+#spawn S_WALL_PLAT_ARRAY          Wall_Platform_Array
+#spawn S_WALL_PLAT                Wall_Platform
+#spawn S_ORBIT_PLAT_ARRAY         Orbit_Platform_Array
+#spawn S_ORBIT_PLAT               Orbit_Platform
+#spawn S_PUSHER                   Pusher_Spawn
+#spawn S_IGUANA                   Iguana_Spawn
+#spawn S_SENSITIVE_PLAT           Sensitive_Platform
+#spawn S_SLIDE_PLAT               Slide_Platform_Spawn
+#spawn S_WALL_PLAT2_ARRAY         Wall_Platform_Array
+#spawn S_WALL_PLAT2               Wall_Platform
+#spawn S_WIGGLE_PLAT              Wiggle_Platform_Spawn
+#spawn S_TORCH_ARRAY              Wall_Platform_Array
+#spawn S_TORCH_PLAT               Torch_Platform
+#spawn S_WALL_PLAT_ARRAY_SHOW     Wall_Platform_Array
+#spawn S_WALL_PLAT_MOVE           Wall_Platform_Move
+
+#include "ShadC.gooh"
+#include "RuiOC.gooh"
+
+inline sub RuinsWallPlatOriginSetRot() {	
+	PlatOriginRot = time(PlatRotCycleDur, PlatRotCycleOff) * PlatRotSpeed >> 8
+	if (PlatFlipRot) {
+		PlatOriginRot = -PlatOriginRot
+	}
+	rotx = PlatOriginRot
+}
+
+state Wall_Platform_Array { // 0
+	code () {
+		if (vecx) PlatRotCycleDur = vecx >> 8;
+		     else PlatRotCycleDur = 6s;
+		PlatRotCycleOff = vecy >> 8
+		if (vecz) {
+			PlatCount = (vecz >> 20 & 0x7) << 8
+			PlatFlipRot = vecz >> 19 & 0x1
+			PlatDist = ((vecz >> 8 & 0x3FF) << 8) * 400 / 100
+			PlatCycleIsOffset = vecz & (1 << 18)
+			PlatNoRotSync = vecz & (1 << 23)
+		}
+		else {
+			PlatCount = 2.0
+			PlatFlipRot = false
+			PlatDist = 3m
+			PlatCycleIsOffset = false
+			PlatNoRotSync = false
+		}
+		PlatRotSpeed = (360deg << 12) / PlatRotCycleDur >> 4
+		do (var plat_rot = 0, rot_inc = 360deg / (PlatCount >> 8), i = 0) {
+			if (pathlen > 1.0) {
+				spawn(RWaOC, S_WALL_PLAT_MOVE, 1, plat_rot, PlatDist)
+			}
+			else if (spawn == S_WALL_PLAT2_ARRAY) {
+				spawn(RWaOC, S_WALL_PLAT2, 1, plat_rot, PlatDist)
+			}
+			else if (spawn == S_TORCH_ARRAY) {
+				spawn(RWaOC, S_TORCH_PLAT, 1, plat_rot, PlatDist)
+			}
+			else {
+				spawn(RWaOC, S_WALL_PLAT, 1, plat_rot, PlatDist)
+			}
+			plat_rot += rot_inc
+			i += 1.0
+		} while (i < PlatCount)
+		zindex = 48
+		if (spawn != S_WALL_PLAT_ARRAY_SHOW) {
+			statusb = FLAG_INVISIBLE
+		}
+		PlatCycleDur = PlatRotCycleDur / 2
+		if (PlatNoRotSync) {
+			PlatCycleOff = 0
+		}
+		else {
+			PlatCycleOff = PlatRotCycleOff
+		}
+		if (PlatCycleIsOffset) {
+			PlatCycleOff += PlatCycleDur / 2
+		}
+		WallPlatPathSpeed = pathlen*2 / (PlatCycleDur+1)
+		rotz = 90deg
+		if (pathlen > 1.0) {
+			do {
+				RuinsWallPlatOriginSetRot()
+				TimePathProg(time(PlatCycleDur, PlatCycleOff), PlatCycleDur, WallPlatPathSpeed)
+				playanim(0, PLAT_ORIGIN)
+			} while (1)
+		}
+		else {
+			do {
+				RuinsWallPlatOriginSetRot()
+				playanim(0, PLAT_ORIGIN)
+			} while (1)
+		}
+	}
+}
+
+inline sub WallPlatCopyVec() {
+	vecx = parent->x
+	vecy = parent->y
+	vecz = parent->z
+}
+
+inline sub SetOldTrans() {
+	OldX = x
+	OldY = y
+	OldZ = z
+}
+
+state Wall_Platform { // 1
+	statusc 0
+	code (rot, dist) {
+		zindex = 25
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		WallPlatCopyVec()
+		SetTRot(0, 0, 90deg)
+		PlatDist = dist
+		PlatRotOffset = rot
+		do {
+			if (spawn == S_WALL_PLAT2) {
+				playanim(0, SLIDE_PLAT)
+			}
+			else {
+				playanim(0, WALL_PLAT)
+			}
+		} while (1)
+	}
+	trans {
+		SetOldTrans()
+		unless (STATUS_FIRSTFRAME) {
+			trotx = parent->PlatOriginRot + PlatRotOffset
+			vectransf2(vvec, vtrans, 0, PlatDist, 0)
+			if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+				CarryCollider(OldX, OldY, OldZ)
+			}
+		}
+	}
+}
+
+state Wall_Platform_Move { // 2
+	statusc 0
+	code (rot, dist) {
+		zindex = 25
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		SetTRot(0, 0, 90deg)
+		PlatDist = dist
+		PlatRotOffset = rot
+		do { playanim(0, WALL_PLAT) } while (1)
+	}
+	trans {
+		SetOldTrans()
+		unless (STATUS_FIRSTFRAME) {
+			WallPlatCopyVec()
+			trotx = parent->PlatOriginRot + PlatRotOffset
+			vectransf2(vvec, vtrans, 0, PlatDist, 0)
+			if (!(player->statusa \ 0x40000)) {
+				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+					CarryCollider(OldX, OldY, OldZ)
+				}
+			}
+		}
+	}
+}
+
+state Torch_Platform { // 3
+	statusc 0
+	code (rot, dist) {
+		zindex = 25
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		spawn(RuiOC, RuiOC_S_TORCH_PLAT)
+		child->vecx = 0
+		child->vecy = 0.3m
+		WallPlatCopyVec()
+		SetTRot(0, 0, 90deg)
+		PlatDist = dist
+		PlatRotOffset = rot
+		do { playanim(0, PLAT_TORCH) } while (1)
+	}
+	trans {
+		SetOldTrans()
+		unless (STATUS_FIRSTFRAME) {
+			trotx = parent->PlatOriginRot + PlatRotOffset
+			vectransf2(vvec, vtrans, 0, PlatDist, 0)
+			if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+				CarryCollider(OldX, OldY, OldZ)
+			}
+		}
+	}
+}
+
+state Orbit_Platform_Array { // 4
+	code () {
+		if (vecy) PlatDecay = vecy / 100;
+		     else PlatDecay = 0.25;
+		if (vecz) PlatFriction = vecz / 1000;
+		     else PlatFriction = 0.05;
+		PlatDecay = PlatDecay / 1s * 50.0 >> 8
+		PlatTouchStatus = 0
+		if (vecx == 0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 2m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 2m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 3, 4m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 4, 4m, 4m)
+		}
+		if (vecx == 1.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 3m, 3m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 3m, 3m)
+		}
+		if (vecx == 2.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 3m, 6m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 3m, 6m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 3, 6m, 6m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 4, 6m, 6m)
+		}
+		if (vecx == 3.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 4m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 4m, 4m)
+		}
+		if (vecx == 4.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 2.5m, 5m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 2.5m, 5m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 3, 5m, 5m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 4, 5m, 5m)
+		}
+		if (vecx == 5.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 2m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 2m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 3, 4m, 4m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 4, 4m, 4m)
+		}
+		if (vecx == 6.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 6m, 6m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 6m, 6m)
+		}
+		if (vecx == 7.0) {
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 1, 2.1m, 4.2m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 2, 2.1m, 4.2m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1,      0, 3, 4.2m, 4.2m)
+			spawn(RWaOC, S_ORBIT_PLAT, 1, 180deg, 4, 4.2m, 4.2m)
+		}
+		PlatIndexTouched = 0
+		PlatOrbitRot = 0
+		PlatSpeed = 0
+		PlatAccel = 0
+		PlatForce = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		sleepanim(0, PLAT_SMALL)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			PlatAccel = 0
+			if (!PlatIndexTouched) {
+				if (PlatOrbitRot >= 0, PlatOrbitRot < 90.0) {
+					if (PlatTouchStatus == 2) {
+						PlatAccel -= PlatDecay
+					}
+					PlatAccel -= PlatDecay
+				}
+				if (PlatOrbitRot >= 90.0, PlatOrbitRot < 180.0) {
+					if (PlatTouchStatus == 2) {
+						PlatAccel += PlatDecay
+					}
+					PlatAccel += PlatDecay
+				}
+				if (PlatOrbitRot >= 180.0, PlatOrbitRot < 270.0) {
+					if (PlatTouchStatus == 2) {
+						PlatAccel -= PlatDecay
+					}
+					PlatAccel -= PlatDecay
+				}
+				if (PlatOrbitRot >= 270.0, PlatOrbitRot < 360.0) {
+					if (PlatTouchStatus == 2) {
+						PlatAccel += PlatDecay
+					}
+					PlatAccel += PlatDecay
+				}
+			}
+			PlatAccel -= PlatFriction * PlatSpeed >> 8
+			PlatAccel += PlatForce
+			PlatSpeed += PlatAccel
+			PlatOrbitNewRot = PlatOrbitRot + PlatSpeed
+			while (PlatOrbitNewRot >= 360.0) {
+				PlatOrbitNewRot -= 360.0
+			}
+			while (PlatOrbitNewRot <= 0) {
+				PlatOrbitNewRot += 360.0
+			}
+			if (!PlatIndexTouched && ((PlatOrbitRot > 270.0 && PlatOrbitNewRot < 90.0) || (PlatOrbitNewRot > 270.0 && PlatOrbitRot < 90.0) || (PlatOrbitRot > 180.0 && PlatOrbitNewRot < 180.0) || (PlatOrbitNewRot > 180.0 && PlatOrbitRot < 180.0))) {
+				if (PlatTouchStatus == 0) {
+					if (abs(PlatSpeed) < 1.0) {
+						PlatOrbitNewRot = 0
+						PlatAccel = 0
+						PlatSpeed = 0
+					}
+				}
+				else if (PlatTouchStatus == 1) {
+					PlatTouchStatus = 2
+				}
+				else if (PlatTouchStatus == 2) {
+					PlatTouchStatus = 0
+					PlatOrbitNewRot = 0
+					PlatAccel = 0
+					PlatSpeed = 0
+				}
+			}
+			PlatOrbitRot = PlatOrbitNewRot
+		}
+	}
+}
+
+state Orbit_Platform { // 5
+	statusc 0
+	code (rot, idx, dist, max_dist) {
+		PlatIndex = idx
+		PlatDist = dist
+		PlatMaxDist = max_dist
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		WallPlatCopyVec()
+		SetTRot(rot & 0xfff, 0, 90deg)
+		PlatIsRightSide = trotx < 90deg || trotx > 270deg
+		PlatLastCollider = 0
+		do { playanim(0, PLAT_SMALL) } while (1)
+	}
+	trans {
+		SetOldTrans()
+		unless (STATUS_FIRSTFRAME) {
+			if (collider && player->y > y - 0.2m) {
+				var ang_boost = (1920.0 + 10.0 * (64.0*((abs(player->x - parent->x)/400 << 8)/(PlatMaxDist/400)) >> 16)) >> 8, // dividend shifted by 8 to give division 8-bit precision
+				ang_land_boost = !PlatLastCollider ? 100.0 : 0
+				parent->PlatIndexTouched = PlatIndex
+				if (trotx < 90deg || trotx > 270deg) {
+					parent->PlatForce = spd(ang_boost)
+					parent->PlatSpeed += spd(ang_land_boost)
+				}
+				else {
+					parent->PlatForce = spd(-ang_boost)
+					parent->PlatSpeed -= spd(ang_land_boost)
+				}
+			}
+			else if (parent->PlatIndexTouched == PlatIndex) {
+				parent->PlatTouchStatus = 1
+				parent->PlatIndexTouched = 0
+				parent->PlatForce = 0
+			}
+			trotx = (PlatIsRightSide ? (parent->PlatOrbitRot << 12) / 360 >> 8 & 0xfff : 180deg + ((parent->PlatOrbitRot << 12) / 360 >> 8 & 0xfff)) & 0xfff
+			vectransf2(vvec, vtrans, 0, PlatDist, 0)
+			if (parent->y - player->y < PlatDist - (PlatDist>>8)) {
+				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+					if (OldY - y >= 0) {
+						CarryCollider(OldX, OldY, OldZ)
+					}
+				}
+			}
+		}
+		PlatLastCollider = collider
+	}
+}
+
+state Sensitive_Platform { // 6
+	code () {
+		if (vecy) PlatDecay = vecy / 100;
+		     else PlatDecay = 1.0;
+		if (vecz) PlatFriction = vecz / 1000;
+		     else PlatFriction = 0.3;
+		PlatBaseY = y
+		PlatSpeed = 0
+		PlatLastCollider = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		sleepanim(0, PLAT_LARGE)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			PlatAccel = 0
+			{var v3 = PlatBaseY-y
+			PlatAccel += spd(PlatDecay) * v3 >> 8}
+			PlatAccel -= PlatFriction * PlatSpeed >> 8
+			if (collider, !PlatLastCollider) {
+				PlatAccel -= spd(40.0) * 400
+			}
+			PlatLastCollider = collider
+			PlatSpeed += PlatAccel
+			y += PlatSpeed
+			if (collider) {
+				player->y += PlatSpeed
+			}
+		}
+	}
+}
+
+state Iguana_Spawn { // 7
+	statusc 0x12
+	code () {
+		IguanaSideTrack = 0
+		density = 0.15m
+		zindex = 25
+		PlatMakeSound = 0
+		var1 = 0.5m
+		IguanaSpinTime = 0
+		spawn(ShadC, ShadC_S_SHADOW_STATIONARY, 1, 0, 1.0S, 10)
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+		changestate(Iguana_Move)
+	}
+}
+
+inline sub IguanaCheckSpin(e) {
+	if (e == EventSpinHit && interrupter == player && frametime - IguanaSpinTime > 0.1s) {
+		sounddecay(0.625)
+		SoundPlayDefault([sht0A], 0.4V)
+		IguanaSpinTime = frametime
+	}
+}
+
+inline sub IguanaTrackPath() {
+	y += 0
+	var path_rot, deg_to_player
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(IguanaSideTrack)
+	}
+	x += velx
+	z += velz
+	path_rot = troty
+	if (abs(IguanaSideTrack - vecy) > 0.1m) {
+		deg_to_player = degdist(troty, atan2(player->trans))
+		if (deg_to_player < -45deg) {
+			deg_to_player = -45deg
+		}
+		else if (deg_to_player > 45deg) {
+			deg_to_player = 45deg
+		}
+		troty += deg_to_player
+	}
+	IguanaSideTrack = seek(IguanaSideTrack, vecy, spd(2m))
+	if (IguanaSideTrack < -pathdist) {
+		troty = path_rot
+		IguanaSideTrack = -pathdist
+	}
+	else if (IguanaSideTrack > pathdist) {
+		troty = path_rot
+		IguanaSideTrack = pathdist
+	}
+}
+
+state Iguana_Move { // 8
+	stateflag 0x5
+	statusc 0
+	code () {
+		trotx = 180deg
+		yzapproach = 120deg
+		sleepframes(IGUANA, 0, 19.0)
+	}
+	event (e, a) {
+		IguanaCheckSpin(e)
+		SpinKnockbackDie(e, 15m, Iguana_Die)
+		accevcstate(Iguana_Die, e == EventJumpedOn || e == EventHitInvincible || e == EventHit || e == EventFling)
+	}
+	trans {
+		if (STATUS_PATH_END) {
+			if (STATUS_REACHED_TROT) {
+				trotx = 180deg
+				statusb |= 0x20000000
+				statusa &= ~FLAG_PATH_END
+			}
+		}
+		else {
+			LoopPathProg2(0.09)
+			if (STATUS_PATH_END) {
+				trotx = 720deg
+				statusb &= ~0x20000000
+			}
+			IguanaTrackPath()
+			troty += loopseek(PlatMakeSound, 4deg, 0.25deg) - 2deg
+		}
+		EnemyHitPlayerGround()
+	}
+}
+
+state Iguana_Die { // 9
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDie(h)
+	}
+	trans {
+		EnemyDieTransSound()
+	}
+}
+
+state Slide_Platform_Spawn { // 10
+	code () {
+		if (vecx) PlatCycleDur = vecx >> 8;
+		     else PlatCycleDur = 80;
+		if (vecy) PlatCycleOff = vecy >> 8;
+		     else PlatCycleOff = 0;
+		PlatCycleDur = spd(1s*PlatCycleDur)
+		PlatCycleOff = spd(1s*PlatCycleOff)
+		if (vecz & 0x100) {
+			setanim(SLIDE_PLAT_LONG)
+		}
+		else {
+			setanim(SLIDE_PLAT)
+		}
+		if (vecz & 0x200) {
+			PlatMakeSound = false
+		}
+		else {
+			PlatMakeSound = true
+		}
+		SlidePlatWaitDur = (PlatCycleDur - 1s*2/3) / 2
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		changestate(Slide_Platform_Wait)
+	}
+}
+
+state Slide_Platform_Wait { // 11
+	statusc 0
+	code () {
+		sleepframe(0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateifn(Slide_Platform_Active, time(PlatCycleDur, PlatCycleOff))
+		}
+	}
+}
+
+inline sub SoundSlidePlatRetract() {
+	sounddecay(0.25)
+	SoundPlayDefault([sr2wA], 0.15V)
+}
+
+inline sub SoundSlidePlatExtend() {
+	sounddecay(0.25)
+	SoundPlayDefault([sx2wA], 0.3V)
+}
+
+inline sub SlidePlatEndSound() {
+	soundfadet(0.1s, voice)
+	soundfadev(0, voice, 3)
+}
+
+inline sub CrusherEndSound() {
+	soundfadet(0.08s, voice)
+	soundfadev(0, voice, 3)
+}
+
+state Slide_Platform_Active { // 12
+	statusc 0
+	code () {
+		if (PlatMakeSound) {
+			SoundSlidePlatRetract()
+		}
+		playframes(0, 9.0)
+		if (PlatMakeSound) {
+			SlidePlatEndSound()
+		}
+		WaitFrame(SlidePlatWaitDur)
+		if (PlatMakeSound) {
+			SoundSlidePlatExtend()
+		}
+		animframe = 10.0
+		do {
+			animframe += -1.0
+			if (collider, !(LEVEL == LEVEL_StormyAscent || LEVEL == LEVEL_SlipperyClimb), abs(x - player->x) < 0.49m) {
+				player->z += vecz - OldZ
+			}
+			playframe()
+		} while (animframe + -1.0 >= 0)
+		if (PlatMakeSound) {
+			SlidePlatEndSound()
+		}
+		changestate(Slide_Platform_Wait)
+	}
+	trans {
+		OldZ = vecz
+		unless (STATUS_FIRSTFRAME) {
+			getvert(vvec, self, 0)
+		}
+	}
+}
+
+state Wiggle_Platform_Spawn { // 13
+	code () {
+		#ifnreg "pal"
+		if (vecx) WigglePlatWiggleDur = vecx >> 8;
+		     else WigglePlatWiggleDur = 0.69s;
+		if (vecy) WigglePlatWaitDur = vecy >> 8;
+		     else WigglePlatWaitDur = 2s;
+		#else
+		if (vecx) WigglePlatWiggleDur = (vecx >> 8) * 25/30;
+		     else WigglePlatWiggleDur = 0.69s;
+		if (vecy) WigglePlatWaitDur = (vecy >> 8) * 25/30;
+		     else WigglePlatWaitDur = 2s;
+		#endif
+		if (vecz) WigglePlatIsLong = vecz >> 8;
+		     else WigglePlatIsLong = 0;
+		#ifreg "ntsc-j"
+		WigglePlatWiggleDur = spd(1s*WigglePlatWiggleDur)
+		WigglePlatWaitDur = spd(1s*WigglePlatWaitDur)
+		#endif
+		if (WigglePlatIsLong) {
+			setanim(WIGGLE_PLAT_LONG)
+		}
+		else {
+			setanim(WIGGLE_PLAT)
+		}
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		changestate(Wiggle_Platform_Wait)
+	}
+}
+
+state Wiggle_Platform_Wait { // 14
+	statusc 0
+	code () {
+		sleep()
+	}
+	trans {
+		changestateif(Wiggle_Platform_Active, collider)
+	}
+}
+
+state Wiggle_Platform_Active { // 15
+	code () {
+		sounddecay(0.25)
+		SoundPlayDefault([wigwA], 0.1V + rand(0.2V))
+		do (var i = 0) {
+			playframe(rand(3) << 8)
+			playframe()
+			i += 1.0
+		} while (i < (WigglePlatWiggleDur << 8) / 2)
+		SoundSlidePlatRetract()
+		playframes(0, 9.0)
+		SlidePlatEndSound()
+		WaitFrame(9.0, WigglePlatWaitDur)
+		SoundSlidePlatExtend()
+		playframesback(9.0, 0)
+		SlidePlatEndSound()
+		changestate(Wiggle_Platform_Wait)
+	}
+}
+
+state Pusher_Spawn { // 16
+	code () {
+		if (vecx) PlatCycleDur = vecx >> 8;
+		     else PlatCycleDur = 2s+1s*2/3;
+		if (vecy) PlatCycleOff = vecy >> 8;
+		     else PlatCycleOff = 0;
+		PlatMakeSound = !(vecz & 0x100)
+		PusherHasTop = vecz & 0x200
+		zindex = 24
+		if (!(vecz & 0x400)) {
+			PlatCycleDur = spd(1s*PlatCycleDur)
+			PlatCycleOff = spd(1s*PlatCycleOff)
+		}
+		SlidePlatWaitDur = (PlatCycleDur-1s*2/3) / 2
+		if (PusherHasTop) {
+			playanim(0, PUSHER_TOP)
+		}
+		else {
+			playanim(0, PUSHER)
+		}
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL2
+		changestate(Pusher_Wait)
+	}
+}
+
+state Pusher_Wait { // 17
+	statusc 0
+	code () {
+		sleepframe(0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateifn(Pusher_Active, time(PlatCycleDur, PlatCycleOff))
+		}
+	}
+}
+
+state Pusher_Active { // 18
+	statusc 0
+	code () {
+		if (PlatMakeSound) {
+			sounddecay(0.25)
+			soundpitch(2.0 + rand(0.4))
+			soundplay([CslsA], 0.15V)
+		}
+		if (PusherHasTop) {
+			playframes(PUSHER_TOP, 0, 9.0)
+		}
+		else {
+			playframes(PUSHER, 0, 9.0)
+		}
+		if (PlatMakeSound) {
+			CrusherEndSound()
+		}
+		statusb &= ~FLAG_COLLIDABLE
+		WaitFrame(SlidePlatWaitDur)
+		statusb |= FLAG_COLLIDABLE
+		if (PlatMakeSound) {
+			sounddecay(0.25)
+			soundpitch(2.0 + rand(0.4))
+			soundplay([CslsA], 0.3V)
+		}
+		if (PusherHasTop) {
+			animframe = 10.0
+			do {
+				animframe += -1.0
+				if (collider, abs(x - player->x) < 0.99m) {
+					player->z += vecz - OldZ
+				}
+				playframe()
+			} while (animframe + -1.0 >= 0)
+		}
+		else {
+			animframe = 10.0
+			do {
+				animframe += -1.0
+				if (collider, abs(x - player->x) < 0.99m) {
+					player->z += vecz - OldZ
+				}
+				playframe()
+			} while (animframe + -1.0 >= 0)
+		}
+		if (PlatMakeSound) {
+			CrusherEndSound()
+		}
+		changestate(Pusher_Wait)
+	}
+	trans {
+		OldZ = vecz
+		unless (STATUS_FIRSTFRAME) {
+			getvert(vvec, self, 0)
+		}
+	}
+}
+

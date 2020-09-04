@@ -1,0 +1,928 @@
+#gool FruiC 3 4
+
+#include "..\\GOOL_EXPR.gooc"
+
+/* #sprite FRUIT_LIME [Wil2T]
+#tex 0x808080 1 3 0 2 16 8 32 32
+#sprite FRUIT_COCONUT [Wil2T]
+#tex 0x808080 1 3 0 3 24 8 32 32
+#sprite FRUIT_PINEAPPLE [Wil2T]
+#tex 0x808080 1 3 0 6 48 16 32 64
+#sprite FRUIT_STRAWBERRY [Wil2T]
+#tex 0x808080 1 3 0 5 32 8 32 32
+#sprite FRUIT_MANGO [Wil2T]
+#tex 0x808080 1 3 0 7 40 8 32 32
+
+
+#sprite FRUIT_LEMON [Wil2T]
+#tex 0x808080 1 3 0 12 80 16 32 32
+#sprite FRUIT_GRAPE [Wil2T]
+#tex 0x808080 1 3 0 14 88 24 32 32
+#sprite PICKUP_YYY [Wil2T]
+#tex 0x808080 1 3 0 13 80 8 32 32
+
+#anim FRUIT_SHROOM [ShroV] 15 */
+
+#sprite FRUIT_WUMPA [WillT]
+#tex 0x808080 1 0 0 4 8 16 32 32
+#tex 0x808080 1 0 0 4 8 8 32 32
+#tex 0x808080 1 0 0 4 16 24 32 32
+#tex 0x808080 1 0 0 4 16 16 32 32
+#tex 0x808080 1 0 0 4 16 8 32 32
+#tex 0x808080 1 0 0 4 24 24 32 32
+#tex 0x808080 1 0 0 4 24 16 32 32
+#tex 0x808080 1 0 0 4 24 8 32 32
+#tex 0x808080 1 0 0 4 32 24 32 32
+#tex 0x808080 1 0 0 4 32 16 32 32
+#tex 0x808080 1 0 0 4 32 8 32 32
+#tex 0x808080 1 0 0 4 40 24 32 32
+#tex 0x808080 1 0 0 4 40 16 32 32
+#tex 0x808080 1 0 0 4 40 8 32 32
+#sprite WUMPA_PARTS [WillT]
+#tex 0x808080 0 3 7 8 118 4 16 16
+#tex 0x808080 0 3 8 8 120 28 16 16
+#sprite PICKUP_WILLY [WillT]
+#tex 0x808080 0 0 3 0 0 24 64 32
+#sprite PICKUP_CORTEX [Ru6wT]
+#tex 0x808080 0 0 5 0 80 8 64 32
+#sprite PICKUP_BRIO [Ru6wT]
+#tex 0x808080 0 0 4 0 8 16 64 64
+#sprite PICKUP_TAWNA [WillT]
+#tex 0x808080 0 3 6 8 8 24 64 32
+
+#anim PICKUP_DOCTOR [WD10V] 1
+
+#spawn S_FRUIT_LIME          Fruit_Lime
+#spawn S_FRUIT_COCONUT       Fruit_Coconut
+#spawn S_FRUIT_PINEAPPLE     Fruit_Pineapple
+#spawn S_FRUIT_STRAWBERRY    Fruit_Strawberry
+#spawn S_FRUIT_MANGO         Fruit_Mango
+#spawn S_PICKUP_WILLY        Pickup_Willy
+#spawn S_PICKUP_DOCTOR       Pickup_Doctor
+#spawn S_FRUIT_LEMON         Fruit_Lemon
+#spawn S_PICKUP_YYY          Pickup_YYY
+#spawn S_FRUIT_SHROOM1       Fruit_Shroom
+#spawn S_FRUIT_SHROOM2       Fruit_Shroom
+#spawn S_FRUIT_GRAPE         Fruit_Grape
+#spawn S_FRUIT_HOP           Fruit_Spawn
+#spawn S_FRUIT_AUTO          Fruit_Spawn
+#spawn S_FRUIT_GOTO_HUD      Fruit_Goto_Hud
+#spawn S_1UP_GOTO_HUD        Fruit_Goto_Hud
+#spawn S_FRUIT_WUMPA         Fruit_Wumpa
+#spawn S_FRUIT_NONE          Fruit_None
+#spawn S_PICKUP_CORTEX       Pickup_Cortex
+#spawn S_PICKUP_BRIO         Pickup_Brio
+#spawn S_PICKUP_TAWNA        Pickup_Tawna
+#spawn S_WUMPA_IDLEANIM      Wumpa_IdleAnim
+#spawn S_WUMPA_IDLEANIM_PART Wumpa_IdleAnim_Part
+
+var mem1, mem2, mem3, mem4, FruitAmount, FruitFrame, FruitGround, FruitEvent, FruitReward, FruitCounted, FruitParentID
+
+event EventHit => state Fruit_Collect
+event EventSpinHit => state Fruit_Fling
+event EventHitInvincible => state Fruit_Collect
+event Event12 => state Kill
+event EventFling => state Fruit_Collect
+
+#ifreg "pal"
+expr DISPLAY_BOUND_Y = 102.0
+#else
+expr DISPLAY_BOUND_Y = 88.0
+#endif
+
+state Fruit_Wumpa { // 0
+	code () {
+		FruitInit(76.0, 0)
+	}
+}
+
+state Fruit_None { // 1
+	code () {
+		FruitInit(-106.0, 0)
+	}
+}
+
+state Pickup_Willy { // 2
+	code () {
+		if (entitygetstate(3)) {
+			FruitInit(-106.0, 0)
+		}
+		else {
+			FruitInit(97.0, id)
+		}
+	}
+}
+
+state Pickup_Doctor { // 3
+	code () {
+		FruitInit(102.0, 0)
+	}
+}
+
+state Pickup_Cortex { // 4
+	code () {
+		unless (entitygetstate(3) || (LEVEL == LEVEL_SunsetVista && ITEM_KEY2) || (LEVEL == LEVEL_JawsOfDarkness && ITEM_KEY1)) {
+			FruitInit(103.0, id)
+		}
+	}
+}
+
+state Pickup_Brio { // 5
+	code () {
+		unless (entitygetstate(3)) {
+			FruitInit(104.0, id)
+		}
+	}
+}
+
+state Pickup_Tawna { // 6
+	code () {
+		unless (entitygetstate(3) || LEVELCOUNT >= CURRENTLEVEL) {
+			FruitInit(105.0, id)
+		}
+	}
+}
+
+inline sub FruitPlayNextFrame() {
+	if (FruitReward <= 96.0) {
+		animframe = (animframe + 1.0) % 14.0
+		playframe()
+	}
+	else {
+		playframe(FruitFrame)
+	}
+}
+
+sub FruitSpawnHop(v) { // 51
+	if (v) {
+		save (statusb, groundy) {
+			statusb = FLAG_SOLID_GROUND | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE
+			groundy = FruitGround
+			vely = v
+			if (FruitReward == 96.0) {
+				velx = rand(-0.75m, 0.75m + 1)
+				velz = rand(-0.75m, 0.75m + 1)
+			}
+			FruitPlayNextFrame()
+			FruitPlayNextFrame()
+			FruitPlayNextFrame()
+			do {
+				FruitPlayNextFrame()
+			} until (STATUS_GROUNDLAND)
+		}
+	}
+}
+
+state Fruit_Stand { // 7
+	statusc 0
+	stateflag 0x801
+	code () {
+		do (var v1 = 0, oy = FruitGround + 0.3m) {
+			y = oy
+			playframe()
+			y += sin(1.0 * 16 / 31 * 24800 >> 12, 24800) - sin(0.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(2.0 * 16 / 31 * 24800 >> 12, 24800) - sin(1.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(3.0 * 16 / 31 * 24800 >> 12, 24800) - sin(2.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(4.0 * 16 / 31 * 24800 >> 12, 24800) - sin(3.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(5.0 * 16 / 31 * 24800 >> 12, 24800) - sin(4.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(6.0 * 16 / 31 * 24800 >> 12, 24800) - sin(5.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(7.0 * 16 / 31 * 24800 >> 12, 24800) - sin(6.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(8.0 * 16 / 31 * 24800 >> 12, 24800) - sin(7.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(9.0 * 16 / 31 * 24800 >> 12, 24800) - sin(8.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(10.0 * 16 / 31 * 24800 >> 12, 24800) - sin(9.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(11.0 * 16 / 31 * 24800 >> 12, 24800) - sin(10.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(12.0 * 16 / 31 * 24800 >> 12, 24800) - sin(11.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(13.0 * 16 / 31 * 24800 >> 12, 24800) - sin(12.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(14.0 * 16 / 31 * 24800 >> 12, 24800) - sin(13.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(15.0 * 16 / 31 * 24800 >> 12, 24800) - sin(14.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(16.0 * 16 / 31 * 24800 >> 12, 24800) - sin(15.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(17.0 * 16 / 31 * 24800 >> 12, 24800) - sin(16.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(18.0 * 16 / 31 * 24800 >> 12, 24800) - sin(17.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(19.0 * 16 / 31 * 24800 >> 12, 24800) - sin(18.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(20.0 * 16 / 31 * 24800 >> 12, 24800) - sin(19.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(21.0 * 16 / 31 * 24800 >> 12, 24800) - sin(20.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(22.0 * 16 / 31 * 24800 >> 12, 24800) - sin(21.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(23.0 * 16 / 31 * 24800 >> 12, 24800) - sin(22.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(24.0 * 16 / 31 * 24800 >> 12, 24800) - sin(23.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(25.0 * 16 / 31 * 24800 >> 12, 24800) - sin(24.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(26.0 * 16 / 31 * 24800 >> 12, 24800) - sin(25.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(27.0 * 16 / 31 * 24800 >> 12, 24800) - sin(26.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(28.0 * 16 / 31 * 24800 >> 12, 24800) - sin(27.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(29.0 * 16 / 31 * 24800 >> 12, 24800) - sin(28.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(30.0 * 16 / 31 * 24800 >> 12, 24800) - sin(29.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y += sin(31.0 * 16 / 31 * 24800 >> 12, 24800) - sin(30.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(31.0 * 16 / 31 * 24800 >> 12, 24800) - sin(30.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(30.0 * 16 / 31 * 24800 >> 12, 24800) - sin(29.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(29.0 * 16 / 31 * 24800 >> 12, 24800) - sin(28.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(28.0 * 16 / 31 * 24800 >> 12, 24800) - sin(27.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(27.0 * 16 / 31 * 24800 >> 12, 24800) - sin(26.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(26.0 * 16 / 31 * 24800 >> 12, 24800) - sin(25.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(25.0 * 16 / 31 * 24800 >> 12, 24800) - sin(24.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(24.0 * 16 / 31 * 24800 >> 12, 24800) - sin(23.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(23.0 * 16 / 31 * 24800 >> 12, 24800) - sin(22.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(22.0 * 16 / 31 * 24800 >> 12, 24800) - sin(21.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(21.0 * 16 / 31 * 24800 >> 12, 24800) - sin(20.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(20.0 * 16 / 31 * 24800 >> 12, 24800) - sin(19.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(19.0 * 16 / 31 * 24800 >> 12, 24800) - sin(18.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(18.0 * 16 / 31 * 24800 >> 12, 24800) - sin(17.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(17.0 * 16 / 31 * 24800 >> 12, 24800) - sin(16.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(16.0 * 16 / 31 * 24800 >> 12, 24800) - sin(15.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(15.0 * 16 / 31 * 24800 >> 12, 24800) - sin(14.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(14.0 * 16 / 31 * 24800 >> 12, 24800) - sin(13.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(13.0 * 16 / 31 * 24800 >> 12, 24800) - sin(12.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(12.0 * 16 / 31 * 24800 >> 12, 24800) - sin(11.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(11.0 * 16 / 31 * 24800 >> 12, 24800) - sin(10.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(10.0 * 16 / 31 * 24800 >> 12, 24800) - sin(9.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(9.0 * 16 / 31 * 24800 >> 12, 24800) - sin(8.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(8.0 * 16 / 31 * 24800 >> 12, 24800) - sin(7.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(7.0 * 16 / 31 * 24800 >> 12, 24800) - sin(6.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(6.0 * 16 / 31 * 24800 >> 12, 24800) - sin(5.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(5.0 * 16 / 31 * 24800 >> 12, 24800) - sin(4.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(4.0 * 16 / 31 * 24800 >> 12, 24800) - sin(3.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(3.0 * 16 / 31 * 24800 >> 12, 24800) - sin(2.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(2.0 * 16 / 31 * 24800 >> 12, 24800) - sin(1.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+			y -= sin(1.0 * 16 / 31 * 24800 >> 12, 24800) - sin(0.0 * 16 / 31 * 24800 >> 12, 24800) playframe()
+		} while (true)
+	}
+	event (e, a) {
+		accevcstate(Fruit_Collect, (e == EventHit || e == EventHitInvincible) && !a[0])
+		accevcstate(Fruit_Fling, (e == EventHit || e == EventHitInvincible) && a[0])
+		if (e == EventDespawn) {
+			if (distance(player, 0) < 5m) {
+				gamefunc4(self)
+			}
+		}
+	}
+	trans {
+		changestateif(Fruit_Collect, !STATUS_FIRSTFRAME && collider)
+		if (FruitReward <= 96.0) {
+			animframe = (animframe + 1.0) % 14.0
+		}
+		else {
+			animframe = FruitFrame
+		}
+	}
+}
+
+state Fruit_Collect { // 8
+	stateflag 0x2
+	statusc 0
+	code () {
+		entitysetspawn(0)
+		FruitCounted = 1.0
+		if (FruitAmount) {
+			sendeventif(Event42, player, spawn != S_FRUIT_AUTO, 0)
+			if (var r = FruitReward; r == 102.0) {
+				changestate(Doctor_Collect)
+			}
+			else if (r == 103.0 || r == 104.0 || r == 105.0) {
+				SPAWNTRANSX = x
+				SPAWNTRANSY = y
+				SPAWNTRANSZ = z
+				if (FruitParentID) {
+					entitysetstate(FruitParentID, 3)
+				}
+			}
+			else if (r == 97.0) {
+				unless (!FruitParentID || (ZONEFLAGS & 0x2000)) {
+					entitysetstate(FruitParentID, 5)
+				}
+			}
+			statusb = FLAG_2D
+			moveto2d()
+			vecx = scalex / (FruitAmount >> 8) / 8
+			vecy = scaley / (FruitAmount >> 8) / 8
+			vecz = scalez / (FruitAmount >> 8) / 8
+			while (FruitAmount) {
+				changestateif(Fruit_Goto_Hud, FruitAmount == 1.0)
+				spawn2(FruiC, S_FRUIT_GOTO_HUD)
+				FruitCounted += 1.0
+				FruitAmount -= 1.0
+				if (FruitAmount) {
+					FruitPlayNextFrame()
+					FruitPlayNextFrame()
+					FruitPlayNextFrame()
+					FruitPlayNextFrame()
+				}
+			}
+			statusb = FLAG_INVISIBLE
+			FruitPlayNextFrame()
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			scalex -= vecx
+			scaley -= vecy
+			scalez -= vecz
+		}
+	}
+}
+
+state Doctor_Collect { // 9
+	stateflag 0x2
+	code () {
+		creator = player->creator
+		sendevent(Event6, creator, self)
+		if (!eventaccepted) {
+			if (spawn == S_FRUIT_AUTO) {
+				return
+			}
+			else {
+				changestate(Fruit_Stand)
+			}
+		}
+		if (spawn == S_PICKUP_DOCTOR) {
+			if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
+				if (vecz) {
+					var0 = vecz >> 8
+				}
+				else {
+					var0 = 60s
+				}
+				sendevent(EventStatus, creator, DOCTOR_STATUS_SET_LIGHT)
+			}
+		}
+		entitysetspawn(0)
+	}
+}
+
+state Fruit_Fling { // 10
+	stateflag 0x2
+	code () {
+		entitysetspawn(0)
+		if (!rand(3)) {
+			troty = GAMEDIR + rand(-50deg, 50deg + 1)
+		}
+		else {
+			troty = rand(360deg)
+		}
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		zindex = 0
+		soundpitch(4.0)
+		sounddecay(0.5625)
+		soundplay([spa0A], 0.25V)
+		do {
+			FruitPlayNextFrame()
+		} until (frametime - statetime >= 2s)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			y += 0.2m
+			speed += 2m
+			setvel()
+		}
+	}
+}
+
+inline sub SetFruitScale(sx, sy, sz) {
+	if (!vecx) {
+		vecx = 1.0S
+	}
+	scalex = sx * vecx >> 12
+	scaley = sy * vecx >> 12
+	scalez = sz * vecx >> 12
+}
+
+inline sub SetFruitAnim(anim, frame) {
+	setanim(anim)
+	FruitFrame = frame
+}
+
+inline sub SetScaleWumpa() {
+	SetFruitScale(0.675S, 0.84375S, 1.2S)
+	y += 0.45m
+}
+
+inline sub SetScale1Up() {
+	SetFruitScale(1.8S, 1.125S, 1.6S)
+	y += 0.6m
+}
+
+inline sub SetScaleBrio() {
+	SetFruitScale(1.8S, 1.8S, 1.6S)
+	y += 0.6m
+}
+
+inline sub SetScaleFruitScreen() {
+	SetFruitScale(0.9S, 1.125S, 1.6S)
+	y += 0.6m
+}
+
+inline sub SetScaleWumpaSmall() {
+	SetFruitScale(0.337S, 0.42125S, 1.2S)
+	y += 0.2m
+}
+
+expr RandPosVal = x ^ ((y << 2) ^ (z >> 3))
+sub FruitInit (r, b) {
+	if (parent != player) {
+		movetolist(3.0)
+	}
+	FruitParentID = b
+	y += 0.2m
+	FruitGround = y
+	velx = 0
+	vely = 0
+	velz = 0
+	rotx = 0
+	roty = 0
+	rotz = 0
+	if (r < 30.0) {
+		return
+	}
+	if (r == 100.0) {
+		r = RandPosVal % 97.0
+	}
+	if (r == 101.0) {
+		r = (RandPosVal % 18.0) + 76.0
+	}
+	if (vecy & 0x100 && entity) {
+		statusb = FLAG_COLLIDABLE | FLAG_INVISIBLE
+	}
+	else {
+		statusb = FLAG_COLLIDABLE
+	}
+	if (vecy & 0x800) {
+		zindex = 0
+	}
+	else {
+		zindex = 25
+	}
+	SetFruitScale(0.7S, 0.7S, 0.7S)
+	FruitAmount = 1.0
+	if (r <= 76.0) {
+		SetFruitAnim(FRUIT_WUMPA, 0)
+		FruitReward = 76.0
+		SetScaleWumpa()
+	}
+	else if (r < 96.0) {
+		if (spawn == S_FRUIT_AUTO) {
+			SetScaleWumpa()
+			FruitReward = -106.0
+			SetFruitAnim(FRUIT_WUMPA, 0)
+			FruitAmount = ((96.0 - r >> 1) + 1.0) & 0xFFFFFF00
+		}
+		else {
+			do (var i = 0) {
+				spawn2(FruiC, S_FRUIT_HOP, 1, 96.0, 0)
+				i += 1.0
+			} while (i < ((96.0 - r >> 1) + 1.0))
+			statusb = FLAG_INVISIBLE
+			playanim(0, FRUIT_WUMPA)
+			return
+		}
+	}
+	else if (r < 97.0) {
+		animframe = rand(14.0)
+		SetScaleWumpa()
+		SetFruitAnim(FRUIT_WUMPA, 0)
+		FruitReward = 96.0
+	}
+	else if (r <= 97.0) {
+		SetFruitAnim(PICKUP_WILLY, 0)
+		SetScale1Up()
+		FruitReward = 97.0
+	}
+	else if (r == 102.0) {
+		SetFruitAnim(PICKUP_DOCTOR, 0)
+		SetScale1Up()
+		FruitReward = 102.0
+	}
+	else if (r == 103.0) {
+		SetFruitAnim(PICKUP_CORTEX, 0)
+		SetScale1Up()
+		FruitReward = 103.0
+	}
+	else if (r == 104.0) {
+		SetFruitAnim(PICKUP_BRIO, 0)
+		SetScaleBrio()
+		FruitReward = 104.0
+	}
+	else if (r == 105.0) {
+		SetFruitAnim(PICKUP_TAWNA, 0)
+		SetScale1Up()
+		FruitReward = 105.0
+	}
+	else if (r == -106.0) {
+		FruitAmount = 10.0
+		SetFruitAnim(FRUIT_WUMPA, 0)
+		SetScaleFruitScreen()
+		FruitReward = -106.0
+	}
+	else {
+		return
+	}
+	if (spawn == S_FRUIT_AUTO) {
+		statusc &= ~0x12
+		changestate(Fruit_Collect)
+	}
+	else if (spawn == S_FRUIT_HOP) {
+		FruitSpawnHop(12.64912m)
+		statusc &= ~0x12
+		changestate(Fruit_Stand)
+	}
+	else {
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Spawn { // 11
+	statusc 0x12
+	code => sub FruitInit
+	event (e, a) {
+		if (e == Event26) {
+			if (distance(player, 0) < 5m) {
+				gamefunc4(self)
+			}
+		}
+	}
+}
+
+inline sub SetPickupVel(v) {
+	setvel(v)
+	if (abs(velx) < 2.0) {
+		velx = 2.0
+	}
+	if (abs(vely) < 2.0) {
+		vely = 2.0
+	}
+}
+
+state Fruit_Goto_Hud { // 12
+	stateflag 0x40001
+	code () {
+		movetolist(3.0)
+		statusb = FLAG_2D
+		var0 = 0
+		if (spawn == S_FRUIT_GOTO_HUD) {
+			if (!(creator->statusb \ FLAG_2D)) {
+				moveto2d()
+			}
+			FruitReward = getfield(creator, offsetof(FruitReward))
+			animseq = creator->animseq
+			animframe = creator->animframe
+			FruitFrame = getfield(creator, offsetof(FruitFrame))
+			FruitCounted = getfield(creator, offsetof(FruitCounted))
+			FruitAmount = 1.0
+			vecz = 1.6
+		}
+		else if (spawn == S_1UP_GOTO_HUD) {
+			unless (creator->statusb \ FLAG_2D) {
+				moveto2d()
+			}
+			setanim(PICKUP_WILLY)
+			FruitFrame = 0
+			scalex *= 2
+			FruitReward = 97.0
+			FruitAmount = 1.0
+			FruitCounted = FruitAmount
+			vecz = scalex
+		}
+		else {
+			vecz = scalex
+		}
+		if (var r = FruitReward; r == 105.0 || r == 103.0 || r == 104.0) {
+			FruitEvent = EventCombo
+			creator = PICKUPDISPLAY
+			soundpitch(4.0)
+			soundsetup(0, 0, 11)
+			sounddecay(0.9375)
+			soundplay([1up0A], 0.5V)
+			vecz = 3.2
+			FruitAmount = FruitReward
+			var0 = FruitReward
+		}
+		else if (r == 97.0) {
+			FruitEvent = Event17
+			creator = LIFEDISPLAY
+			soundpitch(4.0)
+			soundsetup(0, 0, 11)
+			sounddecay(0.9375)
+			soundplay([1up0A], 0.5V)
+			vecz = 3.2
+		}
+		else {
+			if (spawn == S_FRUIT_AUTO) {
+				FruitEvent = Event36
+			}
+			else {
+				FruitEvent = Event2
+			}
+			creator = FRUITDISPLAY
+			soundsetup(0, 0, 11)
+			soundpitch(4.0 + (0.2 * (FruitCounted - 1.0) >> 8))
+			sounddecay(0.25)
+			soundplay([frt0A], 0.35V)
+			if (FruitReward <= 96.0) {
+				vecz = 1.6
+			}
+		}
+		soundsetup(0, voice, 0, 5)
+		vecy = DISPLAY_BOUND_Y
+		if (FruitReward == 97.0) {
+			LIFEICONTRANSX -= 50.0
+			vecx = LIFEICONTRANSX
+			troty = atan2(vec)
+			SetPickupVel(900.0)
+			do {
+				FruitPlayNextFrame()
+			} until (x >> 8 == vecx >> 8 && y >> 8 == vecy >> 8)
+			do (var flickers = 0) {
+				sendevent(EventHit, creator, 0)
+				playframe(FruitFrame, 2)
+				statusb = FLAG_2D | FLAG_INVISIBLE
+				playframe(FruitFrame, 2)
+				statusb = FLAG_2D
+				flickers += 1.0
+			} while (flickers < 6.0)
+			if (LIFEICONTRANSX == vecx) {
+				LIFEICONTRANSX = 100.0
+			}
+		}
+		sendevent(Event32, creator, var0, FruitParentID)
+		vecx = creator->x
+		troty = atan2(vec)
+		SetPickupVel(FruitReward == 97.0 ? 300.0 : 900.0)
+		do {
+			FruitPlayNextFrame()
+		} until (x >> 8 == vecx >> 8 && y >> 8 == vecy >> 8)
+		sendevent(FruitEvent, player, FruitAmount)
+	}
+	event (e, a) {
+		if (e == EventLevelEnd) {
+			acceptevent()
+			if (FruitReward == 97.0) {
+				LIFECOUNT += 1.0
+			}
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			x = seek(x, vecx, spd(velx))
+			y = seek(y, vecy, spd(vely))
+			if (scalex > vecz) {
+				scalex = scalex * 0.9 >> 8
+				scaley = scaley * 0.9 >> 8
+			}
+			else if (scalex < vecz - 0.08) {
+				scalex = scalex * 1.1 >> 8
+				scaley = scaley * 1.1 >> 8
+			}
+		}
+	}
+}
+
+state Wumpa_IdleAnim { // 13
+	stateflag 0x80
+	statusc 0
+	code (v, t) {
+		rotx = 0
+		roty = 0
+		rotz = 0
+		var0 = v
+		getvert(vtrans, creator, var0)
+		groundy = 0
+		vely = 0
+		setanim(FRUIT_WUMPA)
+		FruitFrame = 0
+		FruitReward = 76.0
+		SetScaleWumpaSmall()
+		zindex = 40
+		do (var start_t = frametime) {
+			FruitPlayNextFrame()
+		} while (frametime - start_t < t)
+		changestate(Wumpa_IdleAnim_Thrown)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			getvert(vtrans, creator, var0)
+			y += 0.4m + groundy
+		}
+	}
+}
+
+state Wumpa_IdleAnim_Thrown { // 14
+	stateflag 0x80
+	statusc 0x22
+	code () {
+		groundy = player->y + 1.6m
+		vely = 13m
+		do {
+			FruitPlayNextFrame()
+		} until (y < groundy && vely < 0)
+		y = groundy
+		spawn(FruiC, S_WUMPA_IDLEANIM_PART, 16)
+		creator->statusa |= 0x400000
+		FruitPlayNextFrame()
+	}
+	trans {
+		vely = spd(vely, -5m)
+		y = spd(y, vely)
+		x = seek(x, player->x, 0.05m)
+		z = seek(z, player->z, 0.05m)
+	}
+}
+
+state Wumpa_IdleAnim_Part { // 15
+	stateflag 0x80010
+	code () {
+		movetolist(3.0)
+		setanim(WUMPA_PARTS)
+		if (!rand(2)) {
+			animframe = 0
+		}
+		else {
+			animframe = 1.0
+		}
+		if (!rand(2)) {
+			trotz = 15deg
+		}
+		else {
+			trotz = -15deg
+		}
+		rotx = 0
+		roty = 0
+		rotz = 0
+		scalex = 2.4 + rand(0.8)
+		scaley = 2.4 + rand(0.8)
+		scalez = 2.4 + rand(0.8)
+		velx = rand(-10m, 10m+1)
+		vely = rand(6m)
+		velz = rand(-10m, 10m+1)
+		statusb = FLAG_PHYSICS_ENGINE
+		do (var start_t = frametime) {
+			vely = spd(vely, -20m)
+			y = spd(y, vely)
+			rotz += trotz
+			playframe()
+		} while (frametime - start_t < 0.3s)
+	}
+}
+
+state Kill { // 16
+	stateflag 0x22
+	statusc 0
+	code () {}
+}
+
+/* state Fruit_Lime { // 0
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 1.0
+		SetFruitAnim(FRUIT_LIME, 0)
+		SetFruitScale(0.7S, 0.7S, 0.7S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Pickup_YYY { // 1
+	code () {
+		if (GLOBAL_9) {
+			statusb = FLAG_COLLIDABLE
+			FruitAmount = 1000.0
+			SetFruitAnim(PICKUP_YYY, 0)
+			SetFruitScale(0.7S, 0.7S, 0.7S)
+			y += 0.2m
+			FruitGround = y
+			changestate(Fruit_Stand)
+		}
+	}
+}
+
+state Fruit_Lemon { // 2
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 1.0
+		SetFruitAnim(FRUIT_LEMON, 0)
+		SetFruitScale(0.7S, 0.7S, 0.7S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Pineapple { // 3
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 3.0
+		SetFruitAnim(FRUIT_PINEAPPLE, 0)
+		SetFruitScale(0.7S, 1.4S, 0.7S)
+		y += 0.2m
+		FruitGround = y + 0.75m
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Coconut { // 4
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 1.0
+		SetFruitAnim(FRUIT_COCONUT, 0)
+		SetFruitScale(0.7S, 0.7S, 0.7S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Strawberry { // 5
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 2.0
+		SetFruitAnim(FRUIT_STRAWBERRY, 0)
+		SetFruitScale(0.8S, 0.8S, 0.7S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Mango { // 6
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 2.0
+		SetFruitAnim(FRUIT_MANGO, 0)
+		SetFruitScale(0.7S, 0.7S, 0.7S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Grape { // 7
+	code () {
+		statusb = FLAG_COLLIDABLE
+		FruitAmount = 5.0
+		SetFruitAnim(FRUIT_GRAPE, 0)
+		SetFruitScale(1.0S, 1.0S, 1.0S)
+		y += 0.2m
+		FruitGround = y
+		changestate(Fruit_Stand)
+	}
+}
+
+state Fruit_Shroom { // 22
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		if (spawn == S_FRUIT_SHROOM1) {
+			scalex = 16.0
+			FruitAmount = 1.0
+		}
+		else {
+			scalex = 24.0
+			FruitAmount = 3.0
+		}
+		scaley = scalex
+		scalez = scalex
+		zindex = 24
+		var0 = 0
+		setanim(FRUIT_SHROOM)
+		changestate(Fruit_Shroom_Stand)
+	}
+}
+
+state Fruit_Shroom_Stand { // 23
+	statusc 0
+	code () {
+		do {
+			playframe(loopseek(var0, 15.0))
+		} while (true)
+	}
+	event (e, a) {
+		accepteventandchangestate(Fruit_Shroom_Break, e == EventJumpedOn)
+	}
+	trans {
+		changestate(Fruit_Shroom_Attack, collider)
+	}
+}
+
+state Fruit_Shroom_Attack { // 24
+	statusc 0
+	code () {
+		sendevent(EventHit, player, 100.0)
+		playframe(loopseek(var0, 15.0))
+		changestate(Fruit_Shroom_Stand)
+	}
+	event (e, a) {
+		accepteventandchangestate(Fruit_Shroom_Break, e == EventJumpedOn)
+	}
+}
+
+state Fruit_Shroom_Break { // 25
+	stateflag 0x3
+	code () {
+		sendevent(Event11, player, FruitAmount)
+		do (var scale = 1.0S) {
+			scalex = scale
+			scaley = scale
+			scalez = scale
+			playframe(loopseek(var0, 15.0))
+			scale += -0.1S
+		} while (scale > 0)
+		entitysetspawn(0)
+	}
+}
+ */

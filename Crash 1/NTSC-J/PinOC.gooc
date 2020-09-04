@@ -1,0 +1,261 @@
+#gool PinOC 18 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PINSTRIPE_SPRITES [Pin1T]
+#tex 0x808080 1 1 0 12 48 16 64 64
+#tex 0x808080 1 1 0 7 64 16 64 64
+
+#sprite SHOCK_START [PoC1T]
+#tex 0x505050 0 1 14 0 48 16 64 32
+#tex 0x505050 0 1 14 0 48 8 64 32
+#tex 0x505050 0 1 14 0 56 24 64 32
+
+#sprite SHOCK_STRAIGHT [PoC1T]
+#tex 0x505050 0 1 14 0 56 16 64 32
+#tex 0x505050 0 1 14 0 56 8 64 32
+#tex 0x505050 0 1 14 0 64 24 64 32
+#tex 0x505050 0 1 14 0 64 16 64 32
+
+#sprite SHOCK_LOOP [PoC1T]
+#tex 0x505050 0 1 14 0 64 8 64 32
+#tex 0x505050 0 1 14 0 72 24 64 32
+#tex 0x505050 0 1 14 0 72 16 64 32
+#tex 0x505050 0 1 14 0 72 8 64 32
+#tex 0x505050 0 1 14 0 80 24 64 32
+#tex 0x505050 0 1 14 0 80 16 64 32
+#tex 0x505050 0 1 14 0 80 8 64 32
+#tex 0x505050 0 1 14 0 88 24 64 32
+#tex 0x505050 0 1 14 0 88 16 64 32
+
+#anim LAMP [PiLaV] 1
+
+#spawn S_GENERATOR          Generator_Master
+#spawn S_GENERATOR_ENERGY   Generator_Energy
+#spawn S_GENERATOR_SHOCK    Generator_Shock
+#spawn S_LAMP               Lamp
+#spawn S_4                  __s_4
+#spawn S_BROKEN_GLASS       Broken_Glass
+#spawn S_6                  __s_6
+
+var DistanceToGenerator, GeneratorYOff, GeneratorOrbitSpeed
+
+state Generator_Master {
+	code () {
+		spawn(PinOC, S_GENERATOR_ENERGY, 8)
+		statusb = FLAG_INVISIBLE
+		do {
+			v0 = rand(1s)
+			WaitFrame(0, PINSTRIPE_SPRITES, v0)
+			spawn(PinOC, S_GENERATOR_SHOCK)
+		} until (GLOBALVAL >= 90.0)
+		sleepanim(0, PINSTRIPE_SPRITES)
+	}
+	trans {
+		once {
+			GLOBALVAL = 0
+		}
+		if (GLOBALVAL >= 90.0 && GLOBALVAL < 100.0) {
+			if (GLOBAL_2 < 0) {
+				GLOBAL_2 = -4.0
+			}
+			else {
+				GLOBAL_2 = 4.0
+			}
+		}
+		if (100.0 == GLOBALVAL) {
+			GLOBAL_2 = 0
+			GLOBALVAL = 101.0
+			sendevent(EventWarp, player, 0)
+		}
+	}
+}
+
+state Generator_Energy {
+	statusc 0
+	code () {
+		scalex = 3.0S
+		scaley = 3.0S
+		troty = rand(360deg)
+		DistanceToGenerator = 3m + rand(4m)
+		speed = 6deg + (rand(11deg) + -(DistanceToGenerator >> 14))
+		if (!rand(4)) {
+			speed = -speed
+		}
+		GeneratorYOff = randi(-6deg, 6deg)
+		GeneratorOrbitSpeed = randi(-30deg, 30deg)
+		vecx = parent->x
+		vecy = parent->y + randi(-2m, 2m)
+		vecz = parent->z
+		do {
+			playanim(0, PINSTRIPE_SPRITES, 0.175s)
+		} until (GLOBALVAL >= 90.0)
+		while (DistanceToGenerator > 1m) {
+			DistanceToGenerator -= 1m
+			scalex -= 0.1S
+			scaley -= 0.1S
+			scalez -= 0.1S
+			playanim(0, PINSTRIPE_SPRITES)
+		}
+		DistanceToGenerator = 8m
+		scalex = 3.0S
+		scaley = 3.0S
+		scalez = 3.0S
+		while (DistanceToGenerator > 0) {
+			DistanceToGenerator -= 1m
+			scalex -= 0.1S
+			scaley -= 0.1S
+			scalez -= 0.1S
+			playanim(0, PINSTRIPE_SPRITES)
+		}
+		DistanceToGenerator = 8m
+		scalex = 3.0S
+		scaley = 3.0S
+		scalez = 3.0S
+		while (DistanceToGenerator > 0) {
+			DistanceToGenerator -= 1m
+			scalex -= 0.1S
+			scaley -= 0.1S
+			scalez -= 0.1S
+			playanim(0, PINSTRIPE_SPRITES)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			troty += speed
+			rotz += GeneratorOrbitSpeed
+			trotx = sin(loopseek(GeneratorYOff, 12deg, 1deg), 11deg)
+			vectransf2(vvec, vtrans, 0, DistanceToGenerator, 0)
+		}
+	}
+}
+
+state Generator_Shock {
+	code () {
+		troty = rand(360deg)
+		trotz = rand(360deg)
+		vectransf2(vtrans, vtrans, 0, 2m + rand(1m), 0)
+		scalex = 3.0S + rand(2.0S)
+		scaley = 1.4S
+		scalez = 1.4S
+		zindex = 200
+		rotz = rand(360deg)
+		if (!rand(3)) {
+			playframes(SHOCK_LOOP, 0, 8.0)
+		}
+		else {
+			playanim(0, SHOCK_START)
+			playanim(1, SHOCK_START)
+			playanim(2, SHOCK_START)
+			setanim(SHOCK_STRAIGHT)
+			do (var start = frametime) {
+				playframe(0 + rand(4.0))
+			} while (frametime - start < 0.2s)
+			scalex = -scalex
+			playanim(2, SHOCK_START)
+			playanim(1, SHOCK_START)
+			playanim(0, SHOCK_START)
+		}
+	}
+}
+
+state Lamp {
+	code () {
+		GLOBALOBJ = self
+		zindex = 20
+		statusb = FLAG_INVISIBLE
+		playanim(0, LAMP, 2s)
+		playanim(0, LAMP, 2s)
+		statusb = 0
+		playanim(0, LAMP)
+		statusb = FLAG_INVISIBLE
+		playanim(0, LAMP, 0.08s)
+		statusb = 0
+		playanim(0, LAMP)
+		statusb = FLAG_INVISIBLE
+		playanim(0, LAMP)
+		statusb = 0
+		playanim(0, LAMP)
+		statusb = FLAG_INVISIBLE
+		playanim(0, LAMP)
+		statusb = 0
+		playanim(0, LAMP)
+		do {
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP, 0.18s)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP, 0.08s)
+			statusb = 0
+			playanim(0, LAMP, 0.3s)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP, 0.1s)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP)
+			statusb = FLAG_INVISIBLE
+			playanim(0, LAMP)
+			statusb = 0
+			playanim(0, LAMP, 0.15s)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Lamp_Broken, e == Event28)
+	}
+}
+
+state Lamp_Broken {
+	code () {
+		playanim(0, LAMP, 1.5s)
+		while (var color = 0x80; color > 0) {
+			colra = color
+			colga = color
+			colba = color
+			colr1 = color
+			colg1 = color
+			colb1 = color
+			colr2 = color
+			colg2 = color
+			colb2 = color
+			colr3 = color
+			colg3 = color
+			colb3 = color
+			playanim(0, LAMP)
+			color -= 0x4
+		}
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, LAMP)
+	}
+}
+
+state Broken_Glass {
+	statusc 0
+	code (xoff, yoff, zoff) {
+		soundpitch(3.6 + rand(0.8))
+		soundplay([BrG8A], 1.0V)
+		rotx = 0
+		roty = 0
+		rotz = 0
+		x = xoff
+		y = yoff
+		z = zoff
+		scalex = 4.0S
+		scaley = 4.0S
+		scalez = 4.0S
+		if (x < 0) scalex = -scalex;
+		sleepanim(1, PINSTRIPE_SPRITES)
+	}
+}
+

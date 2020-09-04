@@ -1,0 +1,234 @@
+#gool BriOC 41 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim VIAL_GREEN [Vi1rV] 1
+#anim VIAL_RED [Vi2rV] 1
+#anim STONE [St1rV] 1
+
+#sprite LIGHTNING [Nb2rT]
+#tex 0x404040 1 1 0 2 96 16 32 32
+#tex 0x404040 1 1 0 3 96 8 32 32
+
+#sprite DEBRIS [Nb1rT]
+#tex 0x808080 1 0 0 5 4 4 16 16
+#tex 0x808080 1 0 0 5 8 4 16 16
+#tex 0x808080 1 0 0 5 12 4 16 16
+#tex 0x808080 1 0 0 5 16 4 16 16
+
+#spawn S_VIAL_GREEN               Vial_Throw
+#spawn S_BRIO_LIGHTNING           Brio_Lightning
+#spawn S_STONE                    Stone_Fall
+#spawn S_VIAL_RED                 Vial_Throw
+#spawn S_DEBRIS                   Debris
+
+var StartX, StartY, StartZ
+
+#include "BoxsC.gooh"
+
+inline sub AnimTowardsPoint(anim, tgt_x, tgt_y, tgt_z) {
+	var s_x = x, s_z = z, t_x = tgt_x, t_y = tgt_y, t_z = tgt_z
+	troty = atan2(t_x)
+	setanim(anim)
+	do (var i = 1.0) {
+		x = s_x + ((t_x - s_x) * (i >> 8)) / 24
+		z = s_z + ((t_z - s_z) * (i >> 8)) / 24
+		vely = spd(vely, -30m)
+		playframe((i - 1.0) * 1 / 24 + 0)
+		i += 1.0
+	} while (i <= 24.0)
+}
+
+state Vial_Throw {
+	code (vert, tx, ty, tz) {
+		zindex = 24
+		getvert(vtrans, parent, vert)
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_SOLID_GROUND
+		groundy = ty + 0.2m
+		vely = 10m
+		if (spawn == S_VIAL_RED) {
+			AnimTowardsPoint(VIAL_RED, tx, ty, tz)
+		}
+		else {
+			AnimTowardsPoint(VIAL_GREEN, tx, ty, tz)
+		}
+		do {
+			playframe()
+		} until (STATUS_GROUNDLAND)
+		soundpitch(4.0)
+		soundplay([flerA], 0.7V)
+		soundsetup(0, voice, 5)
+		if (spawn == S_VIAL_RED) {
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 3, 1)
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 5, 0)
+			sendeventif(EventExplode, player, distance(player, DIST_EXACT) < 1.5m, 100.0)
+			interrupter = objectget(5.0)
+			sendevent(Event1, interrupter)
+		}
+		else {
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 1)
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 5, 0)
+			interrupter = objectget(10.0)
+			sendevent(Event27, interrupter, tx, ty, tz)
+		}
+		playframe()
+	}
+	trans {
+		rotx += 20deg
+	}
+}
+
+state Brio_Lightning {
+	code () {
+		StartX = x
+		StartY = y
+		StartZ = z
+		zindex = 50
+		do {
+			if (!rand(5)) {
+				statusb = 0
+				if (!rand(2)) {
+					x = StartX + randi(-3m, 3m)
+					y = StartY - rand(3m)
+				}
+				else {
+					x = StartX + (!rand(2) ? 1m + rand(2m) : -(1m + rand(2m)))
+					y = StartY + rand(2m)
+				}
+				scalex = 4.0S - (StartY-y > 0 ? StartY-y : 0) / 400 * 16
+				scaley = 2.0S - (StartY-y > 0 ? StartY-y : 0) / 400 * 16 / 2
+				if (!rand(2)) {
+					playanim(0, LIGHTNING)
+					statusb = FLAG_INVISIBLE
+					playanim(0, LIGHTNING)
+					statusb = 0
+					if (!rand(6)) {
+						playanim(1, LIGHTNING)
+					}
+					else {
+						playanim(0, LIGHTNING)
+					}
+				}
+				else {
+					playanim(1, LIGHTNING)
+					statusb = FLAG_INVISIBLE
+					playanim(1, LIGHTNING)
+					statusb = 0
+					if (!rand(6)) {
+						playanim(0, LIGHTNING)
+					}
+					else {
+						playanim(1, LIGHTNING)
+					}
+				}
+			}
+			statusb = FLAG_INVISIBLE
+			playanim(0, LIGHTNING)
+		} while (1)
+	}
+}
+
+state Stone_Fall {
+	code (sx, sy, sz) {
+		zindex = 10
+		groundy = sy
+		x = sx
+		y = sy + 5m
+		z = sz
+		vely = -10m
+		statusb = 0x80000000 | FLAG_COLLIDABLE | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | FLAG_SOLID_GROUND
+		do {
+			playanim(0, STONE)
+		} until (STATUS_GROUNDLAND)
+		SoundPlayDefault([rx4rA], 0.4V + rand(0.3V))
+		changestate(Stone)
+	}
+	event => state Stone
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Stone_Trigger, parent->z > z - 2m)
+			sendevent(EventHit, collider, 100.0)
+		}
+	}
+}
+
+state Stone {
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL | 0x80000000
+		sleepanim(0, STONE)
+	}
+	event (e, a) {
+		accevcstate(Stone_Shrink, e == EventTriggered)
+		if (e == EventJumpedOn) {
+			rejev()
+			interrupter = objectget(5.0)
+			if (interrupter) {
+				interrupter->field_61 = true
+			}
+		}
+	}
+	trans {
+		changestateif(Stone_Trigger, parent->z > z - 1m)
+	}
+}
+
+state Stone_Trigger {
+	code () {
+		interrupter = objectget(5.0)
+		sendevent(EventTriggered, interrupter)
+	}
+}
+
+state Stone_Shrink {
+	code () {
+		scalex = 1.0S
+		do {
+			scaley = scalex
+			scalez = scalex
+			playanim(0, STONE)
+			scalex += -0.1S
+		} while (scalex >= 0)
+	}
+}
+
+state Debris {
+	code (s) {
+		zindex = 20
+		SetScale(0.4S)
+		groundy = y
+		setanim(DEBRIS, 0 + rand(4.0))
+		y += 8m
+		x = randi(-3m, 3m)
+		z += rand(11m) - 1m
+		if (z > player->z + 3m) {
+			z = player->z + randi(-1m, 1m)
+		}
+		statusb = FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | FLAG_SOLID_GROUND
+		do {
+			playframe()
+		} until (STATUS_GROUNDLAND && abs(vely) < 2m)
+		if (s) {
+			sounddecay(0.5625)
+			soundpitch(3.2 + rand(1.6))
+			soundplay([roxrA], 0.05V + rand(0.2V))
+			soundsetup(0, voice, 5)
+		}
+		while (scalex > 0) {
+			scalex -= 0.1S
+			scaley = scalex
+			playframe()
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (STATUS_GROUNDLAND) {
+				vely = -(groundvel / 4)
+			}
+			rotz += 5deg
+		}
+	}
+}
+

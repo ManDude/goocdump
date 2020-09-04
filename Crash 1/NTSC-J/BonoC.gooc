@@ -1,0 +1,1823 @@
+#gool BonoC 56 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#sprite TEST_SPR_1 [Fon0T]
+#tex 0x808080 0 0 3 0 48 24 64 32
+#sprite TEST_SPR_2 [Fon0T]
+#tex 0x808080 0 0 1 0 68 4 16 16
+
+#anim TAWNA_CONGRATS [Ta1BV] 22
+#anim TAWNA_LOOK [Ta2BV] 13
+#anim MINECART [Mc1BV] 1
+#anim CORTEX_STAND_1 [CS1BV] 24
+#anim CORTEX_STAND_2 [CS2BV] 25
+#anim CORTEX_STAND_3 [CS3BV] 25
+#anim CORTEX_STAND_4 [CS4BV] 21
+#anim BRIO_PREPARE_1 [BP1rV] 16
+#anim BRIO_PREPARE_2 [BP2rV] 16
+#anim BRIO_PREPARE_3 [BP3rV] 28
+#anim BRIO_PREPARE_4 [BP4rV] 27
+#anim BRIO_SCARE [BS1rV] 18
+
+#spawn S_BONUS_CORTEX             Cortex_Wait
+#spawn S_BONUS_BRIO               Brio_Wait
+#spawn S_BONUS_TAWNA              Tawna_Wait
+#spawn S_BONUS_MINECART_PATH      Minecart_Path
+#spawn S_BONUS_MINECART           Minecart
+#spawn S_CLIP                     Invisible_Clip
+#spawn S_BONUS_MASTER_SECTION     Bonus_Master_Section
+
+var MinecartPathBoost, MinecartNotCrashed, TawnaLoaded
+
+#include "BoxsC.gooh"
+#include "GamOC.gooh"
+#include "CardC.gooh"
+
+state Tawna_Wait { // 0
+	code () {
+		LoadAnim([Ta1BV], [Ta1BG])
+		LoadAnim([Ta2BV], [Ta1BG])
+		zindex = 24
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		roty = -110deg
+		x -= 1m
+		z += 1.5m
+		do {
+			playnull()
+		} until (tryload([Ta1BG]) && tryload([Ta2BV]) && tryload([Ta1BG]) && tryload([Ta1BV]))
+		spawn(BonoC, S_CLIP)
+		TawnaLoaded = true
+		sleepanim(0, TAWNA_CONGRATS)
+	}
+	event (e, a) {
+		if (e == EventDespawn || e == EventRespawn) {
+			DeloadAnim([Ta1BV], [Ta1BG])
+			DeloadAnim([Ta2BV], [Ta1BG])
+		}
+	}
+	trans {
+		once {
+			TawnaLoaded = false
+		}
+		changestateif(Tawna_Congrats, distance(player, DIST_NO_Y) < 3m && player->statusa \ FLAG_GROUNDLAND && TawnaLoaded)
+	}
+}
+
+sub Tawna_J_Disappear () {
+	scalex = seek(scalex, 0, 0.1S)
+	scalez = seek(scalez, 0, 0.1S)
+	if (!scalex) {
+		statusb |= FLAG_INVISIBLE
+	}
+}
+
+state Tawna_Congrats { // 1
+	code () {
+		playanim(0, TAWNA_CONGRATS, 0.15s)
+		playframes(TAWNA_CONGRATS, 0, 21.0)
+		SAVETYPE = SAVE_TYPE_LEVEL
+		spawn(CardC, 34, 1, -192.0, 60.0, 3) // CardC-34
+		soundpitch(4.08)
+		soundplay([1up0A], 0.5V)
+		settrans(Tawna_J_Disappear)
+		sleepanim(21, TAWNA_CONGRATS)
+	}
+	event => state Tawna_Wait
+}
+
+state Minecart_Path { // 2
+	code () {
+		statusb = FLAG_INVISIBLE
+		do {
+			spawn(BonoC, S_BONUS_MINECART)
+			playanim(0, MINECART, 2s)
+			playanim(0, MINECART, 2s)
+		} while (1)
+	}
+}
+
+state Minecart { // 3
+	statusc 0
+	code () {
+		pathprog = 0
+		CopyCreatorPath()
+		rotz = 90deg
+		MinecartPathBoost = 0
+		trotx = 360deg
+		yzapproach = 180deg
+		zindex = 24
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | 0x800 | 0x2000
+		SoundPlayDefault([mcrxA], 0.4V)
+		do {
+			playanim(0, MINECART)
+		} until (STATUS_PATH_END)
+		soundsetup(0, voice, 5)
+	}
+	trans {
+		once {
+			MinecartNotCrashed = 1
+		}
+		unless (STATUS_FIRSTFRAME) {
+			pathprog = spd(pathprog, 12.0 + loopseek(MinecartPathBoost, 1.0, 0.02))
+			if (pathprog >= pathlen) {
+				pathprog = pathlen-1
+			}
+			calcpath()
+			troty += 90deg
+			rotz = roty-90deg
+			y += 1m
+			rotx += -((abs(MinecartPathBoost)-0.5)/2)
+			if (pathprog > pathlen - 9.0) {
+				if (MinecartNotCrashed) {
+					soundsetup(0, voice, 15)
+					SoundPlayDefault([mccxA], 0.5V + rand(0.3V))
+					MinecartNotCrashed = 0
+				}
+				rotx += 35deg
+			}
+		}
+	}
+}
+
+state Invisible_Clip { // 4
+	statusc 0x1002
+	code () {
+		movetolist(3.0)
+		statusb = FLAG_INVISIBLE
+		y += 2m
+		x -= 5m
+		do {
+			playnull()
+		} until (player->x > x+2.8m)
+		SetScale(3.0S, 6.0S, 10.0S)
+		statusb = FLAG_INVISIBLE | FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		sleepanim(0, PLACEHOLDER)
+	}
+}
+
+state Brio_Wait { // 5
+	code () {
+		zindex = 24
+		roty = -60deg
+		spawn(BonoC, S_CLIP)
+		do {
+			playframes(BRIO_PREPARE_1, 0, 15.0)
+			playframes(BRIO_PREPARE_2, 0, 15.0)
+			playframes(BRIO_PREPARE_3, 0, 27.0)
+			playframes(BRIO_PREPARE_4, 0, 26.0)
+		} while (1)
+	}
+	trans {
+		changestateif(Brio_Escape, distance(player, DIST_NO_Y) < 3m && player->statusa \ FLAG_GROUNDLAND)
+	}
+}
+
+state Brio_Escape { // 6
+	code () {
+		KillEntity()
+		playframes(BRIO_SCARE, 0, 17.0)
+		statusb = FLAG_INVISIBLE
+		soundpitch(4.0)
+		soundplay([tnt0A], 1.0V)
+		save (x, y, z) {
+			getvert(vtrans, self, 0)
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 4, 1)
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 6, 0)
+			y += 1m
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 2, 1)
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 0)
+		}
+		wait(2s)
+	}
+}
+
+state Cortex_Wait { // 7
+	code () {
+		GLOBALVAL = 0
+		spawn(BonoC, S_CLIP)
+		y += 1.5m
+		x -= 2m
+		zindex = 24
+		sleepanim(0, CORTEX_STAND_1)
+	}
+	trans {
+		changestateif(Cortex_Escape, distance(player, DIST_NO_Y) < 4.5m && player->statusa \ FLAG_GROUNDLAND)
+	}
+}
+
+state Cortex_Escape { // 8
+	code () {
+		interrupter = child
+		while (interrupter == child) {
+			playanim(0, CORTEX_STAND_1)
+			spawn(GamOC, GamOC_S_KEY)
+		}
+		var0 = false
+		KillEntity()
+		statusb &= ~FLAG_COLLIDABLE
+		playframes(CORTEX_STAND_1, 0, 23.0)
+		playframes(CORTEX_STAND_2, 0, 24.0)
+		playframes(CORTEX_STAND_3, 0, 24.0)
+		var0 = true
+		playframes(CORTEX_STAND_4, 0, 20.0)
+	}
+	trans {
+		if (var0) {
+			colra = seek(colra, 0, 0.12)
+			colga = seek(colga, 0, 0.12)
+			colba = seek(colba, 0, 0.12)
+			SetColor(colra, colga, colba)
+		}
+	}
+}
+
+inline sub SpawnBox(box_spawn, s_x, s_y, obj_id) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+	}
+}
+
+inline sub SpawnBox_F(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+	}
+}
+
+inline sub SpawnBox_R(box_spawn, s_x, s_y, obj_id, reward) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecx = reward
+	}
+}
+
+inline sub SpawnBox_FL(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecz = box_link
+	}
+}
+
+inline sub SpawnBox_FL_B(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecz = box_link
+		player = child
+	}
+}
+
+inline sub SpawnBox_FL_T(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecz = box_link
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBox_RF(box_spawn, s_x, s_y, obj_id, reward, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecx = reward
+	}
+}
+
+inline sub SpawnBox_F_B(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		player = child
+	}
+}
+
+inline sub SpawnBox_F_T(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBox_RF_B(box_spawn, s_x, s_y, obj_id, reward, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecx = reward
+		player = child
+	}
+}
+
+inline sub SpawnBox_RF_T(box_spawn, s_x, s_y, obj_id, reward, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		child->vecy = box_flags
+		child->vecx = reward
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBox_F_Z(box_spawn, s_x, s_y, s_z, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->z = s_z
+		child->id = obj_id
+		child->vecy = box_flags
+	}
+}
+
+inline sub SpawnBox_F_Z_B(box_spawn, s_x, s_y, s_z, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->z = s_z
+		child->id = obj_id
+		child->vecy = box_flags
+		player = child
+	}
+}
+
+inline sub SpawnBox_F_Z_T(box_spawn, s_x, s_y, s_z, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->z = s_z
+		child->id = obj_id
+		child->vecy = box_flags
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_F(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+	}
+}
+
+inline sub SpawnBoxGhost_F_B(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_F_T(box_spawn, s_x, s_y, obj_id, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_FL(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecz = box_link
+	}
+}
+
+inline sub SpawnBoxGhost_RF(box_spawn, s_x, s_y, obj_id, reward, box_flags) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecx = reward
+	}
+}
+
+inline sub SpawnBoxGhost_RFL(box_spawn, s_x, s_y, obj_id, reward, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecx = reward
+		child->vecz = box_link
+	}
+}
+
+inline sub SpawnBoxGhost_FL_B(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecz = box_link
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_FL_T(box_spawn, s_x, s_y, obj_id, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecz = box_link
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_RFL_B(box_spawn, s_x, s_y, obj_id, reward, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecx = reward
+		child->vecz = box_link
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhost_RFL_T(box_spawn, s_x, s_y, obj_id, reward, box_flags, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, box_spawn)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = box_flags
+		child->vecx = reward
+		child->vecz = box_link
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBoxIron(s_x, s_y, obj_id)                        { SpawnBox_F(BoxsC_S_BOX_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxIron_B(s_x, s_y, obj_id)                      { SpawnBox_F_B(BoxsC_S_BOX_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxIron_T(s_x, s_y, obj_id)                      { SpawnBox_F_T(BoxsC_S_BOX_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxFruit(s_x, s_y, obj_id)                       { SpawnBox_F(BoxsC_S_BOX_FRUIT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxFruit_B(s_x, s_y, obj_id)                     { SpawnBox_F_B(BoxsC_S_BOX_FRUIT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxFruit_T(s_x, s_y, obj_id)                     { SpawnBox_F_T(BoxsC_S_BOX_FRUIT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxFruit_R_B(s_x, s_y, obj_id, reward)           { SpawnBox_RF_B(BoxsC_S_BOX_FRUIT, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxFruit_R_T(s_x, s_y, obj_id, reward)           { SpawnBox_RF_T(BoxsC_S_BOX_FRUIT, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxEmpty(s_x, s_y, obj_id)                       { SpawnBox_F(BoxsC_S_BOX_EMPTY, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxEmpty_B(s_x, s_y, obj_id)                     { SpawnBox_F_B(BoxsC_S_BOX_EMPTY, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxEmpty_T(s_x, s_y, obj_id)                     { SpawnBox_F_T(BoxsC_S_BOX_EMPTY, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxEmpty2(s_x, s_y, obj_id)                      { SpawnBox_F(BoxsC_S_BOX_EMPTY2, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxEmpty2_B(s_x, s_y, obj_id)                    { SpawnBox_F_B(BoxsC_S_BOX_EMPTY2, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxEmpty2_T(s_x, s_y, obj_id)                    { SpawnBox_F_T(BoxsC_S_BOX_EMPTY2, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxPickup(s_x, s_y, obj_id)                      { SpawnBox_F(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxPickup_R(s_x, s_y, obj_id, reward)            { SpawnBox_RF(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxPickup_R_B(s_x, s_y, obj_id, reward)          { SpawnBox_RF_B(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxPickup_R_T(s_x, s_y, obj_id, reward)          { SpawnBox_RF_T(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxPickup_B(s_x, s_y, obj_id)                    { SpawnBox_F_B(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxPickup_T(s_x, s_y, obj_id)                    { SpawnBox_F_T(BoxsC_S_BOX_PICKUP, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxLife(s_x, s_y, obj_id)                        { SpawnBox_F(BoxsC_S_BOX_LIFE, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxLife_B(s_x, s_y, obj_id)                      { SpawnBox_F_B(BoxsC_S_BOX_LIFE, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxLife_T(s_x, s_y, obj_id)                      { SpawnBox_F_T(BoxsC_S_BOX_LIFE, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxLife_Z(s_x, s_y, s_z, obj_id)                 { SpawnBox_F_Z(BoxsC_S_BOX_LIFE, s_x, s_y, s_z, obj_id, 0x400) }
+inline sub SpawnBoxLife_Z_B(s_x, s_y, s_z, obj_id)               { SpawnBox_F_Z_B(BoxsC_S_BOX_LIFE, s_x, s_y, s_z, obj_id, 0x400) }
+inline sub SpawnBoxLife_Z_T(s_x, s_y, s_z, obj_id)               { SpawnBox_F_Z_T(BoxsC_S_BOX_LIFE, s_x, s_y, s_z, obj_id, 0x400) }
+inline sub SpawnBoxSpring(s_x, s_y, obj_id)                      { SpawnBox_F(BoxsC_S_BOX_SPRING, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxSpring_B(s_x, s_y, obj_id)                    { SpawnBox_F_B(BoxsC_S_BOX_SPRING, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxSpring_T(s_x, s_y, obj_id)                    { SpawnBox_F_T(BoxsC_S_BOX_SPRING, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxSpringI(s_x, s_y, obj_id)                     { SpawnBox_F(BoxsC_S_BOX_SPRING_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxSpringI_B(s_x, s_y, obj_id)                   { SpawnBox_F_B(BoxsC_S_BOX_SPRING_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxSpringI_T(s_x, s_y, obj_id)                   { SpawnBox_F_T(BoxsC_S_BOX_SPRING_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxTNT(s_x, s_y, obj_id)                         { SpawnBox_F(BoxsC_S_BOX_TNT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxTNT_B(s_x, s_y, obj_id)                       { SpawnBox_F_B(BoxsC_S_BOX_TNT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxTNT_T(s_x, s_y, obj_id)                       { SpawnBox_F_T(BoxsC_S_BOX_TNT, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxAction(s_x, s_y, obj_id, box_link)            { SpawnBox_FL(BoxsC_S_BOX_ACTION, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxAction_B(s_x, s_y, obj_id, box_link)          { SpawnBox_FL_B(BoxsC_S_BOX_ACTION, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxAction_T(s_x, s_y, obj_id, box_link)          { SpawnBox_FL_T(BoxsC_S_BOX_ACTION, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhostIron(s_x, s_y, obj_id)                   { SpawnBoxGhost_F(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhostIron(s_x, s_y, obj_id, box_link)         { SpawnBoxGhost_FL(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhostIron_B(s_x, s_y, obj_id)                 { SpawnBoxGhost_F_B(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhostIron_B(s_x, s_y, obj_id, box_link)       { SpawnBoxGhost_FL_B(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhostIron_T(s_x, s_y, obj_id)                 { SpawnBoxGhost_F_T(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhostIron_T(s_x, s_y, obj_id, box_link)       { SpawnBoxGhost_FL_T(BoxsC_S_BOX_GHOST_IRON, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhost(s_x, s_y, obj_id)                       { SpawnBoxGhost_F(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhost(s_x, s_y, obj_id, box_link)             { SpawnBoxGhost_FL(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhost_R(s_x, s_y, obj_id, reward)             { SpawnBoxGhost_RF(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxGhost_R(s_x, s_y, obj_id, reward, box_link)   { SpawnBoxGhost_RFL(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400, box_link) }
+inline sub SpawnBoxGhost_B(s_x, s_y, obj_id)                     { SpawnBoxGhost_F_B(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhost_B(s_x, s_y, obj_id, box_link)           { SpawnBoxGhost_FL_B(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhost_R_B(s_x, s_y, obj_id, reward)           { SpawnBoxGhost_RF_B(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxGhost_R_B(s_x, s_y, obj_id, reward, box_link) { SpawnBoxGhost_RFL_B(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400, box_link) }
+inline sub SpawnBoxGhost_T(s_x, s_y, obj_id)                     { SpawnBoxGhost_F_T(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400) }
+inline sub SpawnBoxGhost_T(s_x, s_y, obj_id, box_link)           { SpawnBoxGhost_FL_T(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, 0x400, box_link) }
+inline sub SpawnBoxGhost_R_T(s_x, s_y, obj_id, reward)           { SpawnBoxGhost_RF_T(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400) }
+inline sub SpawnBoxGhost_R_T(s_x, s_y, obj_id, reward, box_link) { SpawnBoxGhost_RFL_T(BoxsC_S_BOX_GHOST, s_x, s_y, obj_id, reward, 0x400, box_link) }
+
+expr B_X = 1440.0
+expr B_Y = 2800.0
+expr B_Z = -300.0
+sub BonusObj_Bonus0 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X,      B_Y,      201.0)
+		SpawnBoxIron       (B_X+1m,   B_Y,      202.0)
+		SpawnBoxIron_B     (B_X+2m,   B_Y,      203.0)
+		SpawnBoxFruit_T    (B_X+2m,   B_Y+1m,   204.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,      205.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,      206.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,      207.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,      208.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+10m,  B_Y,      209.0)
+		SpawnBoxIron       (B_X+11m,  B_Y,      210.0)
+		SpawnBoxIron_B     (B_X+12m,  B_Y,      211.0)
+		SpawnBoxFruit_T    (B_X+12m,  B_Y+1m,   212.0)
+		SpawnBoxIron       (B_X+13m,  B_Y,      213.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,      214.0)
+		SpawnBoxIron_B     (B_X+15m,  B_Y,      215.0)
+		SpawnBoxEmpty_T    (B_X+15m,  B_Y+1m,   216.0)
+		SpawnBoxIron_B     (B_X+16m,  B_Y,      217.0)
+		SpawnBoxEmpty_T    (B_X+16m,  B_Y+1m,   218.0)
+		SpawnBoxLife_T     (B_X+16m,  B_Y+2m,   219.0)
+		SpawnBoxIron       (B_X+17m,  B_Y,      220.0)
+	}
+}
+
+sub BonusObj_Bonus1 () {
+	if (health == 0) {
+		SpawnBoxEmpty      (B_X+1m,   B_Y,      201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,      202.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,      203.0)
+		SpawnBoxIron_B     (B_X+5m,   B_Y,      204.0)
+		SpawnBoxSpring_T   (B_X+5m,   B_Y+1m,   205.0)
+		SpawnBoxLife       (B_X+5m,   B_Y+7m,   206.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,      207.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,      208.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+10m,  B_Y,      209.0)
+		SpawnBoxIron       (B_X+11m,  B_Y,      210.0)
+		SpawnBoxIron       (B_X+12m,  B_Y,      211.0)
+		SpawnBoxEmpty      (B_X+14m,  B_Y,      212.0)
+		SpawnBoxLife       (B_X+16m,  B_Y,      213.0)
+	}
+}
+
+sub BonusObj_Bonus2 () {
+	if (health == 0) {
+		SpawnBoxEmpty      (B_X+1m,   B_Y,      201.0)
+		SpawnBoxEmpty      (B_X+3m,   B_Y+1m,   202.0)
+		SpawnBoxEmpty      (B_X+5m,   B_Y+2m,   203.0)
+		SpawnBoxLife       (B_X+7m,   B_Y+3m,   204.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxEmpty      (B_X+10m,  B_Y+3m,   204.0)
+		SpawnBoxEmpty      (B_X+12m,  B_Y+2m,   205.0)
+		SpawnBoxEmpty      (B_X+14m,  B_Y+1m,   206.0)
+		SpawnBoxLife       (B_X+16m,  B_Y,      207.0)
+	}
+}
+
+inline sub BonusObjTawna1End(id1, id2) {
+	SpawnBoxLife_Z_B(B_X+20m, B_Y+1m, B_Z+1m, id1)
+	SpawnBoxLife_Z_T(B_X+20m, B_Y+2m, B_Z+1m, id2)
+}
+
+inline sub BonusObjTawna2End(id1, id2) {
+	SpawnBoxLife_Z_B(B_X+36m, B_Y+1m, B_Z+1m, id1)
+	SpawnBoxLife_Z_T(B_X+36m, B_Y+2m, B_Z+1m, id2)
+}
+
+inline sub BonusObjBrioEnd1(id1, id2, id3) {
+	SpawnBoxLife_Z_B(B_X+36m, B_Y+1m, B_Z+1m, id1)
+	SpawnBoxLife_Z_T(B_X+36m, B_Y+2m, B_Z+1m, id2)
+	SpawnBoxLife_Z_T(B_X+36m, B_Y+3m, B_Z+1m, id3)
+}
+
+inline sub BonusObjBrioEnd2(id1, id2, id3, id4) {
+	SpawnBoxLife_Z_B(B_X+36m, B_Y+1m, B_Z+1m, id1)
+	SpawnBoxLife_Z_T(B_X+36m, B_Y+2m, B_Z+1m, id2)
+	SpawnBoxLife_Z_T(B_X+36m, B_Y+3m, B_Z+1m, id3)
+	SpawnBoxLife_Z(B_X+37m, B_Y+1m, B_Z+1m, id4)
+}
+
+sub BonusObj_Bonus3 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X,      B_Y,      201.0)
+		SpawnBoxIron       (B_X+1m,   B_Y,      202.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,      203.0)
+		SpawnBoxIron_B     (B_X+3m,   B_Y,      204.0)
+		SpawnBoxIron_T     (B_X+3m,   B_Y+1m,   205.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,      206.0)
+		SpawnBoxIron_B     (B_X+5m,   B_Y,      207.0)
+		SpawnBoxTNT_T      (B_X+5m,   B_Y+1m,   208.0)
+		SpawnBoxPickup_R_T (B_X+5m,   B_Y+2m,   209.0, 97.0)
+		SpawnBoxIron_T     (B_X+5m,   B_Y+3m,   210.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron_B     (B_X+10m,  B_Y,      211.0)
+		SpawnBoxIron_T     (B_X+10m,  B_Y+1m,   212.0)
+		SpawnBoxIron       (B_X+11m,  B_Y+2m,   213.0)
+		SpawnBoxIron       (B_X+12m,  B_Y+3m,   214.0)
+		SpawnBoxIron       (B_X+13m,  B_Y+3m,   215.0)
+		SpawnBoxPickup     (B_X+15m,  B_Y-1m,   216.0)
+		SpawnBoxPickup_R   (B_X+17m,  B_Y-1m,   217.0, 97.0)
+		SpawnBoxEmpty2     (B_X+15m,  B_Y+4m,   218.0)
+		SpawnBoxEmpty2     (B_X+16m,  B_Y+4m,   219.0)
+		SpawnBoxEmpty2     (B_X+17m,  B_Y+4m,   220.0)
+		SpawnBoxEmpty2     (B_X+18m,  B_Y+4m,   221.0)
+		SpawnBoxEmpty2     (B_X+19m,  B_Y+4m,   222.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxEmpty2     (B_X+20m,  B_Y+4m,   223.0)
+		SpawnBoxEmpty2     (B_X+21m,  B_Y+4m,   224.0)
+		SpawnBoxEmpty2     (B_X+22m,  B_Y+4m,   225.0)
+		SpawnBoxEmpty2     (B_X+23m,  B_Y+4m,   226.0)
+		SpawnBoxEmpty2     (B_X+24m,  B_Y+4m,   227.0)
+		SpawnBoxEmpty2     (B_X+25m,  B_Y+4m,   228.0)
+		SpawnBoxEmpty2     (B_X+26m,  B_Y+4m,   229.0)
+		SpawnBoxEmpty2     (B_X+27m,  B_Y+4m,   230.0)
+		SpawnBoxEmpty2     (B_X+28m,  B_Y+4m,   231.0)
+		SpawnBoxPickup     (B_X+19m,  B_Y-1m,   232.0)
+		SpawnBoxPickup_R   (B_X+20m,  B_Y-1m,   233.0, 97.0)
+		SpawnBoxPickup     (B_X+21m,  B_Y-1m,   234.0)
+		SpawnBoxPickup     (B_X+23m,  B_Y-1m,   235.0)
+		SpawnBoxPickup     (B_X+24m,  B_Y-1m,   236.0)
+		SpawnBoxPickup_R   (B_X+26m,  B_Y-1m,   237.0, 97.0)
+		SpawnBoxPickup     (B_X+28m,  B_Y-1m,   238.0)
+		SpawnBoxSpring     (B_X+30m,  B_Y-1m,   239.0)
+		SpawnBoxIron       (B_X+31m,  B_Y+2m,   240.0)
+		SpawnBoxIron       (B_X+32m,  B_Y+2m,   241.0)
+		BonusObjTawna2End(242.0, 243.0)
+	}
+}
+
+sub BonusObj_Bonus4 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,      201.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,      202.0)
+		SpawnBoxTNT        (B_X+3m,   B_Y,      203.0)
+		SpawnBoxFruit      (B_X+3m,   B_Y+2m,   204.0)
+		SpawnBoxFruit      (B_X+3m,   B_Y+5m,   205.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,      206.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,      207.0)
+		SpawnBoxIron       (B_X+8m,   B_Y,      208.0)
+		SpawnBoxIron       (B_X+9m,   B_Y,      209.0)
+		SpawnBoxIron_B     (B_X+10m,  B_Y,      210.0)
+		SpawnBoxSpring_T   (B_X+10m,  B_Y+1m,   211.0)
+		SpawnBoxAction     (B_X+10m,  B_Y+5m,   212.0, 110.0)
+		SpawnBoxIron       (B_X+11m,  B_Y,      213.0)
+		SpawnBoxIron       (B_X+12m,  B_Y,      214.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxGhostIron  (B_X+14m,  B_Y,      110.0, 111.0)
+		SpawnBoxGhostIron  (B_X+15m,  B_Y,      111.0, 112.0)
+		SpawnBoxGhostIron  (B_X+16m,  B_Y,      112.0, 113.0)
+		SpawnBoxEmpty      (B_X+16m,  B_Y+2m,   215.0)
+		SpawnBoxGhost      (B_X+17m,  B_Y,      113.0, 114.0)
+		SpawnBoxGhost      (B_X+18m,  B_Y,      114.0, 115.0)
+		SpawnBoxLife       (B_X+18m,  B_Y+3m,   216.0)
+		SpawnBoxGhost      (B_X+19m,  B_Y,      115.0, 116.0)
+		SpawnBoxGhostIron  (B_X+20m,  B_Y,      116.0, 117.0)
+		SpawnBoxGhostIron  (B_X+21m,  B_Y,      117.0, 118.0)
+		SpawnBoxGhostIron  (B_X+22m,  B_Y,      118.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxIron       (B_X+24m,  B_Y,      217.0)
+		SpawnBoxIron       (B_X+25m,  B_Y,      218.0)
+		SpawnBoxIron_B     (B_X+26m,  B_Y,      219.0)
+		SpawnBoxIron_T     (B_X+26m,  B_Y+1m,   220.0)
+		SpawnBoxIron       (B_X+27m,  B_Y+1m,   221.0)
+		SpawnBoxIron_B     (B_X+28m,  B_Y+1m,   222.0)
+		SpawnBoxIron_T     (B_X+28m,  B_Y+2m,   223.0)
+		SpawnBoxIron       (B_X+29m,  B_Y+2m,   224.0)
+		SpawnBoxIron       (B_X+30m,  B_Y+2m,   225.0)
+		SpawnBoxIron       (B_X+31m,  B_Y+2m,   226.0)
+		BonusObjTawna2End(227.0, 228.0)
+	}
+}
+
+sub BonusObj_Bonus5 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y+2m,   201.0)
+		SpawnBoxIron_B     (B_X+3m,   B_Y,      202.0)
+		SpawnBoxIron_T     (B_X+3m,   B_Y+1m,   203.0)
+		SpawnBoxIron_T     (B_X+3m,   B_Y+2m,   204.0)
+		SpawnBoxIron_T     (B_X+3m,   B_Y+3m,   205.0)
+		SpawnBoxTNT_B      (B_X+4m,   B_Y,      206.0)
+		SpawnBoxPickup_R_T (B_X+4m,   B_Y+1m,   207.0, 97.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+2m,   208.0)
+		SpawnBoxPickup_T   (B_X+4m,   B_Y+3m,   209.0)
+		SpawnBoxTNT_B      (B_X+5m,   B_Y,      210.0)
+		SpawnBoxEmpty_T    (B_X+5m,   B_Y+1m,   211.0)
+		SpawnBoxPickup_T   (B_X+5m,   B_Y+2m,   212.0)
+		SpawnBoxEmpty_T    (B_X+5m,   B_Y+3m,   213.0)
+		SpawnBoxTNT_B      (B_X+6m,   B_Y,      214.0)
+		SpawnBoxPickup_T   (B_X+6m,   B_Y+1m,   215.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+2m,   216.0)
+		SpawnBoxPickup_T   (B_X+6m,   B_Y+3m,   217.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,      218.0)
+		SpawnBoxIron       (B_X+8m,   B_Y,      219.0)
+		SpawnBoxTNT        (B_X+9m,   B_Y,      220.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,      221.0)
+		SpawnBoxIron       (B_X+11m,  B_Y,      222.0)
+		SpawnBoxTNT        (B_X+12m,  B_Y,      223.0)
+		SpawnBoxIron       (B_X+13m,  B_Y,      224.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,      225.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron_B     (B_X+7m,   B_Y+3m,   226.0)
+		SpawnBoxIron_T     (B_X+7m,   B_Y+4m,   227.0)
+		SpawnBoxIron_T     (B_X+7m,   B_Y+5m,   228.0)
+		SpawnBoxIron_T     (B_X+7m,   B_Y+6m,   229.0)
+	}
+	else if (health == 2.0) {
+		BonusObjTawna1End(230.0, 231.0)
+	}
+}
+
+sub BonusObj_Bonus6 () {
+	if (health == 0) {
+		SpawnBoxTNT        (B_X+2m,   B_Y,      201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,      202.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,      203.0)
+		SpawnBoxTNT        (B_X+5m,   B_Y,      204.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,      205.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,      206.0)
+		SpawnBoxIron       (B_X+3m,   B_Y+3m,   207.0)
+		SpawnBoxTNT_B      (B_X+8m,   B_Y,      208.0)
+		SpawnBoxEmpty_T    (B_X+8m,   B_Y+1m,   209.0)
+		SpawnBoxEmpty_T    (B_X+8m,   B_Y+2m,   210.0)
+		SpawnBoxPickup_R_T (B_X+8m,   B_Y+3m,   211.0, 97.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+9m,   B_Y,      212.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,      213.0)
+		SpawnBoxTNT        (B_X+11m,  B_Y,      214.0)
+		SpawnBoxIron       (B_X+12m,  B_Y,      215.0)
+		SpawnBoxIron_B     (B_X+13m,  B_Y,      216.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+1m,   217.0)
+		SpawnBoxTNT_B      (B_X+14m,  B_Y,      218.0)
+		SpawnBoxFruit_T    (B_X+14m,  B_Y+1m,   219.0)
+		SpawnBoxEmpty_T    (B_X+14m,  B_Y+2m,   220.0)
+	}
+	else if (health == 2.0) {
+		BonusObjTawna1End(221.0, 222.0)
+	}
+}
+
+sub BonusObj_Bonus7 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y+2m,    201.0)
+		SpawnBoxIron       (B_X+2m,   B_Y+2m,    202.0)
+		SpawnBoxTNT        (B_X+7m,   B_Y,       203.0)
+		SpawnBoxTNT_B      (B_X+8m,   B_Y+1m,    204.0)
+		SpawnBoxTNT_T      (B_X+8m,   B_Y+2m,    205.0)
+		SpawnBoxEmpty_T    (B_X+8m,   B_Y+3m,    206.0)
+		SpawnBoxTNT_B      (B_X+9m,   B_Y+3m,    207.0)
+		SpawnBoxTNT_T      (B_X+9m,   B_Y+4m,    208.0)
+		SpawnBoxEmpty_T    (B_X+9m,   B_Y+5m,    209.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+13m,  B_Y,       210.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       211.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       212.0)
+		SpawnBoxIron       (B_X+16m,  B_Y,       213.0)
+		SpawnBoxLife       (B_X+15m,  B_Y+1m,    214.0)
+		SpawnBoxLife_B     (B_X+16m,  B_Y+1m,    215.0)
+		SpawnBoxLife_T     (B_X+16m,  B_Y+2m,    216.0)
+		SpawnBoxIron       (B_X+17m,  B_Y+2m,    217.0)
+		SpawnBoxIron       (B_X+18m,  B_Y+2m,    218.0)
+		SpawnBoxIron       (B_X+19m,  B_Y+2m,    219.0)
+		SpawnBoxIron       (B_X+20m,  B_Y+2m,    220.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxTNT        (B_X+25m,  B_Y,       221.0)
+		SpawnBoxTNT        (B_X+26m,  B_Y+1m,    222.0)
+		SpawnBoxTNT        (B_X+27m,  B_Y+2m,    223.0)
+		SpawnBoxEmpty2_B   (B_X+25m,  B_Y+4m,    224.0)
+		SpawnBoxEmpty2_T   (B_X+25m,  B_Y+5m,    225.0)
+		SpawnBoxEmpty2_B   (B_X+26m,  B_Y+4m,    226.0)
+		SpawnBoxEmpty2_T   (B_X+26m,  B_Y+5m,    227.0)
+		SpawnBoxTNT        (B_X+28m,  B_Y+3m,    228.0)
+		SpawnBoxLife       (B_X+31m,  B_Y,       229.0)
+		SpawnBoxLife       (B_X+32m,  B_Y,       230.0)
+		SpawnBoxLife       (B_X+33m,  B_Y,       231.0)
+	}
+}
+
+sub BonusObj_Bonus8 () {
+	if (health == 1.0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,       202.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       203.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       204.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       205.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       206.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,       207.0)
+		SpawnBoxIron       (B_X+8m,   B_Y,       208.0)
+		SpawnBoxIron       (B_X+9m,   B_Y,       209.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,       210.0)
+		SpawnBoxEmpty      (B_X+8m,   B_Y+2m,    211.0)
+		SpawnBoxPickup_B   (B_X+9m,   B_Y+2m,    212.0)
+		SpawnBoxEmpty_T    (B_X+9m,   B_Y+3m,    213.0)
+		SpawnBoxEmpty      (B_X+10m,  B_Y+3m,    214.0)
+		SpawnBoxEmpty      (B_X+11m,  B_Y+3m,    215.0)
+		SpawnBoxEmpty      (B_X+12m,  B_Y+3m,    216.0)
+		SpawnBoxEmpty      (B_X+13m,  B_Y+3m,    217.0)
+		SpawnBoxEmpty      (B_X+14m,  B_Y+3m,    218.0)
+		SpawnBoxIron       (B_X+13m,  B_Y,       219.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       220.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       221.0)
+		SpawnBoxPickup_R   (B_X+16m,  B_Y,       222.0, 97.0)
+		SpawnBoxIron       (B_X+17m,  B_Y,       223.0)
+		SpawnBoxIron       (B_X+18m,  B_Y,       224.0)
+		SpawnBoxIron_B     (B_X+19m,  B_Y,       225.0)
+		SpawnBoxEmpty_T    (B_X+19m,  B_Y+1m,    226.0)
+		SpawnBoxIron       (B_X+20m,  B_Y,       227.0)
+		SpawnBoxIron       (B_X+21m,  B_Y,       228.0)
+		SpawnBoxIron       (B_X+22m,  B_Y,       229.0)
+		SpawnBoxEmpty      (B_X+20m,  B_Y+2m,    230.0)
+		SpawnBoxEmpty      (B_X+21m,  B_Y+2m,    231.0)
+		SpawnBoxEmpty      (B_X+22m,  B_Y+3m,    232.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxPickup_R_B (B_X+23m,  B_Y+3m,    233.0, 97.0)
+		SpawnBoxEmpty2_T   (B_X+23m,  B_Y+4m,    234.0)
+		SpawnBoxEmpty2     (B_X+24m,  B_Y+4m,    235.0)
+		SpawnBoxEmpty2     (B_X+25m,  B_Y+4m,    236.0)
+		SpawnBoxIron       (B_X+26m,  B_Y,       237.0)
+		SpawnBoxIron       (B_X+27m,  B_Y,       238.0)
+		SpawnBoxIron_B     (B_X+28m,  B_Y,       239.0)
+		SpawnBoxFruit_T    (B_X+28m,  B_Y+1m,    240.0)
+		SpawnBoxFruit      (B_X+28m,  B_Y+4m,    241.0)
+		SpawnBoxIron       (B_X+29m,  B_Y,       242.0)
+		SpawnBoxIron_B     (B_X+30m,  B_Y,       243.0)
+		SpawnBoxFruit_T    (B_X+30m,  B_Y+1m,    244.0)
+		SpawnBoxFruit      (B_X+30m,  B_Y+4m,    245.0)
+		SpawnBoxIron       (B_X+31m,  B_Y,       246.0)
+		SpawnBoxIron       (B_X+32m,  B_Y,       247.0)
+	}
+}
+
+sub BonusObj_Bonus9 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       202.0)
+		SpawnBoxTNT        (B_X+8m,   B_Y,       203.0)
+		SpawnBoxTNT        (B_X+9m,   B_Y,       204.0)
+		SpawnBoxTNT        (B_X+10m,  B_Y,       205.0)
+		SpawnBoxTNT        (B_X+11m,  B_Y,       206.0)
+		SpawnBoxTNT        (B_X+12m,  B_Y,       207.0)
+		SpawnBoxEmpty_B    (B_X+13m,  B_Y+1m,    208.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+2m,    209.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+3m,    210.0)
+		SpawnBoxEmpty      (B_X+16m,  B_Y,       211.0)
+		SpawnBoxEmpty      (B_X+17m,  B_Y,       212.0)
+		SpawnBoxEmpty      (B_X+18m,  B_Y,       213.0)
+		SpawnBoxEmpty      (B_X+19m,  B_Y,       214.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxTNT        (B_X+21m,  B_Y,       215.0)
+		SpawnBoxTNT        (B_X+22m,  B_Y,       216.0)
+		SpawnBoxTNT        (B_X+23m,  B_Y,       217.0)
+		SpawnBoxTNT        (B_X+24m,  B_Y,       218.0)
+		SpawnBoxTNT        (B_X+25m,  B_Y,       219.0)
+		SpawnBoxTNT        (B_X+26m,  B_Y,       220.0)
+		SpawnBoxEmpty_B    (B_X+27m,  B_Y+1m,    221.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+2m,    222.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+3m,    223.0)
+		SpawnBoxEmpty2_T   (B_X+27m,  B_Y+4m,    224.0)
+		SpawnBoxEmpty2_T   (B_X+27m,  B_Y+5m,    225.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxIron       (B_X+30m,  B_Y,       226.0)
+		SpawnBoxIron       (B_X+31m,  B_Y,       227.0)
+	}
+}
+
+sub BonusObj_Bonus10 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,       201.0)
+		SpawnBoxEmpty_B    (B_X+2m,   B_Y,       202.0)
+		SpawnBoxEmpty_T    (B_X+2m,   B_Y+1m,    203.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       204.0)
+		SpawnBoxEmpty_B    (B_X+4m,   B_Y,       205.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+1m,    206.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+2m,    207.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       208.0)
+		SpawnBoxEmpty_B    (B_X+6m,   B_Y,       209.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+1m,    210.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+2m,    211.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+3m,    212.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,       213.0)
+		SpawnBoxPickup_R   (B_X+8m,   B_Y+1m,    214.0, 76.0)
+		SpawnBoxPickup_R   (B_X+9m,   B_Y+1m,    215.0, 97.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,       216.0)
+		SpawnBoxEmpty_B    (B_X+11m,  B_Y,       217.0)
+		SpawnBoxEmpty_T    (B_X+11m,  B_Y+1m,    218.0)
+		SpawnBoxEmpty_T    (B_X+11m,  B_Y+2m,    219.0)
+		SpawnBoxEmpty_T    (B_X+11m,  B_Y+3m,    220.0)
+		SpawnBoxIron       (B_X+12m,  B_Y,       221.0)
+		SpawnBoxEmpty_B    (B_X+13m,  B_Y,       222.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+1m,    223.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+2m,    224.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       225.0)
+		SpawnBoxEmpty_B    (B_X+15m,  B_Y,       226.0)
+		SpawnBoxEmpty_T    (B_X+15m,  B_Y+1m,    227.0)
+		SpawnBoxIron       (B_X+16m,  B_Y,       228.0)
+	}
+	else if (health == 1.0) {
+		BonusObjTawna1End(221.0, 222.0)
+	}
+}
+
+sub BonusObj_Bonus11 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       202.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       203.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       204.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       205.0)
+		SpawnBoxIron_B     (B_X+7m,   B_Y,       206.0)
+		SpawnBoxSpringI_T  (B_X+7m,   B_Y+1m,    207.0)
+		SpawnBoxIron       (B_X+8m,   B_Y,       208.0)
+		SpawnBoxIron       (B_X+9m,   B_Y,       209.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,       210.0)
+		SpawnBoxEmpty2     (B_X+6m,   B_Y+5m,    211.0)
+		SpawnBoxEmpty2_B   (B_X+7m,   B_Y+4m,    212.0)
+		SpawnBoxEmpty2_T   (B_X+7m,   B_Y+5m,    213.0)
+		SpawnBoxEmpty2_B   (B_X+8m,   B_Y+4m,    214.0)
+		SpawnBoxEmpty2_T   (B_X+8m,   B_Y+5m,    215.0)
+		SpawnBoxEmpty2_B   (B_X+9m,   B_Y+4m,    216.0)
+		SpawnBoxEmpty2_T   (B_X+9m,   B_Y+5m,    217.0)
+		SpawnBoxEmpty2     (B_X+10m,  B_Y+5m,    218.0)
+		SpawnBoxEmpty2     (B_X+11m,  B_Y+5m,    219.0)
+		SpawnBoxEmpty2     (B_X+12m,  B_Y+5m,    220.0)
+		SpawnBoxEmpty2     (B_X+13m,  B_Y+5m,    221.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxEmpty2     (B_X+14m,  B_Y+4m,    222.0)
+		SpawnBoxEmpty2     (B_X+15m,  B_Y+4m,    223.0)
+		SpawnBoxEmpty      (B_X+16m,  B_Y+3m,    224.0)
+		SpawnBoxEmpty      (B_X+17m,  B_Y+3m,    225.0)
+		SpawnBoxEmpty      (B_X+18m,  B_Y+2m,    226.0)
+		SpawnBoxEmpty      (B_X+19m,  B_Y+2m,    227.0)
+		SpawnBoxEmpty      (B_X+20m,  B_Y+1m,    228.0)
+		SpawnBoxEmpty      (B_X+21m,  B_Y+1m,    229.0)
+		SpawnBoxIron       (B_X+22m,  B_Y,       230.0)
+		SpawnBoxIron       (B_X+23m,  B_Y,       231.0)
+		SpawnBoxIron       (B_X+24m,  B_Y,       232.0)
+		SpawnBoxIron       (B_X+25m,  B_Y,       233.0)
+		SpawnBoxIron       (B_X+26m,  B_Y,       234.0)
+		SpawnBoxEmpty      (B_X+29m,  B_Y,       235.0)
+		SpawnBoxEmpty_B    (B_X+30m,  B_Y,       236.0)
+		SpawnBoxEmpty_T    (B_X+30m,  B_Y+1m,    237.0)
+		SpawnBoxEmpty_B    (B_X+31m,  B_Y,       238.0)
+		SpawnBoxFruit_R_T  (B_X+31m,  B_Y+1m,    239.0, 97.0)
+		SpawnBoxEmpty_T    (B_X+31m,  B_Y+2m,    240.0)
+		SpawnBoxEmpty_B    (B_X+32m,  B_Y,       241.0)
+		SpawnBoxEmpty_T    (B_X+32m,  B_Y+1m,    242.0)
+		SpawnBoxEmpty      (B_X+33m,  B_Y,       243.0)
+		BonusObjTawna2End(244.0, 245.0)
+	}
+}
+
+sub BonusObj_Bonus12 () {
+	if (health == 0) {
+		SpawnBoxEmpty      (B_X+1m,   B_Y,       201.0)
+		SpawnBoxEmpty      (B_X+2m,   B_Y,       202.0)
+		SpawnBoxEmpty      (B_X+3m,   B_Y,       203.0)
+		SpawnBoxEmpty      (B_X+4m,   B_Y,       204.0)
+		SpawnBoxEmpty      (B_X+5m,   B_Y,       205.0)
+		SpawnBoxEmpty      (B_X+6m,   B_Y,       206.0)
+		SpawnBoxFruit_B    (B_X+7m,   B_Y,       207.0)
+		SpawnBoxFruit_T    (B_X+7m,   B_Y+1m,    208.0)
+		SpawnBoxFruit_B    (B_X+7m,   B_Y+4m,    209.0)
+		SpawnBoxFruit_T    (B_X+7m,   B_Y+5m,    210.0)
+		SpawnBoxFruit_B    (B_X+8m,   B_Y,       211.0)
+		SpawnBoxFruit_T    (B_X+8m,   B_Y+1m,    212.0)
+		SpawnBoxFruit_B    (B_X+8m,   B_Y+4m,    213.0)
+		SpawnBoxFruit_T    (B_X+8m,   B_Y+5m,    214.0)
+		SpawnBoxFruit_B    (B_X+9m,   B_Y,       215.0)
+		SpawnBoxFruit_T    (B_X+9m,   B_Y+1m,    216.0)
+		SpawnBoxFruit_B    (B_X+9m,   B_Y+4m,    217.0)
+		SpawnBoxFruit_T    (B_X+9m,   B_Y+5m,    218.0)
+		SpawnBoxFruit_B    (B_X+10m,  B_Y,       219.0)
+		SpawnBoxFruit_T    (B_X+10m,  B_Y+1m,    220.0)
+		SpawnBoxFruit_B    (B_X+10m,  B_Y+4m,    221.0)
+		SpawnBoxFruit_T    (B_X+10m,  B_Y+5m,    222.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxFruit_B    (B_X+11m,  B_Y,       223.0)
+		SpawnBoxFruit_T    (B_X+11m,  B_Y+1m,    224.0)
+		SpawnBoxFruit_B    (B_X+11m,  B_Y+4m,    225.0)
+		SpawnBoxFruit_T    (B_X+11m,  B_Y+5m,    226.0)
+		SpawnBoxEmpty      (B_X+12m,   B_Y,      227.0)
+		SpawnBoxEmpty      (B_X+13m,   B_Y,      228.0)
+		SpawnBoxEmpty      (B_X+14m,   B_Y,      229.0)
+		SpawnBoxEmpty      (B_X+15m,   B_Y,      230.0)
+		SpawnBoxEmpty      (B_X+16m,   B_Y,      231.0)
+		BonusObjTawna1End(232.0, 233.0)
+	}
+}
+
+sub BonusObj_Bonus13 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y,       201.0)
+		SpawnBoxIron_B     (B_X+3m,   B_Y,       202.0)
+		SpawnBoxSpringI_T  (B_X+3m,   B_Y+1m,    203.0)
+		SpawnBoxEmpty_T    (B_X+3m,   B_Y+2m,    204.0)
+		SpawnBoxIron_T     (B_X+3m,   B_Y+3m,    205.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       206.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       207.0)
+		SpawnBoxIron_B     (B_X+6m,   B_Y,       208.0)
+		SpawnBoxIron_T     (B_X+6m,   B_Y+1m,    209.0)
+		SpawnBoxIron_T     (B_X+6m,   B_Y+2m,    210.0)
+		SpawnBoxIron       (B_X+7m,   B_Y+2m,    211.0)
+		SpawnBoxIron       (B_X+8m,   B_Y+2m,    212.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxTNT        (B_X+14m,  B_Y,       213.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       214.0)
+		SpawnBoxIron       (B_X+16m,  B_Y+1m,    215.0)
+		SpawnBoxTNT        (B_X+15m,  B_Y-2m,    216.0)
+		SpawnBoxTNT        (B_X+17m,  B_Y-2m,    217.0)
+		SpawnBoxSpringI_B  (B_X+17m,  B_Y,       218.0)
+		SpawnBoxEmpty_T    (B_X+17m,  B_Y+1m,    219.0)
+		SpawnBoxIron_T     (B_X+17m,  B_Y+2m,    220.0)
+		SpawnBoxIron_B     (B_X+18m,  B_Y+2m,    221.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+3m,    222.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+4m,    223.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+5m,    224.0)
+		SpawnBoxIron       (B_X+19m,  B_Y+2m,    225.0)
+		SpawnBoxIron       (B_X+20m,  B_Y+2m,    226.0)
+		SpawnBoxIron       (B_X+21m,  B_Y+2m,    227.0)
+		SpawnBoxIron       (B_X+22m,  B_Y+2m,    228.0)
+		
+	}
+	else if (health == 2.0) {
+		SpawnBoxIron       (B_X+26m,  B_Y,       229.0)
+		SpawnBoxIron       (B_X+27m,  B_Y,       230.0)
+		SpawnBoxIron_B     (B_X+28m,  B_Y,       231.0)
+		SpawnBoxTNT_T      (B_X+28m,  B_Y+1m,    232.0)
+		SpawnBoxEmpty_T    (B_X+28m,  B_Y+2m,    233.0)
+		SpawnBoxIron_T     (B_X+28m,  B_Y+3m,    234.0)
+		SpawnBoxIron       (B_X+29m,  B_Y,       235.0)
+		SpawnBoxIron       (B_X+30m,  B_Y,       236.0)
+		BonusObjTawna2End(237.0, 238.0)
+	}
+}
+
+sub BonusObj_Bonus14 () {
+	if (health == 0) {
+		SpawnBoxTNT        (B_X+2m,   B_Y,       201.0)
+		SpawnBoxTNT        (B_X+4m,   B_Y+2m,    202.0)
+		SpawnBoxTNT        (B_X+6m,   B_Y,       203.0)
+		SpawnBoxIron       (B_X+6m,   B_Y+5m,    204.0)
+		SpawnBoxTNT        (B_X+8m,   B_Y+2m,    205.0)
+		SpawnBoxTNT        (B_X+10m,  B_Y,       206.0)
+		SpawnBoxIron       (B_X+10m,  B_Y+5m,    207.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+14m,  B_Y,       208.0)
+		SpawnBoxIron_B     (B_X+15m,  B_Y,       209.0)
+		SpawnBoxLife_T     (B_X+15m,  B_Y+1m,    210.0)
+		SpawnBoxIron_B     (B_X+16m,  B_Y,       211.0)
+		SpawnBoxLife_T     (B_X+16m,  B_Y+1m,    212.0)
+		SpawnBoxLife_T     (B_X+16m,  B_Y+2m,    213.0)
+		SpawnBoxIron       (B_X+20m,  B_Y,       214.0)
+		SpawnBoxIron       (B_X+21m,  B_Y,       215.0)
+		SpawnBoxIron_B     (B_X+22m,  B_Y,       216.0)
+		SpawnBoxTNT_T      (B_X+22m,  B_Y+1m,    217.0)
+		SpawnBoxEmpty_T    (B_X+22m,  B_Y+2m,    218.0)
+		SpawnBoxIron_T     (B_X+22m,  B_Y+3m,    219.0)
+		SpawnBoxIron       (B_X+23m,  B_Y,       220.0)
+		SpawnBoxIron_B     (B_X+24m,  B_Y,       221.0)
+		SpawnBoxTNT_T      (B_X+24m,  B_Y+1m,    222.0)
+		SpawnBoxEmpty_T    (B_X+24m,  B_Y+2m,    223.0)
+		SpawnBoxIron_T     (B_X+24m,  B_Y+3m,    224.0)
+		SpawnBoxIron       (B_X+25m,  B_Y,       225.0)
+		SpawnBoxIron_B     (B_X+26m,  B_Y,       226.0)
+		SpawnBoxTNT_T      (B_X+26m,  B_Y+1m,    227.0)
+		SpawnBoxEmpty_T    (B_X+26m,  B_Y+2m,    228.0)
+		SpawnBoxIron_T     (B_X+26m,  B_Y+3m,    229.0)
+		SpawnBoxIron       (B_X+27m,  B_Y,       230.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxLife       (B_X+31m,  B_Y,       231.0)
+		SpawnBoxLife       (B_X+32m,  B_Y,       232.0)
+		SpawnBoxLife       (B_X+33m,  B_Y,       233.0)
+	}
+}
+
+sub BonusObj_Bonus15 () {
+	if (health == 0) {
+		SpawnBoxEmpty      (B_X+1m,   B_Y,       201.0)
+		SpawnBoxEmpty      (B_X+3m,   B_Y+1m,    202.0)
+		SpawnBoxEmpty      (B_X+5m,   B_Y+2m,    203.0)
+		SpawnBoxAction_B   (B_X+7m,   B_Y+1m,    204.0, 110.0)
+		SpawnBoxEmpty_T    (B_X+7m,   B_Y+2m,    205.0)
+		SpawnBoxTNT_T      (B_X+7m,   B_Y+3m,    206.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxEmpty      (B_X+10m,  B_Y+3m,    207.0)
+		SpawnBoxPickup_B   (B_X+11m,  B_Y+2m,    208.0)
+		SpawnBoxPickup_R_T (B_X+11m,  B_Y+3m,    209.0, 97.0)
+		SpawnBoxGhostIron  (B_X+16m,  B_Y,       119.0)
+		SpawnBoxGhostIron  (B_X+15m,  B_Y,       118.0, 119.0)
+		SpawnBoxGhostIron  (B_X+14m,  B_Y,       117.0, 118.0)
+		SpawnBoxGhostIron  (B_X+13m,  B_Y,       116.0, 117.0)
+		SpawnBoxGhostIron  (B_X+12m,  B_Y,       115.0, 116.0)
+		SpawnBoxGhostIron  (B_X+11m,  B_Y,       114.0, 115.0)
+		SpawnBoxGhostIron  (B_X+10m,  B_Y,       113.0, 114.0)
+		SpawnBoxGhostIron  (B_X+9m,   B_Y,       112.0, 113.0)
+		SpawnBoxGhostIron  (B_X+8m,   B_Y,       111.0, 112.0)
+		SpawnBoxGhostIron  (B_X+7m,   B_Y,       110.0, 111.0)
+		SpawnBoxEmpty      (B_X+18m,  B_Y+1m,    210.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxEmpty      (B_X+20m,  B_Y+2m,    211.0)
+		SpawnBoxGhost_B    (B_X+22m,  B_Y,       130.0, 131.0)
+		SpawnBoxAction_T   (B_X+22m,  B_Y+1m,    212.0, 130.0)
+		SpawnBoxEmpty_T    (B_X+22m,  B_Y+2m,    213.0)
+		SpawnBoxTNT_T      (B_X+22m,  B_Y+3m,    214.0)
+		SpawnBoxGhost      (B_X+23m,  B_Y,       131.0, 132.0)
+		SpawnBoxTNT        (B_X+23m,  B_Y+1m,    215.0)
+		SpawnBoxGhost      (B_X+24m,  B_Y,       132.0, 133.0)
+		SpawnBoxEmpty      (B_X+25m,  B_Y+3m,    216.0)
+		SpawnBoxPickup_R   (B_X+26m,  B_Y+3m,    217.0, 97.0)
+		SpawnBoxTNT        (B_X+25m,  B_Y,       218.0)
+		SpawnBoxGhost      (B_X+26m,  B_Y,       133.0, 134.0)
+		SpawnBoxGhost      (B_X+27m,  B_Y,       134.0, 135.0)
+		SpawnBoxTNT        (B_X+28m,  B_Y,       219.0)
+		SpawnBoxGhost      (B_X+29m,  B_Y,       135.0, 136.0)
+		SpawnBoxGhost      (B_X+30m,  B_Y,       136.0)
+		SpawnBoxTNT        (B_X+31m,  B_Y,       220.0)
+	}
+	else if (health == 3.0) {
+	}
+}
+
+sub BonusObj_Bonus16 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       202.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       203.0)
+		SpawnBoxAction     (B_X+5m,   B_Y+2m,    204.0, 120.0)
+		SpawnBoxGhostIron  (B_X+10m,  B_Y,       123.0, 124.0)
+		SpawnBoxGhostIron  (B_X+9m,   B_Y,       122.0, 123.0)
+		SpawnBoxGhostIron  (B_X+8m,   B_Y,       121.0, 122.0)
+		SpawnBoxGhostIron  (B_X+7m,   B_Y,       120.0, 121.0)
+		SpawnBoxGhost      (B_X+8m,   B_Y+1m,    124.0, 125.0)
+		SpawnBoxGhost_R_B  (B_X+9m,   B_Y+1m,    125.0, 80.0, 126.0)
+		SpawnBoxGhost_T    (B_X+9m,   B_Y+2m,    126.0, 127.0)
+		SpawnBoxGhost      (B_X+10m,  B_Y+1m,    127.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+13m,  B_Y,       205.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       206.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       207.0)
+		SpawnBoxIron       (B_X+16m,  B_Y,       208.0)
+		SpawnBoxIron       (B_X+17m,  B_Y,       209.0)
+		SpawnBoxAction     (B_X+15m,  B_Y+1m,    210.0, 130.0)
+		SpawnBoxAction     (B_X+18m,  B_Y+2m,    211.0, 135.0)
+		SpawnBoxGhostIron  (B_X+23m,  B_Y,       133.0, 140.0)
+		SpawnBoxGhostIron  (B_X+22m,  B_Y,       132.0, 133.0)
+		SpawnBoxGhostIron  (B_X+21m,  B_Y,       131.0, 132.0)
+		SpawnBoxGhostIron  (B_X+20m,  B_Y,       130.0, 131.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxGhost_R    (B_X+21m,  B_Y+1m,    140.0, 80.0, 141.0)
+		SpawnBoxGhost_R    (B_X+23m,  B_Y+1m,    141.0, 80.0)
+		SpawnBoxIron       (B_X+25m,  B_Y,       212.0)
+		SpawnBoxSpringI    (B_X+26m,  B_Y,       213.0)
+		SpawnBoxGhostIron  (B_X+26m,  B_Y+1m,    135.0)
+		SpawnBoxLife_B     (B_X+26m,  B_Y+7m,    214.0)
+		SpawnBoxLife_T     (B_X+26m,  B_Y+8m,    215.0)
+		SpawnBoxLife_T     (B_X+26m,  B_Y+9m,    216.0)
+		SpawnBoxIron       (B_X+27m,  B_Y,       217.0)
+		SpawnBoxIron       (B_X+30m,  B_Y+1m,    218.0)
+		SpawnBoxIron       (B_X+31m,  B_Y+1m,    219.0)
+	}
+	else if (health == 3.0) {
+		BonusObjTawna2End(220.0, 221.0)
+	}
+}
+
+sub BonusObj_Bonus17 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X,      B_Y,       201.0)
+		SpawnBoxIron       (B_X+1m,   B_Y+1m,    202.0)
+		SpawnBoxIron       (B_X+2m,   B_Y+2m,    203.0)
+		SpawnBoxIron       (B_X+3m,   B_Y+3m,    204.0)
+		SpawnBoxIron       (B_X+4m,   B_Y+3m,    205.0)
+		SpawnBoxIron       (B_X+5m,   B_Y+3m,    206.0)
+		SpawnBoxIron_B     (B_X+6m,   B_Y+3m,    207.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+4m,    208.0)
+		SpawnBoxIron_T     (B_X+6m,   B_Y+5m,    209.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+6m,    210.0)
+		SpawnBoxEmpty_T    (B_X+6m,   B_Y+7m,    211.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+10m,  B_Y+3m,    212.0)
+		SpawnBoxIron       (B_X+11m,  B_Y+3m,    213.0)
+		SpawnBoxIron       (B_X+12m,  B_Y+3m,    214.0)
+		SpawnBoxIron_B     (B_X+13m,  B_Y+3m,    215.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+4m,    216.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+5m,    217.0)
+		SpawnBoxIron_T     (B_X+13m,  B_Y+6m,    218.0)
+		SpawnBoxTNT_T      (B_X+13m,  B_Y+7m,    219.0)
+		SpawnBoxEmpty_T    (B_X+13m,  B_Y+8m,    220.0)
+		SpawnBoxIron       (B_X+17m,  B_Y+3m,    221.0)
+		SpawnBoxIron       (B_X+18m,  B_Y+3m,    222.0)
+		SpawnBoxIron       (B_X+19m,  B_Y+3m,    223.0)
+		SpawnBoxIron_B     (B_X+20m,  B_Y+3m,    224.0)
+		SpawnBoxTNT_T      (B_X+20m,  B_Y+4m,    225.0)
+		SpawnBoxEmpty_T    (B_X+20m,  B_Y+5m,    226.0)
+		SpawnBoxIron_T     (B_X+20m,  B_Y+6m,    227.0)
+		SpawnBoxEmpty_T    (B_X+20m,  B_Y+7m,    228.0)
+		SpawnBoxEmpty_T    (B_X+20m,  B_Y+8m,    229.0)
+		SpawnBoxLife_T     (B_X+20m,  B_Y+9m,    230.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxIron       (B_X+24m,  B_Y+3m,    231.0)
+		SpawnBoxIron       (B_X+25m,  B_Y+3m,    232.0)
+		SpawnBoxIron       (B_X+26m,  B_Y+3m,    233.0)
+		SpawnBoxIron_B     (B_X+27m,  B_Y+3m,    234.0)
+		SpawnBoxTNT_T      (B_X+27m,  B_Y+4m,    235.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+5m,    236.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+6m,    237.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+7m,    238.0)
+		SpawnBoxTNT_T      (B_X+27m,  B_Y+8m,    239.0)
+		SpawnBoxEmpty_T    (B_X+27m,  B_Y+9m,    240.0)
+		SpawnBoxLife_T     (B_X+27m,  B_Y+10m,   241.0)
+		SpawnBoxIron       (B_X+30m,  B_Y+1m,    242.0)
+		SpawnBoxIron       (B_X+31m,  B_Y+1m,    243.0)
+	}
+	else if (health == 3.0) {
+		BonusObjTawna2End(244.0, 245.0)
+	}
+}
+
+sub BonusObj_Bonus18 () {
+	if (health == 0) {
+		SpawnBoxFruit      (B_X+3m,   B_Y+1m,    201.0)
+		SpawnBoxPickup_R_B (B_X+4m,   B_Y+0m,    202.0, 97.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+1m,    203.0)
+		SpawnBoxFruit      (B_X+5m,   B_Y+1m,    204.0)
+		SpawnBoxEmpty      (B_X+6m,   B_Y+1m,    205.0)
+		SpawnBoxFruit      (B_X+7m,   B_Y+1m,    206.0)
+		SpawnBoxPickup_B   (B_X+8m,   B_Y+0m,    207.0)
+		SpawnBoxEmpty_T    (B_X+8m,   B_Y+1m,    208.0)
+		SpawnBoxPickup_R_B (B_X+9m,   B_Y-1m,    209.0, 97.0)
+		SpawnBoxEmpty_T    (B_X+9m,   B_Y+0m,    210.0)
+		SpawnBoxFruit_T    (B_X+9m,   B_Y+1m,    211.0)
+		SpawnBoxPickup_R_B (B_X+10m,  B_Y+0m,    212.0, 97.0)
+		SpawnBoxEmpty_T    (B_X+10m,  B_Y+1m,    213.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxFruit      (B_X+11m,  B_Y+1m,    214.0)
+		SpawnBoxEmpty      (B_X+12m,  B_Y+1m,    215.0)
+		SpawnBoxFruit      (B_X+13m,  B_Y+1m,    216.0)
+		SpawnBoxPickup_B   (B_X+14m,  B_Y+0m,    217.0)
+		SpawnBoxEmpty_T    (B_X+14m,  B_Y+1m,    218.0)
+		SpawnBoxFruit      (B_X+15m,  B_Y+1m,    219.0)
+	}
+}
+
+sub BonusObj_Bonus19 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,       202.0)
+		SpawnBoxIron       (B_X+3m,   B_Y,       203.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       204.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       205.0)
+		SpawnBoxPickup     (B_X+2m,   B_Y+1m,    206.0)
+		SpawnBoxSpring_B   (B_X+3m,   B_Y+1m,    207.0)
+		SpawnBoxPickup_R_T (B_X+3m,   B_Y+2m,    208.0, 97.0)
+		SpawnBoxSpring     (B_X+3m,   B_Y+5m,    209.0)
+		SpawnBoxLife_B     (B_X+3m,   B_Y+13m,   210.0)
+		SpawnBoxLife_T     (B_X+3m,   B_Y+14m,   211.0)
+		SpawnBoxPickup_R   (B_X+4m,   B_Y+1m,    212.0, 80.0)
+		SpawnBoxFruit      (B_X+8m,   B_Y,       213.0)
+		SpawnBoxFruit      (B_X+9m,   B_Y,       214.0)
+		SpawnBoxFruit      (B_X+10m,  B_Y,       215.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+13m,  B_Y,       216.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       217.0)
+		SpawnBoxIron_B     (B_X+15m,  B_Y,       218.0)
+		SpawnBoxPickup_R_T (B_X+15m,  B_Y+1m,    219.0, 80.0)
+		SpawnBoxEmpty_T    (B_X+15m,  B_Y+2m,    220.0)
+	}
+}
+
+sub BonusObj_Bonus20 () {
+	if (health == 0) {
+		SpawnBoxSpringI    (B_X+4m,   B_Y-1m,    201.0)
+		SpawnBoxTNT        (B_X+4m,   B_Y+5m,    202.0)
+		SpawnBoxTNT        (B_X+8m,   B_Y+2m,    203.0)
+		SpawnBoxTNT        (B_X+9m,   B_Y+2m,    204.0)
+		SpawnBoxTNT        (B_X+10m,  B_Y+2m,    205.0)
+		SpawnBoxLife       (B_X+9m,   B_Y+5m,    206.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxSpringI    (B_X+14m,  B_Y-1m,    207.0)
+		SpawnBoxTNT        (B_X+14m,  B_Y+5m,    208.0)
+		SpawnBoxIron_B     (B_X+18m,  B_Y-1m,    209.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+0m,    210.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+1m,    211.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+2m,    212.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+3m,    213.0)
+		SpawnBoxIron_T     (B_X+18m,  B_Y+4m,    214.0)
+		SpawnBoxTNT_T      (B_X+18m,  B_Y+5m,    215.0)
+		SpawnBoxLife_B     (B_X+19m,  B_Y+3m,    216.0)
+		SpawnBoxLife_T     (B_X+19m,  B_Y+4m,    217.0)
+		SpawnBoxTNT        (B_X+19m,  B_Y+5m,    218.0)
+		SpawnBoxEmpty2     (B_X+20m,  B_Y+5m,    219.0)
+		SpawnBoxEmpty2     (B_X+21m,  B_Y+5m,    220.0)
+		SpawnBoxAction     (B_X+19m,  B_Y-1m,    221.0, 110.0)
+		SpawnBoxTNT        (B_X+20m,  B_Y-1m,    222.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxGhost      (B_X+23m,  B_Y-1m,    110.0, 111.0)
+		SpawnBoxGhost      (B_X+26m,  B_Y-1m,    111.0)
+		SpawnBoxIron_B     (B_X+27m,  B_Y+5m,    223.0)
+		SpawnBoxIron_T     (B_X+27m,  B_Y+6m,    224.0)
+		SpawnBoxIron_T     (B_X+27m,  B_Y+7m,    225.0)
+		SpawnBoxTNT        (B_X+28m,  B_Y+5m,    226.0)
+		SpawnBoxSpringI    (B_X+28m,  B_Y-1m,    227.0)
+	}
+	else if (health == 3.0) {
+		BonusObjBrioEnd1(228.0, 229.0, 230.0)
+	}
+}
+
+sub BonusObj_Bonus21 () {
+	if (health == 0) {
+		SpawnBoxEmpty      (B_X+3m,   B_Y,       201.0)
+		SpawnBoxEmpty      (B_X+6m,   B_Y-1m,    202.0)
+		SpawnBoxAction     (B_X+7m,   B_Y+5m,    203.0, 130.0)
+		SpawnBoxEmpty      (B_X+8m,   B_Y-1m,    204.0)
+		SpawnBoxLife       (B_X+10m,  B_Y,       205.0)
+		SpawnBoxGhost      (B_X+9m,   B_Y+4m,    130.0, 131.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxEmpty      (B_X+13m,  B_Y-1m,    206.0)
+		SpawnBoxEmpty      (B_X+15m,  B_Y-1m,    207.0)
+		SpawnBoxEmpty      (B_X+17m,  B_Y-1m,    208.0)
+		SpawnBoxGhost      (B_X+19m,  B_Y+2m,    112.0, 113.0)
+		SpawnBoxGhost      (B_X+15m,  B_Y+2m,    113.0, 114.0)
+		SpawnBoxGhost      (B_X+12m,  B_Y+1m,    114.0, 115.0)
+		SpawnBoxGhost      (B_X+11m,  B_Y+2m,    115.0, 116.0)
+		SpawnBoxGhost      (B_X+9m,   B_Y+3m,    116.0)
+		SpawnBoxGhost      (B_X+12m,  B_Y+4m,    131.0, 132.0)
+		SpawnBoxGhost      (B_X+16m,  B_Y+4m,    132.0, 133.0)
+		SpawnBoxGhost      (B_X+18m,  B_Y+4m,    133.0, 134.0)
+		SpawnBoxGhost      (B_X+20m,  B_Y+4m,    134.0, 135.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxEmpty      (B_X+21m,  B_Y-1m,    209.0)
+		SpawnBoxLife       (B_X+24m,  B_Y-1m,    210.0)
+		SpawnBoxAction     (B_X+26m,  B_Y-1m,    211.0, 110.0)
+		SpawnBoxGhost      (B_X+24m,  B_Y+1m,    110.0, 111.0)
+		SpawnBoxGhost      (B_X+22m,  B_Y+2m,    111.0, 112.0)
+		SpawnBoxGhost      (B_X+23m,  B_Y+3m,    135.0, 136.0)
+		SpawnBoxGhost      (B_X+25m,  B_Y+4m,    136.0, 137.0)
+		SpawnBoxGhost      (B_X+28m,  B_Y+4m,    137.0, 138.0)
+		SpawnBoxGhost      (B_X+30m,  B_Y+3m,    138.0, 139.0)
+		SpawnBoxGhost      (B_X+32m,  B_Y+2m,    139.0)
+	}
+	else if (health == 3.0) {
+		BonusObjBrioEnd2(212.0, 213.0, 214.0, 215.0)
+	}
+}
+
+sub BonusObj_Bonus22 () {
+	if (health == 0) {
+		SpawnBoxSpring     (B_X+1m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       202.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       203.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       204.0)
+		SpawnBoxTNT        (B_X+5m,   B_Y+3m,    205.0)
+		SpawnBoxTNT        (B_X+6m,   B_Y+3m,    206.0)
+		SpawnBoxLife       (B_X+7m,   B_Y+3m,    207.0)
+		SpawnBoxAction     (B_X+8m,   B_Y+3m,    208.0, 110.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxGhost_R    (B_X+10m,  B_Y,       110.0, 80.0, 111.0)
+		SpawnBoxGhost_R    (B_X+11m,  B_Y,       111.0, 97.0, 112.0)
+		SpawnBoxGhost_R    (B_X+12m,  B_Y,       112.0, 80.0, 113.0)
+		SpawnBoxGhost_R    (B_X+13m,  B_Y,       113.0, 97.0)
+		SpawnBoxSpring     (B_X+15m,  B_Y,       209.0)
+	}
+}
+
+sub BonusObj_Bonus23 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+2m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+3m,   B_Y-1m,    202.0)
+		SpawnBoxSpringI_B  (B_X+4m,   B_Y-1m,    203.0)
+		SpawnBoxTNT_T      (B_X+4m,   B_Y+0m,    204.0)
+		SpawnBoxLife_T     (B_X+4m,   B_Y+1m,    205.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+2m,    206.0)
+		SpawnBoxTNT_T      (B_X+4m,   B_Y+3m,    207.0)
+		SpawnBoxIron_T     (B_X+4m,   B_Y+4m,    208.0)
+		SpawnBoxLife       (B_X+8m,   B_Y+3m,    209.0)
+		SpawnBoxPickup_R   (B_X+9m,   B_Y+3m,    210.0, 80.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxLife       (B_X+10m,  B_Y+3m,    211.0)
+		SpawnBoxPickup_R   (B_X+11m,  B_Y+3m,    212.0, 80.0)
+		SpawnBoxPickup_R   (B_X+12m,  B_Y+3m,    213.0, 80.0)
+		SpawnBoxPickup_R   (B_X+13m,  B_Y+3m,    214.0, 80.0)
+		SpawnBoxPickup_R   (B_X+14m,  B_Y+3m,    215.0, 80.0)
+		SpawnBoxLife       (B_X+15m,  B_Y+3m,    216.0)
+	}
+}
+
+sub BonusObj_Bonus24 () {
+	if (health == 0) {
+		SpawnBoxLife_B     (B_X+3m,   B_Y-1m,    201.0)
+		SpawnBoxEmpty_T    (B_X+3m,   B_Y+0m,    202.0)
+		SpawnBoxEmpty_T    (B_X+3m,   B_Y+1m,    203.0)
+		SpawnBoxEmpty_B    (B_X+4m,   B_Y-1m,    204.0)
+		SpawnBoxTNT_T      (B_X+4m,   B_Y+0m,    205.0)
+		SpawnBoxEmpty_T    (B_X+4m,   B_Y+1m,    206.0)
+		SpawnBoxTNT_B      (B_X+5m,   B_Y-1m,    207.0)
+		SpawnBoxEmpty_T    (B_X+5m,   B_Y+0m,    208.0)
+		SpawnBoxLife_T     (B_X+5m,   B_Y+1m,    209.0)
+		SpawnBoxTNT        (B_X+9m,   B_Y-1m,    210.0)
+		SpawnBoxTNT        (B_X+11m,  B_Y,       211.0)
+		SpawnBoxTNT        (B_X+13m,  B_Y+1m,    212.0)
+		SpawnBoxTNT        (B_X+15m,  B_Y+2m,    213.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxPickup_R_B (B_X+18m,  B_Y+1m,    214.0, 80.0)
+		SpawnBoxLife_T     (B_X+18m,  B_Y+2m,    215.0)
+		SpawnBoxLife_B     (B_X+19m,  B_Y+1m,    216.0)
+		SpawnBoxPickup_R_T (B_X+19m,  B_Y+2m,    217.0, 80.0)
+	}
+}
+
+sub BonusObj_Bonus25 () {
+	if (health == 0) {
+		SpawnBoxGhost_R_B  (B_X-3m,   B_Y+1m,    126.0, 80.0, 127.0)
+		SpawnBoxGhost_R_T  (B_X-3m,   B_Y+2m,    125.0, 97.0, 126.0)
+		SpawnBoxGhost_R_T  (B_X-3m,   B_Y+3m,    124.0, 80.0, 125.0)
+		SpawnBoxGhost_R_B  (B_X-2m,   B_Y+1m,    123.0, 80.0, 124.0)
+		SpawnBoxGhost_R_T  (B_X-2m,   B_Y+2m,    122.0, 97.0, 123.0)
+		SpawnBoxGhost_R_T  (B_X-2m,   B_Y+3m,    121.0, 80.0, 122.0)
+		SpawnBoxSpringI    (B_X+2m,   B_Y,       201.0)
+		SpawnBoxGhost_R    (B_X+4m,   B_Y,       120.0, 80.0, 121.0)
+		SpawnBoxGhost_R    (B_X+5m,   B_Y,       119.0, 80.0, 120.0)
+		SpawnBoxSpringI    (B_X+7m,   B_Y,       202.0)
+		SpawnBoxGhost_R    (B_X+9m,   B_Y,       118.0, 80.0, 119.0)
+		SpawnBoxGhost_R    (B_X+10m,  B_Y,       117.0, 80.0, 118.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxSpringI    (B_X+12m,  B_Y,       203.0)
+		SpawnBoxGhost_R    (B_X+14m,  B_Y,       116.0, 80.0, 117.0)
+		SpawnBoxGhost_R    (B_X+15m,  B_Y,       115.0, 80.0, 116.0)
+		SpawnBoxSpringI    (B_X+17m,  B_Y,       204.0)
+		SpawnBoxGhost_R    (B_X+19m,  B_Y,       114.0, 80.0, 115.0)
+		SpawnBoxGhost_R    (B_X+20m,  B_Y,       113.0, 80.0, 114.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxSpringI    (B_X+22m,  B_Y,       205.0)
+		SpawnBoxGhost_R    (B_X+24m,  B_Y,       112.0, 80.0, 113.0)
+		SpawnBoxGhost_R    (B_X+25m,  B_Y,       111.0, 80.0, 112.0)
+		SpawnBoxSpringI    (B_X+27m,  B_Y,       206.0)
+		SpawnBoxGhost_R    (B_X+29m,  B_Y,       110.0, 97.0, 111.0)
+		SpawnBoxIron       (B_X+31m,  B_Y,       207.0)
+		SpawnBoxAction     (B_X+32m,  B_Y,       208.0, 110.0)
+		SpawnBoxIron       (B_X+33m,  B_Y,       209.0)
+	}
+	else if (health == 3.0) {
+		SpawnBoxLife       (B_X+35m,  B_Y+1m,    210.0)
+		SpawnBoxLife       (B_X+36m,  B_Y+1m,    211.0)
+	}
+}
+
+sub BonusObj_Bonus26 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,       201.0)
+		SpawnBoxPickup_R   (B_X+2m,   B_Y+1m,    202.0, 80.0)
+		SpawnBoxLife       (B_X+3m,   B_Y+2m,    203.0)
+		SpawnBoxFruit      (B_X+4m,   B_Y+1m,    204.0)
+		SpawnBoxIron       (B_X+5m,   B_Y,       205.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       206.0)
+		SpawnBoxPickup_R   (B_X+7m,   B_Y+1m,    207.0, 80.0)
+		SpawnBoxPickup_R   (B_X+8m,   B_Y+2m,    208.0, 97.0)
+		SpawnBoxFruit      (B_X+9m,   B_Y+1m,    209.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+10m,  B_Y,       210.0)
+		SpawnBoxIron       (B_X+11m,  B_Y,       211.0)
+		SpawnBoxPickup_R   (B_X+12m,  B_Y+1m,    212.0, 80.0)
+		SpawnBoxLife       (B_X+13m,  B_Y+2m,    213.0)
+		SpawnBoxFruit      (B_X+14m,  B_Y+1m,    214.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       215.0)
+	}
+}
+
+sub BonusObj_Bonus27 () {
+	if (health == 0) {
+		SpawnBoxLife_B     (B_X+3m,   B_Y+5m,    201.0)
+		SpawnBoxFruit_T    (B_X+3m,   B_Y+6m,    202.0)
+		SpawnBoxTNT_T      (B_X+3m,   B_Y+7m,    203.0)
+		SpawnBoxLife_B     (B_X+8m,   B_Y+5m,    204.0)
+		SpawnBoxFruit_T    (B_X+8m,   B_Y+6m,    205.0)
+		SpawnBoxTNT_T      (B_X+8m,   B_Y+7m,    206.0)
+		SpawnBoxLife_B     (B_X+13m,  B_Y+5m,    207.0)
+		SpawnBoxFruit_T    (B_X+13m,  B_Y+6m,    208.0)
+		SpawnBoxTNT_T      (B_X+13m,  B_Y+7m,    209.0)
+		SpawnBoxIron       (B_X+1m,   B_Y,       210.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,       211.0)
+		SpawnBoxSpringI    (B_X+3m,   B_Y,       212.0)
+		SpawnBoxIron       (B_X+4m,   B_Y,       213.0)
+		SpawnBoxTNT        (B_X+5m,   B_Y,       214.0)
+		SpawnBoxTNT        (B_X+6m,   B_Y,       215.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,       216.0)
+		SpawnBoxSpringI    (B_X+8m,   B_Y,       217.0)
+		SpawnBoxIron       (B_X+9m,   B_Y,       218.0)
+		SpawnBoxTNT        (B_X+10m,  B_Y,       219.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxTNT        (B_X+11m,  B_Y,       220.0)
+		SpawnBoxIron       (B_X+12m,  B_Y,       221.0)
+		SpawnBoxSpringI    (B_X+13m,  B_Y,       222.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       223.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       224.0)
+	}
+}
+
+sub BonusObj_Bonus28 () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X+1m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X+2m,   B_Y,       202.0)
+		SpawnBoxIron_B     (B_X+3m,   B_Y,       203.0)
+		SpawnBoxTNT_T      (B_X+3m,   B_Y+1m,    204.0)
+		SpawnBoxIron_B     (B_X+4m,   B_Y,       205.0)
+		SpawnBoxPickup_R_T (B_X+4m,   B_Y+1m,    206.0, 80.0)
+		SpawnBoxLife_T     (B_X+4m,   B_Y+2m,    207.0)
+		SpawnBoxIron_B     (B_X+5m,   B_Y,       208.0)
+		SpawnBoxTNT_T      (B_X+5m,   B_Y+1m,    209.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       210.0)
+		SpawnBoxPickup_R   (B_X+7m,   B_Y,       211.0, 80.0)
+		SpawnBoxPickup_R   (B_X+8m,   B_Y,       212.0, 80.0)
+		SpawnBoxPickup_R   (B_X+9m,   B_Y,       213.0, 80.0)
+		SpawnBoxIron       (B_X+10m,  B_Y,       214.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron_B     (B_X+11m,  B_Y,       215.0)
+		SpawnBoxTNT_T      (B_X+11m,  B_Y+1m,    216.0)
+		SpawnBoxIron_B     (B_X+12m,  B_Y,       217.0)
+		SpawnBoxPickup_R_T (B_X+12m,  B_Y+1m,    218.0, 80.0)
+		SpawnBoxLife_T     (B_X+12m,  B_Y+2m,    219.0)
+		SpawnBoxIron_B     (B_X+13m,  B_Y,       220.0)
+		SpawnBoxTNT_T      (B_X+13m,  B_Y+1m,    221.0)
+		SpawnBoxIron       (B_X+14m,  B_Y,       222.0)
+		SpawnBoxIron       (B_X+15m,  B_Y,       223.0)
+	}
+}
+
+sub BonusObj_Bonus29 () {
+/* 	if (health == 0) {
+		SpawnBoxIron       (B_X,      B_Y,       201.0)
+		SpawnBoxTNT        (B_X+1m,   B_Y+1m,    202.0)
+		SpawnBoxIron       (B_X+2m,   B_Y+2m,    203.0)
+		SpawnBoxIron       (B_X+3m,   B_Y+3m,    204.0)
+		SpawnBoxTNT_B      (B_X+5m,   B_Y,       205.0)
+		SpawnBoxPickup_R_T (B_X+5m,   B_Y+1m,    206.0, 80.0)
+		SpawnBoxLife_T     (B_X+5m,   B_Y+2m,    207.0)
+		SpawnBoxIron       (B_X+6m,   B_Y,       208.0)
+		SpawnBoxIron       (B_X+7m,   B_Y,       209.0)
+		SpawnBoxTNT        (B_X+8m,   B_Y+1m,    210.0)
+		SpawnBoxIron       (B_X+9m,   B_Y+2m,    211.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxIron       (B_X+10m,  B_Y+3m,    212.0)
+		SpawnBoxTNT_B      (B_X+12m,  B_Y,       213.0)
+		SpawnBoxPickup_R_T (B_X+12m,  B_Y+1m,    214.0, 80.0)
+		SpawnBoxPickup_R_T (B_X+12m,  B_Y+2m,    215.0, 80.0)
+		SpawnBoxIron       (B_X+13m,  B_Y,       216.0)
+		SpawnBoxTNT        (B_X+14m,  B_Y,       217.0)
+		SpawnBoxFruit      (B_X+15m,  B_Y,       218.0)
+		SpawnBoxTNT        (B_X+16m,  B_Y,       219.0)
+	} */
+}
+
+/* inline sub SpawnBoxGhostTNT_T(s_x, s_y, obj_id) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, BoxsC_S_BOX_TNT)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = 0x400 | 0x200
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+inline sub SpawnBoxGhostTNT_T(s_x, s_y, obj_id, box_link) {
+	if (entitygetstate(obj_id, 1)) {
+		spawn2(BoxsC, BoxsC_S_BOX_TNT)
+		child->x = s_x
+		child->y = s_y
+		child->id = obj_id
+		entitysetstate(child->id, 9)
+		child->vecy = 0x400 | 0x200
+		child->vecz = box_link
+		child->velx = player
+		player->vely = child
+		player = child
+	}
+}
+
+sub BonusObj_BonusNST () {
+	if (health == 0) {
+		SpawnBoxIron       (B_X-1m,   B_Y,       201.0)
+		SpawnBoxIron       (B_X,      B_Y,       202.0)
+		SpawnBoxIron_B     (B_X+1m,   B_Y,       203.0)
+		SpawnBoxLife_T     (B_X+1m,   B_Y+1m,    204.0)
+		SpawnBoxIron_T     (B_X+1m,   B_Y+2m,    205.0)
+		SpawnBoxIron_B     (B_X+2m,   B_Y,       206.0)
+		SpawnBoxAction_T   (B_X+2m,   B_Y+1m,    207.0, 120.0)
+		SpawnBoxIron_T     (B_X+2m,   B_Y+2m,    208.0)
+		SpawnBoxIron_B     (B_X+3m,   B_Y,       209.0)
+		SpawnBoxLife_T     (B_X+3m,   B_Y+1m,    210.0)
+		SpawnBoxLife_T     (B_X+3m,   B_Y+2m,    211.0)
+		SpawnBoxIron       (B_X+3m,   B_Y+3m,    212.0)
+		SpawnBoxGhostIron  (B_X+4m,   B_Y,       110.0)
+		SpawnBoxAction_B   (B_X+9m,   B_Y-1m,    213.0, 110.0)
+		SpawnBoxSpringI_T  (B_X+9m,   B_Y,       214.0)
+		SpawnBoxTNT_T      (B_X+9m,   B_Y+1m,    215.0)
+	}
+	else if (health == 1.0) {
+		SpawnBoxTNT        (B_X+17m,  B_Y,       216.0)
+		SpawnBoxIron       (B_X+18m,  B_Y,       217.0)
+		SpawnBoxIron       (B_X+19m,  B_Y,       218.0)
+		SpawnBoxIron       (B_X+17m,  B_Y+5m,    219.0)
+		SpawnBoxIron       (B_X+18m,  B_Y+5m,    220.0)
+		SpawnBoxIron       (B_X+19m,  B_Y+5m,    221.0)
+		SpawnBoxFruit      (B_X+22m,  B_Y,       222.0)
+		SpawnBoxFruit_B    (B_X+22m,  B_Y+4.5m,  223.0)
+		SpawnBoxPickup_R_T (B_X+22m,  B_Y+5.5m,  224.0, 80.0)
+		SpawnBoxPickup_R_T (B_X+22m,  B_Y+6.5m,  225.0, 80.0)
+		SpawnBoxPickup_R_T (B_X+22m,  B_Y+7.5m,  226.0, 80.0)
+		SpawnBoxLife_T     (B_X+22m,  B_Y+8.5m,  227.0)
+		SpawnBoxGhost_R_B  (B_X+18m,  B_Y+6m,    130.0, 97.0, 131.0)
+		SpawnBoxGhostTNT_T (B_X+18m,  B_Y+7m,    131.0, 132.0)
+		SpawnBoxGhost_T    (B_X+18m,  B_Y+8m,    132.0, 133.0)
+		SpawnBoxGhostIron_T(B_X+18m,  B_Y+9m,    133.0)
+	}
+	else if (health == 2.0) {
+		SpawnBoxIron       (B_X+25m,  B_Y,       228.0)
+		SpawnBoxIron       (B_X+26m,  B_Y,       229.0)
+		SpawnBoxIron       (B_X+27m,  B_Y,       230.0)
+		SpawnBoxIron       (B_X+28m,  B_Y,       231.0)
+		SpawnBoxTNT        (B_X+25m,  B_Y+5m,    232.0)
+		SpawnBoxTNT        (B_X+26m,  B_Y+5m,    233.0)
+		SpawnBoxTNT        (B_X+27m,  B_Y+5m,    234.0)
+		SpawnBoxTNT        (B_X+28m,  B_Y+5m,    235.0)
+		SpawnBoxIron_B     (B_X+29m,  B_Y-2m,    236.0)
+		SpawnBoxIron_T     (B_X+29m,  B_Y-1m,    237.0)
+		SpawnBoxIron_T     (B_X+29m,  B_Y-0m,    238.0)
+		SpawnBoxSpringI_B  (B_X+30m,  B_Y-2m,    239.0)
+		SpawnBoxFruit_R_T  (B_X+30m,  B_Y-1m,    240.0, 97.0)
+		SpawnBoxIron_T     (B_X+30m,  B_Y-0m,    241.0)
+		SpawnBoxAction_B   (B_X+31m,  B_Y-1m,    242.0, 130.0)
+		SpawnBoxIron_T     (B_X+31m,  B_Y-0m,    243.0)
+		SpawnBoxGhost_R_B  (B_X+31m,  B_Y+1m,    120.0, 80.0, 121.0)
+		SpawnBoxGhostTNT_T (B_X+31m,  B_Y+2m,    121.0)
+		SpawnBoxSpringI_B  (B_X+32m,  B_Y-1m,    244.0)
+		SpawnBoxFruit_T    (B_X+32m,  B_Y-0m,    245.0)
+		SpawnBoxIron_T     (B_X+32m,  B_Y+1m,    246.0)
+		SpawnBoxIron_B     (B_X+33m,  B_Y-1m,    247.0)
+		SpawnBoxIron_T     (B_X+33m,  B_Y-0m,    248.0)
+		SpawnBoxIron       (B_X+34m,  B_Y,       249.0)
+	}
+} */
+
+state Bonus_Master_Section { // 9
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		health = vecx
+		z = B_Z
+		if (var bonus = BONUSROUND;
+				 bonus == 0) BonusObj_Bonus0();
+		else if (bonus == 1) BonusObj_Bonus1();
+		else if (bonus == 2) BonusObj_Bonus2();
+		else if (bonus == 3) BonusObj_Bonus3();
+		else if (bonus == 4) BonusObj_Bonus4();
+		else if (bonus == 5) BonusObj_Bonus5();
+		else if (bonus == 6) BonusObj_Bonus6();
+		else if (bonus == 7) BonusObj_Bonus7();
+		else if (bonus == 8) BonusObj_Bonus8();
+		else if (bonus == 9) BonusObj_Bonus9();
+		else if (bonus == 10) BonusObj_Bonus10();
+		else if (bonus == 11) BonusObj_Bonus11();
+		else if (bonus == 12) BonusObj_Bonus12();
+		else if (bonus == 13) BonusObj_Bonus13();
+		else if (bonus == 14) BonusObj_Bonus14();
+		else if (bonus == 15) BonusObj_Bonus15();
+		else if (bonus == 16) BonusObj_Bonus16();
+		else if (bonus == 17) BonusObj_Bonus17();
+		else if (bonus == 18) BonusObj_Bonus18();
+		else if (bonus == 19) BonusObj_Bonus19();
+		else if (bonus == 20) BonusObj_Bonus20();
+		else if (bonus == 21) BonusObj_Bonus21();
+		else if (bonus == 22) BonusObj_Bonus22();
+		else if (bonus == 23) BonusObj_Bonus23();
+		else if (bonus == 24) BonusObj_Bonus24();
+		else if (bonus == 25) BonusObj_Bonus25();
+		else if (bonus == 26) BonusObj_Bonus26();
+		else if (bonus == 27) BonusObj_Bonus27();
+		else if (bonus == 28) BonusObj_Bonus28();
+		else if (bonus == 29) BonusObj_Bonus29();
+		else BonusObj_Bonus0();
+		sleepnull()
+	}
+}
+
+

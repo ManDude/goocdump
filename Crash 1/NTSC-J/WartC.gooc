@@ -1,0 +1,121 @@
+#gool WartC 7 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim WARTHOG_RUN [WarRV] 16
+#anim WARTHOG_HIT [WarHV] 24
+
+#spawn S_WARTHOG_OLD              Warthog_Spawn
+#spawn S_WARTHOG                  Warthog_Spawn
+
+var PathTrackX, WarthogSquealTime, WarthogGruntTime
+
+state Warthog_Spawn {
+	statusc 0x3
+	code () {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_INVISIBLE | 0x800 | 0x2000
+		pathprog = 0
+		calcpath(0)
+		roty = troty
+		rotx = trotz
+		yzapproach = 90deg
+		statusb = FLAG_INVISIBLE
+		statusc &= ~0x1
+		PathTrackX = 0
+		sleepanim(0, WARTHOG_RUN)
+	}
+	trans {
+		once {
+			WarthogSquealTime = 0
+			WarthogGruntTime = 0
+		}
+		changestateif(Warthog_Run, distance(player, 0) < 10m)
+	}
+}
+
+state Warthog_Run {
+	stateflag 0x10001
+	statusc 0
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x2000
+		roty = troty
+		trotx = 90deg
+		do { playframes(WARTHOG_RUN, 0, 15.0) } while (1)
+	}
+	trans {
+		if (!rand(0.67s) && frametime - WarthogGruntTime > 0.1s) {
+			WarthogGruntTime = frametime
+			if (!rand(2)) {
+				SoundPlayDefault([WH1kA], 0.2V + rand(0.4V))
+			}
+			else {
+				SoundPlayDefault([WH2kA], 0.2V + rand(0.4V))
+			}
+		}
+		changestateif(Warthog_Hit, (distance(player, 0) < 2m && abs(x - player->x) > 0.5m) || (player->z < z - 1m && STATUS_PATH_END))
+		sendevent(Event24, collider, 50.0)
+		SinePathProg(0.09)
+		PathTrackX = seek(PathTrackX, player->x, 0.01m)
+		if (PathTrackX > 1.75m) {
+			PathTrackX = 1.75m
+		}
+		if (PathTrackX < -1.75m) {
+			PathTrackX = -1.75m
+		}
+		x += PathTrackX
+		changestateif(Warthog_Kill, STATUS_PATH_END)
+	}
+}
+
+state Warthog_Run_NoRespawn {
+	stateflag 0x10001
+	statusc 0
+	code => state Warthog_Run
+	trans {
+		SinePathProg(0.09)
+		PathTrackX = seek(PathTrackX, player->x, 0.01m)
+		x += PathTrackX
+		changestateif(Warthog_Kill, STATUS_PATH_END)
+	}
+}
+
+state Warthog_Hit {
+	stateflag 0x10002
+	statusc 0
+	code () {
+		trotx = 360deg
+		do {
+			if (player->z < z - 1m) {
+				entitysetspawn(0)
+				if (player->z < z - 10m) {
+					return
+				}
+			}
+			playframes(WARTHOG_HIT, 0, 23.0)
+			playframe(23.0, 1s)
+		} until (player->z > z + 5m)
+		changestate(Warthog_Run_NoRespawn)
+	}
+	trans {
+		if (animframe < 15.0) {
+			troty = atan2(player->trans)
+		}
+		if (distance(player, 0) < 2m && abs(atan2_obj(player)) < 60deg && animframe > 9.0) {
+			if (frametime - WarthogSquealTime > 1s) {
+				SoundPlayDefault([WH3kA], 0.4V)
+				WarthogSquealTime = frametime
+				sendevent(Event24, player, 50.0)
+			}
+		}
+	}
+}
+
+state Warthog_Kill {
+	stateflag 0x2
+	statusc 0
+	code () {
+		entitysetspawn(0)
+		changestate(Warthog_Run)
+	}
+}
+

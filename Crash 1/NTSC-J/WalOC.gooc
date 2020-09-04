@@ -1,0 +1,569 @@
+#gool WalOC 33 6
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim WALL_PLATFORM [WP1iV] 2
+#anim WALL_SHIELD [WS1iV] 18
+#anim SPIKE_LOG [SL1iV] 1
+#anim WALL_TORCH [WT1iV] 18
+
+#sprite FLAME_1 [Vi3iT]
+#tex 0x808080 0 1 14 0 40 16 64 32 ! 2 1
+#tex 0x808080 0 1 15 0 40 8 64 32 ! 2 1
+#tex 0x808080 0 1 0 3 48 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 3 48 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 3 48 8 64 32 ! 2 1
+#tex 0x808080 0 1 3 3 56 24 64 32 ! 2 1
+#tex 0x808080 0 1 4 3 56 16 64 32 ! 2 1
+#tex 0x808080 0 1 5 3 56 8 64 32 ! 2 1
+#tex 0x808080 0 1 6 3 64 24 64 32 ! 2 1
+#tex 0x808080 0 1 7 3 64 16 64 32 ! 2 1
+#tex 0x808080 0 1 8 3 64 8 64 32 ! 2 1
+#tex 0x808080 0 1 9 3 72 24 64 32 ! 2 1
+#tex 0x808080 0 1 10 3 72 16 64 32 ! 2 1
+#tex 0x808080 0 1 11 3 72 8 64 32 ! 2 1
+#tex 0x808080 0 1 12 3 80 24 64 32 ! 2 1
+#tex 0x808080 0 1 13 3 80 16 64 32 ! 2 1
+
+#sprite FLAME_2 [Vi3iT]
+#tex 0x808080 0 1 14 3 80 8 64 32 ! 2 1
+#tex 0x808080 0 1 15 3 88 24 64 32 ! 2 1
+#tex 0x808080 0 1 0 4 88 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 4 88 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 4 96 24 64 32 ! 2 1
+#tex 0x808080 0 1 3 4 96 16 64 32 ! 2 1
+#tex 0x808080 0 1 4 4 96 8 64 32 ! 2 1
+#tex 0x808080 0 1 5 4 104 24 64 32 ! 2 1
+#tex 0x808080 0 1 6 4 104 16 64 32 ! 2 1
+#tex 0x808080 0 1 7 4 104 8 64 32 ! 2 1
+#tex 0x808080 0 1 8 4 112 24 64 32 ! 2 1
+#tex 0x808080 0 1 9 4 112 16 64 32 ! 2 1
+#tex 0x808080 0 1 10 4 112 8 64 32 ! 2 1
+#tex 0x808080 0 1 11 4 120 24 64 32 ! 2 1
+#tex 0x808080 0 1 12 4 120 16 64 32 ! 2 1
+#tex 0x808080 0 1 13 4 120 8 64 32 ! 2 1
+
+#sprite CLOUD [ClouT]
+#tex 0x404040 0 1 1 0 0 24 64 32
+#tex 0x404040 0 1 2 0 0 16 64 32
+#tex 0x404040 0 1 3 0 0 8 64 32
+#tex 0x404040 0 1 4 0 8 24 64 32
+#tex 0x404040 0 1 5 0 8 16 64 32
+#tex 0x202020 0 1 1 0 0 24 64 32
+#tex 0x202020 0 1 2 0 0 16 64 32
+#tex 0x202020 0 1 3 0 0 8 64 32
+#tex 0x202020 0 1 4 0 8 24 64 32
+#tex 0x202020 0 1 5 0 8 16 64 32
+
+#spawn S_WALL_PLATFORM            Wall_Platform_Spawn
+#spawn S_WALL_SHIELD              Wall_Shield
+#spawn S_WALL_MOSS                Wall_Moss
+#spawn S_SPIKE_LOG_UP             Spike_Log_Up_Spawn
+#spawn S_SPIKE_LOG_DOWN           Spike_Log_Down_Spawn
+#spawn S_WALL_TORCH               Wall_Torch_Spawn
+#spawn S_TORCH_FLAME              Torch_Flame_Spawn
+#spawn S_CLOUDS                   Cloud_Master
+#spawn S_CLOUD_PART               Cloud_Part
+
+var LogUpCycle, LogUpCycleOffset, LogDownCycle, LogDownCycleOffset, LogUsableDur,
+LogActiveShakeDur, LogActiveDur, LogActiveEndDur, TorchFlameCycle, TorchFlameCycleOffset,
+LogBaseY, LogYOff
+
+state Wall_Platform_Spawn { // 0
+	code () {
+		rotz = 90deg
+		trotz = 90deg
+		yzapproach = 180deg
+		rotx = trotz
+		statusb = FLAG_COLLIDABLE | 0x2000 | FLAG_SOLID_BOTTOM
+		changestate(Wall_Platform_Turned)
+	}
+}
+
+state Wall_Platform_Turned { // 1
+	statusc 0
+	code () {
+		statusb &= ~FLAG_SOLID_TOP
+		do {
+			yzapproach = 10deg
+			trotz = 95deg
+			playanim(1, WALL_PLATFORM, 0.55s)
+			trotz = 90deg
+			playanim(1, WALL_PLATFORM, 0.55s)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Wall_Platform_Active, e == EventSpinHit)
+	}
+	trans {
+		if (collider && !(player->stateflag \ 0x10)) {
+			KnockbackPlayerCollider(1m, 7)
+		}
+	}
+}
+
+state Wall_Platform_Active { // 2
+	stateflag 0x3
+	code () {
+		trotz = 0
+		yzapproach = 180deg
+		statusb &= ~0x2000
+		soundpitch(4.0)
+		soundplay([SsuiA], 0.5V)
+		rotx = 90deg
+		do {
+			playanim(0, WALL_PLATFORM)
+			rotx += 50deg
+		} while (rotx < 360deg*4)
+		statusb = FLAG_COLLIDABLE | 0x2000 | FLAG_SOLID_TOP | FLAG_SOLID_BOTTOM
+		density = 0
+		playanim(0, WALL_PLATFORM, 2s)
+		playanim(0, WALL_PLATFORM, 2s)
+		playanim(0, WALL_PLATFORM, 2s)
+		if (LEVEL == LEVEL_TheGreatGate) {
+			playanim(0, WALL_PLATFORM, 2s)
+		}
+		yzapproach = 10deg
+		do (var i = 0) {
+			trotz = 5deg
+			playanim(0, WALL_PLATFORM, 0.55s)
+			trotz = 0
+			playanim(0, WALL_PLATFORM, 0.55s)
+			i += 1.0
+		} while (i < 2.0)
+		density = 0.5m
+		statusb &= ~FLAG_SOLID_TOP
+		yzapproach = 90deg
+		trotz = 90deg
+		soundpitch(4.0)
+		soundplay([SsdiA], 0.2V)
+		playanim(0, WALL_PLATFORM, 0.9s)
+		changestate(Wall_Platform_Turned)
+	}
+	trans {
+		if (!(STATUS_SOLID_TOP || !(frametime - statetime >= 2s))) {
+			if (collider) {
+				KnockbackPlayerCollider(2.5m, 7)
+			}
+		}
+	}
+}
+
+state Spike_Log_Up_Spawn { // 3
+	code () {
+		rotz = 90deg
+		rotx = 180deg
+		density = 0.5m
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		if (vecx) LogUpCycle = vecx >> 8;
+		     else LogUpCycle = 6s;
+		if (vecy) LogUpCycleOffset = vecy >> 8;
+		     else LogUpCycleOffset = 0;
+		y -= 2.5m
+		LogBaseY = y
+		LogUsableDur = (LogUpCycle - (2.5s-1)) << 8
+		LogActiveShakeDur = LogUsableDur * 0.13 >> 16
+		LogActiveDur = LogUsableDur * 0.4 >> 16
+		LogActiveEndDur = LogUsableDur * 0.16 >> 16
+		changestate(Spike_Log_Up_Wait)
+	}
+}
+
+sub SpikeLogTransCommon () {
+	if (collider) {
+		interrupter = DOCTOR
+		sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
+		sendeventif(EventHit, collider, v0 <= 2.0, 100.0)
+		if (!(collider->stateflag \ 0x20)) {
+			if (collider->x > x) {
+				if (collider->x < x + 0.9m) {
+					collider->x = x + 0.9m
+				}
+			}
+			else {
+				if (collider->x > x - 0.9m) {
+					collider->x = x - 0.9m
+				}
+			}
+		}
+	}
+}
+
+state Spike_Log_Up_Wait { // 4
+	code () {
+		sleepanim(0, SPIKE_LOG)
+	}
+	trans {
+		once {
+			LogYOff = 0
+		}
+		SpikeLogTransCommon()
+		changestateifn(Spike_Log_Up_Active, time(LogUpCycle, LogUpCycleOffset))
+	}
+}
+
+inline sub WaitLogAnim(dur) {
+	do (var i = 0) {
+		playanim(0, SPIKE_LOG)
+		i += 1.0
+	} while (i < dur)
+}
+
+state Spike_Log_Up_Active { // 5
+	stateflag 0x81
+	code () {
+		soundpitch(1.92 + rand(0.16))
+		soundplay([SLwiA], 0.2V)
+		do (var i = 0) {
+			LogYOff += 0.05m
+			playanim(0, SPIKE_LOG)
+			LogYOff -= 0.05m
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 9.0)
+		WaitLogAnim(LogActiveShakeDur)
+		SoundPlayDefault([SLsiA], 0.8V)
+		do (var i = 0) {
+			LogYOff += 0.84m
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 4.0)
+		v0 = 0.11m
+		do (var i = 0) {
+			v0 -= 0.01m
+			LogYOff += v0
+			playanim(0, SPIKE_LOG)
+			LogYOff -= v0
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 8.0)
+		WaitLogAnim(LogActiveDur)
+		v0 = 0.01m
+		while (LogYOff > 0.1m) {
+			LogYOff -= v0
+			v0 += 0.01m
+			playanim(0, SPIKE_LOG)
+		}
+		LogYOff = 0.1m
+		WaitLogAnim(LogActiveEndDur)
+		SoundPlayDefault([SLciA], 0.3V)
+		while (LogYOff > 0) {
+			LogYOff -= 0.01m
+			playanim(0, SPIKE_LOG)
+		}
+		changestate(Spike_Log_Up_Wait)
+	}
+	trans {
+		y = LogYOff + LogBaseY
+		SpikeLogTransCommon()
+	}
+}
+
+state Spike_Log_Down_Spawn { // 6
+	code () {
+		density = 0.3m
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		if (vecx) LogDownCycle = vecx >> 8;
+		     else LogDownCycle = 6s;
+		if (vecy) LogDownCycleOffset = vecy >> 8;
+		     else LogDownCycleOffset = 0;
+		y += 2.5m
+		LogBaseY = y
+		LogUsableDur = (LogDownCycle - (2.5s-1)) << 8
+		LogActiveShakeDur = LogUsableDur * -2.08
+		LogActiveDur = LogUsableDur * -6.4
+		LogActiveEndDur = LogUsableDur * -2.56
+		changestate(Spike_Log_Down_Wait)
+	}
+}
+
+state Spike_Log_Down_Wait { // 7
+	code () {
+		sleepanim(0, SPIKE_LOG)
+	}
+	trans {
+		once {
+			LogYOff = 0
+		}
+		SpikeLogTransCommon()
+		changestateifn(Spike_Log_Down_Active, time(LogDownCycle, LogDownCycleOffset))
+	}
+}
+
+state Spike_Log_Down_Active { // 8
+	stateflag 0x81
+	code () {
+		soundpitch(1.92 + rand(0.16))
+		soundplay([SLwiA], 0.2V)
+		do (var i = 0) {
+			LogYOff += 0.05m
+			playanim(0, SPIKE_LOG)
+			LogYOff -= 0.05m
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 9.0)
+		WaitLogAnim(LogActiveShakeDur)
+		SoundPlayDefault([SLsiA], 0.8V)
+		do (var i = 0) {
+			LogYOff += 0.84m
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 3.0)
+		v0 = 0.11m
+		do (var i = 0) {
+			v0 -= 0.01m
+			LogYOff += v0
+			playanim(0, SPIKE_LOG)
+			LogYOff -= v0
+			playanim(0, SPIKE_LOG)
+			i += 1.0
+		} while (i < 6.0)
+		WaitLogAnim(LogActiveDur)
+		v0 = 0.01m
+		while (LogYOff > 0.1m) {
+			LogYOff -= v0
+			v0 += 0.01m
+			playanim(0, SPIKE_LOG)
+		}
+		LogYOff = 0.1m
+		WaitLogAnim(LogActiveEndDur)
+		sounddelay(0.1s)
+		SoundPlayDefault([SLciA], 0.3V)
+		while (LogYOff > 0) {
+			LogYOff -= 0.01m
+			playanim(0, SPIKE_LOG)
+		}
+		changestate(Spike_Log_Down_Wait)
+	}
+	trans {
+		y = LogBaseY - LogYOff
+		SpikeLogTransCommon()
+	}
+}
+
+state Wall_Shield { // 9
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		sleepanim(0, WALL_SHIELD)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			sendevent(EventBounce, interrupter, 23.66432m)
+			rejevcstate(Wall_Shield_Bounce, eventaccepted)
+		}
+	}
+}
+
+inline sub WallObjPlayBounceAnim(anim) {	
+	playframes(anim, 0, 17.0)
+	playframeslt(0, 3.0)
+	playanim(2, anim)
+	playanim(1, anim)
+	playanim(0, anim)
+	playanim(16, anim)
+	playanim(15, anim)
+	playanim(14, anim)
+	playanim(15, anim)
+	playanim(16, anim)
+}
+
+state Wall_Shield_Bounce { // 10
+	stateflag 0x81
+	statusc 0
+	code () {
+		WallObjPlayBounceAnim(WALL_SHIELD)
+		changestate(Wall_Shield)
+	}
+	event => state Wall_Shield
+}
+
+state Wall_Moss { // 11
+	statusc 0
+	code () {
+		SlipperyObjCode(WALL_PLATFORM, 1.5m)
+	}
+	trans {
+		SlipperyObjTrans(4m, 3m)
+	}
+}
+
+state Wall_Torch_Spawn { // 12
+	statusc 0
+	code () {
+		spawn(WalOC, S_TORCH_FLAME)
+		changestate(Wall_Torch)
+	}
+}
+
+state Wall_Torch { // 13
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		sleepanim(0, WALL_TORCH)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			sendevent(EventBounce, interrupter, 15.49194m)
+			rejevcstate(Wall_Torch_Bounce, eventaccepted)
+		}
+	}
+}
+
+state Wall_Torch_Bounce { // 14
+	stateflag 0x81
+	statusc 0
+	code () {
+		SoundPlayDefault([bnc0A], 0.5V)
+		WallObjPlayBounceAnim(WALL_TORCH)
+		changestate(Wall_Torch)
+	}
+	event => state Wall_Torch
+}
+
+state Torch_Flame_Spawn { // 15
+	statusc 0
+	code () {
+		LogBaseY = y + 0.6m
+		if (vecx) TorchFlameCycle = vecx >> 8;
+		     else TorchFlameCycle = 4s;
+		if (vecy) TorchFlameCycleOffset = vecy >> 8;
+		     else TorchFlameCycleOffset = 0;
+		scalez = 3.0S
+		changestate(Torch_Flame_Wait)
+	}
+}
+
+state Torch_Flame_Wait { // 16
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, FLAME_1)
+	}
+	trans {
+		changestateifn(Torch_Flame_Active, time(TorchFlameCycle, TorchFlameCycleOffset))
+	}
+}
+
+state Torch_Flame_Active { // 17
+	statusc 0
+	code () {
+		SoundPlayDefault([TflsA], 0.25V)
+		statusb = 0
+		scalex = 0
+		setanim(FLAME_1)
+		do (var i = 0) {
+			scalex += 0.1S
+			scaley = scalex
+			getvert(vtrans, parent, 0)
+			y = LogBaseY + (scalex << 5)
+			playframe(i)
+			i += 1.0
+		} while (i < 3.0)
+		do (var i = 6.0) {
+			i -= 1.0
+			scalex -= 0.05S
+			scaley = scalex
+			getvert(vtrans, parent, 0)
+			y = LogBaseY + (scalex << 5)
+			playframe(i)
+		} while (i)
+		statusb = FLAG_INVISIBLE
+		playanim(0, FLAME_1, 0.6s)
+		changestate(Torch_Flame_Lit)
+	}
+}
+
+state Torch_Flame_Lit { // 18
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE
+		SoundPlayDefault([TfmsA], 0.8V)
+		playframes(FLAME_1, 0, 15.0)
+		playframes(FLAME_2, 0, 15.0)
+		changestate(Torch_Flame_Wait)
+	}
+	trans {
+		once {
+			scalex = 0
+		}
+		if (scalex < 1.0S) {
+			scalex += 0.1S
+			scaley = scalex * 2
+			scaley += scalex
+		}
+		unless (STATUS_FIRSTFRAME) {
+			if (collider) {
+				interrupter = DOCTOR
+				sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
+				sendeventif(EventBurn, collider, v0 <= 2.0, 100.0)
+			}
+			getvert(vtrans, parent, 0)
+			y = LogBaseY + (scalex << 5)
+		}
+	}
+}
+
+state Cloud_Master { // 19
+	stateflag 0x801
+	statusc 0x22
+	code () {
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		groundy = y
+		vely = rand(0.25m)
+		SetScale(2.0S, 1.0S, 1.5S)
+		spawn(WalOC, S_CLOUD_PART, 1, +0.4m, 4.0S)
+		spawn(WalOC, S_CLOUD_PART, 1, +0.2m, 3.0S)
+		spawn(WalOC, S_CLOUD_PART, 1, -0.2m, 2.4S)
+		spawn(WalOC, S_CLOUD_PART, 1, -0.4m, 2.8S)
+		FlipRand()
+		setanim(CLOUD, rand(10.0))
+		sleep()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			y = groundy + sin(loopseek(vely, 0.25m, 0.25m/32), 24800)
+		}
+	}
+}
+
+state Cloud_Part { // 20
+	statusc 0x22
+	code (offset, size) {
+		zindex = 48
+		scalex = size
+		scaley = size/2
+		scalez = size
+		if (!rand(2)) {
+			scalex = scalex * 3 / 2
+			scaley = scaley * 3 / 2
+		}
+		v0 = rand(0.5s)
+		FlipRand()
+		velx = 0
+		vely = 0
+		velz = offset
+		vecx = randi(-0.5m, 0.5m)
+		vecy = rand(0.5m)
+		vecz = offset
+		setanim(CLOUD, rand(5.0))
+		if (abs(offset) > 0.3m) {
+			animframe += 5.0
+		}
+		playframe()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			x = creator->x + velx
+			y = creator->y + vely
+			z = creator->z + velz
+			velx = seek(velx, vecx, 0.006m)
+			vely = seek(vely, vecy, 0.006m)
+			velz = seek(velz, vecz, 0.006m)
+			if (!time(0.5s, v0)) {
+				vecx = randi(-0.5m, 0.5m)
+				vecy = 0.25m + rand(0.3m)
+			}
+		}
+	}
+}
+

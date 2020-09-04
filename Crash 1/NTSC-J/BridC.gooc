@@ -1,0 +1,343 @@
+#gool BridC 23 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim BRIDGE_STANDARD1 [BS1bV] 1
+#anim BRIDGE_EMPTY [BE1kV] 1
+#anim BRIDGE_STANDARD2 [Bs1kV] 1
+#anim BRIDGE_DROP [BD1kV] 1
+#anim BRIDGE_TEST [BT1kV] 1
+#anim BRIDGE_EMPTY_FALL [Be1kV] 30
+
+#sprite FOG_LARGE_1 [Br4kT]
+#tex 0x5A5A5A 1 1 0 6 0 16 64 64
+#tex 0x5A5A5A 1 1 0 6 16 16 64 64
+#tex 0x5A5A5A 1 1 0 6 32 16 64 64
+#tex 0x5A5A5A 1 1 0 6 48 16 64 64
+#tex 0x5A5A5A 1 1 0 6 64 16 64 64
+#tex 0x5A5A5A 1 1 0 6 80 16 64 64
+#tex 0x5A5A5A 1 1 0 6 96 16 64 64
+#tex 0x5A5A5A 1 1 0 6 112 16 64 64
+#sprite FOG_LARGE_2 [Br5kT]
+#tex 0x5A5A5A 1 1 0 1 0 16 64 64
+#tex 0x5A5A5A 1 1 0 1 16 16 64 64
+#tex 0x5A5A5A 1 1 0 1 32 16 64 64
+#tex 0x5A5A5A 1 1 0 1 48 16 64 64
+#tex 0x5A5A5A 1 1 0 1 64 16 64 64
+#tex 0x5A5A5A 1 1 0 1 80 16 64 64
+#tex 0x5A5A5A 1 1 0 1 96 16 64 64
+#tex 0x5A5A5A 1 1 0 1 112 16 64 64
+#sprite FOG_LARGE_3 [Br6kT]
+#tex 0x5A5A5A 1 1 0 1 0 16 64 64
+#tex 0x5A5A5A 1 1 0 1 16 16 64 64
+#tex 0x5A5A5A 1 1 0 1 32 16 64 64
+#tex 0x5A5A5A 1 1 0 1 48 16 64 64
+#tex 0x5A5A5A 1 1 0 1 64 16 64 64
+#tex 0x5A5A5A 1 1 0 1 80 16 64 64
+#tex 0x5A5A5A 1 1 0 1 96 16 64 64
+#tex 0x5A5A5A 1 1 0 1 112 16 64 64
+#sprite FOG_LARGE_4 [Br7kT]
+#tex 0x5A5A5A 1 1 0 1 0 16 64 64
+#tex 0x5A5A5A 1 1 0 1 16 16 64 64
+#tex 0x5A5A5A 1 1 0 1 32 16 64 64
+#tex 0x5A5A5A 1 1 0 1 48 16 64 64
+#tex 0x5A5A5A 1 1 0 1 64 16 64 64
+#tex 0x5A5A5A 1 1 0 1 80 16 64 64
+#tex 0x5A5A5A 1 1 0 1 96 16 64 64
+#tex 0x5A5A5A 1 1 0 1 112 16 64 64
+
+#sprite FOG_SMALL_1 [Br5kT]
+#tex 0x5A5A5A 1 1 0 2 0 8 32 32
+#tex 0x5A5A5A 1 1 0 2 8 8 32 32
+#tex 0x5A5A5A 1 1 0 2 16 8 32 32
+#tex 0x5A5A5A 1 1 0 2 24 8 32 32
+#tex 0x5A5A5A 1 1 0 2 32 8 32 32
+#tex 0x5A5A5A 1 1 0 2 40 8 32 32
+#tex 0x5A5A5A 1 1 0 2 48 8 32 32
+#tex 0x5A5A5A 1 1 0 2 56 8 32 32
+#tex 0x5A5A5A 1 1 0 2 64 8 32 32
+#tex 0x5A5A5A 1 1 0 2 72 8 32 32
+#tex 0x5A5A5A 1 1 0 2 80 8 32 32
+#tex 0x5A5A5A 1 1 0 2 88 8 32 32
+#tex 0x5A5A5A 1 1 0 2 96 8 32 32
+#tex 0x5A5A5A 1 1 0 2 104 8 32 32
+#tex 0x5A5A5A 1 1 0 2 112 8 32 32
+#tex 0x5A5A5A 1 1 0 2 120 8 32 32
+#sprite FOG_SMALL_2 [Br6kT]
+#tex 0x5A5A5A 1 1 0 2 0 8 32 32
+#tex 0x5A5A5A 1 1 0 2 8 8 32 32
+#tex 0x5A5A5A 1 1 0 2 16 8 32 32
+#tex 0x5A5A5A 1 1 0 2 24 8 32 32
+#tex 0x5A5A5A 1 1 0 2 32 8 32 32
+#tex 0x5A5A5A 1 1 0 2 40 8 32 32
+#tex 0x5A5A5A 1 1 0 2 48 8 32 32
+#tex 0x5A5A5A 1 1 0 2 56 8 32 32
+#tex 0x5A5A5A 1 1 0 2 64 8 32 32
+#tex 0x5A5A5A 1 1 0 2 72 8 32 32
+#tex 0x5A5A5A 1 1 0 2 80 8 32 32
+#tex 0x5A5A5A 1 1 0 2 88 8 32 32
+#tex 0x5A5A5A 1 1 0 2 96 8 32 32
+#tex 0x5A5A5A 1 1 0 2 104 8 32 32
+#tex 0x5A5A5A 1 1 0 2 112 8 32 32
+#tex 0x5A5A5A 1 1 0 2 120 8 32 32
+
+#spawn S_BRIDGE                   Bridge_Spawn
+#spawn S_BRIDGE_DROP              Bridge_Drop
+#spawn S_BRIDGE_STABLE            Bridge_Stable
+#spawn S_BRIDGE_BROKEN            Bridge_Broken
+#spawn S_BRIDGE_SLIPPERY          Bridge_Slippery
+#spawn S_BRIDGE_STABLE_INVISIBLE  Bridge_Stable
+#spawn S_BRIDGE_FOG               Bridge_Fog_Main
+#spawn S_BRIDGE_FOG_LARGE         Bridge_Fog_Big
+
+var BridgeObjBaseY, BridgeObjYOffset, FogZMod, mem4, mem5, mem6, mem7
+
+event EventTriggered => state Bridge_Fall_Immediately
+
+inline sub BridgeFlipRand() {
+	if (!rand(2)) {
+		scalex = -abs(scalex)
+	}
+}
+
+state Bridge_Spawn {
+	stateflag 0x801
+	statusc 0
+	code () {
+		rotz = -90deg
+		BridgeObjBaseY = y
+		BridgeObjYOffset = 0
+		zindex = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		sleepanim(0, BRIDGE_STANDARD1)
+	}
+	trans {
+		changestateif(Bridge_Fall, collider && !STATUS_FIRSTFRAME)
+	}
+}
+
+state Bridge_Fall {
+	stateflag 0x803
+	code () {
+		if (spawn != S_BRIDGE_BROKEN) {
+			SoundPlayDefault([BGvkA], 0.15V + rand(0.2V))
+			do (var start = frametime) {
+				rotx = 5deg
+				playframe(0)
+				rotx = 0
+				playframe(0)
+			} while (frametime - start < 0.5s)
+		}
+		rotz += 85deg + rand(20deg)
+		trotz = 30deg + randi(-60deg, 60deg)
+		yzapproach = 20deg
+		trotx = 7deg
+		troty = roty + randi(-60deg, 60deg)
+		statusb |= FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | 0x2000
+		if (spawn == S_BRIDGE_BROKEN) {
+			setanim(BRIDGE_EMPTY_FALL, 29.0)
+		}
+		if (spawn != S_BRIDGE) {
+			SoundPlayDefault([BBrkA], 0.15V + rand(0.2V))
+		}
+		do {
+			if (spawn == S_BRIDGE_BROKEN) {
+				animframe = (animframe + 1.0) % 29.0
+				playframe()
+			}
+			else {
+				playframe(0)
+			}
+		} until (BridgeObjBaseY - y > 20m)
+	}
+	trans {
+		if (y < BridgeObjBaseY - 0.25m) {
+			v0 = amb1 + 0.17S
+			amb1 = v0
+			amb2 = v0
+			amb3 = v0
+		}
+	}
+}
+
+state Bridge_Fall_Immediately {
+	stateflag 0x803
+	code () {
+		statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		do {
+			playframe(0)
+		} until (BridgeObjBaseY - y > 20m)
+	}
+	trans => state Bridge_Fall
+}
+
+state Bridge_Drop {
+	stateflag 0x801
+	statusc 0
+	code () {
+		mem7 = 1.0
+		density = 0.2m
+		BridgeObjBaseY = y
+		vely = 0
+		BridgeObjYOffset = 0
+		zindex = -10
+		v0 = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		BridgeFlipRand()
+		x += randi(-0.05m, 0.05m)
+		mem6 = 0
+		sleepanim(0, BRIDGE_DROP)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (BridgeObjYOffset >= 0) {
+				if (vely) {
+					statetime = frametime
+					v0 = 1.9s + rand(3s)
+				}
+				if (frametime - statetime >= v0) {
+					vely = -1
+				}
+				else {
+					vely = 0
+				}
+			}
+			if (BridgeObjYOffset <= -0.1m) {
+				vely = 1
+			}
+			if (vely == 1) {
+				BridgeObjYOffset += 0.02m
+			}
+			else if (vely == -1) {
+				BridgeObjYOffset -= 0.1m
+			}
+			y = BridgeObjBaseY + BridgeObjYOffset
+			changestateif(Bridge_Fall, collider && STATUS_PLAYER_D_COLLIDER)
+		}
+	}
+}
+
+state Bridge_Broken {
+	stateflag 0x801
+	statusc 0
+	code () {
+		BridgeObjBaseY = y
+		BridgeObjYOffset = 0
+		zindex = -10
+		statusb = FLAG_COLLIDABLE
+		BridgeFlipRand()
+		x += randi(-0.05m, 0.05m)
+		sleepanim(0, BRIDGE_EMPTY)
+	}
+	trans {
+		if (collider && !STATUS_FIRSTFRAME) {
+			statusb &= ~FLAG_COLLIDABLE
+			changestate(Bridge_Fall)
+		}
+	}
+}
+
+state Bridge_Stable {
+	stateflag 0x801
+	statusc 0
+	code () {
+		BridgeObjBaseY = y
+		BridgeObjYOffset = 0
+		zindex = -10
+		if (spawn == S_BRIDGE_STABLE_INVISIBLE && !entitygetstate(2)) {
+			statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP | FLAG_INVISIBLE
+		}
+		else {
+			statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+		}
+		BridgeFlipRand()
+		x += randi(-0.05m, 0.05m)
+		sleepanim(0, BRIDGE_STANDARD2)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (collider) {
+				entitysetstate(1)
+				statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
+				BridgeObjYOffset = -0.05m
+			}
+			else if (frametime - player->groundtime >= 0.2s) {
+				BridgeObjYOffset = 0
+			}
+			y = BridgeObjBaseY + BridgeObjYOffset
+		}
+	}
+}
+
+state Bridge_Slippery {
+	statusc 0
+	code () {
+		SlipperyObjCode(BRIDGE_DROP, 1.5m, 4)
+	}
+	trans {
+		SlipperyObjTrans(4m, 4m)
+	}
+}
+
+state Bridge_Fog_Main {
+	statusc 0
+	code () {
+		loadfile([BridC])
+		FogZMod = 0
+		v0 = 0
+		BridgeObjYOffset = 0
+		trotz = 2deg
+		SetScale(1.3S, 0.2S, 1.0S)
+		x = 0
+		y = 70.0
+		z = 0
+		BridgeObjBaseY = y
+		statusb = FLAG_2D
+		spawn(BridC, S_BRIDGE_FOG_LARGE, 1, -850)
+		do {
+			playframes(FOG_SMALL_1, 0, 15.0)
+			playframes(FOG_SMALL_2, 0, 15.0)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (FogZMod == v0) {
+				v0 = 192
+			}
+			if (FogZMod < v0) {
+				FogZMod += 1
+			}
+			else if (FogZMod > v0) {
+				FogZMod -= 1
+			}
+			GLOBAL_3 = FogZMod
+			zindex = -650 + FogZMod
+			y = BridgeObjBaseY + loopseek(BridgeObjYOffset, 3.0, 0.1)
+			rotz = -2deg + loopseek(trotz, 4deg, 0.1deg)
+		}
+	}
+}
+
+state Bridge_Fog_Big {
+	statusc 0
+	code (zmod) {
+		zindex = 0
+		BridgeObjYOffset = 2.0
+		trotz = 2deg
+		y = -30.0
+		BridgeObjBaseY = y
+		SetScale(1.3S, 0.68S, 1.0S)
+		statusb = FLAG_2D
+		do {
+			playframes(FOG_LARGE_1, 0, 7.0)
+			playframes(FOG_LARGE_2, 0, 7.0)
+			playframes(FOG_LARGE_3, 0, 7.0)
+			playframes(FOG_LARGE_4, 0, 7.0)
+		} while (1)
+	}
+	trans {
+		y = BridgeObjBaseY + loopseek(BridgeObjYOffset, 3.0, 0.15)
+		rotz = -3deg + loopseek(trotz, 6deg, 0.05deg)
+	}
+}
+

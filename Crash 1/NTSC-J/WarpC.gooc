@@ -1,0 +1,242 @@
+#gool WarpC 32 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim WARP_WHIRL_PARTICLE [WWP0V] 1
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#sprite WARP_SMOKE [WillT]
+#tex 0x00FFFF 0 1 5 8 96 24 32 32
+#tex 0x00B4FF 0 1 5 8 96 24 32 32
+#tex 0x0082FF 0 1 5 8 96 24 32 32
+
+#spawn S_0                        __s_0
+#spawn S_WARP_OUT                 Warp_Out
+#spawn S_2                        __s_2
+#spawn S_WARP_SMOKE_MASTER        Warp_Smoke_Master
+#spawn S_WARP_SMOKE_SLAVE         Warp_Smoke_Slave
+#spawn S_WARP_WHIRL               Warp_Whirl
+
+#include "DoctC.gooh"
+
+state Warp_Out { // 0
+	code () {
+		scalex = 0.0S
+		scaley = 1.0S
+		scalez = 0.0S
+		y += 1m
+		zindex = 24
+		spawn(WarpC, S_WARP_SMOKE_MASTER, 1, 0, -0.1m, 0)
+		spawn(WarpC, S_WARP_WHIRL, 1, 1.0S, -0.3m, 720deg)
+		if (FRAMETIME < 30) {
+			spawn(WarpC, S_WARP_WHIRL, 1, 0.9S, 0, 600deg)
+		}
+		soundpitch(4.0)
+		sounddecay(0.84)
+		soundfadet(0.5s)
+		soundfadev(0.3V, 0, 2)
+		soundplay([WAn0A], 0)
+		sleepnull()
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			soundsetup(0, voice, 5)
+			soundfadet(0.25s, voice)
+			soundfadev(0, voice, 3)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (var level = LEVEL; level == LEVEL_HogWild || level == LEVEL_WholeHog) {
+				if (player->z < z + 2m) {
+					sendevent(EventWarp, player, 0)
+					changestateif(Warp_Out_Used, eventaccepted)
+				}
+			}
+			else {
+				if (distance(player, 3) < 1.6m) {
+					if (player->y >= y - 1.3m && player->y < y && player->statusa \ FLAG_GROUNDLAND && !(player->statusa \ 0x200000)) {
+						if (player->invincible == 5) {
+							player->invincible = 0
+						}
+						sendevent(EventWarp, player, 0)
+						changestateif(Warp_Out_Used, eventaccepted)
+					}
+				}
+			}
+			roty = GAMEDIR
+			if (scalex < 1.0S) {
+				scalex += 0.05S
+				scalez = scalex
+			}
+		}
+	}
+}
+
+state Warp_Out_Used { // 0
+	code () {
+		cascadeevent(EventTriggered, self)
+		sleepnull()
+	}
+	trans {
+		getvert(vvec, player, 0)
+		unless (STATUS_FIRSTFRAME) {
+			y += vecy - groundy
+		}
+		groundy = vecy
+		x = seek(x, player->x, spd(1m))
+		z = seek(z, player->z, spd(1m))
+		if (frametime - statetime >= 0.8s) {
+			if (FRAMETIME < 32) {
+				spawn(DoctC, DoctC_S_DOCTOR_SPARKLE, 3, 250.0, player, 0.6s)
+			}
+		}
+		scalex += 0.05S
+		scalez = scalex
+	}
+}
+
+state Warp_Smoke_Master { // 0
+	statusc 0x22
+	code (xoff, yoff, zoff) {
+		vecx = xoff
+		vecy = yoff
+		vecz = zoff
+		x += vecx
+		y += vecy
+		z += vecz
+		vely = rand(0.25m)
+		SetScale(1.0S)
+		if (!rand(2)) {
+			trotz = 15deg + rand(5deg)
+		}
+		else {
+			trotz = -(15deg + rand(5deg))
+		}
+		if (FRAMETIME < 27) {
+			spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, 0.4m, 40.0)
+		}
+		spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, 0.2m, 25.6)
+		spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, -0.2m, 12.8)
+		spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, -0.4m, 19.2)
+		FlipRand()
+		setanim(WARP_SMOKE)
+		animframe = rand(3.0)
+		sleep()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			groundy = parent->y + vecy
+			y = groundy + sin(loopseek(vely, 1m, 1m/128), 1m-800)
+			rotz += trotz
+			x = parent->x + vecx
+			z = parent->z + vecz
+		}
+	}
+}
+
+state Warp_Smoke_Slave { // 0
+	statusc 0x22
+	code (drift, size) {
+		zindex = 48
+		scalex = 0
+		scaley = 0
+		scalez = size
+		field_61 = size
+		if (!rand(2)) {
+			trotz = 15deg + rand(5deg)
+		}
+		else {
+			trotz = -(15deg + rand(5deg))
+		}
+		v0 = rand(0.5s)
+		velx = 0
+		vely = 0
+		velz = drift
+		vecx = rand(-0.5m, 0.5m+1)
+		vecy = rand(0.5m)
+		vecz = drift
+		setanim(WARP_SMOKE)
+		animframe = rand(3.0)
+		sleep()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			x = creator->x + velx
+			y = creator->y + vely
+			z = creator->z + velz
+			velx = seek(velx, vecx, 0.02m)
+			vely = seek(vely, vecy, 0.02m)
+			velz = seek(velz, vecz, 0.02m)
+			if (!time(0.5s, v0)) {
+				vecx = rand(-0.8m, 0.8m+1)
+				vecy = rand(-0.4m, 0.4m+1)
+				vecz = rand(-0.8m, 0.8m+1)
+			}
+			rotz += trotz
+			if (FRAMETIME < 30) {
+				scalez = seek(scalez, field_61, 0.05S)
+			}
+			else {
+				scalez = seek(scalez, 0.1S, 0.05S)
+			}
+			scalex = seek(scalex, scalez, 0.1S)
+			scaley = seek(scaley, scalez, 0.1S)
+		}
+	}
+	
+}
+
+state Warp_Whirl { // 0
+	statusc 0x22
+	code (size, yoff, rotspd) {
+		statusb |= 0x400
+		zindex = 24
+		v0 = 0
+		field_61 = size
+		scalex = 0.0
+		scaley = 0.75S
+		scalez = 0.0
+		y += yoff
+		troty = rotspd
+		sleepanim(0, WARP_WHIRL_PARTICLE)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			accev()
+			v0 = 1.0
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			scalex = parent->scalex * field_61 >> 12
+			scalez = parent->scalez * field_61 >> 12
+			roty = spd(roty, troty)
+			if (v0) {
+				colra = seek(colra, 0, 8)
+				colga = seek(colga, 0, 8)
+				colba = seek(colba, 0, 8)
+				colra = colra
+				colga = colga
+				colba = colba
+				colr1 = colra
+				colg1 = colga
+				colb1 = colba
+				colr2 = colra
+				colg2 = colga
+				colb2 = colba
+				colr3 = colra
+				colg3 = colga
+				colb3 = colba
+				changestateif(Kill, !colra)
+			}
+		}
+	}
+}
+
+state Kill { // 0
+	statusc 0
+	code () {}
+}

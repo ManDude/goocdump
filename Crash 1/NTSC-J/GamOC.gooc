@@ -1,0 +1,1952 @@
+#gool GamOC 52 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim BACKGROUND [Obg0V] 1
+
+#anim NDI_HOUSE_1 [ND1pV] 40
+#anim NDI_HOUSE_2 [NDfpV] 40
+#anim NDI_HOUSE_3 [NDgpV] 40
+#anim NDI_PAW_1 [ND2pV] 51
+#anim NDI_PAW_2 [NDhpV] 10
+#anim NDI_BAR_BLACK [ND3pV] 51
+#anim NDI_BAR_WHITE [NDepV] 51
+#anim NDI_NAME_N [NDdpV] 11
+#anim NDI_NAME_A [ND4pV] 11
+#anim NDI_NAME_U [ND5pV] 11
+#anim NDI_NAME_G [ND6pV] 11
+#anim NDI_NAME_H [ND7pV] 11
+#anim NDI_NAME_T [ND8pV] 16
+#anim NDI_NAME_Y [ND9pV] 11
+#anim NDI_NAME_D [NDapV] 11
+#anim NDI_NAME_O [NDbpV] 11
+#anim NDI_NAME_G2 [NDcpV] 11
+
+#sprite NDI_TM [LogoT]
+#tex 0x808080 0 3 2 0 0 2 16 8
+
+#anim WILLY_WALK [WiWaV] 10
+#anim WILLY_STAND [WiS1V] 13
+#anim WILLY_DUCK [WiD1V] 14
+#anim WILLY_LAND [WiTSV] 5
+#anim WILLY_STAND_2 [WiS2V] 26
+#anim WILLY_SHOCK [WS10V] 3
+#anim WILLY_BLOW [WiBlV] 8
+#anim CORTEX_RUN [Co1pV] 24
+
+#sprite CORTEX_PLACEHOLDER [Cr2vT]
+#tex 0x808080 0 3 4 8 16 8 64 32
+
+#anim GAMEOVER_BACKGROUND [Go1pV] 39
+
+#sprite BACKGROUND_PLACEHOLDER [LogoT]
+#tex 0x808080 1 3 0 2 0 8 32 32
+#sprite LOGO_PLACEHOLDER [Dem2T]
+#tex 0x808080 1 0 0 1 0 16 64 64
+
+#anim GAMEOVER_GAME_1 [GO2pV] 21
+#anim GAMEOVER_GAME_2 [GO3pV] 14
+#anim GAMEOVER_OVER_1 [GO2pV] 21
+#anim GAMEOVER_OVER_2 [GO3pV] 14
+
+#anim LOGO_BACKGROUND [Lo1pV] 53
+#anim LOGO_NAME_1 [LO2pV] 16
+#anim LOGO_NAME_2 [LO4pV] 12
+#anim LOGO_SUB_B [LO5pV] 56
+#anim LOGO_SUB_A [LO6pV] 56
+#anim LOGO_SUB_N [LO7pV] 56
+#anim LOGO_SUB_D [LO8pV] 56
+#anim LOGO_SUB_I [LO9pV] 56
+#anim LOGO_SUB_C [LO9pV] 56
+#anim LOGO_SUB_O1 [LO9pV] 56
+#anim LOGO_SUB_O2 [LO9pV] 56
+#anim LOGO_SUB_T [LO9pV] 56
+
+#anim GEM_BLUE [Ge10V] 1
+#anim GEM_RED [Ge20V] 1
+#anim GEM_ORANGE [Ge30V] 1
+#anim GEM_PURPLE [Ge40V] 1
+#anim GEM_GREEN [Ge50V] 1
+#anim GEM_YELLOW [Ge60V] 1
+#anim GEM_CLEAR [Gc10V] 1
+#anim GEM_KEY [Gk10V] 1
+
+#fraganim LEVEL_END_FLAVOR [Ta2JT] 3
+#frag 0x808080 0 0 1 0 96 24 64 32 -200 0 200 200
+#frag 0x808080 0 0 1 0 96 16 64 32 200 0 600 200
+#frag 0x808080 0 0 1 0 112 16 16 32 600 0 700 200
+#frag 0x808080 0 0 1 0 96 8 64 32 -200 0 200 200
+#frag 0x808080 0 0 1 0 104 24 64 32 200 0 600 200
+#frag 0x808080 0 0 1 0 104 16 64 32 600 0 1000 200
+#frag 0x808080 0 0 1 0 104 8 64 32 -200 0 200 200
+#frag 0x808080 0 0 1 0 112 24 64 32 200 0 600 200
+#frag 0x808080 0 0 1 0 112 8 16 32 600 0 700 200
+
+#fraganim LOGOJ_SPRITE [DemJT] 20
+#frag 0x808080 1 3 0 1 0 16 64 64 -1300 -19 -900 381
+#frag 0x808080 1 3 0 1 16 16 64 64 -900 -19 -500 381
+#frag 0x808080 1 3 0 1 32 16 64 64 -500 -19 -100 381
+#frag 0x808080 1 3 0 1 48 16 64 64 -100 -19 300 381
+#frag 0x808080 1 3 0 1 64 16 64 64 300 -19 700 381
+#frag 0x808080 1 3 0 1 80 16 64 64 700 -19 1100 381
+#frag 0x808080 1 3 0 1 120 8 16 64 1100 -19 1200 381
+#frag 0x808080 1 3 0 1 0 8 64 32 -1300 -219 -900 -19
+#frag 0x808080 1 3 0 1 16 8 64 32 -900 -219 -500 -19
+#frag 0x808080 0 3 1 0 96 16 64 32 -500 -219 -100 -19
+#frag 0x808080 0 3 2 0 96 8 64 32 -100 -219 300 -19
+#frag 0x808080 0 3 3 0 104 16 64 32 300 -219 700 -19
+#frag 0x808080 0 3 4 0 104 8 64 32 700 -219 1100 -19
+#frag 0x808080 1 3 0 1 124 16 16 32 1100 -219 1200 -19
+#frag 0x808080 1 3 0 1 32 8 64 32 -1300 -419 -900 -219
+#frag 0x808080 0 3 5 0 112 24 64 32 -900 -419 -500 -219
+#frag 0x808080 0 3 6 0 112 16 64 32 -500 -419 -100 -219
+#frag 0x808080 0 3 7 0 112 8 64 32 300 -419 700 -219
+#frag 0x808080 0 3 8 0 120 24 64 32 700 -419 1100 -219
+#frag 0x808080 1 3 0 1 124 8 16 32 1100 -419 1200 -219
+
+#fraganim NDIJ_SPRITE [DemJT] 7
+#frag 0x808080 1 3 0 2 48 8 64 32 0 -200 400 0
+#frag 0x808080 1 3 0 2 64 8 64 32 400 -200 800 0
+#frag 0x808080 1 3 0 2 80 8 64 32 0 -400 400 -200
+#frag 0x808080 1 3 0 2 96 24 64 32 400 -400 800 -200
+#frag 0x808080 1 3 0 2 0 4 64 16 ! 2 1 800 -400 900 0
+#frag 0x808080 1 3 0 2 16 4 64 16 0 -500 400 -400
+#frag 0x808080 1 3 0 2 32 4 64 16 400 -500 800 -400
+
+#fraganim LOGO_SPRITE [DemoT] 20
+#frag 0x808080 1 3 0 1 0 16 64 64 -1300 -50 -900 350
+#frag 0x808080 1 3 0 1 16 16 64 64 -900 -50 -500 350
+#frag 0x808080 1 3 0 1 32 16 64 64 -500 -50 -100 350
+#frag 0x808080 1 3 0 1 48 16 64 64 -100 -50 300 350
+#frag 0x808080 1 3 0 1 64 16 64 64 300 -50 700 350
+#frag 0x808080 1 3 0 1 80 16 64 64 700 -50 1100 350
+#frag 0x808080 1 3 0 1 112 8 32 64 1100 -50 1300 350
+#frag 0x808080 1 3 0 1 0 8 64 32 -1300 -250 -900 -50
+#frag 0x808080 1 3 0 1 16 8 64 32 -900 -250 -500 -50
+#frag 0x808080 1 3 0 1 32 8 64 32 -500 -250 -100 -50
+#frag 0x808080 1 3 0 1 48 8 64 32 -100 -250 300 -50
+#frag 0x808080 1 3 0 1 64 8 64 32 300 -250 700 -50
+#frag 0x808080 1 3 0 1 80 8 64 32 700 -250 1100 -50
+#frag 0x808080 1 3 0 1 120 16 32 32 1100 -250 1300 -50
+#frag 0x808080 1 3 0 1 0 4 64 16 -1300 -350 -900 -250
+#frag 0x808080 1 3 0 1 16 4 64 16 -900 -350 -500 -250
+#frag 0x808080 1 3 0 1 32 4 64 16 700 -350 1100 -250
+#frag 0x808080 1 3 0 1 96 4 32 16 1100 -350 1300 -250
+#frag 0x808080 1 3 0 1 96 4 32 16 1100 -250 1100 -250
+#frag 0x808080 1 3 0 1 96 4 32 16 1100 -250 1100 -250
+
+#fraganim NDI_SPRITE [DemoT] 7
+#frag 0x808080 1 0 0 2 96 24 64 32 0 -200 400 0
+#frag 0x808080 1 0 0 2 96 16 64 32 400 -200 800 0
+#frag 0x808080 1 0 0 2 96 8 64 32 0 -400 400 -200
+#frag 0x808080 1 0 0 2 112 24 64 32 400 -400 800 -200
+#frag 0x808080 1 0 0 2 48 4 64 16 ! 2 1 800 -400 900 0
+#frag 0x808080 1 0 0 2 64 4 64 16 0 -500 400 -400
+#frag 0x808080 1 0 0 2 80 4 64 16 400 -500 800 -400
+
+#font FONT [Fon0T]
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 //  
+#char 0x808080 0 0 1 0 80 4 16 16 400 0 // !
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // "
+#char 0x808080 1 0 0 1 24 4 32 16 800 0 // #
+#char 0x808080 0 0 1 0 90 20 16 16 400 0 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // %
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // &
+#char 0x808080 0 0 1 0 90 8 16 16 300 0 // '
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // (
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // )
+#char 0x808080 1 0 0 1 16 4 32 16 800 0 // *
+#char 0x808080 1 0 0 1 32 4 32 16 800 0 // +
+#char 0x808080 0 0 1 0 90 4 16 16 300 0 // ,
+#char 0x808080 0 0 1 0 90 16 16 16 400 0 // -
+#char 0x808080 0 0 1 0 90 12 16 16 250 0 // .
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // /
+#char 0x808080 0 0 1 0 68 4 16 16 400 0 // 0
+#char 0x808080 0 0 1 0 70 4 16 16 400 0 // 1
+#char 0x808080 0 0 1 0 72 4 16 16 400 0 // 2
+#char 0x808080 0 0 1 0 74 4 16 16 400 0 // 3
+#char 0x808080 0 0 1 0 76 4 16 16 400 0 // 4
+#char 0x808080 0 0 1 0 78 12 16 16 400 0 // 5
+#char 0x808080 0 0 1 0 78 8 16 16 400 0 // 6
+#char 0x808080 0 0 1 0 78 4 16 16 400 0 // 7
+#char 0x808080 0 0 1 0 80 12 16 16 400 0 // 8
+#char 0x808080 0 0 1 0 80 8 16 16 400 0 // 9
+#char 0x808080 0 0 1 0 92 28 16 16 300 0 // :
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ;
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // <
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // =
+#char 0x808080 0 3 8 3 64 4 32 16 400 0 // >
+#char 0x808080 0 0 9 3 106 16 16 16 400 0 // ?
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // @
+#char 0x808080 0 0 1 0 82 12 16 16 400 0 // A
+#char 0x808080 0 0 1 0 82 8 16 16 400 0 // B
+#char 0x808080 0 0 1 0 82 4 16 16 400 0 // C
+#char 0x808080 0 0 1 0 84 28 16 16 400 0 // D
+#char 0x808080 0 0 1 0 84 24 16 16 400 0 // E
+#char 0x808080 0 0 1 0 84 20 16 16 400 0 // F
+#char 0x808080 0 0 1 0 84 16 16 16 400 0 // G
+#char 0x808080 0 0 1 0 84 12 16 16 400 0 // H
+#char 0x808080 0 0 1 0 84 8 16 16 400 0 // I
+#char 0x808080 0 0 1 0 84 4 16 16 400 0 // J
+#char 0x808080 0 0 1 0 86 28 16 16 400 0 // K
+#char 0x808080 0 0 1 0 86 24 16 16 400 0 // L
+#char 0x808080 0 0 1 0 86 20 16 16 400 0 // M
+#char 0x808080 0 0 1 0 86 16 16 16 400 0 // N
+#char 0x808080 0 0 1 0 86 12 16 16 400 0 // O
+#char 0x808080 0 0 1 0 86 8 16 16 400 0 // P
+#char 0x808080 0 0 1 0 86 4 16 16 400 0 // Q
+#char 0x808080 0 0 1 0 88 28 16 16 400 0 // R
+#char 0x808080 0 0 1 0 88 24 16 16 400 0 // S
+#char 0x808080 0 0 1 0 88 20 16 16 400 0 // T
+#char 0x808080 0 0 1 0 88 16 16 16 400 0 // U
+#char 0x808080 0 0 1 0 88 12 16 16 400 0 // V
+#char 0x808080 0 0 1 0 88 8 16 16 400 0 // W
+#char 0x808080 0 0 1 0 88 4 16 16 400 0 // X
+#char 0x808080 0 0 1 0 90 28 16 16 400 0 // Y
+#char 0x808080 0 0 1 0 90 24 16 16 400 0 // Z
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // [
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // \
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ]
+#char 0x808080 1 0 0 1 40 4 32 16 800 0 // ^
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // _
+
+#text TEXT FONT [1141I]
+"コンティニュー　しますか？"
+"はい"
+"いいえ"
+">"
+"スタート"
+"ロードします"
+"オプション"
+"TEST SAVE SYSTEM"
+"%d$ クリア"
+"ダイヤのかず　%d　コ"
+"カギのかず　 %d　コ"
+"でも　%d　はこ　のこっているよ"
+"ひみつの　つうろに　はいれるよ！~nもういちど　ちょうせん　しよう"
+"~c0~sx800~*~sx400~~c1　か　~c0~sx800~+~sx400~~c1　ボタンを　おしてください"
+
+#spawn S_GAMEOVER_MASTER          GameOver_Master
+#spawn S_GAMEOVER_CORTEX          GameOver_Cortex
+#spawn S_PASSWORD_MASTER          Password_Master
+#spawn S_PASSWORD_MASTER_SELECT   Password_Master
+#spawn S_PASSWORD_ICON            Password_Icon_Spawn
+#spawn S_PASSWORD_MASTER_BONUS    Password_Master
+#spawn S_6                        State_7
+#spawn S_7                        State_7
+#spawn S_LEVEL_END_FLAVOR         Level_End_Flavor
+#spawn S_LEVEL_END_wILLY          Level_End_Willy_Spawn
+#spawn S_TITLE_WILLY              Title_Willy_Spawn
+#spawn S_LOGO_ANIM                Logo_Anim
+#spawn S_TEXT_DEFAULT             Text_Default
+#spawn S_ISLAND_GEM_DISPLAY       Island_Gem_Display
+#spawn S_LOGO_NDI                 Logo_NDI
+#spawn S_TEXT_DEFAULT_FLASH       Text_Default
+#spawn S_KEY                      Key_Stance
+#spawn S_LOGO_UIS                 Logo_UIS
+#spawn S_18                       __s_18
+#spawn S_LOGO_SCE                 Logo_SCE
+#spawn S_TEXT                     Text
+#spawn S_TITLE_MENU               Title_Menu
+#spawn S_LEVEL_END_GEM_PATH       Level_End_Gem_Path
+#spawn S_LEVEL_END_GEM            Level_End_Gem
+#spawn S_GAMEOVER_MENU            GameOver_Menu
+#spawn S_BACKGROUND               Background_Stance
+#spawn S_LEVEL_END_FLAVOR_J       Level_End_Flavor_J
+
+var PasswordCode, mem2, PasswordSelectedIndex, mem4, mem5,
+LevelBoxCount, PercentBaseComplete, PercentComplete,
+TitleIdleTime, LogoAnimSet, BackgroundColorAmt,
+TextFlash, GemScreenX, GemScreenY, GemScreenScaleX, GemScreenScaleY, GemScreenScaleZ,
+MenuDebug, TitleMenuOptions, LevelEndWaitState, TitlePlayedScream
+
+#include "DispC.gooh"
+#include "BoxsC.gooh"
+#include "CardC.gooh"
+
+inline sub GemPathSpawn1(gem_id) {
+	if (ITEMPOOL1 & (1 << gem_id)) {
+		playnull(0.5s)
+		spawn(GamOC, S_LEVEL_END_GEM, 1, false, gem_id)
+	}
+}
+inline sub GemPathSpawn2(gem_id) {
+	if (ITEMPOOL2 & (1 << (gem_id-32))) {
+		playnull(0.5s)
+		spawn(GamOC, S_LEVEL_END_GEM, 1, false, gem_id)
+	}
+}
+
+state Level_End_Gem_Path { // 0
+	code () {
+		LoadAnim([Gc10V], [Gc10G])
+		LoadAnim([Ge10V], [Ge10G])
+		LoadAnim([Ge20V], [Ge20G])
+		LoadAnim([Ge40V], [Ge40G])
+		LoadAnim([Ge30V], [Ge30G])
+		LoadAnim([Ge60V], [Ge60G])
+		LoadAnim([Ge50V], [Ge50G])
+		LoadAnim([Gk10V], [Gk10G])
+		statusb |= FLAG_INVISIBLE
+		setanim(GEM_CLEAR)
+		LevelEndWaitState = 0
+		until (LevelEndWaitState == 1) {
+			playnull()
+		}
+		GemPathSpawn1(1)
+		GemPathSpawn1(2)
+		GemPathSpawn1(3)
+		GemPathSpawn1(4)
+		GemPathSpawn1(5)
+		
+		GemPathSpawn1(7)
+		GemPathSpawn1(8)
+		GemPathSpawn1(9)
+		GemPathSpawn1(10)
+		
+		GemPathSpawn1(12)
+		GemPathSpawn1(13)
+		GemPathSpawn1(14)
+		GemPathSpawn1(15)
+		GemPathSpawn1(16)
+		
+		GemPathSpawn1(18)
+		GemPathSpawn1(19)
+		GemPathSpawn1(20)
+		GemPathSpawn1(21)
+		
+		GemPathSpawn1(23)
+		GemPathSpawn1(24)
+		GemPathSpawn1(25)
+		GemPathSpawn1(26)
+		GemPathSpawn1(27)
+		
+		GemPathSpawn1(29)
+		
+		GemPathSpawn2(40)
+		GemPathSpawn2(50)
+		
+		playnull(0.5s)
+		spawn(GamOC, S_LEVEL_END_GEM, 1, true, CURRENTLEVEL)
+		sleepframe(0)
+	}
+	event (e, a) {
+		if (e == Event33) {
+			LevelEndWaitState = 1
+		}
+	}
+}
+
+expr GemTimeToCounter = 1s/3
+
+inline sub GemPathDoPath(path_end) {	
+	SoundPitchDefault()
+	sounddelay(1.4s)
+	soundplay([jmp0A], 0.4V)
+	pathprog = 0
+	do {
+		calcpath()
+		SetScale(5.6, 5.6, 5.6)
+		moveto2d()
+		playframe(0)
+		pathprog += 0.25
+	} while (pathprog <= path_end)
+}
+
+inline sub GemPathDoPathNew() {	
+	GemPathDoPath((pathlen-1.0) / 2)
+}
+
+inline sub GemPathDoPathOld() {	
+	GemPathDoPath(pathlen-1.0)
+}
+
+state Level_End_Gem { // 1
+	code (new_gem, gem_id) {
+		var0 = false
+		SetRot(20deg, 0, 0)
+		GetGemAnim(gem_id)
+		setanim(misc)
+		CopyParentPath()
+		pathprog = 0
+		statusb |= FLAG_2D
+		if (new_gem) {
+			GemPathDoPathNew()
+			playframe(0, 1s)
+			if ((-24.0 - x) != 0) {
+				GemScreenX = (-24.0 - x) / GemTimeToCounter
+			}
+			else {
+				GemScreenX = 0
+			}
+			if ((-12.0 - y) != 0) {
+				GemScreenY = (-12.0 - y) / GemTimeToCounter
+			}
+			else {
+				GemScreenY = 0
+			}
+			if ((0.96 - scalex) != 0) {
+				GemScreenScaleX = (0.96 - scalex) / GemTimeToCounter
+			}
+			else {
+				GemScreenScaleX = 0
+			}
+			if ((0.96 - scaley) != 0) {
+				GemScreenScaleY = (0.96 - scaley) / GemTimeToCounter
+			}
+			else {
+				GemScreenScaleY = 0
+			}
+			if ((0.96 - scalez) != 0) {
+				GemScreenScaleZ = (0.96 - scalez) / GemTimeToCounter
+			}
+			else {
+				GemScreenScaleZ = 0
+			}
+			do (var i = 0) {
+				x += GemScreenX
+				y += GemScreenY
+				scalex += GemScreenScaleX
+				scaley += GemScreenScaleY
+				scalez += GemScreenScaleZ
+				playframe(0)
+				i += 1.0
+			} while (i < GemTimeToCounter<<8)
+			interrupter = objectget(1.0)
+			sendevent(Event33, interrupter)
+			soundpitch(4.0)
+			soundplay([Gpu0A], 0.25V)
+			sleepframe(0)
+		}
+		else {
+			GemPathDoPathOld()
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (!var0) {
+				roty += 10deg
+			}
+		}
+	}
+}
+
+inline sub GetLevelPercent() {
+	var levelscomplete = LEVELCOUNT - 1
+	if (levelscomplete > 28) levelscomplete = 28;
+	PercentBaseComplete = levelscomplete*2
+}
+
+sub CalcGameProgress () {
+	GEMCOUNT = 0
+	KEYCOUNT = 0
+	if (ITEM_HAS_GEM1) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM2) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM3) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM4) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM5) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM6) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM7) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM8) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM9) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM10) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM11) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM12) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM13) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM14) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM15) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM16) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM17) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM18) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM19) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM20) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM21) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM22) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM23) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM24) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM25) GEMCOUNT += 1;
+	if (ITEM_HAS_GEM26) GEMCOUNT += 1;
+	if (ITEM_HAS_KEY1) KEYCOUNT += 1;
+	if (ITEM_HAS_KEY2) KEYCOUNT += 1;
+	GetLevelPercent()
+	PercentBaseComplete += GEMCOUNT
+	PercentBaseComplete += 3 * KEYCOUNT
+	if (GLOBAL_109) PercentBaseComplete = 0;
+	PercentComplete = PercentBaseComplete * 100 / (28*2 + 26*1 + 2*3)
+	PERCENTCOMPLETE = PercentComplete
+}
+
+inline sub AnimWillyWalk(vol) {
+	playanim_nm(0, WILLY_WALK)
+	playanim_nm(1, WILLY_WALK)
+	playanim_nm(2, WILLY_WALK)
+	playanim_nm(3, WILLY_WALK)
+	playanim_nm(4, WILLY_WALK)
+	playanim_nm(5, WILLY_WALK)
+	playanim_nm(6, WILLY_WALK)
+	playanim_nm(7, WILLY_WALK)
+	playanim_nm(8, WILLY_WALK)
+	playanim_nm(9, WILLY_WALK)
+	SoundPlayDefault([fs10A], vol)
+	playanim_m(0, WILLY_WALK)
+	playanim_m(1, WILLY_WALK)
+	playanim_m(2, WILLY_WALK)
+	playanim_m(3, WILLY_WALK)
+	playanim_m(4, WILLY_WALK)
+	playanim_m(5, WILLY_WALK)
+	playanim_m(6, WILLY_WALK)
+	playanim_m(7, WILLY_WALK)
+	playanim_m(8, WILLY_WALK)
+	playanim_m(9, WILLY_WALK)
+	SoundPlayDefault([fs00A], vol)
+}
+
+state GameOver_Master { // 2
+	code () {
+		GAMEFLAGS |= 0x80000
+		GLOBAL_50 = 0
+		GLOBAL_51 = 8
+		GLOBAL_52 = 0x5C
+		GLOBAL_53 = 4.4s
+		LoadAnim([Go1pV], [Go1pG])
+		LoadAnim([GO2pV], [GO2pG])
+		LoadAnim([GO2pV], [GO2pG])
+		loadfile([LogoT])
+		LogoAnimSet = 0
+		do {
+			playnull()
+		} until (tryload([LogoT]) && tryload([GO2pG]) && tryload([GO2pV]) && tryload([GO2pG]) && tryload([GO2pV]) && tryload([Go1pG]) && tryload([Go1pV]))
+		soundpitch(16000Hz)
+		soundplay([go1pA], 0.75V)
+		soundpitch(16000Hz)
+		sounddelay(4.4s)
+		soundplay([go2pA], 0.75V)
+		playnull(0.15s)
+		spawn(GamOC, S_BACKGROUND)
+		spawn(GamOC, S_LOGO_ANIM, 1, 15)
+		spawn(GamOC, S_LOGO_ANIM, 1, 16)
+		LoadAnim([GO3pV], [GO2pG])
+		LoadAnim([GO3pV], [GO2pG])
+		LogoAnimSet = 1.0
+		spawn(GamOC, S_GAMEOVER_MENU)
+		LoadAnim([WiWaV], [WillG])
+		LoadAnim([Co1pV], [Co1pG])
+		loadfile([Cr2vT])
+		LogoAnimSet = 2.0
+		statusb = FLAG_INVISIBLE
+		playnull(2s)
+		playnull(2s)
+		playnull(1s)
+		do {
+			playnull()
+		} until (tryload([Cr2vT]) && tryload([Co1pG]) && tryload([Co1pV]) && tryload([WillG]) && tryload([WiWaV]))
+		SetTrans(CAMTRANSX-10m, CAMTRANSY-2m, CAMTRANSZ-6m)
+		SetVel(6m, 0, 0)
+		SetRot(0, 90deg, 0)
+		statusb = FLAG_PHYSICS_ENGINE
+		var0 = true
+		spawn(GamOC, S_GAMEOVER_CORTEX)
+		while (x < CAMTRANSX + 10m && var0) {
+			AnimWillyWalk(0.2V)
+		}
+		sleepnull()
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			if (LogoAnimSet == 0) {
+				DeloadAnim([Go1pV], [Go1pG])
+				DeloadAnim([GO2pV], [GO2pG])
+				DeloadAnim([GO2pV], [GO2pG])
+				deloadfile([LogoT])
+			}
+			else if (LogoAnimSet == 1.0) {
+				DeloadAnim([Go1pV], [Go1pG])
+				deloadfile([LogoT])
+				DeloadAnim([GO2pV], [GO2pG])
+				DeloadAnim([GO2pV], [GO2pG])
+				DeloadAnim([GO3pV], [GO2pG])
+				DeloadAnim([GO3pV], [GO2pG])
+			}
+			else if (LogoAnimSet == 2.0) {
+				DeloadAnim([Go1pV], [Go1pG])
+				deloadfile([LogoT])
+				DeloadAnim([GO2pV], [GO2pG])
+				DeloadAnim([GO2pV], [GO2pG])
+				DeloadAnim([GO3pV], [GO2pG])
+				DeloadAnim([GO3pV], [GO2pG])
+				DeloadAnim([WiWaV], [WillG])
+				DeloadAnim([Co1pV], [Co1pG])
+				deloadfile([Cr2vT])
+			}
+		}
+	}
+}
+
+inline sub SoundMenuButton() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddelay(1)
+	sounddecay(0.9375)
+	soundplay([Mb1iA], 0.5V)
+	statusb &= ~FLAG_2D
+}
+
+inline sub SoundMenuSelect() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddecay(0.9375)
+	soundplay([selpA], 0.8V)
+	statusb &= ~FLAG_2D
+}
+
+state GameOver_Menu { // 3
+	code () {
+		SetRot(0)
+		statusb = FLAG_2D
+		SetScale(0.64, 1.015, 256.0)
+		zindex = 20
+		spawn(GamOC, S_TEXT, 1, -160.0, -48.0, TEXT, 0.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // Continue?
+		spawn(GamOC, S_TEXT, 1,   64.0, -48.0, TEXT, 1.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // Yes
+		spawn(GamOC, S_TEXT, 1,   64.0, -64.0, TEXT, 2.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // No
+
+		spawn(GamOC, S_TEXT, 1,   48.0, -48.0, TEXT, 3.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // >
+		var1 = 0
+		do {
+			if (frametime - statetime >= 30s) {
+				GAMESCREEN = 5
+			}
+			child->y = -48.0 + var1 * -16.0
+			if (dirpress(PAD_S) && var1 <= 0) {
+				SoundMenuButton()
+				var1 += 1
+			}
+			if (dirpress(PAD_N) && var1 >= 1) {
+				SoundMenuButton()
+				var1 -= 1
+			}
+			if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+				SoundMenuSelect()
+				if (var1 == 0) {
+					save (SAVEDITEMPOOL1, SAVEDITEMPOOL2, LEVELCOUNT) {
+						startgame()
+					}
+					ITEMPOOL1 = SAVEDITEMPOOL1
+					ITEMPOOL2 = SAVEDITEMPOOL2
+					LEVELSUNLOCKED = LEVELCOUNT
+					CURRENTLEVEL = LEVELCOUNT
+					SAVEDLEVELCOUNT = LEVELCOUNT
+					GAMESCREEN = 15
+				}
+				else {
+					CalcGameProgress()
+					GAMESCREEN = 5
+				}
+				GAMEFLAGS &= ~0x80000
+				playnull(2s)
+				playnull(2s)
+				playnull(2s)
+				playnull(2s)
+				statusb = FLAG_INVISIBLE
+				sleepnull()
+			}
+			playnull()
+		} while (1)
+		sleepnull()
+	}
+}
+
+state GameOver_Cortex { // 4
+	code () {
+		while (x < 10m) {
+			playframes(CORTEX_RUN, 0, 23.0)
+		}
+	}
+	trans {
+		x = creator->x - 3m
+	}
+}
+
+state Title_Willy_Spawn { // 5
+	code () {
+		vecx = x
+		vecy = y
+		vecz = z
+		statusb |= 0x40000
+		LoadAnim2([WiWaV], [WillG])
+		loadfile2([fs10A])
+		loadfile2([fs00A])
+		LoadAnim2([WiTSV], [WillG])
+		LoadAnim2([WS10V], [WS10G])
+		LoadAnim2([WiD1V], [WillG])
+		loadfile2([LogoT])
+		LoadAnim2([Lo1pV], [Lo1pG])
+		loadfile2([lgopA])
+		loadfile2([XclpA])
+		loadfile2([DemJT])
+		LogoAnimSet = 3.0
+		LoadAnim([LO2pV], [LO2pG])
+		LoadAnim([LO4pV], [LO2pG])
+		LoadAnim([WiS1V], [WillG])
+		LoadAnim([LO5pV], [LO5pG])
+		LoadAnim([LO6pV], [LO6pG])
+		LoadAnim([LO7pV], [LO7pG])
+		LoadAnim([LO8pV], [LO8pG])
+		LoadAnim([LO9pV], [LO9pG])
+		LoadAnim([LO9pV], [LO9pG])
+		LoadAnim([LO9pV], [LO9pG])
+		LoadAnim([LO9pV], [LO9pG])
+		LoadAnim([LO9pV], [LO9pG])
+		loadfile([Dem2T])
+		loadfile([LogoT])
+		LogoAnimSet = 4.0
+		spawn(GamOC, S_TITLE_MENU, 1, -197.75, -27.5)
+		changestate(Title_Willy_Walk)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			DeloadAnim([WiWaV], [WillG])
+			deloadfile([fs10A])
+			deloadfile([fs00A])
+			DeloadAnim([WiTSV], [WillG])
+			DeloadAnim([WS10V], [WS10G])
+			DeloadAnim([WiD1V], [WillG])
+			deloadfile([LogoT])
+			DeloadAnim([Lo1pV], [Lo1pG])
+			deloadfile([lgopA])
+			deloadfile([XclpA])
+			if (LogoAnimSet == 4.0) {
+				DeloadAnim([LO2pV], [LO2pG])
+				DeloadAnim([LO4pV], [LO2pG])
+				DeloadAnim([WiS1V], [WillG])
+				DeloadAnim([LO5pV], [LO5pG])
+				DeloadAnim([LO6pV], [LO6pG])
+				DeloadAnim([LO7pV], [LO7pG])
+				DeloadAnim([LO8pV], [LO8pG])
+				DeloadAnim([LO9pV], [LO9pG])
+				DeloadAnim([LO9pV], [LO9pG])
+				DeloadAnim([LO9pV], [LO9pG])
+				DeloadAnim([LO9pV], [LO9pG])
+				DeloadAnim([LO9pV], [LO9pG])
+				deloadfile([Dem2T])
+				deloadfile([LogoT])
+			}
+		}
+	}
+	trans {
+		once {
+			BackgroundColorAmt = 0
+			TitleIdleTime = frametime
+		}
+	}
+}
+
+state Title_Willy_Walk { // 6
+	code () {
+		statusb |= FLAG_PHYSICS_ENGINE
+		SetTrans(-1840.0, -840.0, -4800.0)
+		groundy = y
+		TitlePlayedScream = 0
+		SetVel(0, -1m, 4.5m)
+		do {
+			AnimWillyWalk(0.1V)
+		} while (1)
+	}
+	event => state Title_Willy_Spawn
+	trans {
+		if (frametime - statetime >= 1s) {
+			if (BackgroundColorAmt < 0xFF) {
+				BackgroundColorAmt += 0x10
+				if (BackgroundColorAmt > 0xFF) {
+					BackgroundColorAmt = 0xFF
+				}
+			}
+		}
+		if (z >= -2.5m && !TitlePlayedScream) {
+			soundpitch(16000Hz)
+			sounddecay(0.9375)
+			soundplay([XclpA], 0.75V)
+			TitlePlayedScream = 1
+		}
+		if (z >= -920.0) {
+			statusb &= ~FLAG_PHYSICS_ENGINE
+			changestate(Title_Willy_Surprise)
+		}
+		unless (STATUS_FIRSTFRAME) {
+			if (z >= -2860.0) {
+				vely = 540.0
+			}
+		}
+	}
+}
+
+state Title_Willy_Surprise { // 7
+	code () {
+		playanim(1, WILLY_LAND, 2)
+		playanim(2, WILLY_LAND, 2)
+		playanim(3, WILLY_LAND, 2)
+		playanim(4, WILLY_LAND, 2)
+		playanim(0, WILLY_SHOCK)
+		y += 0.1m
+		playanim(1, WILLY_SHOCK)
+		y += 0.05m
+		playanim(2, WILLY_SHOCK)
+		y += 0.025m
+		playanim(0, WILLY_SHOCK)
+		y += 0.015m
+		playanim(1, WILLY_SHOCK)
+		playanim(2, WILLY_SHOCK)
+		playanim(0, WILLY_SHOCK)
+		playanim(1, WILLY_SHOCK)
+		playanim(2, WILLY_SHOCK)
+		playanim(0, WILLY_DUCK)
+		y -= 0.1m
+		playanim(1, WILLY_DUCK)
+		y -= 0.09m
+		playanim(2, WILLY_DUCK)
+		playanim(3, WILLY_DUCK)
+		playanim(4, WILLY_DUCK)
+		playanim(5, WILLY_DUCK)
+		playanim(6, WILLY_DUCK)
+		playanim(7, WILLY_DUCK)
+		save (x, y, z, scalex) {
+			SetTrans(vecx, vecy, vecz)
+			SetRot(0)
+			scalex = abs(scalex)
+			spawn(GamOC, S_LOGO_ANIM, 1, 0)
+			spawn(GamOC, S_LOGO_ANIM, 1, 1)
+			spawn(GamOC, S_LOGO_ANIM, 1, 2)
+			spawn(GamOC, S_LOGO_ANIM, 1, 3)
+			spawn(GamOC, S_LOGO_ANIM, 1, 4)
+			spawn(GamOC, S_LOGO_ANIM, 1, 5)
+			spawn(GamOC, S_LOGO_ANIM, 1, 6)
+		}
+		do (var start = frametime) {
+			playanim(8, WILLY_DUCK, 1s)
+			playanim(9, WILLY_DUCK)
+			playanim(10, WILLY_DUCK)
+			playanim(11, WILLY_DUCK)
+			playanim(12, WILLY_DUCK)
+			playanim(13, WILLY_DUCK, 0.5s)
+			playanim(12, WILLY_DUCK)
+			playanim(11, WILLY_DUCK)
+			playanim(10, WILLY_DUCK)
+			playanim(9, WILLY_DUCK)
+		} while (frametime - start < 2s)
+		trotx = 720deg
+		statusb |= FLAG_ROT_Y
+		troty = -20deg
+		playanim(6, WILLY_DUCK)
+		playanim(5, WILLY_DUCK)
+		playanim(4, WILLY_DUCK)
+		playanim(3, WILLY_DUCK)
+		playanim(2, WILLY_DUCK)
+		playanim(1, WILLY_DUCK)
+		playanim(0, WILLY_DUCK)
+		do {
+			AnimWillyStand(true)
+			changestateif(Title_Willy_Start_Demo, frametime - TitleIdleTime >= 30s)
+		} while (1)
+	}
+	event => state Title_Willy_Spawn
+}
+
+state Title_Menu { // 8
+	code (sx, sy) {
+		MenuDebug = DEBUG
+		SetScale(1.0S)
+		SetRot(0)
+		statusb = FLAG_2D
+		SetScale(0.64, 1.015, 256.0)
+		zindex = 20
+		sy -= 8.0
+		x = sx
+		y = sy
+		spawn(GamOC, S_TEXT, 1, sx+16.0, sy, TEXT, 4.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+		vecx = child
+		spawn(GamOC, S_TEXT, 1, sx+16.0, sy-16.0, TEXT, 5.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+		vecy = child
+		spawn(GamOC, S_TEXT, 1, sx+16.0, sy-32.0, TEXT, 6.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+		groundy = child
+		TitleMenuOptions = 2
+		if (MenuDebug) {
+			TitleMenuOptions += 1
+			spawn(GamOC, S_TEXT, 1, sx+16.0, sy-48.0, TEXT, 7.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+		}
+		spawn(GamOC, S_TEXT, 1, sx, sy, TEXT, 3.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+		var0 = 0
+		var1 = 0
+		do {
+			child->y = sy + var0 * -16.0
+			if (frametime - statetime >= 0.2s) {
+				if (dirpress(PAD_S) && var0 < TitleMenuOptions) {
+					SoundMenuButton()
+					var0 += 1
+					parent->TitleIdleTime = frametime
+				}
+				if (dirpress(PAD_N) && var0 > 0) {
+					SoundMenuButton()
+					var0 -= 1
+					parent->TitleIdleTime = frametime
+				}
+				if (dirpress(PAD_N) || dirpress(PAD_S) || dirpress(PAD_W) || dirpress(PAD_E) || buttonpress(PAD_X|PAD_O|PAD_SQUARE|PAD_TRIANGLE|PAD_R1|PAD_R2|PAD_L1|PAD_L2|PAD_START|PAD_SELECT)) {
+					if (var1 == 0) { if (dirpress(PAD_N)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 1.0) { if (dirpress(PAD_N)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 2.0) { if (dirpress(PAD_S)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 3.0) { if (dirpress(PAD_S)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 4.0) { if (dirpress(PAD_W)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 5.0) { if (dirpress(PAD_E)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 6.0) { if (dirpress(PAD_W)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 7.0) { if (dirpress(PAD_E)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 8.0) { if (dirpress(PAD_W)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 9.0) { if (dirpress(PAD_E)) var1 += 1.0; else var1 = 0; }
+					else if (var1 == 10.0) {
+						if (buttonpress(PAD_CIRCLE)) {
+							GAMESCREEN = 14
+							GLOBALVAL = 3
+							sleepnull()
+							var1 = 0
+						}
+						else {
+							var1 = 0
+						}
+					}
+				}
+				if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+					SoundMenuSelect()
+					parent->TitleIdleTime = frametime
+					if (var0 == 0) {
+						GAMESCREEN = 15
+					}
+					else if (var0 == 1) {
+						GAMESCREEN = 14
+						GLOBALVAL = 4
+					}
+					else if (var0 == 99) {
+						GAMESCREEN = 14
+						GLOBALVAL = 3
+					}
+					else if (var0 == 2) {
+						GAMESCREEN = 6
+					}
+					else if (var0 == 3) {
+						GAMESCREEN = 14
+						GLOBALVAL = 13
+					}
+					sleepnull()
+				}
+			}
+			playnull()
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Kill, e == Event14)
+	}
+}
+
+state Title_Willy_Start_Demo { // 9
+	code () {
+		cascadeevent(Event14, self)
+		spawn(GamOC, S_LOGO_ANIM, 1, 40)
+		playanim(0, WILLY_STAND, 2s/3)
+		GAMEFLAGS &= ~0x200000
+		FadeToBlack()
+		playanim(0, WILLY_STAND, 0.3s)
+		GAMESTATE = GAME_STATE_TITLE
+		if (var demo_id = DEMOID; demo_id == 0) {
+			GAMESTATE = GAME_STATE_CUTSCENE
+			loadlevel(LEVEL_Intro)
+		}
+		else if (demo_id == 1.0) {
+			loadlevel(LEVEL_JungleRollers)
+		}
+		else if (demo_id == 2.0) {
+			loadlevel(LEVEL_PapuPapu)
+		}
+		else if (demo_id == 3.0) {
+			loadlevel(LEVEL_TheGreatGate)
+		}
+		else if (demo_id == 4.0) {
+			loadlevel(LEVEL_Boulders)
+		}
+		else if (demo_id == 5.0) {
+			loadlevel(LEVEL_JawsOfDarkness)
+		}
+		else if (demo_id == 6.0) {
+			loadlevel(LEVEL_TheLab)
+		}
+		DEMOID += 1.0
+		if (DEMOID >= 7.0) {
+			DEMOID = 0
+		}
+		sleepnull()
+	}
+	event => state Title_Willy_Spawn
+	trans {
+		if (BackgroundColorAmt > 0) {
+			BackgroundColorAmt -= 0x10
+			if (BackgroundColorAmt < 0) {
+				BackgroundColorAmt = 0
+			}
+		}
+		y = spd(y, -4m)
+	}
+}
+
+inline sub WaitLogoAnim(frame, anim, len) {
+	do (var i = 0) {
+		playanim(frame, anim)
+		i += 1.0
+	} while (i < len<<8)
+}
+
+inline sub WaitLogoAnim(anim, len) {
+	WaitLogoAnim(0, anim, len)
+}
+
+inline sub WaitLogoNull(len) {
+	do (var i = 0) {
+		playnull()
+		i += 1.0
+	} while (i < len<<8)
+}
+
+sub AnimNDILogo (l) {
+	if (l == 20) {
+		zindex = -40
+		WaitLogoAnim(NDI_BAR_BLACK, 2s)
+		playframes(NDI_BAR_BLACK, 0, 50.0)
+	}
+	else if (l == 34) {
+		zindex = -20
+		WaitLogoAnim(NDI_BAR_WHITE, 2s)
+		playframes(NDI_BAR_WHITE, 0, 50.0)
+	}
+	else if (l == 21) {
+		zindex = -80
+		playframes(NDI_HOUSE_1, 0, 39.0)
+		playframes(NDI_HOUSE_2, 0, 39.0)
+		playframes(NDI_HOUSE_3, 0, 39.0)
+	}
+	else if (l == 22) {
+		zindex = 40
+		WaitLogoAnim(NDI_PAW_1, 3s)
+		playframes(NDI_PAW_1, 0, 50.0)
+		playframes(NDI_PAW_2, 0, 9.0)
+	}
+	else if (l == 23) {
+		WaitLogoAnim(NDI_NAME_N, 2.18s)
+		playframes(NDI_NAME_N, 0, 10.0)
+	}
+	else if (l == 24) {
+		WaitLogoAnim(NDI_NAME_A, 2.18s+(1s/6))
+		playframes(NDI_NAME_A, 0, 10.0)
+	}
+	else if (l == 25) {
+		WaitLogoAnim(NDI_NAME_U, 2.18s+(2s/6))
+		playframes(NDI_NAME_U, 0, 10.0)
+	}
+	else if (l == 26) {
+		WaitLogoAnim(NDI_NAME_G, 2.18s+(3s/6))
+		playframes(NDI_NAME_G, 0, 10.0)
+	}
+	else if (l == 27) {
+		WaitLogoAnim(NDI_NAME_H, 2.18s+(4s/6))
+		playframes(NDI_NAME_H, 0, 10.0)
+	}
+	else if (l == 28) {
+		WaitLogoAnim(NDI_NAME_T, 2.18s+(5s/6))
+		playframes(NDI_NAME_T, 0, 15.0)
+	}
+	else if (l == 29) {
+		WaitLogoAnim(NDI_NAME_Y, 2.18s+(6s/6))
+		playframes(NDI_NAME_Y, 0, 10.0)
+	}
+	else if (l == 30) {
+		WaitLogoAnim(NDI_NAME_D, 2.18s+(7s/6))
+		playframes(NDI_NAME_D, 0, 10.0)
+	}
+	else if (l == 31) {
+		WaitLogoAnim(NDI_NAME_O, 2.18s+(8s/6))
+		playframes(NDI_NAME_O, 0, 10.0)
+	}
+	else if (l == 32) {
+		WaitLogoAnim(NDI_NAME_G2, 2.18s+(9s/6))
+		playframes(NDI_NAME_G2, 0, 10.0)
+	}
+	else if (l == 33) {
+		statusb = FLAG_2D
+		SetScale(0.64, 1.015/2, 256.0)
+		SetTrans(205.0, -5.0, 205.0)
+		playanim(0, NDI_TM)
+	}
+	else if (l == 35) {
+		statusb = FLAG_2D
+		SetScale(0.64, 1.015/2, 256.0)
+		WaitLogoNull(2.18s+(9s/6))
+		SetTrans(205.0, -20.0, 205.0)
+		playanim(0, NDI_TM)
+	}
+	else if (l == 36) {
+		statusb = FLAG_2D
+		SetScale(5.106, 8.117, 256.0*8)
+		WaitLogoNull(200)
+		SetTrans(30.0, -20.0, 30.0)
+		do (var i = 0) {
+			playanim(0, NDIJ_SPRITE)
+			scalex -= 0.256
+			scaley -= 0.406
+			i += 1.0
+		} while (i < 10.0)
+	}
+}
+
+state Logo_Anim { // 10
+	code (l) {
+		if (l < 40 && l >= 20) {
+			AnimNDILogo(l)
+		}
+		if (l == 0) {
+			zindex = 0
+			soundpitch(16000Hz)
+			soundplay([lgopA], 0.75V)
+			playframes(LOGO_BACKGROUND, 0, 52.0)
+		}
+		else if (l == 1) {
+			zindex = 40
+			SetScale(2.0S, 1.0S, 1.0S)
+			WaitLogoAnim(LOGO_NAME_1, 1s)
+			playframes(LOGO_NAME_1, 0, 15.0)
+			playframes(LOGO_NAME_2, 0, 11.0)
+		}
+		else if (l == 2) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_B, 50)
+			playframes(LOGO_SUB_B, 0, 55.0)
+		}
+		else if (l == 3) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_A, 50)
+			playframes(LOGO_SUB_A, 0, 55.0)
+		}
+		else if (l == 4) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_N, 50)
+			playframes(LOGO_SUB_N, 0, 55.0)
+		}
+		else if (l == 5) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_D, 50)
+			playframes(LOGO_SUB_D, 0, 55.0)
+		}
+		else if (l == 6) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_I, 50)
+			playframes(LOGO_SUB_I, 0, 55.0)
+			spawn(GamOC, S_LOGO_ANIM, 1, 33)
+		}
+		else if (l == 7) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_C, 50)
+			playframes(LOGO_SUB_C, 0, 55.0)
+		}
+		else if (l == 8) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_O1, 50)
+			playframes(LOGO_SUB_O1, 0, 55.0)
+		}
+		else if (l == 9) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_O2, 50)
+			playframes(LOGO_SUB_O2, 0, 55.0)
+		}
+		else if (l == 10) {
+			zindex = 60
+			WaitLogoAnim(LOGO_SUB_T, 50)
+			playframes(LOGO_SUB_T, 0, 55.0)
+		}
+		else if (l == 15) {
+			playframes(GAMEOVER_BACKGROUND, 0, 38.0)
+		}
+		else if (l == 16) {
+			WaitLogoAnim(GAMEOVER_GAME_1, 35)
+			playframes(GAMEOVER_GAME_1, 0, 20.0)
+			WaitLogoAnim(20, GAMEOVER_GAME_1, 100)
+			playframes(GAMEOVER_GAME_2, 0, 13.0)
+			playanim(0, GAMEOVER_GAME_2)
+			playanim(20, GAMEOVER_GAME_1)
+		}
+		else if (l == 17) {
+			zindex = 40
+			WaitLogoAnim(GAMEOVER_OVER_1, 35)
+			playframes(GAMEOVER_OVER_1, 0, 20.0)
+			WaitLogoAnim(20, GAMEOVER_OVER_1, 100)
+			playframes(GAMEOVER_OVER_2, 0, 13.0)
+			playanim(0, GAMEOVER_OVER_2)
+			playanim(20, GAMEOVER_OVER_1)
+		}
+		else if (l == 40) {
+			SetRot(0)
+			statusb = FLAG_2D
+			zindex = 1000
+			SetTrans(9.0, 38.0, 0)
+			SetScale(2.552, 4.055, 1024.0)
+			do (var i = 0) {
+				scalex -= 0.1
+				scaley -= 0.16
+				y += 2.5
+				playanim(0, LOGOJ_SPRITE)
+				i += 1.0
+			} while (i < 16.0)
+			spawn(DispC, DispC_S_DEMO_LOGO, 1, 8.904, 80.1)
+			spawn(DispC, DispC_S_DEMO_TEXT, 1, 0, -91.0)
+			statusb = FLAG_INVISIBLE
+			sleepnull()
+		}
+		sleep()
+	}
+	event (e, a) {
+		if (e == Event14) {
+			statusb |= FLAG_INVISIBLE
+		}
+	}
+}
+
+inline sub SplashTransCommon(screen_id) {
+	unless (STATUS_FIRSTFRAME) {
+		if (frametime - statetime >= 5s || (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)))) {
+			GAMESCREEN = screen_id
+			return_sup
+		}
+	}
+}
+
+state Logo_UIS { // 11
+	statusc 0
+	code () {
+		statetime = frametime
+		statusb = FLAG_INVISIBLE
+		sleepnull()
+	}
+	trans {
+		SplashTransCommon(8)
+	}
+}
+
+state Logo_SCE { // 12
+	statusc 0
+	code () {
+		changestateif(Logo_NDI_Load, GAMESCREEN == 10)
+		DEMOID = 0
+		statusb = FLAG_INVISIBLE
+		tpc = 0
+		playnull()
+		playnull()
+		playnull()
+		playnull()
+		statetime = frametime
+		settrans(__Logo_SCE_TRANS)
+		sleepnull()
+	}
+	trans {
+		SplashTransCommon(10)
+	}
+}
+
+state Logo_NDI_Load { // 13
+	statusc 0
+	code () {
+		DEMOID = 0
+		statusb = FLAG_INVISIBLE
+		tpc = 0
+		playnull()
+		playnull()
+		playnull()
+		playnull()
+		statetime = frametime
+		settrans(__Logo_NDI_Load_TRANS)
+		LoadAnim([ND3pV], [ND3pG])
+		LoadAnim([NDepV], [NDepG])
+		LoadAnim([ND1pV], [ND1pG])
+		LoadAnim([NDfpV], [ND1pG])
+		LoadAnim([NDgpV], [ND1pG])
+		LoadAnim([ND2pV], [ND2pG])
+		LoadAnim([NDhpV], [ND2pG])
+		LoadAnim([NDdpV], [NDdpG])
+		LoadAnim([ND4pV], [ND4pG])
+		LoadAnim([ND5pV], [ND5pG])
+		LoadAnim([ND6pV], [ND6pG])
+		LoadAnim([ND7pV], [ND7pG])
+		LoadAnim([ND8pV], [ND8pG])
+		LoadAnim([ND9pV], [ND9pG])
+		LoadAnim([NDapV], [NDapG])
+		LoadAnim([NDbpV], [NDbpG])
+		LoadAnim([NDcpV], [NDcpG])
+		loadfile([LogoT])
+		sleepnull()
+	}
+	trans {
+		SplashTransCommon(7)
+	}
+}
+
+inline sub SoundNaughtyDogInc() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	soundplay([ndipA], 1.0V)
+	statusb &= ~FLAG_2D
+}
+
+state Logo_NDI { // 14
+	code () {
+		do {
+			statetime = frametime
+			playnull()
+		} until (
+		tryload([NDcpG]) &&
+		tryload([NDcpV]) &&
+		tryload([NDbpG]) &&
+		tryload([NDbpV]) &&
+		tryload([NDapG]) &&
+		tryload([NDapV]) &&
+		tryload([ND9pG]) &&
+		tryload([ND9pV]) &&
+		tryload([ND8pG]) &&
+		tryload([ND8pV]) &&
+		tryload([ND7pG]) &&
+		tryload([ND7pV]) &&
+		tryload([ND6pG]) &&
+		tryload([ND6pV]) &&
+		tryload([ND5pG]) &&
+		tryload([ND5pV]) &&
+		tryload([ND4pG]) &&
+		tryload([ND4pV]) &&
+		tryload([NDdpG]) &&
+		tryload([NDdpV]) &&
+		tryload([ND2pG]) &&
+		tryload([NDhpV]) &&
+		tryload([ND2pG]) &&
+		tryload([ND2pV]) &&
+		tryload([ND1pG]) &&
+		tryload([NDgpV]) &&
+		tryload([ND1pG]) &&
+		tryload([NDfpV]) &&
+		tryload([ND1pG]) &&
+		tryload([ND1pV]) &&
+		tryload([NDepG]) &&
+		tryload([NDepV]) &&
+		tryload([ND3pG]) &&
+		tryload([ND3pV]))
+		spawn(GamOC, S_LOGO_ANIM, 1, 20)
+		spawn(GamOC, S_LOGO_ANIM, 1, 21)
+		spawn(GamOC, S_LOGO_ANIM, 1, 22)
+		spawn(GamOC, S_LOGO_ANIM, 1, 23)
+		spawn(GamOC, S_LOGO_ANIM, 1, 24)
+		spawn(GamOC, S_LOGO_ANIM, 1, 25)
+		spawn(GamOC, S_LOGO_ANIM, 1, 26)
+		spawn(GamOC, S_LOGO_ANIM, 1, 27)
+		spawn(GamOC, S_LOGO_ANIM, 1, 28)
+		spawn(GamOC, S_LOGO_ANIM, 1, 29)
+		spawn(GamOC, S_LOGO_ANIM, 1, 30)
+		spawn(GamOC, S_LOGO_ANIM, 1, 31)
+		spawn(GamOC, S_LOGO_ANIM, 1, 32)
+		spawn(GamOC, S_LOGO_ANIM, 1, 35)
+		spawn(GamOC, S_LOGO_ANIM, 1, 34)
+		spawn(GamOC, S_LOGO_ANIM, 1, 36)
+		SoundNaughtyDogInc()
+		playnull(2s)
+		playnull(2s)
+		playnull(2s)
+		playnull(2s)
+		playnull(2s)
+		GAMESCREEN = 5
+		sleepnull()
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			DeloadAnim([ND3pV], [ND3pG])
+			DeloadAnim([NDepV], [NDepG])
+			DeloadAnim([ND1pV], [ND1pG])
+			DeloadAnim([NDfpV], [ND1pG])
+			DeloadAnim([NDgpV], [ND1pG])
+			DeloadAnim([ND2pV], [ND2pG])
+			DeloadAnim([NDhpV], [ND2pG])
+			DeloadAnim([NDdpV], [NDdpG])
+			DeloadAnim([ND4pV], [ND4pG])
+			DeloadAnim([ND5pV], [ND5pG])
+			DeloadAnim([ND6pV], [ND6pG])
+			DeloadAnim([ND7pV], [ND7pG])
+			DeloadAnim([ND8pV], [ND8pG])
+			DeloadAnim([ND9pV], [ND9pG])
+			DeloadAnim([NDapV], [NDapG])
+			DeloadAnim([NDbpV], [NDbpG])
+			DeloadAnim([NDcpV], [NDcpG])
+			deloadfile([LogoT])
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X))) {
+				GAMESCREEN = 5
+			}
+		}
+	}
+}
+
+sub GetGemAnim (gem_id) {
+	if (gem_id == 12) {
+		misc = GEM_RED
+	}
+	else if (gem_id == 25) {
+		misc = GEM_PURPLE
+	}
+	else if (gem_id == 16) {
+		misc = GEM_CLEAR
+	}
+	else if (gem_id == 29) {
+		misc = GEM_YELLOW
+	}
+	else if (gem_id == 20) {
+		misc = GEM_ORANGE
+	}
+	else if (gem_id == 21) {
+		misc = GEM_BLUE
+	}
+	else if (gem_id == 42 || gem_id == 52) {
+		misc = GEM_KEY
+	}
+	else if (gem_id == 8) {
+		misc = GEM_GREEN
+	}
+	else {
+		misc = GEM_CLEAR
+	}
+}
+
+inline sub WillyEndLevelLose() {
+	x -= 4m
+	changestate(Level_End_Willy_Lose)
+}
+
+state Level_End_Willy_Spawn { // 15
+	code () {
+		zindex = 24
+		statusb = FLAG_PHYSICS_FULL | 0x4000000
+		if (var level = PREVLEVEL;
+				 level == LEVEL_NSanityBeach) LevelBoxCount = 48.0;
+		else if (level == LEVEL_JungleRollers) LevelBoxCount = 38.0;
+		else if (level == LEVEL_TheGreatGate) LevelBoxCount = 26.0;
+		else if (level == LEVEL_HogWild) LevelBoxCount = 24.0;
+		else if (level == LEVEL_WholeHog) LevelBoxCount = 24.0;
+		else if (level == LEVEL_NativeFortress) LevelBoxCount = 42.0;
+		else if (level == LEVEL_Upstream) LevelBoxCount = 14.0;
+		else if (level == LEVEL_RollingStones) LevelBoxCount = 46.0;
+		else if (level == LEVEL_Boulders) LevelBoxCount = 16.0;
+		else if (level == LEVEL_BoulderDash) LevelBoxCount = 35.0;
+		else if (level == LEVEL_UpTheCreek) LevelBoxCount = 15.0;
+		else if (level == LEVEL_TempleRuins) LevelBoxCount = 70.0;
+		else if (level == LEVEL_TheLostCity) LevelBoxCount = 26.0;
+		else if (level == LEVEL_SunsetVista) LevelBoxCount = 50.0;
+		else if (level == LEVEL_JawsOfDarkness) LevelBoxCount = 66.0;
+		else if (level == LEVEL_CortexPower) LevelBoxCount = 44.0;
+		else if (level == LEVEL_HeavyMachinery) LevelBoxCount = 33.0;
+		else if (level == LEVEL_GeneratorRoom) LevelBoxCount = 44.0;
+		else if (level == LEVEL_ToxicWaste) LevelBoxCount = 27.0;
+		else if (level == LEVEL_RoadToNowhere) LevelBoxCount = 33.0;
+		else if (level == LEVEL_TheHighRoad) LevelBoxCount = 14.0;
+		else if (level == LEVEL_LightsOut) LevelBoxCount = 15.0;
+		else if (level == LEVEL_StormyAscent) LevelBoxCount = 34.0;
+		else if (level == LEVEL_FumblingInTheDark) LevelBoxCount = 18.0;
+		else if (level == LEVEL_SlipperyClimb) LevelBoxCount = 34.0;
+		else if (level == LEVEL_CastleMachinery) LevelBoxCount = 27.0;
+		else if (level == LEVEL_TheLab) LevelBoxCount = 25.0;
+		if (buttonhold(PAD_R1) && DEBUG) {
+			WillyEndLevelLose()
+		}
+		changestateif(Level_End_Willy_Secret, buttonhold(PAD_L2) && DEBUG)
+		changestateif(Level_End_Willy_Win_Wait, PREVBOXCOUNT == LevelBoxCount || (buttonhold(PAD_L1) && DEBUG))
+		WillyEndLevelLose()
+	}
+}
+
+sub AnimWillyStand (wait) {
+	playanim(11, WILLY_STAND, 1s/3)
+	if (!rand(4)) {
+		playanim(12, WILLY_STAND, 0.1s)
+		playanim(11, WILLY_STAND, 0.1s)
+		playanim(12, WILLY_STAND, 0.1s)
+		playanim(11, WILLY_STAND, 0.2s)
+	}
+	if (!rand(4) && wait) {
+		playanim(11, WILLY_STAND, 1s)
+	}
+	scalex = -scalex
+	playanim(0, WILLY_STAND)
+	playanim(1, WILLY_STAND)
+	playanim(2, WILLY_STAND)
+	playanim(3, WILLY_STAND)
+	playanim(4, WILLY_STAND)
+	do {
+		if (wait) {
+			playanim(5, WILLY_STAND, 1s)
+		}
+		else {
+			playanim(5, WILLY_STAND)
+		}
+		playanim(6, WILLY_STAND)
+		playanim(7, WILLY_STAND)
+		playanim(8, WILLY_STAND)
+		if (!rand(8)) {
+			playanim(7, WILLY_STAND)
+			playanim(6, WILLY_STAND)
+		}
+		else break;
+	} while (1)
+	playanim(9, WILLY_STAND)
+	playanim(10, WILLY_STAND)
+}
+
+state Level_End_Willy_Lose { // 16
+	code () {
+		loadfile2([Ta2JT])
+		LoadAnim2([WiS1V], [WillG])
+		LoadAnim2([WiD1V], [WillG])
+		spawn(GamOC, S_LEVEL_END_FLAVOR_J, 1, -170.0, 40.0, 118.0, 0)
+		CalcGameProgress()
+		vecz = PercentComplete
+		var1 = CURRENTLEVEL
+		vecx = GEMCOUNT
+		vecy = KEYCOUNT
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, 40.0, TEXT, 8.0, offsetof(vecz))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, 10.0, TEXT, 9.0, offsetof(vecx))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, -20.0, TEXT, 10.0, offsetof(vecy))
+		var0 = (LevelBoxCount - PREVBOXCOUNT) >> 8
+		LevelBoxCount = PREVBOXCOUNT - 1.0
+		AnimWillyStand(false)
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, -50.0, TEXT, 11.0, offsetof(var0))
+		player = child
+		playframes(WILLY_DUCK, 0, 7.0)
+		do (var i = 0) {
+			spawn(BoxsC, BoxsC_S_BOX_EMPTY_AUTO, 1, 5m, 5s, x-0.5m, y+1.5m, z-0.5m)
+			if (var r = rand(4); r == 0) {
+				soundpitch(16000Hz)
+				sounddelay(0.65s)
+				soundplay([Ahb0A], 0.7V)
+			}
+			else if (r == 1) {
+				soundpitch(16000Hz)
+				sounddelay(0.65s)
+				soundplay([Oob0A], 0.7V)
+			}
+			else if (r == 2) {
+				soundpitch(16000Hz)
+				sounddelay(0.65s)
+				soundplay([Owb0A], 0.7V)
+			}
+			else if (r == 3) {
+				soundpitch(16000Hz)
+				sounddelay(0.65s)
+				soundplay([Hyb0A], 0.7V)
+			}
+			playanim(9, WILLY_DUCK)
+			playanim(10, WILLY_DUCK)
+			playanim(11, WILLY_DUCK)
+			playanim(12, WILLY_DUCK)
+			playanim(13, WILLY_DUCK)
+			playanim(12, WILLY_DUCK)
+			playanim(11, WILLY_DUCK)
+			playanim(10, WILLY_DUCK)
+			playanim(9, WILLY_DUCK)
+			i += 1.0
+		} while (i < LevelBoxCount - PREVBOXCOUNT)
+		playframesback(WILLY_DUCK, 12.0, 0)
+		AnimWillyStand(true)
+		changestate(Level_End_Willy_Lose_Proceed)
+	}
+}
+
+inline sub AnimWillySpin() {
+	soundpitch(4.0)
+	sounddecay(0.625)
+	soundplay([spn0A], 0.25V)
+	var f = 0
+	setanim(WILLY_BLOW)
+	do {
+		roty += troty
+		playframe(loopseek(f, 7.0))
+	} until (frametime - statetime >= 0.4s)
+}
+
+inline sub SoundBadaba() {
+	soundpitch(16000Hz)
+	sounddecay(0.75)
+	soundplay([Bdb0A], 0.7V)
+}
+
+inline sub AnimWillyBadaba() {
+	statetime = frametime
+	statusb &= ~FLAG_ROT_Y
+	if (scalex < 0) {
+		troty = 40deg
+	}
+	else {
+		troty = -40deg
+	}
+	AnimWillySpin()
+	roty = GAMEDIR
+	troty = roty
+	SoundBadaba()
+	playframes(WILLY_STAND_2, 0, 11.0)
+	playanim(11, WILLY_STAND_2, 0.5s)
+}
+
+state Level_End_Willy_Secret { // 17
+	code () {
+		x -= 4m
+		spawn(GamOC, S_LEVEL_END_FLAVOR_J, 1, -180.0, 50.0, 118.0, 2.0)
+		CalcGameProgress()
+		vecz = PercentComplete
+		var1 = CURRENTLEVEL
+		vecx = GEMCOUNT
+		vecy = KEYCOUNT
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, 40.0, TEXT, 8.0, offsetof(vecz))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, 10.0, TEXT, 9.0, offsetof(vecx))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0,-20.0, TEXT, 10.0,offsetof(vecy))
+		AnimWillyStand(false)
+		AnimWillyBadaba()
+		ITEMPOOL1 |= 1<<12 | 1<<20 | 1<<23 | 1<<24 | 1<<25 | 1<<29
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, -50.0, TEXT, 12.0, offsetof(var0))
+		CalcGameProgress()
+		vecx = GEMCOUNT
+		vecy = KEYCOUNT
+		vecz = PercentComplete
+		changestate(Level_End_Willy_Win_Proceed)
+	}
+}
+
+state Level_End_Willy_Win_Wait { // 18
+	code () {
+		LevelEndWaitState = 0
+		LoadAnim([WiS2V], [WillG])
+		LoadAnim([WiBlV], [WiBlG])
+		CalcGameProgress()
+		var0 = PercentComplete
+		var1 = CURRENTLEVEL
+		vecx = GEMCOUNT
+		vecy = KEYCOUNT
+		spawn(GamOC, S_LEVEL_END_FLAVOR_J, 1, 80.0, 40.0, 118.0, 1.0)
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0, 40.0, TEXT, 8.0, offsetof(var0))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,  0.0, TEXT, 9.0, offsetof(vecx))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,-40.0, TEXT,10.0, offsetof(vecy))
+		interrupter = objectget(10.0)
+		sendevent(Event33, interrupter)
+		do {
+			AnimWillyStand(false)
+		} while (1)
+	}
+	event (e, a) {
+		if (e == Event33) {
+			LevelEndWaitState = 1
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Level_End_Willy_Win, LevelEndWaitState == 1)
+		}
+	}
+}
+
+state Level_End_Willy_Win { // 19
+	code () {
+		if (var1 >= 32) {
+			ITEMPOOL2 |= 1 << (var1-32)
+		}
+		else {
+			ITEMPOOL1 |= 1 << var1
+		}
+		CalcGameProgress()
+		if (GEMCOUNT == 26) {
+			LEVELCOUNT = 31
+			LEVELSUNLOCKED = 31
+			CalcGameProgress()
+		}
+		vecx = GEMCOUNT
+		vecy = KEYCOUNT
+		var0 = PercentComplete
+		AnimWillyBadaba()
+		changestate(Level_End_Willy_Win_Proceed)
+	}
+}
+
+state Level_End_Willy_Win_Proceed { // 20
+	code () {
+		spawn(GamOC, S_TEXT_DEFAULT_FLASH, 1, -66.0, -90.0, TEXT, 13.0, offsetof(var0))
+		sleep()
+	}
+	trans {
+		if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+			SoundMenuSelect()
+			if (GLOBAL_109) {
+				loadlevel(LEVEL_Map)
+			}
+			else {
+				changestate(Level_End_Willy_Win_Card)
+			}
+		}
+	}
+}
+
+state Level_End_Willy_Lose_Proceed { // 21
+	code () {
+		spawn(GamOC, S_TEXT_DEFAULT_FLASH, 1, -66.0, -90.0, TEXT, 13.0, offsetof(var0))
+		do {
+			AnimWillyStand(true)
+		} while (1)
+	}
+	trans {
+		if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+			SoundMenuSelect()
+			GAMESTATE = GAME_STATE_CONTINUE
+			loadlevel(LEVEL_Map)
+		}
+	}
+}
+
+state Level_End_Willy_Win_Card { // 22
+	stateflag 0x60001
+	statusc 0
+	code () {
+		GLOBALVAL = 9
+		SAVETYPE = SAVE_TYPE_GEM
+		spawn(CardC, 0) // CardC-0
+		wait(2)
+		do {
+			playnull()
+		} until (GLOBALVAL == 0)
+		GAMESTATE = GAME_STATE_CONTINUE
+		loadlevel(LEVEL_Map)
+		sleepnull()
+	}
+}
+
+state Level_End_Willy_Lose_Card { // 23
+	statusc 0
+	code () {}
+}
+
+state Level_End_Flavor { // 24
+	statusc 0
+	code (posx, posy, anim, frame) {
+		SetTrans(posx, posy, 0)
+		SetScale(2.552, 4.055, 1024.0)
+		statusb = FLAG_2D
+		setanim(anim)
+		sleepframe(frame)
+	}
+}
+
+state Level_End_Flavor_J { // 25
+	statusc 0
+	code (posx, posy, anim, frame) {
+		SetTrans(posx, posy, 0)
+		SetScale(3.83, 6.086, 1536.0)
+		statusb = FLAG_2D
+		setanim(anim)
+		sleepframe(frame)
+	}
+}
+
+inline sub GetSelectedGem() {
+	if (var1 >= 32) {
+		misc = ITEMPOOL2 & (1 << (var1-32))
+	}
+	else {
+		misc = ITEMPOOL1 & (1 << var1)
+	}
+}
+
+state Island_Gem_Display { // 26
+	statusc 0
+	code (posx, posy, gem_id_var) {
+		LoadAnim([Gc10V], [Gc10G])
+		LoadAnim([Ge10V], [Ge10G])
+		LoadAnim([Ge20V], [Ge20G])
+		LoadAnim([Ge40V], [Ge40G])
+		LoadAnim([Ge30V], [Ge30G])
+		LoadAnim([Ge60V], [Ge60G])
+		LoadAnim([Ge50V], [Ge50G])
+		LoadAnim([Gk10V], [Gk10G])
+		zindex = -200
+		var0 = gem_id_var
+		SetTrans(posx, posy, 0)
+		statusb = FLAG_2D | 0x1000000
+		SetScale(0)
+		SetRot(20deg, 0, 0)
+		do {
+			GetSelectedGem()
+			if (misc) {
+				GetGemAnim(getfield(creator, var0))
+				setanim(misc)
+			}
+			playframe(0)
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			DeloadAnim([Gc10V], [Gc10G])
+			DeloadAnim([Ge10V], [Ge10G])
+			DeloadAnim([Ge20V], [Ge20G])
+			DeloadAnim([Ge40V], [Ge40G])
+			DeloadAnim([Ge30V], [Ge30G])
+			DeloadAnim([Ge60V], [Ge60G])
+			DeloadAnim([Ge50V], [Ge50G])
+			DeloadAnim([Gk10V], [Gk10G])
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			roty += 10deg
+			var1 = getfield(creator, var0)
+			GetSelectedGem()
+			if (misc) {
+				statusb &= ~FLAG_INVISIBLE
+				scalex = seek(scalex, 0.96, 0.32)
+				scaley = seek(scaley, 0.96, 0.32)
+				scalez = seek(scalez, 0.96, 0.32)
+			}
+			else {
+				scalex = seek(scalex, 0, 0.32)
+				scaley = seek(scaley, 0, 0.32)
+				scalez = seek(scalez, 0, 0.32)
+			}
+		}
+	}
+}
+
+state Text_Default { // 27
+	statusc 0
+	code (posx, posy, anim, frame, fmt_var) {
+		SetTrans(posx, posy, 0)
+		SetScale(0.64, 1.015, 256.0)
+		TextDefaultColor()
+		statusb = FLAG_2D | 0x4000000
+		setanim(anim)
+		do (var fmt) {
+			fmt = getfield(creator, fmt_var)
+			playframe(frame)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Kill, e == Event12)
+	}
+	trans {
+		if ((frametime - statetime) % 1s > 0.5s && spawn == S_TEXT_DEFAULT_FLASH) {
+			statusb |= FLAG_INVISIBLE
+		}
+		else {
+			statusb &= ~FLAG_INVISIBLE
+		}
+	}
+}
+
+state Text { // 28
+	statusc 0
+	code (posx, posy, anim, frame, fmt_var, sizex, sizey, r1, g1, b1, r2, g2, b2, flash, b) {
+		TextFlash = flash
+		SetTrans(posx, posy, 0)
+		SetScale(sizex, sizey, 0)
+		SetTextColor(r1, g1, b1, r2, g2, b2)
+		statusb = FLAG_2D
+		setanim(anim)
+		if (b) {
+			statusb |= 0x400
+		}
+		do (var fmt) {
+			fmt = getfield(creator, fmt_var)
+			playframe(frame)
+		} while (1)
+	}
+	event (e, a) {
+		accevcstate(Kill, e == Event12)
+	}
+	trans {
+		if (TextFlash) {
+			if (TextFlash && (frametime - statetime) % 1s > 0.5s) {
+				statusb |= FLAG_INVISIBLE
+			}
+			else {
+				statusb &= ~FLAG_INVISIBLE
+			}
+		}
+	}
+}
+
+state Kill { // 29
+	statusc 0
+	code () {}
+}
+
+state Key_Stance { // 30
+	statusc 0
+	code () {
+		GLOBALVAL = 0
+		movetolist(3.0)
+		zindex = 10
+		SetRot(0)
+		groundy = y-0.5m
+		statusb = FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | FLAG_SOLID_GROUND
+		SetVel(0, 21.9089m, 0)
+		do {
+			playanim(0, GEM_KEY)
+		} until (STATUS_GROUNDLAND)
+		sleepanim(0, GEM_KEY)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			scalex = seek(scalex, 1.0S, 0.1S)
+			scaley = seek(scaley, 1.0S, 0.1S)
+			scalez = seek(scalez, 1.0S, 0.1S)
+			roty += 10deg
+			changestateif(Key_Collect, collider)
+		}
+	}
+}
+
+state Key_Collect { // 31
+	statusc 0
+	code () {
+		GLOBALVAL = 9
+		SAVETYPE = SAVE_TYPE_KEY
+		if (var lev = CURRENTLEVEL; lev == 24) {
+			ITEMPOOL2 |= 1<<20
+		}
+		else if (lev == 26) {
+			ITEMPOOL2 |= 1<<10
+		}
+		soundpitch(4.08)
+		soundsetup(0, 11)
+		soundplay([1up0A], 0.5V)
+		soundsetup(0, voice, 5)
+	}
+}
+
+state Background_Stance { // 32
+	stateflag 0x60001
+	statusc 0x5000
+	code () {
+		LoadAnim2([Obg0V], [Obg0G])
+		SetTrans(0, 0, 0)
+		statusb = FLAG_2D
+		zindex = -1000
+		SetScale(0.6S, 0.6S, 0.6S)
+		SetRot(randi(-25deg, 25deg), randi(-25deg, 25deg), 0)
+		sleepanim(0, BACKGROUND)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			accev()
+			DeloadAnim([Obg0V], [Obg0G])
+		}
+	}
+}
+
+

@@ -1,0 +1,103 @@
+#gool BeaOC 27 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim OCEAN_WAVE [JuOWV] 128
+
+#spawn S_BEACH_MASTER        Beach_Master
+#spawn S_BEACH_WAVE          Beach_Wave
+#spawn S_SEAGULL             Seagull
+
+var SeagullType, SeagullWaitTime, SeagullDistance, SeagullOrbitSpeed
+
+inline sub SoundOceanWave() {
+	SoundPitchDefault()
+	soundplay([Su19A], 0.3V + rand(0.4V))
+}
+
+state Beach_Master {
+	code () {
+		spawn(BeaOC, S_BEACH_WAVE, 1, 6.0)
+		spawn(BeaOC, S_SEAGULL, 1, 1)
+		spawn(BeaOC, S_SEAGULL, 1, 2)
+		spawn(BeaOC, S_SEAGULL, 1, 1 + rand(2))
+		zindex = 200
+		statusb = 0x40000
+		while (GAMESTATE == GAME_STATE_CUTSCENE) {
+			SoundOceanWave()
+			playframes(OCEAN_WAVE, 0, 127.0)
+		}
+		statusb = FLAG_INVISIBLE
+		do {
+			SoundOceanWave()
+			playanim(0, OCEAN_WAVE, 50)
+			playanim(0, OCEAN_WAVE, 50)
+			playanim(0, OCEAN_WAVE, 28)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + 0, 1.0))
+			y += 0.1m
+		}
+	}
+}
+
+state Beach_Wave {
+	code (path_off) {
+		zindex = 200
+		CopyParentPath()
+		pathprog = path_off
+		statusb = 0x40000
+		playframeslt(OCEAN_WAVE, 124.0, 127.0)
+		while (GAMESTATE == GAME_STATE_CUTSCENE) {
+			playframes(OCEAN_WAVE, 0, 127.0)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + 0, 1.0))
+			y += 0.1m
+			x += 1m
+		}
+	}
+}
+
+inline sub SoundSeagull(sound) {
+	SoundPitchDefault()
+	soundplay(sound, 0.1V + rand(0.3V))
+}
+
+state Seagull {
+	code (seagull_type) {
+		SeagullType = seagull_type
+		vecx = parent->x + randi(-10m, 10m)
+		vecz = parent->z + randi(-6m, 6m)
+		vecy = parent->y + 7m
+		troty = rand(360deg)
+		SeagullDistance = 10m + rand(6m)
+		SeagullOrbitSpeed = 2deg + rand(5deg)
+		if (!rand(2)) SeagullOrbitSpeed = -SeagullOrbitSpeed;
+		statusb = FLAG_INVISIBLE
+		do {
+			SeagullWaitTime = 3s + rand(6s)
+			WaitFrame(0, PLACEHOLDER, SeagullWaitTime)
+			if (SeagullType == 1) {
+				SoundSeagull([SG29A])
+			}
+			else if (SeagullType == 2) {
+				SoundSeagull([SG49A])
+			}
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			troty += SeagullOrbitSpeed
+			vectransf2(vvec, vtrans, 0, SeagullDistance, 0)
+		}
+	}
+}
+

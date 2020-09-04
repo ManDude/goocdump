@@ -1,0 +1,283 @@
+#gool MafiC 12 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim MAFIA_TRAIL [MTraV] 1
+#anim SLIM [SliMV] 1
+#anim SLIM_SHOOT [SliSV] 24
+#anim SLIM_LAUGH_1 [SliLV] 23
+#anim SLIM_LAUGH_2 [SlilV] 24
+
+#sprite MAFIA_SMOKE [PoC1T]
+#tex 0x808080 1 1 0 11 96 16 32 32
+#tex 0x808080 1 1 0 11 96 8 32 32
+#tex 0x808080 1 1 0 11 104 24 32 32
+#tex 0x808080 1 1 0 11 104 16 32 32
+#tex 0x808080 1 1 0 11 104 8 32 32
+#tex 0x808080 1 1 0 11 112 24 32 32
+#tex 0x808080 1 1 0 11 112 16 32 32
+#tex 0x808080 1 1 0 11 112 8 32 32
+
+#spawn S_SLIM                     Slim_Spawn
+#spawn S_BULLET                   Bullet_Spawn
+
+#include "BoxsC.gooh"
+
+var MafiaVoice, MafiaStandY, MafiaRotVariance, MafiaRot
+
+event EventJumpedOn          => state Slim_Enemy_Die
+event EventHit               => state Slim_Enemy_Die
+event EventSpinHit           => state Slim_Enemy_Fling
+event EventHitInvincible     => state Slim_Enemy_Fling
+event EventFling             => state Slim_Enemy_Die
+
+#iflev 3
+expr SOUND_GUN = [gun3A] // 1001I
+expr SOUND_RICCOCHET1 = [1002I] // 1002I
+expr SOUND_RICCOCHET2 = [1003I] // 1003I
+expr SOUND_RICCOCHET3 = [1004I] // 1004I
+expr SOUND_LAUGH = [laf3A] // 1006I
+#eliflev 8
+expr SOUND_GUN = [MGn8A] // 1001I
+expr SOUND_RICCOCHET1 = [Rc18A] // 1002I
+expr SOUND_RICCOCHET2 = [Rc28A] // 1003I
+expr SOUND_RICCOCHET3 = [Rc38A] // 1004I
+expr SOUND_LAUGH = [1006I] // 1006I
+#else
+expr SOUND_GUN = [1001I] // 1001I
+expr SOUND_RICCOCHET1 = [1002I] // 1002I
+expr SOUND_RICCOCHET2 = [1003I] // 1003I
+expr SOUND_RICCOCHET3 = [1004I] // 1004I
+expr SOUND_LAUGH = [1006I] // 1006I
+#endif
+
+state Slim_Spawn { // 0
+	code () {
+		if (entitygetstate(3)) {
+			if (vecx) {
+				player = objectget(vecx)
+				sendevent(EventTriggered, player)
+			}
+			return
+		}
+		MafiaStandY = y
+		zindex = 24
+		y -= 3m
+		trotx = 90deg
+		MafiaVoice = 0
+		statusb = FLAG_INVISIBLE
+		if (LEVEL == LEVEL_HeavyMachinery) {
+			MafiaRotVariance = 4deg
+		}
+		else {
+			MafiaRotVariance = 16deg
+		}
+		sleepanim(0, SLIM)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Slim_Appear, distance(player, 0) < 16m && z - player->z < 5m)
+		}
+	}
+}
+
+state Slim_Appear { // 1
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		setanim(SLIM_LAUGH_2, -1.0)
+		while (y < MafiaStandY) {
+			y += 0.125m
+			playframe(animframe + 1.0)
+		}
+		y = MafiaStandY
+		MafiaRot = -MafiaRotVariance
+		changestate(Slim_Shoot)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Slim_Shoot { // 2
+	stateflag 0x80
+	statusc 0
+	code () {
+		setanim(SLIM_SHOOT, 23.0)
+		do (var i = 0) {
+			playframe((animframe+1.0) % 24.0)
+			playframe((animframe+1.0) % 24.0)
+			playframe((animframe+1.0) % 24.0)
+			spawn(MafiC, S_BULLET, 1, roty, 0, randi(-10.0, 10.0))
+			playframe((animframe+1.0) % 24.0)
+			playframe((animframe+1.0) % 24.0)
+			playframe((animframe+1.0) % 24.0)
+			spawn(MafiC, S_BULLET, 1, roty, 1.0, randi(-10.0, 10.0))
+			i += 1.0
+		} while (i < 12.0)
+		changestate(Slim_Laugh)
+	}
+	trans {
+		troty = sin(loopseek(MafiaRot, MafiaRotVariance * 2, -3deg), MafiaRotVariance * 2 - -3deg) + atan2(player->trans) + -MafiaRotVariance
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Slim_Laugh { // 3
+	statusc 0
+	code () {
+		soundpitch(3.84 + rand(0.32))
+		soundplay(SOUND_LAUGH, 0.15V + rand(0.35V))
+		playframes(SLIM_LAUGH_1, 0, 22.0)
+		playframes(SLIM_LAUGH_2, 0, 23.0)
+		changestate(Slim_Shoot)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Slim_Enemy_Die { // 4
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		if (vecx) {
+			player = objectget(vecx)
+			sendevent(EventTriggered, player)
+		}
+		entitysetstate(3)
+		entitysetspawn(0)
+		sendevent(EventCombo, player, h)
+		statusb &= ~(FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | 0x8000)
+		while (scalex > 0.04S) {
+			playframe()
+		}
+	}
+	trans {
+		once {
+			v0 = 1.0S
+		}
+		scalex = loopseek(v0, 1.2S, 0.2S)
+		scaley = scalex
+		scalez = scalex
+		roty += 60deg
+	}
+}
+
+state Slim_Enemy_Fling { // 5
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		if (vecx) {
+			player = objectget(vecx)
+			sendevent(EventTriggered, player)
+		}
+		entitysetstate(3)
+		EnemyFling(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+
+state Bullet_Spawn { // 6
+	statusc 0x12
+	code (a, b, c) {
+		if (b >= 0) {
+			getvert(vtrans, parent, b)
+		}
+		else {
+			y += 1.5m
+		}
+		if (FRAMETIME < 30) {
+			spawn(BoxsC, BoxsC_S_SMOKE, 1, -1.0)
+		}
+		statusb = FLAG_COLLIDABLE
+		zindex = -25
+		roty = a
+		rotz = roty + 90deg
+		if (LEVEL == LEVEL_HeavyMachinery) {
+			rotx = randi(-90deg, 90deg)
+		}
+		else {
+			rotx = randi(-30deg, 30deg)
+		}
+		if (distance(player, 2) < 1.5m, abs(y - player->y) < 2m) {
+			sendevent(EventHit, player, 100.0)
+			changestateif(Bullet_Hit, eventaccepted)
+		}
+		troty = a
+		setvel(0.125m)
+		vely = c
+		checkzonecollision(vvec)
+		velx *= 8
+		vely *= 4
+		velz *= 8
+		if (getfield(parent, offsetof(MafiaVoice))) {
+			v0 = getfield(parent, offsetof(MafiaVoice))
+			soundfadet(0.1s, v0)
+			soundfadev(0, v0, 3)
+		}
+		soundpitch(3.84 + rand(0.32))
+		soundsetup(0, 9)
+		soundplay(SOUND_GUN, 0.14V + rand(0.02V))
+		parent->MafiaVoice = voice
+		changestate(Bullet)
+	}
+}
+
+state Bullet { // 7
+	stateflag 0x80
+	statusc 0x12
+	code () {
+		do (var start = frametime) {
+			statusb = FLAG_COLLIDABLE
+			playanim(0, MAFIA_TRAIL)
+			if (rand(3)) {
+				statusb = FLAG_INVISIBLE | FLAG_COLLIDABLE
+			}
+			playanim(0, MAFIA_TRAIL, 2)
+		} while (frametime - start < 2s)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		changestateif(Bullet_Hit, eventaccepted)
+		changestateif(Bullet_Hit, distance(vec, self, 0) < 0.8m)
+		x += velx
+		y += vely
+		z += velz
+	}
+}
+
+state Bullet_Hit { // 8
+	stateflag 0x80
+	statusc 0x12
+	code () {
+		statusb = 0
+		rotx = 0
+		roty = 0
+		rotz = rand(360deg)
+		scalex = 0.75S
+		scaley = 0.75S
+		scalez = 0.75S
+		zindex = -50
+		if (LEVEL == LEVEL_Pinstripe) {
+			if (!rand(8)) {
+				if (var r = rand(3); r == 0) {
+					soundpitch(3.2 + rand(1.6))
+					soundplay(SOUND_RICCOCHET1, 0.17V)
+				}
+				else if (r == 1) {
+					soundpitch(3.2 + rand(1.6))
+					soundplay(SOUND_RICCOCHET2, 0.17V)
+				}
+				else if (r == 2) {
+					soundpitch(3.2 + rand(1.6))
+					soundplay(SOUND_RICCOCHET3, 0.08V)
+				}
+				soundsetup(0, voice, 5)
+			}
+		}
+		playframes(MAFIA_SMOKE, 0, 7.0)
+	}
+}
+

@@ -1,0 +1,201 @@
+#gool MonkC 1 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim MONKEY_ROLL [Mo1fV] 6
+#anim MONKEY_STANCE [Mo2fV] 33
+#anim MONKEY_TAUNT [Mo3fV] 29
+
+#spawn S_0                        __s_0
+#spawn S_1                        __s_1
+#spawn S_MONKEY                   Monkey_Stance
+
+var YOff, ActiveRange
+
+event EventJumpedOn      => state Monkey_Die
+event EventHit           => state Monkey_Die
+event EventSpinHit       => state Monkey_Fling
+event EventHitInvincible => state Monkey_Fling
+event EventFling         => state Monkey_Die
+
+inline sub MonkeyTransHit() {
+	sendevent(EventHit, collider, 100.0)
+}
+
+inline sub MonkeySetPathStartPoint() {
+	var start_dist, end_dist
+	if (ZONEFLAGS & 0x800) {
+		calcpath(0, vvec)
+		start_dist = distance(vec, player, DIST_EXACT)
+		calcpath(pathlen-1.0, vvec)
+		end_dist = distance(vec, player, DIST_EXACT)
+		if (start_dist < end_dist) {
+			pathprog = 0
+		}
+		else {
+			pathprog = pathlen-1.0
+		}
+	}
+	else {
+		pathprog = -(pathlen - pathlen/4)
+	}
+	calcpath()
+	y += YOff
+}
+
+state Monkey_Stance {
+	code () {
+		if (vecx) ActiveRange = (vecx >> 8 << 8) * 400;
+		     else ActiveRange = 6m;
+		YOff = 0.5m
+		y += YOff
+		trotx = 360deg*3
+		troty = 180deg
+		roty = troty
+		rotx = 0
+		rotz = 0
+		yzapproach = 0
+		zindex = 24
+		MonkeySetPathStartPoint()
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_TRACK_PATH_ROT | FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		roty = 0
+		troty = 0
+		statusc &= ~0x2
+		do {
+			playframes(MONKEY_STANCE, 0, 32.0)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Monkey_Roll, distance(player, DIST_EXACT | DIST_NO_Y) < ActiveRange)
+		}
+		MonkeyTransHit()
+	}
+}
+
+state Monkey_Taunt {
+	statusc 0
+	code () {
+		troty = GAMEDIR
+		MonkeyTauntAnim()
+		changestate(Monkey_Roll)
+	}
+	trans {
+		MonkeyTransHit()
+	}
+}
+
+state Monkey_Roll {
+	code () {
+		playframes(MONKEY_ROLL, 0, 5.0)
+		sleepanim(5, MONKEY_ROLL)
+	}
+	event (e, a) {
+		SpinKnockback(e, 15m)
+	}
+	trans {
+		once {
+			yzapproach = 0
+		}
+		rotz = troty
+		if (yzapproach < 800deg) {
+			yzapproach += 60deg
+		}
+		else {
+			yzapproach = 800deg
+		}
+		rotx = spd(rotx, yzapproach)
+		LoopPathProg(spd(4.0))
+		y += YOff
+		changestateif(Monkey_Turn, STATUS_PATH_END)
+		MonkeyTransHit()
+		if (frametime - statetime >= 1s/6) {
+			//MonkeyTransHit()
+		}
+	}
+}
+
+state Monkey_Turn {
+	statusc 0
+	code () {
+		rotx = 0
+		yzapproach = 0
+		troty += 180deg
+		playframesback(4.0, 0)
+		while (yzapproach) {
+			playanim(0, MONKEY_ROLL)
+		}
+		changestate(Monkey_Taunt)
+	}
+	trans {
+		rotx = spd(rotx, yzapproach)
+		if (abs(degdist(rotx, 0)) < 50deg) {
+			rotx = 0
+			yzapproach = 0
+		}
+	}
+}
+
+sub MonkeyTauntAnim () {
+	if (!rand(3)) {
+		SoundPlayDefault([chmiA], 0.25V)
+	}
+	if (!rand(2)) {
+		playframes(MONKEY_STANCE, 0, 32.0)
+		playframes(MONKEY_STANCE, 0, 32.0)
+	}
+	else {
+		playframeslt(MONKEY_TAUNT, 0, 6.0)
+		do (var i = 0) {
+			SoundPlayDefault([Mp2iA], 0.1V)
+			SoundPitchDefault()
+			sounddelay(0.2s)
+			soundplay([Mp1iA], 0.1V)
+			playframes(6.0, 17.0)
+			SoundPlayDefault([Mp2iA], 0.1V)
+			SoundPitchDefault()
+			sounddelay(0.2s)
+			soundplay([Mp1iA], 0.1V)
+			playanim(18, MONKEY_TAUNT)
+			playframesback(17.0, 7.0)
+			i += 1.0
+		} while (i < 4.0)
+		SoundPlayDefault([Mp2iA], 0.1V)
+		playframes(20.0, 28.0)
+	}
+}
+
+state Monkey_Die {
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDieCombo(h)
+		playframes(MONKEY_ROLL, 0, 5.0)
+		while (scalex > 0.04S) {
+			playframe()
+		}
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state Monkey_Fling {
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingCombo(h)
+		EnemyFlingSetDir()
+		vely = 0
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		playframes(MONKEY_ROLL, 0, 5.0)
+		while (scalex > 0 && scaley > 0 && scalez > 0) {
+			playanim(5, MONKEY_ROLL)
+		}
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+

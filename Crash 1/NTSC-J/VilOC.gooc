@@ -1,0 +1,120 @@
+#gool VilOC 51 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim CURTAIN [Cu1hV] 27
+#anim NATIVE_HEAD [NH1hV] 1
+#anim NATIVE_BOOMERANG [NB1hV] 1
+#anim NATIVE_ROTISSERIE_1 [NS1hV] 31
+#anim NATIVE_ROTISSERIE_2 [NS2hV] 35
+
+#spawn S_BOOMERANG                Boomerang
+#spawn S_NATIVE_HEAD              Native_Head
+#spawn S_ROTISSERIE               Rotisserie
+#spawn S_DRUM_COLLIDER            Drum_Collider
+#spawn S_CURTAIN                  Curtain_Closed
+
+#include "ShadC.gooh"
+
+state Drum_Collider {
+	code () {
+		SetScale(1.5S)
+		statusb = FLAG_COLLIDABLE | FLAG_INVISIBLE
+		sleepanim(0, PLACEHOLDER)
+	}
+	trans {
+		sendevent(EventBounce, collider, 16.97056m)
+		if (eventaccepted) {
+			SoundPitchDefault()
+			soundplay([bnc0A], 0.8V)
+		}
+	}
+}
+
+state Native_Head {
+	statusc 0x32
+	code () {
+		zindex = -60
+		SetVillageObjPathProg()
+		sleepanim(0, NATIVE_HEAD)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + -0.9, 0.1))
+			sendevent(EventHit, collider, 100.0)
+			if (eventaccepted) {
+				SoundPitchDefault()
+				soundplay([bnc0A], 0.5V)
+			}
+		}
+	}
+}
+
+state Boomerang {
+	statusc 0x32
+	code () {
+		SetScale(2.0S)
+		rotz = 90deg
+		spawn(ShadC, ShadC_S_SHADOW, 1, 0, 2.0S, 10)
+		statusb = FLAG_COLLIDABLE | FLAG_HAS_SHADOW
+		SetVillageObjPathProg()
+		SoundPitchDefault()
+		soundplay([boohA], 0.3V)
+		sleepanim(0, NATIVE_BOOMERANG)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			pathprog = spd(pathprog, 6.0) % pathlen
+			calcpath()
+			sendevent(EventHit, collider, 100.0)
+			rotx = spd(rotx, 360deg*15/4)
+		}
+	}
+}
+
+state Rotisserie {
+	statusc 0x32
+	code () {
+		statusb = 0x80000000 | FLAG_COLLIDABLE
+		if (vecx == 1.0) {
+			playframesback(NATIVE_ROTISSERIE_2, 26.0, 0)
+			playframesback(NATIVE_ROTISSERIE_1, 30.0, 0)
+		}
+		else if (vecx == 2.0) {
+			playframesback(NATIVE_ROTISSERIE_1, 23.0, 0)
+		}
+		else {
+			playframesback(NATIVE_ROTISSERIE_2, 9.0, 0)
+			playframesback(NATIVE_ROTISSERIE_1, 30.0, 0)
+		}
+		do {
+			playframesback(NATIVE_ROTISSERIE_2, 34.0, 0)
+			playframesback(NATIVE_ROTISSERIE_1, 30.0, 0)
+		} while (1)
+	}
+	trans {
+		sendeventif(EventHit, collider, !STATUS_FIRSTFRAME, 100.0)
+	}
+}
+
+state Curtain_Closed {
+	code () {
+		zindex = 100
+		sleepanim(26, CURTAIN)
+	}
+	trans {
+		changestateif(Curtain_Open, distance(player, 0) < 6m)
+	}
+}
+
+state Curtain_Open {
+	code () {
+		playframesback(CURTAIN, 26.0, 0)
+		sleep()
+	}
+}
+
+

@@ -1,0 +1,403 @@
+#gool frogC 36 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim FROG_STAND [Fr1rV] 104
+#anim FROG_ANGRY [Fr2rV] 24
+
+#spawn S_FROG_ROAM                Frog_Roam_Spawn
+#spawn S_FROG_ROAM_PATH           Frog_Roam_Path
+#spawn S_FROG_PATH                Frog_Path
+#spawn S_FROG                     Frog_Spawn
+
+var FrogPathSpeed, FrogYOff, FrogSideTrack, CycleDur, CycleOff, ActiveRange, FrogCount, FrogJumpMax, mem9, RoamSpawnX, RoamSpawnY, RoamSpawnZ, mem13, FrogSpinTime
+
+event EventJumpedOn      => state Frog_Die
+event EventHit           => state Frog_Die
+event EventSpinHit       => state Frog_Knockback
+event EventHitInvincible => state Frog_Knockback
+
+#include "ShadC.gooh"
+
+state Frog_Roam_Path {
+	statusc 0x12
+	code () {
+		if (vecx) pathdist = vecx;
+		     else pathdist = 3.5m;
+		FrogJumpMax = 3.0
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, 0)
+	}
+	event (e, a) {
+		if (e == Event27) {
+			accev()
+			spawn(frogC, S_FROG_ROAM, 1, a[0], a[1], a[2])
+		}
+	}
+}
+
+state Frog_Path {
+	statusc 0x12
+	code () {
+		if (vecx) CycleDur = vec >> 8;
+		     else CycleDur = 2s;
+		CycleOff = 0
+		FrogCount = 0
+		if (vecy) FrogPathSpeed = vecy >> 8;
+		     else FrogPathSpeed = 6.0;
+		if (vecz) var0 = vecz;
+		     else var0 = 3.0;
+		statusb = FLAG_INVISIBLE
+		setanim(FROG_ANGRY)
+		ActiveRange = 8m
+		do {
+			if (distance(player, DIST_EXACT | DIST_NO_Y) > ActiveRange && abs(z - player->z) < 14m && player->z > z) {
+				spawn(frogC, S_FROG)
+				FrogCount += 1.0
+			}
+			playframe(0)
+			while (FrogCount >= 1.0) {
+				playframe(0)
+			}
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			accev()
+			FrogCount -= 1.0
+		}
+	}
+}
+
+state Frog_Spawn {
+	statusc 0x12
+	code () {
+		zindex = 55
+		yzapproach = 180deg
+		trotx = 360deg
+		pathdist = 2m
+		pathprog = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		FrogSideTrack = 0
+		density = 0.1m
+		FrogPathSpeed = getfield(parent, offsetof(FrogPathSpeed))
+		CopyParentPath()
+		do (var s = 0) {
+			SetScale(s)
+			playanim(0, FROG_ANGRY)
+			s += 0.05S
+		} while (s < 1.0S)
+		setanim(FROG_ANGRY)
+		SoundPlayDefault([jl2rA], 0.2V)
+		changestate(Frog_Move)
+	}
+}
+
+inline sub FrogTrackPath() {
+	var old_rot, ang_to_player
+	pathprog = spd(pathprog, FrogPathSpeed)
+	calcpath()
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(FrogSideTrack)
+	}
+	x += velx
+	z += velz
+	if (pathlen - pathprog >= 2.0) {
+		old_rot = troty
+		if (abs(FrogSideTrack - vecy) > 0.1m) {
+			ang_to_player = degdist(troty, atan2(player->trans))
+			if (ang_to_player < -20deg) {
+				ang_to_player = -20deg
+			}
+			else if (ang_to_player > 20deg) {
+				ang_to_player = 20deg
+			}
+			troty += ang_to_player
+		}
+		FrogSideTrack = seek(FrogSideTrack, vecy, spd(2m))
+		if (FrogSideTrack < -pathdist) {
+			troty = old_rot
+			FrogSideTrack = -pathdist
+		}
+		else if (FrogSideTrack > pathdist) {
+			troty = old_rot
+			FrogSideTrack = pathdist
+		}
+	}
+}
+
+inline sub SoundJumpLand2() {
+	SoundPlayDefault([jl2rA], 0.2V)
+}
+
+inline sub SoundJumpLand3() {
+	SoundPlayDefault([jl3rA], 0.2V)
+}
+
+inline sub PlayJumpLandSound() {
+	if (!rand(2)) {
+		SoundJumpLand2()
+	}
+	else {
+		SoundJumpLand3()
+	}
+}
+
+state Frog_Move {
+	stateflag 0x81
+	statusc 0x10
+	code () {
+		FrogSpinTime = 0
+		animframe = 0
+		FrogYOff = 0
+		vely = 0
+		do {
+			mem9 = pathprog
+			FrogTrackPath()
+			vely = spd(vely, -27m)
+			FrogYOff = spd(FrogYOff, vely)
+			if (FrogYOff < 0) {
+				vely = 0
+				FrogYOff = 0
+				if (pathprog && pathprog < pathlen - 5.0) {
+					PlayJumpLandSound()
+					playframeslt(FROG_STAND, 0, 9.0)
+					setanim(FROG_ANGRY, -1.0)
+				}
+				vely = 10m
+				SoundPlayDefault([jmp0A], 0.1V)
+			}
+			y += FrogYOff
+			animframe = (animframe + 1.0) % 24.0
+			playframe()
+		} until (STATUS_PATH_END)
+		sendevent(EventTriggered, creator)
+	}
+	event (e, a) {
+		accevcstate(Frog_Die, e == EventHitInvincible)
+		if (e == EventJumpedOn && interrupter->y < y) {
+			rejev()
+			sendevent(EventHit, interrupter, 0)
+		}
+		if (e == EventSpinHit && interrupter == player && frametime - FrogSpinTime > 0.1s) {
+			SoundPlayDefault([sht0A], 0.4V)
+			FrogSpinTime = frametime
+		}
+		SpinKnockbackDie(e, 15m, Frog_Die)
+	}
+	trans {
+		if (pathlen - pathprog < 1.0) {
+			zindex = seek(zindex, -20, 3)
+		}
+		else {
+			sendevent(EventHit, collider, 0)
+		}
+	}
+}
+
+state Frog_Roam_Spawn {
+	statusc 0x12
+	code (sx, sy, sz) {
+		density = 0.2m
+		CopyCreatorPath()
+		pathdist = creator->pathdist
+		FrogJumpMax = getfield(creator, offsetof(FrogJumpMax))
+		x = sx
+		y = sy
+		z = sz
+		zindex = 24
+		spawn(ShadC, ShadC_S_SHADOW_GROUND, 1, y, 0.9S, -15)
+		RoamSpawnX = x
+		RoamSpawnY = y
+		RoamSpawnZ = z
+		FrogCount = 0
+		groundy = y
+		SetColor(0xFF, 0, 0)
+		SoundJumpLand2()
+		scalex = 0
+		do {
+			scaley = scalex
+			scalez = scalex
+			playanim(0, FROG_STAND)
+			scalex += 0.2S
+		} while (scalex < 1.0S)
+		changestate(Frog_Roam_Stand)
+	}
+}
+
+inline sub AnimTowardsPoint(tgt_x, tgt_y, tgt_z) {
+	var s_x = x, s_z = z, t_x = tgt_x, t_y = tgt_y, t_z = tgt_z
+	troty = atan2(t_x)
+	setanim(FROG_ANGRY)
+	do (var i = 1.0) {
+		x = s_x + ((t_x - s_x) * (i >> 8)) / 24
+		z = s_z + ((t_z - s_z) * (i >> 8)) / 24
+		vely = spd(vely, -30m)
+		playframe((i - 1.0) * 24 / 24 + 0)
+		i += 1.0
+	} while (i <= 24.0)
+}
+
+sub JumpToTargetVec (target_x, target_y, target_z) {
+	vely = 12m
+	statusb |= FLAG_PHYSICS_ENGINE
+	SoundPlayDefault([jmp0A], 0.1V)
+	AnimTowardsPoint(target_x, target_y, target_z)
+	PlayJumpLandSound()
+	y = groundy
+	statusb &= ~FLAG_PHYSICS_ENGINE
+}
+
+inline sub CheckPlayerChase(st) {
+	if (distance(player) < 15m) {
+		save (groundy, statusb, statusa, x, y, z, vecx, vecy, vecz) {
+			statusb = FLAG_PATH_CALCS
+			statusa = 0
+			x = player->x
+			y = player->y
+			z = player->z
+			calcpath(0, vvec)
+			eventaccepted = !STATUS_INVALID_PATH
+		}
+		changestateif(st, eventaccepted)
+	}
+}
+
+state Frog_Roam_Stand {
+	stateflag 0x5
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE | 0x400 | FLAG_SOLID_GROUND | FLAG_SOLID_SIDES
+		velx = 0
+		vely = 0
+		velz = 0
+		if (FrogCount >= FrogJumpMax) {
+			statusc &= ~0x2
+			statusb |= FLAG_SOLID_TOP
+			playframes(FROG_STAND, 0, 103.0)
+			statusb &= ~FLAG_SOLID_TOP
+			FrogCount = 0
+		}
+		else {
+			playframeslt(FROG_STAND, 0, 9.0)
+		}
+		CheckPlayerChase(Frog_Roam_Chase)
+		changestate(Frog_Roam)
+	}
+	event => state Frog_Roam_Chase
+	trans {
+		/*FrogCount >= FrogJumpMax*/
+		EnemyHitPlayerGround()
+	}
+}
+
+inline sub JumpTowardsPlayer() {
+	var dist = distance(player, DIST_EXACT | DIST_NO_Y), x_dist = player->x - x, z_dist = player->z - z
+	if (dist > 5m) {
+		dist /= 4.0
+		x_dist = x_dist * 500 / dist
+		z_dist = z_dist * 500 / dist
+	}
+	JumpToTargetVec(x + x_dist, player->y, z + z_dist)
+}
+
+state Frog_Roam_Chase {
+	stateflag 0x85
+	statusc 0
+	code () {
+		FrogCount += 1.0
+		if (!rand(2)) {
+			troty = 1deg + rand(1deg)
+		}
+		else {
+			troty = -(1deg + rand(1deg))
+		}
+		JumpTowardsPlayer()
+		changestate(Frog_Roam_Stand)
+	}
+	event (e, a) {
+		accevcstate(Frog_Die, e == EventSpinHit && player->stateflag \ 0x8)
+	}
+	trans {
+		sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+	}
+}
+
+state Frog_Roam {
+	stateflag 0x85
+	code () {
+		FrogCount += 1.0
+		if (!rand(2)) {
+			troty = 1deg + rand(1deg)
+		}
+		else {
+			troty = -(1deg + rand(1deg))
+		}
+		troty = atan2(RoamSpawnX)
+		JumpToTargetVec(RoamSpawnX + randi(-pathdist, pathdist), RoamSpawnY, RoamSpawnZ + rand(3m))
+		changestate(Frog_Roam_Stand)
+	}
+	event => state Frog_Roam_Chase
+	trans => state Frog_Roam_Chase
+}
+
+state Frog_Knockback {
+	stateflag 0x15
+	statusc 0x12
+	code (h) {
+		troty = (((atan2(player->trans) + (180deg + -GAMEDIR)) + 22.5deg) & ~(45deg-1)) % 360deg + GAMEDIR
+		vely = -1.8m
+		speed = 10m
+		setvel()
+		statusb |= FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | FLAG_PATH_CALCS
+		do {
+			playanim(0, FROG_STAND)
+		} until (STATUS_INVALID_PATH)
+		y = groundy
+		statusb &= ~(FLAG_GRAVITY | FLAG_PHYSICS_ENGINE)
+		velx = 0
+		vely = 0
+		velz = 0
+		FrogCount = 0
+		CheckPlayerChase(Frog_Roam_Stand)
+		changestate(Frog_Roam)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			speed += 3m
+			if (speed < 40m) {
+				speed += 3m
+			}
+			setvel(speed < 43m ? speed : 40m)
+			y = spd(y, vely)
+		}
+	}
+}
+
+state Frog_Die {
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		entitysetspawn(0)
+		if (LEVEL == LEVEL_DrNBrio) {
+			interrupter = objectget(5.0)
+			sendevent(EventTriggered, interrupter)
+		}
+		else {
+			sendevent(EventTriggered, creator)
+		}
+		sendevent(EventCombo, player, h)
+		EnemyDieClearFlags()
+		EnemyDieWaitScale()
+	}
+	trans {
+		EnemyDieTransNoRot()
+	}
+}
+

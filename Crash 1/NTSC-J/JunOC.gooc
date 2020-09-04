@@ -1,0 +1,539 @@
+#gool JunOC 22 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev 9
+#anim BUTTERFLY_1 [JuB9V] 8
+#anim BUTTERFLY_2 [JuB9V] 8
+#anim BUTTERFLY_3 [JuB9V] 8
+#eliflev b
+#anim BUTTERFLY_1 [JuBbV] 8
+#anim BUTTERFLY_2 [1004I] 8
+#anim BUTTERFLY_3 [1007I] 8
+#eliflev cl
+#anim BUTTERFLY_1 [JuBcV] 8
+#anim BUTTERFLY_2 [JubcV] 8
+#anim BUTTERFLY_3 [JuFcV] 8
+#eliflev d
+#anim BUTTERFLY_1 [JuBdV] 8
+#anim BUTTERFLY_2 [JubdV] 8
+#anim BUTTERFLY_3 [JuFdV] 8
+#eliflev ej
+#anim BUTTERFLY_1 [JuBeV] 8
+#anim BUTTERFLY_2 [JubeV] 8
+#anim BUTTERFLY_3 [JuFeV] 8
+#eliflev fo
+#anim BUTTERFLY_1 [JuBfV] 8
+#anim BUTTERFLY_2 [JubfV] 8
+#anim BUTTERFLY_3 [JuFfV] 8
+#eliflev AP
+#anim BUTTERFLY_1 [JuBPV] 8
+#anim BUTTERFLY_2 [JubPV] 8
+#anim BUTTERFLY_3 [1007I] 8
+#endif
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#iflev cl
+#anim ROLLER [JuRcV] 1
+#else
+#anim ROLLER [1011I] 1
+#endif
+
+#iflev cl
+#anim LEAF [JuLcV] 112
+#eliflev ej
+#anim LEAF [JuLeV] 112
+#eliflev fo
+#anim LEAF [JuLfV] 112
+#else
+#anim LEAF [1014I] 112
+#endif
+#anim BOULDER [JuSeV] 1
+#anim BOULDER_OBSTACLE_1 [JB1eV] 1
+#anim BOULDER_OBSTACLE_2 [JB2eV] 1
+#anim BOULDER_OBSTACLE_3 [JB3eV] 1
+#anim BOULDER_OBSTACLE_4 [JB4eV] 1
+#anim BOULDER_OBSTACLE_5 [JB5eV] 1
+#anim BOULDER_OBSTACLE_6 [JB6eV] 1
+
+#sprite JUNGLE_PARTICLES [Ju4eT]
+#tex 0x808080 0 3 9 11 32 4 16 16
+#tex 0x808080 0 3 10 11 34 4 16 16
+#tex 0x808080 0 3 11 11 36 4 16 16
+#tex 0x808080 0 3 12 11 38 4 16 16
+
+#spawn S_JUNGLE_PARTICLE          Jungle_Particle
+#spawn S_BUTTERFLY_1              Butterfly_Fly
+#spawn S_OBSTACLE_ROCK_1          Obstacle_Rock_Wait
+#spawn S_OBSTACLE_ROCK_2          Obstacle_Rock_Wait
+#spawn S_4                        __s_4
+#spawn S_TREE_BOUNCE              Tree_Wait
+#spawn S_ROLLER                   Roller_Spawn
+#spawn S_7                        __s_7
+#spawn S_BUTTERFLY_2              Butterfly_Fly
+#spawn S_BUTTERFLY_3              Butterfly_Fly
+#spawn S_LEAVES                   Leaves
+#spawn S_ROCK_PARTICLE            Rock_Particle
+#spawn S_BOULDER                  Boulder_Wait
+#spawn S_OBSTACLE_HIGH_SMALL      Boulder_Obstacle
+#spawn S_OBSTACLE_HIGH_MEDIUM     Boulder_Obstacle
+#spawn S_OBSTACLE_HIGH_LARGE      Boulder_Obstacle
+#spawn S_OBSTACLE_LOW_SMALL       Boulder_Obstacle
+#spawn S_OBSTACLE_LOW_MEDIUM      Boulder_Obstacle
+#spawn S_OBSTACLE_LOW_LARGE       Boulder_Obstacle
+#spawn S_JUNGLE_TEST              Jungle_Test
+
+var JungleObjStartY, JungleObjStartX, JungleObjStartZ, RockFallHeight, JungleObjPathSpeed,
+JungleObjYOff, BoulderMoveWaver, RollerStopZ, RollerStartZOff, BoulderPathProg,
+BoulderRumbleVoice, BoulderHasRumbleVoice
+
+state Jungle_Test { // 0
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepnull()
+	}
+}
+
+inline sub ButterflyFlyAnim() {
+	playframe(0)
+	playframe(3.0)
+	playframe(7.0)
+	playframe(3.0)
+}
+
+state Butterfly_Fly { // 1
+	code () {
+		zindex = 50
+		trotx = 720deg
+		yzapproach = 5deg
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_TRACK_PATH_ROT
+		velx = 0
+		vely = 0
+		velz = 0
+		if (spawn == S_BUTTERFLY_1) {
+			setanim(BUTTERFLY_1)
+		}
+		else if (spawn == S_BUTTERFLY_2) {
+			setanim(BUTTERFLY_2)
+		}
+		else {
+			setanim(BUTTERFLY_3)
+		}
+		do {
+			ButterflyFlyAnim()
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + -0.98, 0.02))
+			velx += randi(-0.18m, 0.18m)
+			x += velx
+			vely += randi(-0.09m, 0.09m)
+			y += vely
+			velz += randi(-0.18m, 0.18m)
+			z += velz
+			changestateif(Butterfly_Pose, STATUS_PATH_END)
+		}
+	}
+}
+
+state Butterfly_Pose { // 2
+	code () {
+		while (velx || vely || velz) {
+			ButterflyFlyAnim()
+		}
+		do (var start = frametime) {
+			playframe(0, 0.1s)
+			playframe(1.0, 0.1s)
+			playframe(2.0, 0.1s)
+			playframe(3.0, 0.4s)
+			playframe(2.0, 0.1s)
+			playframe(1.0, 0.1s)
+			playframe(0, 0.3s)
+		} while (frametime - start < 6s)
+		changestate(Butterfly_Fly)
+	}
+	trans {
+		calcpath(pathprog, vvec)
+		velx = seek(velx, 0, 0.08m)
+		x = velx + vecx
+		vely = seek(vely, 0, 0.08m)
+		y = vely + vecy
+		velz = seek(velz, 0, 0.08m)
+		z = velz + vecz
+	}
+}
+
+state Leaves { // 3
+	code () {
+		statusb = FLAG_INVISIBLE
+		zindex = 50
+		y += 6m
+		JungleObjStartX = x
+		JungleObjStartY = y
+		JungleObjStartZ = z
+		v0 = rand(3s)
+		playanim(0, LEAF, 2)
+		playanim(0, LEAF, 2)
+		playanim(0, LEAF, 2)
+		WaitFrame(0, LEAF, v0)
+		do {
+			x = JungleObjStartX
+			y = JungleObjStartY
+			z = JungleObjStartZ
+			velx = 0
+			vely = -0.2m - rand(0.4m)
+			velz = 0
+			statusb = FLAG_PHYSICS_ENGINE
+			while (JungleObjStartY - y < 6m) {
+				playframes(LEAF, 0, 111.0)
+			}
+			statusb = 0
+			v0 = 2s + rand(2s)
+			WaitFrame(0, LEAF, v0)
+			statusb = FLAG_PHYSICS_ENGINE
+			velx = randi(-9m, 9m)
+			vely = rand(0.2m)
+			velz = randi(-9m, 9m)
+			playframes(LEAF, 0, 111.0)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			velx += randi(-0.05m, 0.05m)
+			velz += randi(-0.05m, 0.05m)
+		}
+	}
+}
+
+state Roller_Spawn { // 4
+	code () {
+		pathprog = (vecx - 128.0) * pathlen >> 15
+		if (pathprog >= pathlen) {
+			pathprog = pathlen-1
+		}
+		else if (pathprog <= -pathlen) {
+			pathprog = -pathlen + 1
+		}
+		calcpath(abs(pathprog))
+		rotz = 90deg
+		JungleObjPathSpeed = 0
+		zindex = -5
+		density = 0.2m
+		JungleObjYOff = -0.2m
+		RollerStopZ = z - 2m
+		if (vecy) {
+			RollerStartZOff = vecy * 400
+		}
+		else {
+			RollerStartZOff = 200m
+		}
+		statusb = FLAG_TRACK_PATH_ROT | FLAG_COLLIDABLE | FLAG_SOLID_SIDES | 0x80000000
+		statusa |= FLAG_PATH_END
+		changestate(Roller)
+	}
+}
+
+state Roller { // 5
+	code () {
+		sleepanim(0, ROLLER)
+	}
+	trans {
+		if (!STATUS_PATH_END || (player->z > RollerStopZ && player->z < RollerStopZ + RollerStartZOff)) {
+			if (STATUS_PATH_END) {
+				soundpitch(4.0)
+				sounddecay(0.5625)
+				soundplay([RoleA], 0.2V)
+			}
+			statusb &= ~FLAG_INVISIBLE
+			calcpath(loopseek(pathprog, pathlen + spd(5.4) + -1.0, spd(5.4)))
+			if (statusa \ 0x4) {
+				rotx += spd(150deg)
+			}
+			else {
+				rotx -= spd(150deg)
+			}
+			y += JungleObjYOff
+		}
+		else {
+			if (player->z >= RollerStopZ + RollerStartZOff) {
+				statusb |= FLAG_INVISIBLE
+			}
+		}
+		sendevent(EventSquash, collider, 100.0)
+	}
+}
+
+state Boulder_Wait { // 6
+	code () {
+		zindex = -20
+		BoulderPathProg = 0
+		JungleObjYOff = 0
+		JungleObjStartY = 0.5m
+		trotx = 150deg
+		BoulderMoveWaver = randi(-10deg, 10deg)
+		pathprog = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		if (vecx) {
+			JungleObjPathSpeed = vecx >> 8
+		}
+		else {
+			JungleObjPathSpeed = 124.16
+		}
+		JungleObjPathSpeed = JungleObjPathSpeed * 0.98 >> 8
+		calcpath(0)
+		y += JungleObjYOff + 1020.0
+		if (player->z > z) {
+			calcpath(pathlen - 1.0)
+			y += JungleObjYOff + 1020.0
+			changestate(Boulder_Stop)
+		}
+		sleepanim(0, BOULDER)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (player->z > z - 15m) {
+				statusb = 0x40000
+			}
+			else {
+				statusb = 0x40000
+			}
+			changestateif(Boulder_Chase, player->z > z + 6m && player->z < z + 50m)
+		}
+	}
+}
+
+inline sub BoulderBounceDefault() {
+	if (JungleObjYOff <= 0 && !rand(2.5s) && pathprog < pathlen - 5.0) {
+		if (!BoulderHasRumbleVoice) {
+			voice = BoulderRumbleVoice
+			soundfadet(0.2s, voice)
+			soundfadev(0.2V, voice, 2)
+			BoulderHasRumbleVoice = 1
+		}
+		vely += 10m
+	}
+}
+
+state Boulder_Chase { // 7
+	stateflag 0x81
+	code () {
+		GLOBALOBJ = self
+		soundpitch(4.0)
+		sounddecay(0.5625)
+		soundplay([SlieA], 0.4V)
+		soundpitch(4.0)
+		sounddelay(0.4s)
+		sounddecay(0.9375)
+		soundplay([RmbeA], 0.6V)
+		BoulderRumbleVoice = voice
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_GRAVITY | FLAG_COLLIDABLE | FLAG_SOLID_ALL | 0x40000
+		do {
+			BoulderPathProg = spd(BoulderPathProg, JungleObjPathSpeed)
+			pathprog = BoulderPathProg >> 5
+			calcpath()
+			y += JungleObjYOff + 2.55m+1
+			troty += loopseek(BoulderMoveWaver, 20deg, 1deg) - 10deg
+			rotz = troty
+			rotx += 12deg
+			playanim(0, BOULDER)
+		} until (STATUS_PATH_END || z > CAMTRANSZ - 3.5m)
+		voice = BoulderRumbleVoice
+		soundfadet(0.08s, voice)
+		soundfadev(0, voice, 3)
+		soundpitch(4.0)
+		sounddecay(0.75)
+		soundsetup(0, 9)
+		soundplay([SlmeA], 1.0V)
+		if (!SHAKEY) SHAKEY = 10.0;
+		changestate(Boulder_Stop)
+	}
+	event (e, a) {
+		if (e == EventRespawn) {
+			accev()
+			GLOBALOBJ = 0
+		}
+	}
+	trans {
+		once {
+			BoulderRumbleVoice = -1
+			BoulderHasRumbleVoice = 0
+		}
+		if (collider) {
+			collider->invincible = 0
+			collider->invincibletime = frametime
+		}
+		if (!vecy || pathprog < pathlen - 1.5) {
+			if (collider || z > player->z) {
+				sendevent(EventBoulderSquash, player, 100.0)
+				if (eventaccepted) {
+					statusb &= ~(FLAG_COLLIDABLE | FLAG_SOLID_ALL)
+					if (!SHAKEY) SHAKEY = 10.0;
+					y += 8m
+				}
+			}
+		}
+		JungleObjYOff = spd(JungleObjYOff, vely)
+		if (JungleObjYOff < 0) {
+			JungleObjYOff = 0
+			if (vely < -3m) {
+				SoundPitchDefault()
+				soundplay([BmpeA], (abs(vely) >> 15) * 0.01V)
+				soundsetup(0, voice, 5)
+				if (BoulderHasRumbleVoice) {
+					voice = BoulderRumbleVoice
+					soundfadet(0.1s, voice)
+					soundfadev(0.6V, voice, 2)
+					BoulderHasRumbleVoice = 0
+				}
+			}
+			vely /= -2
+		}
+		{var v1 = z / 1m
+		if (var level = LEVEL; level == LEVEL_Boulders) {
+			if ((v1 > -90 && v1 <= -84) || (v1 > -72 && v1 <= -66) || (v1 > 14 && v1 <= 20) || (v1 > 25 && v1 <= 31)) {
+				if (JungleObjYOff <= 0 && (v1 == -84 || v1 == -66 || v1 == 20 || v1 == 31)) {
+					if (!BoulderHasRumbleVoice) {
+						voice = BoulderRumbleVoice
+						soundfadet(0.2s, voice)
+						soundfadev(0.2V, voice, 2)
+						BoulderHasRumbleVoice = 1
+					}
+					vely += 16m
+				}
+			}
+			else {
+				BoulderBounceDefault()
+			}
+		}
+		else {
+			BoulderBounceDefault()
+		}}
+		if (!time(8)) {
+			if (var r = rand(10); r == 0 || r == 1 || r == 2 || r == 3) {
+				spawn(JunOC, S_JUNGLE_PARTICLE, 2, 0, 0)
+			}
+			else if (r == 4 || r == 5) {
+				spawn(JunOC, S_JUNGLE_PARTICLE, 1, 1.0, 0)
+			}
+			else if (r == 6 || r == 7) {
+				spawn(JunOC, S_JUNGLE_PARTICLE, 1, 2.0, 1)
+			}
+			else if (r == 8 || r == 9) {
+				spawn(JunOC, S_JUNGLE_PARTICLE, 2, 3.0, 1)
+			}
+		}
+	}
+}
+
+state Boulder_Stop { // 8
+	code () {
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_ALL | 0x40000
+		GLOBALOBJ = 0
+		if (vecy && STATUS_PATH_END) {
+			statusb |= FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+			playanim(0, BOULDER, 2s)
+			entitysetspawn(0)
+		}
+		else {
+			SetColor(0x80, 0x80, 0x80)
+			sleepanim(0, BOULDER)
+		}
+	}
+}
+
+state Jungle_Particle { // 9
+	code (f, t) {
+		scalex = 0.5S
+		scaley = 0.5S
+		scalez = 0.5S
+		zindex = 0
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		trotz = 6m
+		if (t == 0) {
+			x += randi(-1.5m, 1.5m)
+			y -= 2.5m
+			z += 2m
+			vely = 2m + rand(3m)
+		}
+		else if (t == 1) {
+			/* weird block of bad stack code */
+			z += 1m
+			vely = rand(0.5m)
+			y += 2.5m
+		}
+		rotx = 0
+		roty = 0
+		rotz = 0
+		trotz = rand(160deg)
+		velx = randi(-12m, 12m)
+		velz = 2m + randi(-3m, 3m)
+		setanim(JUNGLE_PARTICLES)
+		while (y > parent->y - 5m) {
+			playframe(f, 0.1s)
+		}
+	}
+	trans {
+		rotz += trotz
+	}
+}
+
+state Boulder_Obstacle { // 10
+	stateflag 0x81
+	code () {
+		zindex = 30
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		if (spawn == S_OBSTACLE_HIGH_SMALL) setanim(BOULDER_OBSTACLE_4);
+		else if (spawn == S_OBSTACLE_HIGH_MEDIUM) setanim(BOULDER_OBSTACLE_5);
+		else if (spawn == S_OBSTACLE_HIGH_LARGE) setanim(BOULDER_OBSTACLE_6);
+		else if (spawn == S_OBSTACLE_LOW_SMALL) setanim(BOULDER_OBSTACLE_1);
+		else if (spawn == S_OBSTACLE_LOW_MEDIUM) setanim(BOULDER_OBSTACLE_2);
+		else if (spawn == S_OBSTACLE_LOW_LARGE) setanim(BOULDER_OBSTACLE_3);
+		sleepframe(0)
+	}
+	trans {
+		if (frametime - statetime >= 0.1s && GLOBALOBJ) {
+			v0 = true
+			interrupter = GLOBALOBJ
+			if (interrupter) {
+				changestateif(Boulder_Obstacle_Runover, interrupter->z - z >= -1.5m)
+			}
+			v0 = false
+			if (collider) {
+				soundpitch(4.0)
+				soundplay([FtreA], 0.4V)
+				changestate(Boulder_Obstacle_Runover)
+			}
+		}
+	}
+}
+
+state Boulder_Obstacle_Runover { // 11
+	stateflag 0x81
+	code () {
+		yzapproach = 360deg
+		trotz = 75deg
+		statusb = 0x2000
+		entitysetspawn(0)
+		soundpitch(4.0)
+		soundsetup(0, 9)
+		soundplay([FcreA], 0.2V)
+		if (!v0) {
+			player->speed = 0
+			playframe(0)
+			player->speed = 0
+		}
+		do {
+			playframe(0)
+			interrupter = GLOBALOBJ
+			if (interrupter) {
+				if (z < interrupter->z - 9m) break;
+			}
+		} while (1)
+	}
+}
+
+

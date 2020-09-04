@@ -1,0 +1,416 @@
+#gool SpidC 43 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim SPIDER_MOVE [Sp1sV] 31
+#anim SPIDER_DEAD [SpdsV] 1
+#anim SPIDER_DROP [SpDsV] 31
+#anim SPIDER_SHADOW [SpSsV] 1
+
+#spawn S_SPIDER                   Spider_Spawn
+#spawn S_SPIDER_HANG              Spider_Hang_Spawn
+#spawn S_SPIDER_SHADOW            Spider_Shadow
+#spawn S_SPIDER_PATH              Spider_Path_Spawner
+#spawn S_SPIDER_PATH_CHILD        Spider_Path_Spawn
+
+var SpiderBasePathSpeed, SpiderBouncePropulsion, SpiderRotWave, SpiderPathStrafe, SpiderCycle,
+SpiderCycleOffset, SpiderActiveRange, SpiderBaseY, SpiderYOffset, SpiderSize,
+SpiderZMod, SpiderAttackVal
+
+event EventJumpedOn      => state Spider_Die
+event EventHit           => state Spider_Die
+event EventSpinHit       => state Spider_Fling
+event EventHitInvincible => state Spider_Fling
+event EventFling         => state Spider_Die
+
+state Spider_Spawn { // 0
+	statusc 0x12
+	code () {
+		spawn(SpidC, S_SPIDER_SHADOW, 1, 0, 1.5S, 5)
+		density = 0.15m
+		if (vecx) pathdist = vecx;
+		     else pathdist = 1m;
+		if (vecy) SpiderBouncePropulsion = vecy;
+		     else SpiderBouncePropulsion = 15.49194m;
+		zindex = 25
+		SpiderRotWave = 0
+		SpiderPathStrafe = 0
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+		changestate(Spider)
+	}
+}
+
+inline sub SetSpiderActiveRange() {
+	var level = LEVEL
+	SpiderActiveRange = 8m
+}
+
+inline sub SetSpiderDefaultBounce() {
+	if (LEVEL == LEVEL_FumblingInTheDark) {
+		SpiderBouncePropulsion = 14.14213m
+	}
+	else {
+		SpiderBouncePropulsion = 15.49194m
+	}
+}
+
+inline sub WaitSpiderCycle() {
+	while (time(SpiderCycle, SpiderCycleOffset)) {
+		playframe(0)
+	}
+}
+
+state Spider_Path_Spawner { // 1
+	code () {
+		if (vecx) SpiderCycle = vecx >> 8;
+		     else SpiderCycle = 1.4s;
+		SpiderCycleOffset = rand(4s)
+		if (vecy) SpiderBasePathSpeed = vecy >> 8;
+		     else SpiderBasePathSpeed = 1.0;
+		if (vecz) v0 = vecz;
+		     else v0 = 1.0;
+		statusb = FLAG_INVISIBLE
+		calcpath(pathlen - 1.0, vvec)
+		setanim(SPIDER_MOVE)
+		SetSpiderActiveRange()
+		do {
+			do (var i = 0) {
+				WaitSpiderCycle()
+				if (distance(player, DIST_EXACT | DIST_NO_Y) > SpiderActiveRange && player->z < vecz + 15m) {
+					spawn(SpidC, S_SPIDER_PATH_CHILD)
+				}
+				playframe(0)
+				i += 1.0
+			} while (i < v0)
+			WaitSpiderCycle()
+			playframe(0)
+			WaitSpiderCycle()
+			playframe(0)
+			WaitSpiderCycle()
+			playframe(0)
+		} while (1)
+	}
+}
+
+state Spider_Path_Spawn { // 2
+	code () {
+		zindex = 55
+		yzapproach = 180deg
+		trotx = 360deg
+		pathdist = 1m
+		pathprog = 0
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_TRACK_PATH_SIGN | 0x800 | 0x2000 | FLAG_SOLID_ALL
+		SpiderCycle = 2s
+		SpiderCycleOffset = rand(2s)
+		SpiderPathStrafe = 0
+		density = 0.1m
+		SpiderBasePathSpeed = getfield(parent, offsetof(SpiderBasePathSpeed))
+		CopyParentPath()
+		y += 0.25m
+		do (var s = 0) {
+			SetScale(s)
+			playanim(0, SPIDER_MOVE)
+			s += 0.2S
+		} while (s < 1.0S)
+		setanim(SPIDER_MOVE)
+		changestate(Spider_Path)
+	}
+}
+
+inline sub SpiderTrackPath() {
+	var path_rot, deg_dist
+	pathprog = spd(pathprog, v0)
+	calcpath()
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(SpiderPathStrafe)
+	}
+	x += velx
+	z += velz
+	if (pathlen - pathprog >= 2.0) {
+		path_rot = troty
+		if (abs(SpiderPathStrafe - vecy) > 0.1m) {
+			deg_dist = degdist(troty, atan2(player->trans))
+			if (deg_dist < -45deg) {
+				deg_dist = -45deg
+			}
+			else if (deg_dist > 45deg) {
+				deg_dist = 45deg
+			}
+			troty += deg_dist
+		}
+		SpiderPathStrafe = seek(SpiderPathStrafe, vecy, spd(2m))
+		if (SpiderPathStrafe < -pathdist) {
+			troty = path_rot
+			SpiderPathStrafe = -pathdist
+		}
+		else if (SpiderPathStrafe > pathdist) {
+			troty = path_rot
+			SpiderPathStrafe = pathdist
+		}
+	}
+}
+
+inline sub SpiderTrackPathLess() {
+	var path_rot, deg_dist
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(SpiderPathStrafe)
+	}
+	x += velx
+	z += velz
+	path_rot = troty
+	if (abs(SpiderPathStrafe - vecy) > 0.1m) {
+		deg_dist = degdist(troty, atan2(player->trans))
+		if (deg_dist < -20deg) {
+			deg_dist = -20deg
+		}
+		else if (deg_dist > 20deg) {
+			deg_dist = 20deg
+		}
+		troty += deg_dist
+	}
+	SpiderPathStrafe = seek(SpiderPathStrafe, vecy, spd(2m))
+	if (SpiderPathStrafe < -pathdist) {
+		troty = path_rot
+		SpiderPathStrafe = -pathdist
+	}
+	else if (SpiderPathStrafe > pathdist) {
+		troty = path_rot
+		SpiderPathStrafe = pathdist
+	}
+}
+
+state Spider_Path { // 3
+	stateflag 0x81
+	statusc 0
+	code () {
+		animframe = 0
+		SpiderYOffset = 0
+		vely = 0
+		do {
+			SpiderAttackVal = pathprog
+			if ((SpiderAttackVal >> 8) & 1) {
+				v0 = SpiderBasePathSpeed * 2
+			}
+			else {
+				v0 = SpiderBasePathSpeed
+			}
+			SpiderTrackPath()
+			if (pathprog >> 8 != SpiderAttackVal >> 8 && (pathprog >> 8) & 1) {
+				vely = 15m
+			}
+			vely = spd(vely, -60m)
+			SpiderYOffset = spd(SpiderYOffset, vely)
+			if (SpiderYOffset < 0) {
+				vely = 0
+				SpiderYOffset = 0
+			}
+			y += SpiderYOffset
+			animframe = (animframe+1.0) % 31.0
+			playframe()
+		} until (STATUS_PATH_END)
+	}
+	event (e, a) {
+		rejevret(e == EventJumpedOn && interrupter->y < y)
+	}
+	trans {
+		if (pathlen - pathprog < 1.0) {
+			zindex = seek(zindex, -20, 3)
+		}
+		else {
+			EnemyHitPlayerGround()
+		}
+	}
+}
+
+state Spider { // 4
+	stateflag 0x5
+	statusc 0
+	code () {
+		trotx = 180deg
+		yzapproach = 120deg
+		sleepframes(SPIDER_MOVE, 0, 30.0)
+	}
+	trans {
+		if (STATUS_PATH_END) {
+			if (STATUS_REACHED_TROT) {
+				trotx = 180deg
+				statusb |= 0x20000000
+				statusa &= ~FLAG_PATH_END
+			}
+		}
+		else {
+			calcpath(loopseek(pathprog, pathlen + -0.91, 0.09))
+			if (STATUS_PATH_END) {
+				trotx = 720deg
+				statusb &= ~0x20000000
+			}
+			y += 0.25m
+			SpiderTrackPathLess()
+			troty += loopseek(SpiderRotWave, 4deg, 0.25deg) - 2deg
+			EnemyHitPlayerGround()
+		}
+	}
+}
+
+inline sub SpiderDeadSetDir() {
+	statusb |= 0x2000
+	trotz = 180deg
+	yzapproach = 720deg
+}
+
+state Spider_Die { // 5
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDieCombo(h)
+		SpiderDeadSetDir()
+		while (scalex > 0.04S) {
+			playanim(0, SPIDER_DEAD)
+		}
+	}
+	trans {
+		EnemyDieTrans()
+		rotz = roty
+	}
+}
+
+state Spider_Fling { // 6
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingCombo(h)
+		EnemyFlingSetDirNoZone()
+		EnemyFlingSetVel()
+		SpiderDeadSetDir()
+		if (spawn == S_SPIDER_HANG) {
+			getvert(vtrans, self, 0)
+		}
+		EnemyFlingWaitScale(0, SPIDER_DEAD)
+	}
+	trans {
+		EnemyFlingTransNoZone()
+	}
+}
+
+state Spider_Hang_Spawn { // 7
+	statusc 0x12
+	code () {
+		if (vecx) SpiderCycle = vecx >> 8;
+		     else SpiderCycle = 6s;
+		if (vecy) SpiderCycleOffset = vecy >> 8;
+		     else SpiderCycleOffset = 0;
+		if (vecz) SpiderActiveRange = vecz >> 8;
+		     else SpiderActiveRange = 2s;
+		density = 0.15m
+		zindex = 25
+		setanim(SPIDER_DROP)
+		SetSpiderDefaultBounce()
+		SpiderBaseY = y
+		spawn(SpidC, S_SPIDER_SHADOW, 1, -0.9m, 1.5S, 0)
+		SpiderAttackVal = frametime - 3s
+		changestate(Spider_Hang_High)
+	}
+}
+
+state Spider_Hang_High { // 8
+	statusc 0x12
+	code () {
+		y = SpiderBaseY
+		do {
+			statusb = FLAG_INVISIBLE
+			playanim(0, SPIDER_DROP)
+		} while (1)
+	}
+	trans {
+		roty += 1deg
+		unless (STATUS_FIRSTFRAME) {
+			if (frametime - SpiderAttackVal >= 3s) {
+				changestateif(Spider_Hang_Drop, distance(player, DIST_EXACT | DIST_NO_Y) < 8m)
+			}
+		}
+	}
+}
+
+state Spider_Hang_Drop { // 9
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE
+		playframes(0, 7.0)
+		playanim(7, SPIDER_DROP, 1s/3)
+		playframes(8.0, 30.0)
+		WaitFrame(30, SPIDER_DROP, SpiderActiveRange)
+		playframes(13.0, 17.0)
+		playframesback(16.0, 13.0)
+		do (var i = 0) {
+			y += 0.8m
+			playanim(13, SPIDER_DROP)
+			i += 1.0
+		} while (i < 5.0)
+		SpiderAttackVal = frametime
+		changestate(Spider_Hang_High)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			SoundPlayDefault([bnc0A], 0.5V)
+			sendevent(EventBounce, interrupter, SpiderBouncePropulsion)
+			rejevcstate(Spider_Die, eventaccepted)
+		}
+		rejevret(e == EventHitInvincible && player->y > y)
+	}
+	trans {
+		EnemyHitPlayerGround()
+		roty += 1deg
+	}
+}
+
+state Spider_Hang_Wait { // 10
+	statusc 0x12
+	code () {
+		statusb = FLAG_INVISIBLE
+		playanim(0, SPIDER_DROP, 2s)
+		playanim(0, SPIDER_DROP, 2s)
+		SetScale(1.0S)
+		SetRot(0)
+		calcpath(0)
+		changestate(Spider_Hang_High)
+	}
+}
+
+state Spider_Shadow { // 11
+	code (hdif, size, zmod) {
+		setanim(SPIDER_SHADOW)
+		SpiderYOffset = hdif
+		parent->field_60 = 0
+		SpiderSize = size
+		SpiderZMod = zmod
+		y = parent->y + SpiderYOffset
+		do { ShadowPlayFrame() } while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			zindex = parent->zindex + SpiderZMod
+			x = parent->x
+			z = parent->z
+			roty = parent->roty + 45deg
+			scalex = parent->scalex * SpiderSize >> 12
+			scaley = parent->scaley * SpiderSize >> 12
+			scalez = parent->scalez * SpiderSize >> 12
+		}
+	}
+}
+

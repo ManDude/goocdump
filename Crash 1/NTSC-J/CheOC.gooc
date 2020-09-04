@@ -1,0 +1,93 @@
+#gool CheOC 21 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite FLAME_1 [Ju3aT]
+#tex 0x808080 1 1 0 1 0 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 0 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 0 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 32 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 32 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 32 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 48 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 48 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 48 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 64 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 64 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 64 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 80 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 80 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 80 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 96 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 96 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 96 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 112 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 112 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 112 8 64 32 ! 2 1
+
+#sprite FLAME_2 [Ju4aT]
+#tex 0x808080 1 1 0 1 0 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 0 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 0 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 16 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 16 8 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 32 24 64 32 ! 2 1
+#tex 0x808080 1 1 0 1 32 16 64 32 ! 2 1
+
+#spawn S_0                   __s_0
+#spawn S_CHIEF_FLAME         Chief_Flame
+#spawn S_2                   __s_2
+#spawn S_3                   __s_3
+#spawn S_4                   __s_4
+
+var mem1, FlameBaseSize, FlameTargetSize, FlameBaseY
+
+state Chief_Flame {
+	code () {
+		scalex = 0.7S
+		scaley = 1.4S
+		scalez = 0.7S
+		zindex = 30
+		FlameBaseSize = scaley
+		FlameBaseY = y - 0.5m
+		z -= 0.5m
+		FlameTargetSize = scaley
+		if (x < 0) {
+			playframes(FLAME_1, 0, 23.0)
+			scalex = -scalex
+		}
+		animframe = 0 + rand(8.0)
+		setanim(FLAME_2)
+		while (animframe < 7.0) {
+			animframe += 1.0
+			playframe()
+		}
+		do {
+			if (!rand(4)) scalex = -scalex;
+			playframes(FLAME_1, 0, 23.0)
+			if (!rand(6)) {
+				playframes(FLAME_1, 0, 23.0)
+			}
+			playframes(FLAME_2, 0, 7.0)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (!rand(4)) {
+				FlameTargetSize = FlameBaseSize + ((rand(10) << 12) / 32)
+			}
+			if (FlameTargetSize > scaley) {
+				scaley += 0.15S
+			}
+			else {
+				scaley += -0.15S
+			}
+			y = FlameBaseY + (scaley/16*400) / 4
+		}
+	}
+}
+

@@ -1,0 +1,619 @@
+#gool PinsC 15 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim PINSTRIPE_STAND [PinSV] 1
+#anim PINSTRIPE_HIT_1 [PiF1V] 20
+#anim PINSTRIPE_HIT_2 [PiF2V] 20
+#anim PINSTRIPE_HIT_3 [PiF3V] 13
+#anim PINSTRIPE_HIT_4 [PiF4V] 17
+#anim PINSTRIPE_LEFT1_1 [PiL1V] 7
+#anim PINSTRIPE_LEFT1_2 [PiL2V] 16
+#anim PINSTRIPE_LEFT1_3 [PiL3V] 7
+#anim PINSTRIPE_LEFT2_1 [PiL4V] 7
+#anim PINSTRIPE_LEFT2_2 [PiL5V] 16
+#anim PINSTRIPE_LEFT2_3 [PiL6V] 7
+#anim PINSTRIPE_RIGHT1_1 [PiR1V] 7
+#anim PINSTRIPE_RIGHT1_2 [PiR2V] 16
+#anim PINSTRIPE_RIGHT1_3 [PiR3V] 7
+#anim PINSTRIPE_RIGHT2_1 [PiR4V] 7
+#anim PINSTRIPE_RIGHT2_2 [PiR5V] 16
+#anim PINSTRIPE_RIGHT2_3 [PiR6V] 7
+#anim PINSTRIPE_GUN1 [PiG1V] 24
+#anim PINSTRIPE_GUN2 [PiG2V] 24
+#anim PINSTRIPE_GUN3 [PiG3V] 24
+#anim PINSTRIPE_EMPTY1_1 [PiE1V] 20
+#anim PINSTRIPE_EMPTY1_2 [PiE2V] 20
+#anim PINSTRIPE_EMPTY1_3 [PiE3V] 20
+#anim PINSTRIPE_EMPTY2_1 [PiE4V] 20
+#anim PINSTRIPE_EMPTY2_2 [PiE5V] 20
+#anim PINSTRIPE_EMPTY2_3 [PiE6V] 20
+#anim PINSTRIPE_EMPTY3_1 [PiE7V] 20
+#anim PINSTRIPE_EMPTY3_2 [PiE8V] 20
+#anim PINSTRIPE_EMPTY3_3 [PiE9V] 20
+#anim PINSTRIPE_MOVE1 [PiA1V] 20
+#anim PINSTRIPE_MOVE2 [PiA2V] 20
+#anim PINSTRIPE_MOVE3 [PiA3V] 20
+
+#sprite PINSTRIPE_SHADOW [Pin1T]
+#tex 0x282828 1 2 0 5 32 8 64 32
+
+#spawn S_PINSTRIPE           Pinstripe_Spawn
+#spawn S_PINSTRIPE_SHADOW    Pinstripe_Shadow
+
+var mem1, mem2, PinstripeShootDirOff, PinstripeShootDir, PinstripePosition, PinstripeLeftHits,
+PinstripeMiddleHits, PinstripeRightHits, PinstripeMovedToMiddle, PinstripeMoveFrame, PinstripeAnimSet, PinstripeVoice
+
+event EventJumpedOn => state Pinstripe_Hit
+event EventSpinHit => state Pinstripe_Hit
+event EventRespawn => sub DeloadAnimSet
+
+#include "ShadC.gooh"
+#include "MafiC.gooh"
+#include "PinOC.gooh"
+
+expr PINNY_POSITION_LEFT = 0.0
+expr PINNY_POSITION_MIDDLE = 1.0
+expr PINNY_POSITION_RIGHT = 2.0
+expr PINNY_POSITION_MOVE_LEFT = 3.0
+expr PINNY_POSITION_MOVE_RIGHT = 4.0
+
+state Pinstripe_Spawn {
+	stateflag 0x10001
+	code () {
+		health = 6.0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, health, 0) // health type 0: "health" is remaining health
+		mem2 = y // unused
+		zindex = 14
+		trotx = 180deg
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_ALL | 0x80000000
+		PinstripeShootDirOff = -8deg
+		PinstripeLeftHits = 0
+		PinstripeMiddleHits = 0
+		PinstripeRightHits = 0
+		PinstripeMovedToMiddle = 1.0
+		density = 40.0
+		mem1 = 0 // unused
+		PinstripePosition = PINNY_POSITION_MIDDLE
+		spawn(PinsC, S_PINSTRIPE_SHADOW)
+		LoadAnim([PiF1V], [Pin1G])
+		LoadAnim([PiF2V], [Pin1G])
+		LoadAnim([PiF3V], [Pin1G])
+		LoadAnim([PiA1V], [Pin1G])
+		LoadAnim([PiA2V], [Pin1G])
+		LoadAnim([PiA3V], [Pin1G])
+		LoadAnim([PiL1V], [Pin1G])
+		LoadAnim([PiL2V], [Pin1G])
+		LoadAnim([PiL3V], [Pin1G])
+		PinstripeAnimSet = 0
+		soundpitch(4.0)
+		soundplay([PPH8A], 0.05V)
+		soundsetup(0, voice, 5)
+		PinstripeVoice = voice
+		changestate(Pinstripe_Shoot)
+	}
+}
+
+state Pinstripe_Shoot {
+	stateflag 0x10080
+	code () {
+		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+			setanim(PINSTRIPE_GUN2)
+			soundpitch(3.6 + rand(0.8))
+			soundplay([laf8A], 0.3V + rand(0.2V))
+		}
+		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+			setanim(PINSTRIPE_GUN3)
+		}
+		else {
+			setanim(PINSTRIPE_GUN1)
+		}
+		do (var i = 0) {
+			animframe = -1.0
+			do (var j = 0) {
+				if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+					v0 = -180deg + rand(360deg)
+				}
+				else {
+					v0 = randi(-135deg, 135deg)
+				}
+				animframe += 1.0
+				playframe()
+				spawn(MafiC, MafiC_S_BULLET, 1, PinstripeShootDir, 0, v0)
+				animframe += 1.0
+				playframe()
+				animframe += 1.0
+				playframe()
+				j += 1.0
+			} while (j < 24.0 / 3)
+			i += 1.0
+		} while (i < 3.0)
+		changestate(Pinstripe_Empty)
+	}
+	trans {
+		once {
+			PinstripeShootDirOff = -8deg
+		}
+		troty = atan2(player->trans)
+		PinstripeShootDir = roty + sin(loopseek(PinstripeShootDirOff, 16deg, -1.4deg), 17.4deg)
+		if (STATUS_PLAYER_D_COLLIDER) {
+			sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+		}
+	}
+}
+
+inline sub PlayMinigunSound() {
+	soundpitch(3.6 + rand(0.8))
+	soundsetup(0, 9)
+	soundplay([MGn8A], 0.15V)
+}
+
+inline sub PlayMinigunSound(delay) {
+	soundpitch(3.6 + rand(0.8))
+	sounddelay(delay)
+	soundsetup(0, 9)
+	soundplay([MGn8A], 0.15V)
+}
+
+state Pinstripe_Empty {
+	stateflag 0x10001
+	statusc 0
+	code () {
+		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+			if (!PinstripeMiddleHits && health == 1.0) {
+				playframes(PINSTRIPE_EMPTY2_1, 0, 19.0)
+				playframes(PINSTRIPE_EMPTY2_2, 0, 19.0)
+				PlayMinigunSound(0.25s)
+				PlayMinigunSound(0.3s)
+				PlayMinigunSound(0.45s)
+				playframes(PINSTRIPE_EMPTY2_3, 0, 19.0)
+			}
+			if (health == 3.0) {
+				changestate(Pinstripe_To_Left)
+			}
+			else if (health == 2.0 || health == 1.0) {
+				changestate(Pinstripe_To_Right)
+			}
+			else {
+				changestate(Pinstripe_To_Left)
+			}
+		}
+		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+			if (!PinstripeRightHits && health == 2.0) {
+				playframes(PINSTRIPE_EMPTY3_1, 0, 19.0)
+				playframes(PINSTRIPE_EMPTY3_2, 0, 19.0)
+				PlayMinigunSound(0.25s)
+				PlayMinigunSound(0.3s)
+				PlayMinigunSound(0.45s)
+				playframes(PINSTRIPE_EMPTY3_3, 0, 19.0)
+			}
+			if (health <= 3.0 || !PinstripeMovedToMiddle) {
+				changestate(Pinstripe_From_Right)
+			}
+			else {
+				changestate(Move_Left_Right)
+			}
+		}
+		else {
+			if (!PinstripeLeftHits && health == 3.0) {
+				playframes(PINSTRIPE_EMPTY1_1, 0, 19.0)
+				playframes(PINSTRIPE_EMPTY1_2, 0, 19.0)
+				PlayMinigunSound(0.25s)
+				PlayMinigunSound(0.3s)
+				PlayMinigunSound(0.45s)
+				playframes(PINSTRIPE_EMPTY1_3, 0, 19.0)
+			}
+			if (health <= 3.0 || !PinstripeMovedToMiddle) {
+				changestate(Pinstripe_From_Left)
+			}
+			else {
+				changestate(Move_Left_Right)
+			}
+		}
+	}
+	trans {
+		troty = atan2(player->trans)
+	}
+}
+
+state Pinstripe_To_Left {
+	stateflag 0x10001
+	code () {
+		PinstripeMovedToMiddle = 1.0
+		PinstripePosition = PINNY_POSITION_LEFT
+		playframes(PINSTRIPE_LEFT1_1, 0, 6.0)
+		setanim(PINSTRIPE_LEFT1_2, -1.0)
+		pathprog = 0
+		do {
+			calcpath()
+			animframe += 1.0
+			playframe()
+			pathprog += 1.0
+		} while (pathprog <= 15.0)
+		playframes(PINSTRIPE_LEFT1_3, 0, 6.0)
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		troty = atan2(player->trans)
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Pinstripe_From_Left {
+	stateflag 0x10001
+	code () {
+		PinstripeMovedToMiddle = 1.0
+		playframes(PINSTRIPE_LEFT2_1, 0, 6.0)
+		setanim(PINSTRIPE_LEFT2_2, -1.0)
+		pathprog = 15.0
+		do {
+			calcpath()
+			animframe += 1.0
+			playframe()
+			pathprog += 1.0
+		} while (pathprog <= 30.0)
+		PinstripePosition = PINNY_POSITION_MIDDLE
+		playframes(PINSTRIPE_LEFT2_3, 0, 6.0)
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		troty = atan2(player->trans)
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Pinstripe_To_Right {
+	stateflag 0x10001
+	code () {
+		PinstripeMovedToMiddle = 1.0
+		PinstripePosition = PINNY_POSITION_RIGHT
+		playframes(PINSTRIPE_RIGHT1_1, 0, 6.0)
+		setanim(PINSTRIPE_RIGHT1_2, -1.0)
+		pathprog = 30.0
+		do {
+			calcpath()
+			animframe += 1.0
+			playframe()
+			pathprog += 1.0
+		} while (pathprog <= 45.0)
+		playframes(PINSTRIPE_RIGHT1_3, 0, 6.0)
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		troty = atan2(player->trans)
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Pinstripe_From_Right {
+	stateflag 0x10001
+	code () {
+		playframes(PINSTRIPE_RIGHT2_1, 0, 6.0)
+		setanim(PINSTRIPE_RIGHT2_2, -1.0)
+		pathprog = 45.0
+		do {
+			calcpath()
+			animframe += 1.0
+			playframe()
+			pathprog += 1.0
+		} while (pathprog <= 60.0)
+		playframes(PINSTRIPE_RIGHT2_3, 0, 6.0)
+		PinstripePosition = PINNY_POSITION_MIDDLE
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		troty = atan2(player->trans)
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+sub PinstripePlayMoveFrame (frame) {
+	if (frame < 20.0) {
+		setanim(PINSTRIPE_MOVE1)
+		if (frame == 7.0 || frame == 9.0) {
+			PlayMinigunSound()
+		}
+		playframe(frame)
+	}
+	else if (frame < 40.0) {
+		setanim(PINSTRIPE_MOVE2)
+		playframe(frame - 20.0)
+	}
+	else {
+		setanim(PINSTRIPE_MOVE3)
+		if (frame == 47.0) {
+			PlayMinigunSound()
+		}
+		playframe(frame - 40.0)
+	}
+}
+
+state Move_Left_Right {
+	stateflag 0x10001
+	statusc 0
+	code () {
+		zindex = 35
+		if (PinstripePosition == PINNY_POSITION_RIGHT || PinstripePosition == PINNY_POSITION_MOVE_LEFT) {
+			if (PinstripePosition != PINNY_POSITION_MOVE_LEFT) {
+				PinstripePosition = PINNY_POSITION_MOVE_LEFT
+				pathprog = 66.0
+				PinstripeMoveFrame = -1.0
+			}
+			if (health <= 3.0) {
+				statusc |= 0x2
+			}
+			while (pathprog <= 95.0) {
+				calcpath()
+				pathprog += 0.5
+				PinstripeMoveFrame += 1.0
+				PinstripePlayMoveFrame(PinstripeMoveFrame)
+			}
+			PinstripePosition = PINNY_POSITION_LEFT
+		}
+		else {
+			if (PinstripePosition != PINNY_POSITION_MOVE_RIGHT) {
+				PinstripePosition = PINNY_POSITION_MOVE_RIGHT
+				pathprog = 95.0
+				PinstripeMoveFrame = 60.0
+			}
+			if (health <= 3.0) {
+				statusc |= 0x2
+			}
+			while (pathprog >= 66.0) {
+				calcpath()
+				pathprog -= 0.5
+				PinstripeMoveFrame -= 1.0
+				PinstripePlayMoveFrame(PinstripeMoveFrame)
+			}
+			PinstripePosition = PINNY_POSITION_RIGHT
+		}
+		zindex = 14
+		if (health == 3.0 && PinstripeAnimSet < 1.0) {
+			DeloadAnim([PiA1V], [Pin1G])
+			DeloadAnim([PiA2V], [Pin1G])
+			DeloadAnim([PiA3V], [Pin1G])
+			LoadAnim([PiE1V], [Pin1G])
+			LoadAnim([PiE2V], [Pin1G])
+			LoadAnim([PiE3V], [Pin1G])
+			PinstripeAnimSet = 1.0
+		}
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		troty = atan2(player->trans)
+	}
+}
+
+state Pinstripe_Hit {
+	stateflag 0x10002
+	code () {
+		statusb &= ~FLAG_ROT_Y
+		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+			PinstripeMiddleHits += 1.0
+		}
+		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+			PinstripeRightHits += 1.0
+		}
+		else if (PinstripePosition >= PINNY_POSITION_MOVE_LEFT) {
+			nop() // debug instruction
+		}
+		else {
+			PinstripeLeftHits += 1.0
+		}
+		health -= 1.0
+		changestateif(Pinstripe_Dead, health <= 0)
+		if (health == 2.0) {
+			DeloadAnim([PiE1V], [Pin1G])
+			DeloadAnim([PiE2V], [Pin1G])
+			DeloadAnim([PiE3V], [Pin1G])
+			DeloadAnim([PiL1V], [Pin1G])
+			DeloadAnim([PiL2V], [Pin1G])
+			DeloadAnim([PiL3V], [Pin1G])
+			LoadAnim([PiR1V], [Pin1G])
+			LoadAnim([PiR2V], [Pin1G])
+			LoadAnim([PiR3V], [Pin1G])
+			LoadAnim([PiE7V], [Pin1G])
+			LoadAnim([PiE8V], [Pin1G])
+			LoadAnim([PiE9V], [Pin1G])
+			PinstripeAnimSet = 2.0
+		}
+		if (health == 1.0) {
+			DeloadAnim([PiE7V], [Pin1G])
+			DeloadAnim([PiE8V], [Pin1G])
+			DeloadAnim([PiE9V], [Pin1G])
+			LoadAnim([PiE4V], [Pin1G])
+			LoadAnim([PiE5V], [Pin1G])
+			LoadAnim([PiE6V], [Pin1G])
+			PinstripeAnimSet = 3.0
+		}
+		playanim(0, PINSTRIPE_HIT_1)
+		playanim(1, PINSTRIPE_HIT_1)
+		playanim(2, PINSTRIPE_HIT_1)
+		playanim(3, PINSTRIPE_HIT_1)
+		playanim(4, PINSTRIPE_HIT_1, 0.7s)
+		playanim(5, PINSTRIPE_HIT_1)
+		playanim(6, PINSTRIPE_HIT_1)
+		playanim(7, PINSTRIPE_HIT_1)
+		playanim(8, PINSTRIPE_HIT_1)
+		playanim(9, PINSTRIPE_HIT_1)
+		playanim(10, PINSTRIPE_HIT_1)
+		playanim(11, PINSTRIPE_HIT_1)
+		playanim(12, PINSTRIPE_HIT_1)
+		playanim(13, PINSTRIPE_HIT_1)
+		playanim(14, PINSTRIPE_HIT_1)
+		playanim(15, PINSTRIPE_HIT_1)
+		playanim(16, PINSTRIPE_HIT_1)
+		playanim(17, PINSTRIPE_HIT_1)
+		playanim(18, PINSTRIPE_HIT_1)
+		playanim(19, PINSTRIPE_HIT_1, 0.18s)
+		playanim(0, PINSTRIPE_HIT_2)
+		playanim(1, PINSTRIPE_HIT_2)
+		playanim(2, PINSTRIPE_HIT_2)
+		playanim(3, PINSTRIPE_HIT_2)
+		playanim(4, PINSTRIPE_HIT_2)
+		playanim(5, PINSTRIPE_HIT_2)
+		playanim(6, PINSTRIPE_HIT_2)
+		playanim(7, PINSTRIPE_HIT_2)
+		playanim(8, PINSTRIPE_HIT_2)
+		playanim(9, PINSTRIPE_HIT_2)
+		playanim(10, PINSTRIPE_HIT_2)
+		playanim(11, PINSTRIPE_HIT_2)
+		playanim(12, PINSTRIPE_HIT_2)
+		do (var i = 0) {
+			playanim(13, PINSTRIPE_HIT_2)
+			playanim(14, PINSTRIPE_HIT_2)
+			playanim(15, PINSTRIPE_HIT_2)
+			playanim(16, PINSTRIPE_HIT_2)
+			playanim(17, PINSTRIPE_HIT_2)
+			playanim(18, PINSTRIPE_HIT_2)
+			i += 1.0
+		} while (i < 3.0)
+		playanim(19, PINSTRIPE_HIT_2)
+		playanim(0, PINSTRIPE_HIT_3)
+		playanim(1, PINSTRIPE_HIT_3)
+		playanim(2, PINSTRIPE_HIT_3)
+		playanim(3, PINSTRIPE_HIT_3, 0.18s)
+		playanim(4, PINSTRIPE_HIT_3)
+		playanim(5, PINSTRIPE_HIT_3)
+		playanim(6, PINSTRIPE_HIT_3)
+		playanim(7, PINSTRIPE_HIT_3)
+		playanim(8, PINSTRIPE_HIT_3)
+		playanim(9, PINSTRIPE_HIT_3)
+		playanim(10, PINSTRIPE_HIT_3)
+		playanim(11, PINSTRIPE_HIT_3)
+		playanim(12, PINSTRIPE_HIT_3)
+		if (health == 1.0) {
+			DeloadAnim([PiF2V], [Pin1G])
+			DeloadAnim([PiF3V], [Pin1G])
+			LoadAnim([PiF4V], [Pin1G])
+			PinstripeAnimSet = 4.0
+		}
+		statusb |= FLAG_ROT_Y
+		changestateif(Move_Left_Right, PinstripePosition >= PINNY_POSITION_MOVE_LEFT)
+		changestate(Pinstripe_Shoot)
+	}
+	trans {
+		if (!(frametime - statetime >= 1s)) {
+			roty += 24deg
+		}
+	}
+}
+
+state Pinstripe_Dead {
+	stateflag 0x10001
+	code () {
+		playanim(0, PINSTRIPE_HIT_1)
+		playanim(1, PINSTRIPE_HIT_1)
+		playanim(2, PINSTRIPE_HIT_1)
+		playanim(3, PINSTRIPE_HIT_1)
+		do (var i = 0) {
+			playanim(4, PINSTRIPE_HIT_1)
+			playanim(0, PINSTRIPE_HIT_4)
+			playanim(1, PINSTRIPE_HIT_4)
+			i += 1.0
+		} while (i < 5.0)
+		spawn(PinOC, PinOC_S_BROKEN_GLASS, 1, -2.67m, 3.2m, 1m)
+		playanim(4, PINSTRIPE_HIT_1)
+		playanim(0, PINSTRIPE_HIT_4)
+		playanim(1, PINSTRIPE_HIT_4)
+		spawn(PinOC, PinOC_S_BROKEN_GLASS, 1, 2.74m, 2.57m, 1m)
+		voice = PinstripeVoice
+		soundfadet(1.5s, voice)
+		soundfadev(0, voice, 2)
+		sounddelay(0.5s)
+		soundpitch(3.6 + rand(0.8))
+		soundplay([WDn8A], 0.03V)
+		player = GLOBALOBJ
+		sendevent(Event28, player)
+		GLOBALVAL = 90.0
+		playanim(4, PINSTRIPE_HIT_1)
+		playanim(0, PINSTRIPE_HIT_4)
+		playanim(1, PINSTRIPE_HIT_4)
+		PlayMinigunSound(0.15s)
+		playframeslt(2.0, 16.0)
+		playframe(16.0, 2s)
+		GLOBALVAL = 100.0
+		sleepframe(16.0)
+	}
+	trans {
+		if (!(frametime - statetime >= 1s)) {
+			roty += 24deg
+		}
+	}
+}
+
+state Pinstripe_Shadow {
+	stateflag 0x81
+	statusc 0
+	code () {
+		rotx = 0//90deg
+		roty = 0
+		rotz = 0
+		y = 43.0
+		scalex = 1.5S
+		scaley = 1.5S
+		scalez = 1.5S
+		do {
+			x = parent->x
+			z = parent->z
+			if (parent->y - y > 0.125m) {
+				zindex = -20
+			}
+			else {
+				zindex = 25
+			}
+			playanim(0, PINSTRIPE_SHADOW)
+		} while (1)
+	}
+}
+
+sub DeloadAnimSet () {
+	if (PinstripeAnimSet == 0) {
+		DeloadAnim([PiF1V], [Pin1G])
+		DeloadAnim([PiF2V], [Pin1G])
+		DeloadAnim([PiF3V], [Pin1G])
+		DeloadAnim([PiA1V], [Pin1G])
+		DeloadAnim([PiA2V], [Pin1G])
+		DeloadAnim([PiA3V], [Pin1G])
+		DeloadAnim([PiL1V], [Pin1G])
+		DeloadAnim([PiL2V], [Pin1G])
+		DeloadAnim([PiL3V], [Pin1G])
+	}
+	else if (PinstripeAnimSet == 1.0) {
+		DeloadAnim([PiF1V], [Pin1G])
+		DeloadAnim([PiF2V], [Pin1G])
+		DeloadAnim([PiF3V], [Pin1G])
+		DeloadAnim([PiE1V], [Pin1G])
+		DeloadAnim([PiE2V], [Pin1G])
+		DeloadAnim([PiE3V], [Pin1G])
+		DeloadAnim([PiL1V], [Pin1G])
+		DeloadAnim([PiL2V], [Pin1G])
+		DeloadAnim([PiL3V], [Pin1G])
+	}
+	else if (PinstripeAnimSet == 2.0) {
+		DeloadAnim([PiF1V], [Pin1G])
+		DeloadAnim([PiF2V], [Pin1G])
+		DeloadAnim([PiF3V], [Pin1G])
+		DeloadAnim([PiE7V], [Pin1G])
+		DeloadAnim([PiE8V], [Pin1G])
+		DeloadAnim([PiE9V], [Pin1G])
+		DeloadAnim([PiR1V], [Pin1G])
+		DeloadAnim([PiR2V], [Pin1G])
+		DeloadAnim([PiR3V], [Pin1G])
+	}
+	else if (PinstripeAnimSet == 3.0) {
+		DeloadAnim([PiF2V], [Pin1G])
+		DeloadAnim([PiF3V], [Pin1G])
+		DeloadAnim([PiE4V], [Pin1G])
+		DeloadAnim([PiE5V], [Pin1G])
+		DeloadAnim([PiE6V], [Pin1G])
+	}
+	else if (PinstripeAnimSet == 4.0) {
+		DeloadAnim([PiF1V], [Pin1G])
+		DeloadAnim([PiF4V], [Pin1G])
+		DeloadAnim([PiE4V], [Pin1G])
+		DeloadAnim([PiE5V], [Pin1G])
+		DeloadAnim([PiE6V], [Pin1G])
+	}
+}
+

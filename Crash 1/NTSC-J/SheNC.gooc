@@ -1,0 +1,204 @@
+#gool SheNC 38 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim WALL_NATIVE_WALK #iflev iq [Na1iV] #else [1001I] #endif 29
+#anim WALL_NATIVE_COVER #iflev iq [Na2iV] #else [1002I] #endif 18
+#anim VILLAGE_NATIVE #iflev hu [Na1hV] #else [1003I] #endif 22
+
+#spawn S_WALL_NATIVE              Wall_Native_Spawn
+#spawn S_VILLAGE_NATIVE           Village_Native
+
+var NativePathSpeed, mem2, StartX, StartY, StartZ,
+EndX, EndY, EndZ, OldX, OldY,
+OldZ, NativeBounceTime
+
+event EventHit           => state Wall_Native_Fling
+event EventSpinHit       => state Wall_Native_Fling
+event EventHitInvincible => state Wall_Native_Fling
+event EventFling         => state Wall_Native_Fling
+
+inline sub NativeSetPathStartPoint(yoff) {
+	var start_dist, end_dist
+	calcpath(0, vvec)
+	start_dist = distance(vec, player, 1)
+	StartX = vecx
+	StartY = vecy
+	StartZ = vecz
+	calcpath(pathlen-1.0, vvec)
+	EndX = vecx
+	EndY = vecy
+	EndZ = vecz
+	end_dist = distance(vec, player, 1)
+	if (start_dist > end_dist) {
+		pathprog = 0
+	}
+	else {
+		pathprog = pathlen - 1.0
+	}
+	calcpath()
+	y += yoff
+}
+
+state Wall_Native_Spawn {
+	code () {
+		zindex = 25
+		mem2 = 0
+		density = 0.15m
+		if (vecx) NativePathSpeed = vecx;
+			 else NativePathSpeed = 300.0;
+		NativePathSpeed = spd(NativePathSpeed / 100)
+		NativeSetPathStartPoint(0)
+		setanim(WALL_NATIVE_WALK, 0)
+		yzapproach = 120deg
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+		changestate(Wall_Native_Stand)
+	}
+}
+
+state Wall_Native_Stand {
+	statusc 0
+	code () {
+		trotx = 1500deg
+		var target_path_p = 0, rot_spd = 180deg
+		if (distance(StartX, player, 0) < distance(EndX, player, 0)) {
+			rot_spd = 0
+			target_path_p = pathlen - 1.0
+		}
+		setanim(WALL_NATIVE_WALK)
+		do {
+			pathprog = seek(abs(pathprog), target_path_p, NativePathSpeed)
+			calcpath()
+			if (!pathprog) {
+				rot_spd = 0
+			}
+			troty += rot_spd
+			y += 0
+			if (abs(pathprog) == target_path_p) {
+				playframe()
+			}
+			else {
+				animframe = (animframe + 1.0) % 29.0
+				playframe()
+			}
+		} while (1)
+	}
+	trans {
+		changestateif(Wall_Native_Attack, distance(player, 0) < 6m)
+	}
+}
+
+state Wall_Native_Attack {
+	statusc 0
+	code () {
+		NativeBounceTime = 0
+		trotx = 180deg
+		do {
+			playframes(WALL_NATIVE_WALK, 0, 28.0)
+		} while (1)
+	}
+	event (e, a) {
+		SpinKnockback(e, 10m)
+		accevcstate(Wall_Native_Cover, e == EventJumpedOn)
+		rejevret(e == EventSpinHit)
+	}
+	trans {
+		changestateif(Wall_Native_Stand, distance(player, 0) > 7m)
+		OldX = x
+		OldY = y
+		OldZ = z
+		if (STATUS_PATH_END) {
+			if (STATUS_REACHED_TROT) {
+				trotx = 180deg
+				statusb |= 0x20000000
+				statusa &= ~FLAG_PATH_END
+			}
+		}
+		else {
+			calcpath(loopseek(pathprog, pathlen + NativePathSpeed + -1.0, NativePathSpeed))
+			if (collider) {
+				if (abs(degdist(roty, atan2(collider->trans))) < 45deg && collider->y < y + 2m) {
+					if (frametime - NativeBounceTime > 0.1s) {
+						SoundPitchDefault()
+						soundplay([bnc0A], 0.5V)
+						NativeBounceTime = frametime
+					}
+					KnockbackPlayerCollider(10m, 6)
+				}
+			}
+			if (player->x >= StartX && player->x <= EndX) {
+				if (abs(degdist(troty, atan2(player->trans))) > 90deg) {
+					pathprog = -pathprog
+				}
+			}
+			if (STATUS_PATH_END) {
+				trotx = 720deg
+				statusb &= ~0x20000000
+			}
+			y += 0
+		}
+	}
+}
+
+state Wall_Native_Cover {
+	stateflag 0x23
+	statusc 0
+	code () {
+		sendevent(EventStatus, player, 3.0)
+		playframes(WALL_NATIVE_COVER, 0, 11.0)
+		changestate(Wall_Native_Cover_Wait)
+	}
+}
+
+state Wall_Native_Cover_Wait {
+	stateflag 0x23
+	statusc 0
+	code () {
+		sendevent(EventStatus, player, 3.0)
+		setanim(WALL_NATIVE_COVER)
+		do {
+			playframe(seek(animframe, 11.0, 2.0))
+		} until (animframe == 11.0)
+		playframes(WALL_NATIVE_COVER, 12.0, 17.0)
+		playanim(17, WALL_NATIVE_COVER, 0.8s)
+		playframesback(16.0, 0)
+		changestate(Wall_Native_Attack)
+	}
+	event (e, a) {
+		accevcstate(Wall_Native_Cover_Wait, e == EventJumpedOn)
+	}
+}
+
+state Wall_Native_Fling {
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFling(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+
+state Village_Native {
+	statusc 0x32
+	code () {
+		SetScale(1.2S)
+		statusb = FLAG_COLLIDABLE | FLAG_ROT_Y
+		trotx = 180deg
+		SetVillageObjPathProg()
+		do { playframes(VILLAGE_NATIVE, 0, 21.0) } while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			calcpath(loopseek(pathprog, pathlen + spd(4.5) + -1.0, spd(4.5)))
+			troty = GAMEDIR
+			sendevent(EventHit, collider, 100.0)
+			if (eventaccepted) {
+				SoundPitchDefault()
+				soundplay([de20A], 0.5V)
+			}
+		}
+	}
+}
+

@@ -1,0 +1,533 @@
+#gool CortC 49 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim CORTEX_DEAD [CD1vV] 30
+#anim HOVERBOARD_DEAD [Cd1vV] 30
+#anim CORTEX_STAND [CS1vV] 1
+#anim CORTEX_FIRE_AIM [CF1vV] 7
+#anim CORTEX_FIRE [CF2vV] 23
+#anim CORTEX_REFIRE [CF3vV] 16
+#anim CORTEX_REFIRE_AIM [CF4vV] 8
+#anim CORTEX_HIT_COVER [CH1vV] 12
+#anim CORTEX_HIT_1 [CH2vV] 18
+#anim CORTEX_HIT_2 [CH3vV] 20
+#anim CORTEX_HIT_3 [CH4vV] 20
+#anim CORTEX_HIT_4 [CH5vV] 2
+#anim CORTEX_AMMO [CA1vV] 20
+#anim CORTEX_INTRO_1 [CI1vV] 20
+#anim CORTEX_INTRO_2 [CI2vV] 20
+#anim CORTEX_INTRO_3 [CI3vV] 20
+#anim CORTEX_INTRO_4 [CI4vV] 20
+#anim CORTEX_INTRO_5 [CI5vV] 20
+#anim CORTEX_INTRO_6 [CI6vV] 20
+#anim CORTEX_INTRO_7 [CI7vV] 20
+#anim CORTEX_INTRO_8 [CI8vV] 10
+
+#spawn S_CORTEX                   Cortex_Spawn
+#spawn S_HOVERBOARD_BREAK         Hoverboard_Break
+
+var OldX, OldY, OldZ, CortexPhase, mem5, CortexLookVec, CortexAnimSet, CortexHoverboardVoice
+
+event EventHit => state Cortex_Hit
+event EventTriggered => state Cortex_Cover
+event EventRespawn => sub DeloadAnims
+
+#include "ShadC.gooh"
+#include "CorOC.gooh"
+#include "BoxsC.gooh"
+
+expr CORTEX_TOTAL_HEALTH = 5.0
+
+state Cortex_Spawn {
+	code () {
+		zindex = 100
+		statusb = 0x20000000 | FLAG_ROT_Y
+		trotx = 360deg
+		troty = 0
+		CortexLookVec = 0
+		health = 0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, CORTEX_TOTAL_HEALTH, 2)
+		rotz = 90deg
+		GLOBALOBJ = 0
+		GLOBAL_11 = 0
+		var1 = false
+		pathprog = 63.0
+		calcpath()
+		z += 3m
+		y += -2m
+		CortexPhase = 0
+		mem5 = 0
+		spawn(CorOC, CorOC_S_CASTLE)
+		changestate(Cortex_Intro)
+	}
+}
+
+inline sub SoundAttack() {
+	if (!rand(2)) {
+		soundpitch(3.84 + rand(0.32))
+		soundplay([TakvA], 0.6V + rand(0.2V))
+	}
+}
+
+inline sub SoundBlast() {
+	SoundPlayDefault([blavA], 0.5V)
+	SoundAttack()
+}
+
+inline sub SoundCortexLaugh() {
+	if (!rand(3)) {
+		soundpitch(3.84 + rand(0.32))
+		soundplay([ChgvA], 0.7V)
+	}
+}
+
+inline sub AnimCortexFireAim() {
+	playframes(CORTEX_FIRE_AIM, 0, 6.0)
+}
+
+inline sub AnimCortexFireShoot() {
+	playframes(CORTEX_FIRE, 0, 22.0)
+}
+
+inline sub AnimCortexRefireShoot() {
+	playframes(CORTEX_FIRE, 0, 6.0)
+	playframes(CORTEX_REFIRE, 0, 15.0)
+}
+
+inline sub AnimCortexRefireAim() {
+	playframes(CORTEX_REFIRE_AIM, 0, 7.0)
+}
+
+inline sub AnimCortexAmmo() {
+	playframes(CORTEX_AMMO, 0, 11.0)
+	playframes(CORTEX_AMMO, 12.0, 19.0)
+}
+
+inline sub CortexAmmo() {
+	SoundCortexLaugh()
+	AnimCortexAmmo()
+	AnimCortexFireAim()
+}
+
+inline sub CortexLoad(times) {
+	SoundCortexLaugh()
+	playframes(CORTEX_AMMO, 0, 11.0)
+	do (var i = 0) {
+		playframes(7.0, 11.0)
+		i += 1.0
+	} while (i < times)
+	playframes(CORTEX_AMMO, 12.0, 19.0)
+	AnimCortexFireAim()
+}
+
+inline sub CortexOrangeFire() {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_ORANGE)
+	AnimCortexFireShoot()
+}
+
+inline sub CortexOrangeRefire() {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_ORANGE)
+	AnimCortexRefireShoot()
+}
+
+inline sub CortexOrangeTarget(tx) {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_ORANGE_TARGET, 1, tx)
+	playframes(CORTEX_FIRE, 0, 3.0)
+	playanim(2, CORTEX_FIRE)
+	playanim(1, CORTEX_FIRE)
+	CortexLookVec = false
+}
+
+inline sub CortexBlueFire(path_id, start) {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_BLUE, 1, path_id, start)
+	AnimCortexFireShoot()
+	CortexLookVec = false
+}
+
+inline sub CortexBlueRefire(path_id, start) {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_BLUE, 1, path_id, start)
+	AnimCortexRefireShoot()
+	CortexLookVec = false
+}
+
+inline sub CortexGreenFire(green_id, phase_health, tx) {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_GREEN, 1, green_id, phase_health, tx)
+	AnimCortexFireShoot()
+	CortexLookVec = false
+}
+
+inline sub CortexGreenRefire(green_id, phase_health, tx) {
+	SoundBlast()
+	spawn(CorOC, CorOC_S_BULLET_GREEN, 1, green_id, phase_health, tx)
+	AnimCortexRefireShoot()
+	CortexLookVec = false
+}
+
+inline sub SetAimParams(tx) {
+	CortexLookVec = true
+	vecx = tx
+	vecy = 8m
+	vecz = player->z
+}
+
+sub CortexAttackPhase1 () {
+	CortexLookVec = false
+	CortexAmmo()
+	CortexOrangeRefire()
+	AnimCortexRefireAim()
+	CortexOrangeRefire()
+	SetAimParams(0)
+	AnimCortexRefireAim()
+	CortexGreenFire(0, 1.0, 0)
+}
+
+sub CortexAttackPhase2 () {
+	CortexLookVec = false
+	CortexAmmo()
+	CortexOrangeRefire()
+	SetAimParams(4.8m)
+	AnimCortexRefireAim()
+	CortexBlueRefire(23.0, true)
+	AnimCortexRefireAim()
+	CortexOrangeRefire()
+	SetAimParams(-4.8m)
+	AnimCortexRefireAim()
+	CortexBlueRefire(22.0, false)
+	SetAimParams(4.8m)
+	AnimCortexRefireAim()
+	CortexBlueFire(23.0, true)
+	SetAimParams(1m)
+	CortexLoad(3.0)
+	CortexGreenRefire(0, 2.0, 1m)
+	SetAimParams(-1m)
+	AnimCortexRefireAim()
+	CortexGreenFire(1.0, 2.0, -1m)
+}
+
+sub CortexAttackPhase3 () {
+	CortexLookVec = false
+	CortexAmmo()
+	CortexOrangeRefire()
+	SetAimParams(4.8m)
+	AnimCortexRefireAim()
+	CortexBlueRefire(23.0, true)
+	SetAimParams(-4.8m)
+	AnimCortexRefireAim()
+	CortexBlueRefire(22.0, false)
+	AnimCortexRefireAim()
+	CortexOrangeFire()
+	SetAimParams(1m)
+	CortexAmmo()
+	CortexGreenFire(0, 3.0, 1m)
+	CortexAmmo()
+	CortexOrangeRefire()
+	SetAimParams(4.8m)
+	AnimCortexRefireAim()
+	CortexBlueFire(21.0, true)
+	SetAimParams(-4.8m)
+	CortexAmmo()
+	CortexBlueFire(20.0, false)
+	SetAimParams(4.8m)
+	CortexAmmo()
+	CortexBlueFire(20.0, true)
+	SetAimParams(-1m)
+	CortexLoad(6.0)
+	CortexGreenRefire(1.0, 3.0, -1m)
+	SetAimParams(1m)
+	AnimCortexRefireAim()
+	CortexGreenFire(2.0, 3.0, 1m)
+	CortexAmmo()
+	CortexOrangeFire()
+}
+
+inline sub CortexPhase4Ammo(tx) {
+	SetAimParams(tx)
+	CortexAmmo()
+	CortexOrangeTarget(tx)
+}
+
+inline sub CortexPhase4Orange(tx) {
+	SetAimParams(tx)
+	AnimCortexRefireAim()
+	CortexOrangeTarget(tx)
+}
+
+sub CortexAttackPhase4 () {
+	CortexLookVec = false
+	CortexPhase4Ammo(-3m)
+	CortexPhase4Orange(-1m)
+	CortexPhase4Orange(0)
+	CortexPhase4Orange(1m)
+	CortexPhase4Orange(3m)
+	SetAimParams(-1m)
+	AnimCortexRefireAim()
+	CortexGreenRefire(0, 2.0, -1m)
+	CortexPhase4Orange(3m)
+	CortexPhase4Orange(1m)
+	CortexPhase4Orange(0)
+	CortexPhase4Orange(-1m)
+	CortexPhase4Orange(-3m)
+	SetAimParams(1m)
+	AnimCortexRefireAim()
+	CortexGreenFire(1.0, 2.0, 1m)
+}
+
+sub CortexAttackPhase5 () {
+	CortexLookVec = false
+	SetAimParams(0)
+	var1 = true
+	SoundCortexLaugh()
+	AnimCortexAmmo()
+	var0 = false
+	AnimCortexFireAim()
+	CortexGreenRefire(0, 1.0, 0)
+}
+
+inline sub CortexDoPath(path_spd) {
+	OldX = x
+	OldY = y
+	OldZ = z
+	calcpath()
+	z += 3m
+	y += -2m
+	pathprog = spd(pathprog, path_spd) % pathlen
+}
+
+state Cortex_Attack {
+	statusc 0
+	code () {
+		var0 = 0
+		do {
+			if (CortexPhase == 0) {
+				CortexPhase += 1.0
+				mem5 = 0
+			}
+			else if (CortexPhase == 1.0) {
+				CortexAttackPhase1()
+			}
+			else if (CortexPhase == 2.0) {
+				CortexAttackPhase2()
+			}
+			else if (CortexPhase == 3.0) {
+				CortexAttackPhase3()
+			}
+			else if (CortexPhase == 4.0) {
+				CortexAttackPhase4()
+			}
+			else if (CortexPhase == 5.0) {
+				CortexAttackPhase5()
+			}
+		} while (1)
+	}
+	trans {
+		CortexDoPath(5.0)
+		if (CortexLookVec) {
+			troty = atan2(vec)
+		}
+		else {
+			troty = atan2(player->trans)
+		}
+		if (!rand(40 - (health*4 >> 8)) && FRAMETIME < 28) {
+			spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE)
+		}
+		if (var1 && time(2)) {
+			y += 0.02m
+		}
+	}
+}
+
+inline sub MakeHoverboardExplosion() {
+	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 1)
+	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 5, 0)
+	spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE, 3)
+	sounddecay(0.25)
+	SoundPlayDefault([tnt0A], 0.6V + rand(0.2V))
+}
+
+state Cortex_Hit {
+	stateflag 0x3
+	code () {
+		MakeHoverboardExplosion()
+		voice = CortexHoverboardVoice
+		soundfadet(1s/3 + rand(1s/3), voice)
+		soundpitch(3.6 + rand(0.8), voice, 2)
+		SoundPlayDefault([HitvA], 0.5V)
+		sounddelay(1s/6)
+		SoundPlayDefault([sspvA], 0.5V)
+		playframes(CORTEX_HIT_1, 0, 17.0)
+		spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE)
+		playframes(CORTEX_HIT_2, 0, 19.0)
+		spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE)
+		playframes(CORTEX_HIT_3, 0, 19.0)
+		voice = CortexHoverboardVoice
+		soundfadet(1s/6, voice)
+		soundpitch(4.0, voice)
+		playframes(CORTEX_HIT_4, 0, 19.0)
+		changestateif(Cortex_Dead, health >= CORTEX_TOTAL_HEALTH)
+		CortexPhase += 1.0
+		mem5 = 0
+		changestate(Cortex_Attack)
+	}
+	trans {
+		once {
+			health += 1.0
+		}
+		if (!rand(1s/3) && health >= CORTEX_TOTAL_HEALTH) {
+			GLOBAL_11 = 1.0
+			MakeHoverboardExplosion()
+		}
+	}
+}
+
+state Cortex_Cover {
+	statusc 0
+	code () {
+		playframes(CORTEX_HIT_COVER, 0, 11.0)
+		sleep()
+	}
+	trans {
+		CortexDoPath(2.5)
+	}
+}
+
+state Cortex_Dead {
+	stateflag 0x21
+	code () {
+		zindex = -20
+		spawn(CortC, S_HOVERBOARD_BREAK)
+		voice = CortexHoverboardVoice
+		soundfadet(0.1s, voice)
+		soundfadev(0, voice, 3)
+		soundpitch(4.0)
+		soundplay([SuivA], 1.0V)
+		playframes(CORTEX_DEAD, 0, 29.0)
+		GLOBAL_11 = 0
+		wait(2s)
+		wait(0.5s)
+		sendevent(EventWarp, player, 0)
+		wait(1.5s)
+		wait(0.5s)
+		loadlevel(LEVEL_GameWin)
+	}
+}
+
+inline sub MakeHoverboardExplosion2() {
+	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 1)
+	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 5, 0)
+	spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE, 3)
+	if (!rand(2)) {
+		sounddecay(0.25)
+		SoundPlayDefault([tnt0A], 0.6V + rand(0.2V))
+	}
+}
+
+state Hoverboard_Break {
+	code () {
+		playframes(HOVERBOARD_DEAD, 0, 19.0)
+	}
+	trans {
+		if (!rand(1s/6) || animframe == 10.0) {
+			MakeHoverboardExplosion2()
+		}
+	}
+}
+
+state Cortex_Intro {
+	statusc 0
+	code () {
+		GAMESTATE = GAME_STATE_PLAYING
+		CortexAnimSet = 0
+		LoadAnim2([CI1vV], [CS1vG])
+		LoadAnim2([CI2vV], [CS1vG])
+		LoadAnim2([CI3vV], [CS1vG])
+		SoundPitchDefault()
+		soundfadet(2s)
+		soundfadev(0.4V, 0, 2)
+		soundplay([sctvA], 0)
+		CortexHoverboardVoice = voice
+		playframes(CORTEX_INTRO_1, 0, 19.0)
+		GAMESTATE = GAME_STATE_PLAYING
+		playframes(CORTEX_INTRO_2, 0, 19.0)
+		DeloadAnim([CI1vV], [CS1vG])
+		DeloadAnim([CI2vV], [CS1vG])
+		LoadAnim([CI4vV], [CS1vG])
+		LoadAnim([CI5vV], [CS1vG])
+		CortexAnimSet = 1.0
+		playframes(CORTEX_INTRO_3, 0, 19.0)
+		zindex = 24
+		playframes(CORTEX_INTRO_4, 0, 19.0)
+		DeloadAnim([CI3vV], [CS1vG])
+		DeloadAnim([CI4vV], [CS1vG])
+		LoadAnim([CI6vV], [CS1vG])
+		LoadAnim([CI7vV], [CS1vG])
+		CortexAnimSet = 2.0
+		soundpitch(4.0)
+		soundplay([MadvA], 1.0V)
+		voice = CortexHoverboardVoice
+		soundfadet(1s, voice)
+		soundfadev(0.3V, voice, 2)
+		playframes(CORTEX_INTRO_5, 0, 19.0)
+		playframes(CORTEX_INTRO_6, 0, 19.0)
+		DeloadAnim([CI5vV], [CS1vG])
+		DeloadAnim([CI6vV], [CS1vG])
+		LoadAnim([CI8vV], [CS1vG])
+		CortexAnimSet = 3.0
+		playframes(CORTEX_INTRO_7, 0, 19.0)
+		playframes(CORTEX_INTRO_8, 0, 9.0)
+		zindex = 100
+		DeloadAnim([CI7vV], [CS1vG])
+		DeloadAnim([CI8vV], [CS1vG])
+		LoadAnim([CH1vV], [CS1vG])
+		LoadAnim([CH2vV], [CS1vG])
+		LoadAnim([CH3vV], [CS1vG])
+		LoadAnim([CH4vV], [CS1vG])
+		LoadAnim([CH5vV], [CS1vG])
+		LoadAnim([CD1vV], [CS2vG])
+		LoadAnim([Cd1vV], [CS3vG])
+		CortexAnimSet = 4.0
+		changestate(Cortex_Attack)
+	}
+	trans {
+		troty = atan2(player->trans)
+	}
+}
+
+sub DeloadAnims () {
+	if (CortexAnimSet == 0) {
+		DeloadAnim([CI1vV], [CS1vG])
+		DeloadAnim([CI2vV], [CS1vG])
+		DeloadAnim([CI3vV], [CS1vG])
+	}
+	else if (CortexAnimSet == 1.0) {
+		DeloadAnim([CI3vV], [CS1vG])
+		DeloadAnim([CI4vV], [CS1vG])
+		DeloadAnim([CI5vV], [CS1vG])
+	}
+	else if (CortexAnimSet == 2.0) {
+		DeloadAnim([CI5vV], [CS1vG])
+		DeloadAnim([CI6vV], [CS1vG])
+		DeloadAnim([CI7vV], [CS1vG])
+	}
+	else if (CortexAnimSet == 3.0) {
+		DeloadAnim([CI7vV], [CS1vG])
+		DeloadAnim([CI8vV], [CS1vG])
+	}
+	else if (CortexAnimSet == 4.0) {
+		DeloadAnim([CH1vV], [CS1vG])
+		DeloadAnim([CH2vV], [CS1vG])
+		DeloadAnim([CH3vV], [CS1vG])
+		DeloadAnim([CH4vV], [CS1vG])
+		DeloadAnim([CH5vV], [CS1vG])
+		DeloadAnim([CD1vV], [CS2vG])
+		DeloadAnim([Cd1vV], [CS3vG])
+	}
+}
+
+

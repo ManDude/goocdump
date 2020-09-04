@@ -1,0 +1,190 @@
+#gool PillC 35 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim PILL_SKUNK [Pi10V] 21
+#anim PILL_RAT [Pi1EV] 16
+
+#spawn S_PILL_PATH           Pill_Path
+#spawn S_PILL                Pill_Spawn
+
+var PillSpawnCycle, PillSpawnOffset, PillPathSpeed, PillTrackOffset, PillAnimLength, PillPathDisableRange
+
+event EventJumpedOn      => state Pill_Die
+event EventHit           => state Pill_Die
+event EventSpinHit       => state Pill_Fling
+event EventHitInvincible => state Pill_Fling
+event EventFling         => state Pill_Die
+
+inline sub PillTransHitPlayer() {
+	if (STATUS_PLAYER_D_COLLIDER) {
+		sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+	}
+}
+
+state Pill_Path {
+	code () {
+		if (vecx) {
+			PillSpawnCycle = vecx >> 8
+		}
+		else {
+			PillSpawnCycle = 1.4s
+		}
+		PillSpawnOffset = rand(4s)
+		if (vecy) {
+			PillPathSpeed = vecy >> 8
+		}
+		else {
+			PillPathSpeed = 2.7
+		}
+		if (vecz) {
+			v0 = vecz
+		}
+		else {
+			v0 = 3.0
+		}
+		statusb = FLAG_INVISIBLE
+		calcpath(pathlen - 1.0, vvec)
+		if (var level = LEVEL; level == LEVEL_LightsOut || level == LEVEL_FumblingInTheDark) {
+			setanim(PILL_RAT)
+			PillAnimLength = 16.0
+			PillPathDisableRange = 8m
+		}
+		else {
+			setanim(PILL_SKUNK)
+			PillAnimLength = 21.0
+			PillPathDisableRange = 8m
+		}
+		do {
+			do (var i = 0) {
+				while (time(PillSpawnCycle, PillSpawnOffset)) {
+					playframe(0)
+				}
+				if (distance(player, 3) > PillPathDisableRange && player->z < vecz + 15m) {
+					spawn(PillC, S_PILL)
+				}
+				playframe(0)
+				i += 1.0
+			} while (i < v0)
+			while (time(PillSpawnCycle, PillSpawnOffset)) {
+				playframe(0)
+			}
+			playframe(0)
+			while (time(PillSpawnCycle, PillSpawnOffset)) {
+				playframe(0)
+			}
+			playframe(0)
+			while (time(PillSpawnCycle, PillSpawnOffset)) {
+				playframe(0)
+			}
+			playframe(0)
+		} while (1)
+	}
+}
+
+state Pill_Spawn {
+	code () {
+		zindex = 55
+		yzapproach = 180deg
+		trotx = 360deg
+		pathprog = 0
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000
+		PillSpawnCycle = 2s
+		PillSpawnOffset = rand(2s)
+		PillTrackOffset = 0
+		density = 120.0
+		PillPathSpeed = getfield(parent, offsetof(PillPathSpeed))
+		CopyParentPath()
+		animseq = parent->animseq
+		PillAnimLength = getfield(parent, offsetof(PillAnimLength))
+		y += 0
+		do (var s = 0) {
+			scalex = s
+			scaley = s
+			scalez = s
+			playframe(0)
+			s += 0.2S
+		} while (s < 1.0S)
+		changestate(Pill)
+	}
+}
+
+state Pill {
+	stateflag 0x81
+	statusc 0
+	code () {
+		animframe = 0
+		do {
+			{var path_rot, deg_to_player
+			pathprog = spd(pathprog, PillPathSpeed)
+			calcpath()
+			save (troty, statusa, statusb, x, y, z, pathprog) {
+				statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+				x = player->x
+				y = player->y
+				z = player->z
+				calcpath(0)
+				troty += 90deg
+				setvel(PillTrackOffset)
+			}
+			x += velx
+			z += velz
+			if (pathlen - pathprog >= 3.0) {
+				path_rot = troty
+				if (abs(PillTrackOffset - vecy) > 0.1m) {
+					deg_to_player = degdist(troty, atan2(player->trans))
+					if (deg_to_player < -45deg) {
+						deg_to_player = -45deg
+					}
+					else if (deg_to_player > 45deg) {
+						deg_to_player = 45deg
+					}
+					troty += deg_to_player
+				}
+				PillTrackOffset = seek(PillTrackOffset, vecy, spd(2m))
+				if (PillTrackOffset < -1.6m) {
+					troty = path_rot
+					PillTrackOffset = -1.6m
+				}
+				else if (PillTrackOffset > 1.6m) {
+					troty = path_rot
+					PillTrackOffset = 1.6m
+				}
+			}}
+			y += 0
+			animframe = (animframe + 1.0) % PillAnimLength
+			playframe()
+		} until (STATUS_PATH_END)
+	}
+	trans {
+		if (pathlen - pathprog < 3.0) {
+			zindex = seek(zindex, -20, 3)
+		}
+		else {
+			PillTransHitPlayer()
+		}
+	}
+}
+
+state Pill_Die {
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDie(h)
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state Pill_Fling {
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingAbs(h)
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+

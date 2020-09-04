@@ -1,0 +1,900 @@
+#gool RuiOC 42 6
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER1 [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+#sprite PLACEHOLDER2 [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim RUINS_ARRAY [Ra1sV] 1
+#anim RUINS_DART [Rd1sV] 7
+#anim RUINS_SPEAR [Rs1sV] 13
+#iflev st
+#anim BAT_FLY [Ba1sV] 14
+#anim BAT_MOTHER [1026I] 48
+#eliflev wz
+#anim BAT_FLY [Ba1wV] 14
+#anim BAT_MOTHER [Ba2wV] 48
+#endif
+#anim RUINS_CRUSHER_LEFT [RcLsV] 1
+#anim RUINS_CRUSHER_RIGHT [RcRsV] 1
+
+#iflev st
+#sprite FLAME [Ru3sT]
+#tex 0x808080 0 1 1 0 0 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 8 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 16 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 24 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 32 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 40 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 48 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 56 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 64 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 64 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 64 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 72 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 72 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 72 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 80 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 80 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 80 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 88 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 88 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 88 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 96 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 96 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 96 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 104 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 104 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 104 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 112 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 112 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 112 8 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 120 24 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 120 16 64 32 ! 2 1
+#tex 0x808080 0 1 1 0 120 8 64 32 ! 2 1
+#eliflev wz
+#sprite FLAME [Ru6wT]
+#tex 0x808080 0 1 2 0 0 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 8 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 16 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 16 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 16 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 24 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 24 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 24 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 32 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 32 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 32 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 40 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 40 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 40 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 48 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 48 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 48 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 48 0 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 56 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 56 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 56 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 56 0 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 64 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 64 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 64 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 64 0 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 72 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 72 16 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 72 8 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 72 0 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 80 24 64 32 ! 2 1
+#tex 0x808080 0 1 2 0 80 16 64 32 ! 2 1
+#endif
+
+#spawn S_PILLAR_ARRAY             Pillar_Array
+#spawn S_PILLAR_ARRAY_BOB         Pillar_Array
+#spawn S_PILLAR                   Pillar
+#spawn S_RUINS_SHADOW             Ruins_Shadow
+#spawn S_TORCH                    Torch
+#spawn S_5                        __s_5
+#spawn S_6                        __s_6
+#spawn S_CRUSHER_RIGHT            Crusher_Spawn
+#spawn S_CRUSHER_LEFT             Crusher_Spawn
+#spawn S_BAT_SPAWNER_3D           Bat_Spawner
+#spawn S_TORCH_FLAME              Torch_Flame_Spawn
+#spawn S_BAT                      Bat_Spawn
+#spawn S_BAT_SPAWNER_2D           Bat_Spawner
+#spawn S_TORCH_SOUND              Torch_Sound
+#spawn S_BAT_MOTHER               Bat_Mother
+#spawn S_TORCH_PLAT               Torch
+#spawn S_TORCH_FLAME_PLAT         Torch_Flame_Spawn
+#spawn S_DART                     Spear_Spawner
+#spawn S_SPEAR                    Spear_Spawn
+#spawn S_SPEAR_LEFT               Spear_Spawner
+#spawn S_SPEAR_RIGHT              Spear_Spawner
+#spawn S_RUINS_FLARE              Ruins_Flare
+
+var mem1, OldX, OldY, OldZ,
+XOffset, YOffset, ZOffset,
+SpawnX, SpawnY, SpawnZ,
+mem11, SpawnCount,
+PillarOrbitSpeed, PillarOrbitDist, PillarRotSpeed,
+PillarBobSpeed, PillarBobMax, PillarBobY,
+PillarFall1, PillarFall1Start, PillarFall1End, PillarWarn1, PillarWarn1Neg,
+PillarFall2, PillarFall2Start, PillarFall2End, PillarWarn2, PillarWarn2Neg,
+PillarYOff, RuinsCycle, RuinsCycleOffset, RuinsCycleDur,
+ActiveDistance, TorchCycleDur, TorchOldSize, TorchPlaySound, PillarShake
+
+#include "ShadC.gooh"
+#include "FruiC.gooh"
+
+inline sub PlatSetAngleCutoff1(start_ang, end_ang) {
+	PillarFall1 = true
+	PillarFall1Start = start_ang
+	PillarFall1End = end_ang
+}
+
+inline sub PlatSetAngleCutoff2(start_ang, end_ang) {
+	PillarFall2 = true
+	PillarFall2Start = start_ang
+	PillarFall2End = end_ang
+}
+
+state Pillar_Array { // 0
+	code () {
+		if (vecx) PillarOrbitDist = (vecx >> 8 << 8) * 400;
+		     else PillarOrbitDist = 4m;
+		if (vecy) PillarOrbitSpeed = (vecy >> 8 << 12) / 360;
+		     else PillarOrbitSpeed = 30deg;
+		PillarFall1 = false
+		PillarFall2 = false
+		if (vecz == 0) {
+			SpawnCount = 5.0
+		}
+		else if (vecz == 1.0) {
+			SpawnCount = 9.0
+		}
+		else if (vecz == 2.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(40deg, 60deg)
+			PlatSetAngleCutoff2(220deg, 240deg)
+		}
+		else if (vecz == 3.0) {
+			SpawnCount = 9.0
+			PlatSetAngleCutoff1(310deg, 330deg)
+		}
+		else if (vecz == 4.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(130deg, 150deg)
+		}
+		else if (vecz == 5.0) {
+			SpawnCount = 9.0
+			PlatSetAngleCutoff1(40deg, 60deg)
+			PlatSetAngleCutoff2(220deg, 235deg)
+		}
+		else if (vecz == 6.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(310deg, 330deg)
+		}
+		else if (vecz == 7.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(220deg, 240deg)
+		}
+		else if (vecz == 8.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(40deg, 60deg)
+		}
+		else if (vecz == 9.0) {
+			SpawnCount = 5.0
+			PlatSetAngleCutoff1(130deg, 150deg)
+			PlatSetAngleCutoff2(310deg, 330deg)
+		}
+		else if (vecz == 10.0) {
+			SpawnCount = 4.0
+			PlatSetAngleCutoff1(130deg, 150deg)
+		}
+		else if (vecz == 11.0) {
+			SpawnCount = 8.0
+			PlatSetAngleCutoff1(40deg, 60deg)
+			PlatSetAngleCutoff2(220deg, 235deg)
+		}
+		else {
+			SpawnCount = 5.0
+		}
+		PillarWarn1 = PillarFall1Start - 30deg
+		PillarWarn2 = PillarFall2Start - 30deg
+		PillarWarn1Neg = PillarFall1End + 30deg
+		PillarWarn2Neg = PillarFall2End + 30deg
+		PillarRotSpeed = -PillarOrbitSpeed * 2
+		if (spawn == S_PILLAR_ARRAY_BOB) {
+			PillarBobMax = 1.5m
+			PillarBobSpeed = 1m
+		}
+		else {
+			PillarBobMax = 0
+			PillarBobSpeed = 0
+		}
+		do (var plat_bob = -PillarBobMax, plat_bob_inc = (PillarBobMax / (SpawnCount >> 8)) * 2, plat_rot = 0, plat_rot_inc = 360deg / (SpawnCount >> 8), i = 0) {
+			spawn(RuiOC, S_PILLAR, 1, plat_rot, PillarOrbitSpeed, PillarOrbitDist, PillarRotSpeed, PillarBobMax, PillarBobSpeed, plat_bob)
+			plat_bob += plat_bob_inc
+			plat_rot += plat_rot_inc
+			i += 1.0
+		} while (i < SpawnCount)
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, RUINS_ARRAY)
+	}
+}
+
+inline sub PlatformGetYOff() {
+	var y_off = 999999, nrot = troty & 0xfff
+	if (parent->PillarFall1) {
+		if (PillarOrbitSpeed < 0) {
+			if (nrot >= parent->PillarFall1Start) {
+				if (nrot <= parent->PillarFall1End) {
+					y_off = seek(PillarYOff, -30m, 1m)
+				}
+				else if (nrot <= parent->PillarWarn1Neg) {
+					if (PillarShake) {
+						y_off = randi(-0.15m, 0.15m)
+					}
+					else {
+						y_off = PillarYOff
+					}
+				}
+			}
+		}
+		else {
+			if (nrot <= parent->PillarFall1End) {
+				if (nrot >= parent->PillarFall1Start) {
+					y_off = seek(PillarYOff, -30m, 1m)
+				}
+				else if (nrot >= parent->PillarWarn1) {
+					if (PillarShake) {
+						y_off = randi(-0.15m, 0.15m)
+					}
+					else {
+						y_off = PillarYOff
+					}
+				}
+			}
+		}
+	}
+	if (parent->PillarFall2) {
+		if (PillarOrbitSpeed < 0) {
+			if (nrot >= parent->PillarFall2Start) {
+				if (nrot <= parent->PillarFall2End) {
+					y_off = seek(PillarYOff, -30m, 1m)
+				}
+				else if (nrot <= parent->PillarWarn2Neg) {
+					if (PillarShake) {
+						y_off = randi(-0.15m, 0.15m)
+					}
+					else {
+						y_off = PillarYOff
+					}
+				}
+			}
+		}
+		else {
+			if (nrot <= parent->PillarFall2End) {
+				if (nrot >= parent->PillarFall2Start) {
+					y_off = seek(PillarYOff, -30m, 1m)
+				}
+				else if (nrot >= parent->PillarWarn2) {
+					if (PillarShake) {
+						y_off = randi(-0.15m, 0.15m)
+					}
+					else {
+						y_off = PillarYOff
+					}
+				}
+			}
+		}
+	}
+	if (y_off == 999999) {
+		PillarYOff = seek(PillarYOff, 0, 1m)
+	}
+	else {
+		PillarYOff = y_off
+	}
+}
+
+state Pillar { // 1
+	statusc 0
+	code (start_rot, orb_spd, orb_dist, rot_spd, bob_max, bob_spd, bob_y) {
+		PillarShake = 0
+		PillarYOff = 0
+		SpawnY = y
+		zindex = -10
+		statusb = 0x80000000 | FLAG_SOLID_ALL | FLAG_COLLIDABLE
+		vecx = parent->x
+		vecy = parent->y
+		vecz = parent->z
+		trotx = 0
+		troty = start_rot
+		trotz = 0
+		PillarOrbitSpeed = orb_spd
+		PillarOrbitDist = orb_dist
+		PillarRotSpeed = rot_spd
+		PillarBobMax = bob_max
+		PillarBobSpeed = bob_spd
+		PillarBobY = bob_y
+		do { playanim(0, RUINS_ARRAY) } while (1)
+	}
+	trans {
+		OldX = x
+		OldY = y
+		OldZ = z
+		unless (STATUS_FIRSTFRAME) {
+			troty = spd(troty, PillarOrbitSpeed)
+			vectransf2(vvec, vtrans, 0, PillarOrbitDist, 0)
+			if (parent->spawn == S_PILLAR_ARRAY_BOB) {
+				y = SpawnY + sin(loopseek(PillarBobY, PillarBobMax, spd(PillarBobSpeed)), PillarBobMax - spd(PillarBobSpeed))
+			}
+			PlatformGetYOff()
+			y += PillarYOff
+			PillarShake = 1-PillarShake
+			roty = spd(roty, PillarRotSpeed) & 0xfff
+			if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
+				save (vecx, vecy, vecz, troty) {
+					RotPlatCarryPlayer(OldX, OldY, OldZ, PillarRotSpeed)
+				}
+			}
+		}
+	}
+}
+
+state Ruins_Shadow { // 2
+	statusc 0
+	code () {
+		if (vecx) PillarFall1 = vecx * 400;
+		     else PillarFall1 = -2.25m;
+		if (vecy) PillarFall1Start = vecy * 400;
+		     else PillarFall1Start = 0;
+		if (vecz) PillarFall1End = vecz << 12 >> 8;
+		     else PillarFall1End = 2.5S;
+		spawn(ShadC, ShadC_S_BOSS_HEALTH_OLD, 1, x, y+PillarFall1, z+PillarFall1Start, PillarFall1End, PillarFall1End, PillarFall1End, offsetof(PillarBobY))
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, FLAME)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (!rand(2)) {
+				PillarBobY = 42 + randi(-2, 2)
+			}
+		}
+	}
+}
+
+state Torch { // 3
+	statusc 0
+	code () {
+		if (vecx) ActiveDistance = vecx / 100 * 400;
+		     else ActiveDistance = 11m;
+		if (vecy) TorchCycleDur = vecy >> 8;
+		     else TorchCycleDur = 2s;
+		scalez = 3.0S
+		if (spawn == S_TORCH_PLAT) {
+			spawn(RuiOC, S_TORCH_FLAME_PLAT, 1, 1.25S, 0.7S, 3.0S, -0.25m, 0, 1m, 1.0, 0)
+			spawn(RuiOC, S_TORCH_FLAME_PLAT, 1, 2.0S, 1.0S, 3.0S, 0, 0, 1m, 0, 0)
+			spawn(RuiOC, S_TORCH_FLAME_PLAT, 1, 2.75S, 1.3S, 3.0S, -0.25m, 0, 1m, 0, 0)
+		}
+		else {
+			spawn(RuiOC, S_TORCH_FLAME, 1, 1.25S, 0.7S, 3.0S, -0.25m, 0, -0.25m, 1.0, vecz)
+			spawn(RuiOC, S_TORCH_FLAME, 1, 2.0S, 1.0S, 3.0S, 0, 0, -0.5m, 0, 0)
+			spawn(RuiOC, S_TORCH_FLAME, 1, 2.75S, 1.3S, 3.0S, -0.25m, 0, -0.75m, 0, 0)
+		}
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, FLAME)
+	}
+}
+
+state Torch_Flame_Spawn { // 4
+	statusc 0
+	code (sx, sy, sz, xo, yo, zo, play_sound, unk) {
+		ActiveDistance = parent->ActiveDistance
+		TorchCycleDur = parent->TorchCycleDur
+		TorchPlaySound = play_sound
+		SetScale(sx, sy, sz)
+		XOffset = xo
+		YOffset = yo
+		ZOffset = zo
+		SpawnX = x
+		SpawnY = y
+		SpawnZ = z
+		PillarBobSpeed = frametime - TorchCycleDur
+		if (spawn == S_TORCH_PLAT) { // typo? old code?
+			OldX = parent->x
+			OldY = parent->y
+			OldZ = parent->z
+		}
+		changestate(Torch_Flame_Wait)
+	}
+}
+
+inline sub SetFlameTrans() {
+	if (spawn == S_TORCH_FLAME_PLAT) {
+		interrupter = parent->parent
+		x = interrupter->x + XOffset
+		interrupter = parent->parent
+		y = interrupter->y + YOffset
+		interrupter = parent->parent
+		z = interrupter->z + ZOffset
+	}
+	else {
+		x = SpawnX + XOffset
+		y = SpawnY + YOffset
+		z = SpawnZ + ZOffset
+	}
+}
+
+state Torch_Flame_Wait { // 5
+	statusc 0
+	code () {
+		statusb = FLAG_INVISIBLE
+		do {
+			SetFlameTrans()
+			playanim(0, FLAME)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (frametime - PillarBobSpeed >= TorchCycleDur) {
+				changestateif(Torch_Flame_Active, spawn == S_TORCH_FLAME_PLAT || distance(parent->trans, player, DIST_EXACT | DIST_NO_Y) < ActiveDistance)
+			}
+		}
+	}
+}
+
+state Torch_Flame_Active { // 6
+	statusc 0
+	code () {
+		XOffset += 0.25m
+		ZOffset += 0.5m
+		statusb = 0
+		scalex = 0
+		scaley = 0
+		setanim(FLAME)
+		if (TorchPlaySound) {
+			soundpitch(2.8 + rand(0.8))
+			soundplay([TflsA], 0.2V)
+		}
+		save (YOffset) {
+			do (var i = 0) {
+				TorchOldSize = scaley
+				scalex += 0.1S
+				scaley = scalex
+				YOffset += scaley / 16 * 400 / 2 - TorchOldSize / 16 * 400 / 2
+				playframe(0 + i)
+				i += 1.0
+			} while (i < 3.0)
+			do (var i = 6.0) {
+				i -= 1.0
+				TorchOldSize = scaley
+				scalex -= 0.05S
+				scaley = scalex
+				YOffset += scaley / 16 * 400 / 2 - TorchOldSize / 16 * 400 / 2
+				playframe(0 + i)
+			} while (i)
+		}
+		playanim(0, FLAME, 0.6s)
+		statusb = FLAG_COLLIDABLE | FLAG_INVISIBLE
+		XOffset -= 0.25m
+		ZOffset -= 0.5m
+		changestate(Torch_Flame_Lit)
+	}
+	trans {
+		SetFlameTrans()
+	}
+}
+
+state Torch_Flame_Lit { // 7
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE
+		animframe = 0 + rand(32.0)
+		setanim(FLAME)
+		FlipRand()
+		save (YOffset) {
+			scalex = 0
+			do (var i = 0) {
+				if (scalex < 1.0S) {
+					TorchOldSize = scaley
+					scalex += 0.1S
+					scaley = scalex*2
+					YOffset += scaley / 16 * 400 / 2 - TorchOldSize / 16 * 400 / 2
+				}
+				playframe(0 + ((animframe - 0) + 1.0) % 32.0)
+				i += 1.0
+			} while (i < 64.0)
+			if (TorchPlaySound) {
+				soundfadet(0.2s, voice)
+				soundfadev(0, voice, 3)
+			}
+			statusb &= ~FLAG_COLLIDABLE
+			do (var i = 16.0) {
+				i -= 1.0
+				if (scalex > 0) {
+					TorchOldSize = scaley
+					scalex -= 0.2S
+					scaley = scalex
+					YOffset += scaley / 16 * 400 / 2 - TorchOldSize / 16 * 400 / 2
+				}
+				playframe(0 + ((animframe - 0) + 1.0) % 32.0)
+			} while (i)
+		}
+		PillarBobSpeed = frametime
+		changestate(Torch_Flame_Wait)
+	}
+	trans {
+		once {
+			if (TorchPlaySound) {
+				SoundPlayDefault([tfswA], 0.7V + rand(0.2V))
+			}
+		}
+		SetFlameTrans()
+		unless (STATUS_FIRSTFRAME) {
+			if (frametime - statetime >= 0.15s) {
+				if (collider) {
+					interrupter = DOCTOR
+					sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
+					sendeventif(EventBurn, collider, v0 <= 2.0, 100.0)
+				}
+			}
+		}
+	}
+}
+
+/* state Ruins_Flare { // 8
+	code (off) {
+		z -= off
+		y += 1m
+		sleepanim(0, FLARE)
+	}
+	trans {
+		scalex = 3*parent->scalex
+		scaley = 1.875*parent->scaley >> 8
+	}
+} */
+
+state Spear_Spawner { // 8
+	code () {
+		if (1.0 != vecz) {
+			if (vecx) RuinsCycle = vecx >> 8;
+			     else RuinsCycle = 2s;
+			if (vecy) RuinsCycleOffset = vecy >> 8;
+			     else RuinsCycleOffset = rand(0.25s);
+			ActiveDistance = spawn == S_SPEAR_RIGHT
+			statusb = FLAG_INVISIBLE
+			playanim(0, RUINS_SPEAR, 2s)
+			sleepanim(0, RUINS_SPEAR)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (!time(RuinsCycle, RuinsCycleOffset)) {
+				spawn(RuiOC, S_SPEAR)
+			}
+		}
+	}
+}
+
+state Spear_Spawn { // 9
+	code () {
+		statusb = FLAG_COLLIDABLE
+		if (parent->ActiveDistance) {
+			scalex = -scalex
+		}
+		sounddecay(0.25)
+		soundpitch(2.08 + rand(0.4))
+		soundfadet(0.3s)
+		soundfadev(0, 0, 2)
+		soundplay([SLwiA], 0.15V)
+		changestate(Spear_Attack)
+	}
+}
+
+state Spear_Attack { // 10
+	stateflag 0x81
+	code () {
+		playframesback(RUINS_SPEAR, 2.0, 12.0, 3.0)
+		playanim(2, RUINS_SPEAR)
+		playanim(1, RUINS_SPEAR)
+		playanim(2, RUINS_SPEAR)
+		playanim(1, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playanim(0, RUINS_SPEAR)
+		playframes(3.0, 12.0)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Crusher_Spawn { // 11
+	code () {
+		if (vecx) RuinsCycle = vecx >> 8;
+			 else RuinsCycle = 3s;
+		if (vecy) RuinsCycleOffset = vecy >> 8;
+			 else RuinsCycleOffset = 0;
+		if (vecz) RuinsCycleDur = vecz >> 8;
+			 else RuinsCycleDur = 1s;
+		statusb = 0x80000000 | FLAG_SOLID_SIDES | FLAG_COLLIDABLE
+		if (spawn == S_CRUSHER_RIGHT) {
+			setanim(RUINS_CRUSHER_RIGHT)
+		}
+		else {
+			setanim(RUINS_CRUSHER_LEFT)
+		}
+		zindex = -20
+		changestate(Crusher_Open)
+	}
+}
+
+state Crusher_Open { // 12
+	statusc 0
+	code () {
+		sleepframe(0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Crusher_Smash, !time(RuinsCycle, RuinsCycleOffset) && player->z > z - 0.75m)
+		}
+	}
+}
+
+state Crusher_Smash { // 13
+	statusc 0
+	code () {
+		if (spawn == S_CRUSHER_RIGHT) {
+			SoundPlayDefault([CslsA], 0.3V)
+		}
+		pathprog = 0
+		do {
+			OldX = x
+			OldY = y
+			OldZ = z
+			calcpath()
+			playframe(0)
+			pathprog += spd(10.5)
+		} while (pathprog <= pathlen - 1.0)
+		calcpath(pathlen - 1.0)
+		if (spawn == S_CRUSHER_RIGHT) {
+			soundfadet(0.08s, voice)
+			soundfadev(0, voice, 3)
+		}
+		if (spawn == S_CRUSHER_RIGHT) {
+			SoundPlayDefault([CsmsA], 0.75V)
+			if (!SHAKEY) {
+				SHAKEY = 0 > 10.0 - abs((z+1m) - player->z) / 400 ? 0 : 10.0 - abs((z+1m) - player->z) / 400
+			}
+		}
+		WaitFrame(0, RuinsCycleDur)
+		if (spawn == S_CRUSHER_RIGHT) {
+			SoundPlayDefault([CslsA], 0.15V)
+		}
+		pathprog = -pathlen + 1.0
+		do {
+			OldX = x
+			OldY = y
+			OldZ = z
+			calcpath(-pathprog)
+			playframe(0)
+			pathprog += spd(10.5)/2
+		} while (pathprog <= 0)
+		if (spawn == S_CRUSHER_RIGHT) {
+			soundfadet(0.08s, voice)
+			soundfadev(0, voice, 3)
+		}
+		changestate(Crusher_Open)
+	}
+	trans {
+		if (collider && abs(collider->z - z) < 0.75m) {
+			if (pathprog > 0 && !(collider->stateflag \ 0x20) && player->y < y + 2m) {
+				CarryColliderNoGround(OldX, OldY, OldZ)
+				if (pathlen - pathprog < 1.0) {
+					sendevent(EventSquash, collider, 100.0)
+					if (eventaccepted) {
+						interrupter = DOCTOR
+						sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
+						if (v0 > 0) {
+							collider->z = z + 1m
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+inline sub SpawnBats() {
+	var bat_delay = 0
+	do (var i = 0) {
+		spawn(RuiOC, S_BAT, 1, bat_delay, i)
+		bat_delay += 1s/6 + rand(0.1s)
+		i += 1.0
+	} while (i < SpawnCount)
+}
+
+state Bat_Spawner { // 14
+	code () {
+		if (vecx) SpawnCount = vecx;
+		     else SpawnCount = 5.0;
+		if (vecy) PillarOrbitDist = vecy >> 8;
+		     else PillarOrbitDist = 10s;
+		if (vecz) PillarRotSpeed = vecz >> 8;
+		     else PillarRotSpeed = 2s;
+		if (entitygetstate(2)) {
+			mem11 = 1
+		}
+		else {
+			mem11 = 0
+		}
+		PillarOrbitSpeed = (frametime-PillarOrbitDist) + PillarRotSpeed
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, BAT_FLY)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			mem11 += 1
+			entitysetstate(1)
+			if (mem11 == 2) {
+				cascadeevent(Event14, self)
+				accevcstate(Bat_Kill)
+			}
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (frametime - PillarOrbitSpeed >= PillarOrbitDist && (spawn != S_BAT_SPAWNER_3D || player->z > z + 3m)) {
+				SpawnBats()
+				PillarOrbitSpeed = frametime
+			}
+		}
+	}
+}
+
+state Bat_Kill { // 15
+	stateflag 0
+	statusc 0
+	code () {
+		playframe()
+		KillEntity()
+	}
+}
+
+state Bat_Spawn { // 16
+	code (wait, idx) {
+		CopyParentPath()
+		pathprog = 0
+		setanim(BAT_FLY, rand(14.0))
+		vecx = x
+		vecy = y
+		vecz = z
+		WaitFrame(wait)
+		if (idx == 0) {
+			sounddecay(0.625)
+			soundpitch(3.7)
+			sounddelay(0.5s)
+			soundplay([BfssA], 0.4V + rand(0.2V))
+		}
+		else {
+			voice = 0
+		}
+		trotx = 180deg
+		yzapproach = 180deg
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000
+		changestate(Bat_Fly)
+	}
+	event (e, a) {
+		accevcstate(Bat_To_Fruit, e == Event14)
+		accevcstate(Bat_Fling, e == EventSpinHit || e == EventHitInvincible)
+	}
+}
+
+state Bat_To_Fruit { // 17
+	stateflag 0x10
+	statusc 0
+	code () {
+		z = parent->z
+		spawn2(FruiC, FruiC_S_FRUIT_HOP, 1, 76.0, 0)
+		playframe()
+	}
+}
+
+state Bat_Fly { // 18
+	stateflag 0x81
+	code () {
+		XOffset = 0
+		vecx = 0
+		YOffset = 0
+		vecy = 0
+		ZOffset = 0
+		vecz = 0
+		pathprog = 0
+		do {
+			calcpath()
+			if (parent->spawn == S_BAT_SPAWNER_2D) {
+				if (!rand(16)) {
+					vecy = rand(1.5m)
+				}
+				YOffset = seek(YOffset, vecy, spd(0.75m))
+				y += YOffset
+			}
+			else {
+				if (!rand(16)) {
+					vecx = randi(-3m, 3m)
+					vecy = rand(1.5m)
+				}
+				XOffset = seek(XOffset, vecx, spd(0.75m))
+				YOffset = seek(YOffset, vecy, spd(0.75m))
+				x += XOffset
+				y += YOffset
+			}
+			animframe = (animframe + 1.0) % 14.0
+			playframe()
+			pathprog += spd(4.5)
+		} while (pathprog <= pathlen-1.0)
+		soundsetup(0, voice, 5)
+	}
+	event => state Bat_Spawn
+	trans {
+		sendevent(EventHit, collider, 100.0)
+	}
+}
+
+state Torch_Sound { // 19
+	code () {
+		statusb = FLAG_INVISIBLE
+		//SoundPlayDefault([TlpsA], 0.2V)
+		sleepanim(0, FLAME)
+	}
+}
+
+state Bat_Mother { // 20
+	code () {
+		statusb = FLAG_COLLIDABLE
+		setanim(BAT_MOTHER)
+		do (var i = 0) {
+			playanim(0, BAT_MOTHER)
+			i += 1.0
+		} while (i < 15.0)
+		do {
+			playframes(0, 46.0)
+			playframes(31.0, 46.0)
+			playframes(31.0, 46.0)
+			playframes(31.0, 46.0)
+			playframesback(31.0, 0)
+			playanim(0, BAT_MOTHER, 0.475s)
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventSpinHit || e == EventHitInvincible || e == EventFling) {
+			sendevent(EventCombo, player, 2.0)
+			interrupter = objectget(vecx)
+			sendevent(EventTriggered, interrupter)
+			accevcstate(Bat_Fling)
+		}
+	}
+}
+
+state Bat_Fling { // 21
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingReplaceVoice(h)
+	}
+	trans {
+		EnemyFlingTrans(2m, EventHit)
+	}
+}
+
+

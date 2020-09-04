@@ -1,0 +1,329 @@
+#gool GemsC 58 4
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev 3lt
+#anim GEM [Ge10V] 1 // blue
+#eliflev kq
+#anim GEM [Ge20V] 1 // red
+#eliflev f
+#anim GEM [Ge30V] 1 // orange
+#eliflev j
+#anim GEM [Ge40V] 1 // purple
+#eliflev cT
+#anim GEM [Ge50V] 1 // green
+#eliflev iE
+#anim GEM [Ge60V] 1 // yellow
+#else
+#anim GEM [1000I] 1
+#endif
+
+#anim GEM_CLEAR [Gc10V] 1
+
+#sprite SPARKLE [WillT]
+#tex 0xFFFFFF 0 1 11 9 112 24 32 32
+
+#spawn S_GEM_CLEAR                Gem_Spawn
+#spawn S_GEM_RED                  Gem_Spawn
+#spawn S_GEM_BLUE                 Gem_Spawn
+#spawn S_GEM_GREEN                Gem_Spawn
+#spawn S_GEM_PURPLE               Gem_Spawn
+#spawn S_GEM_YELLOW               Gem_Spawn
+#spawn S_GEM_ORANGE               Gem_Spawn
+#spawn S_7                        __s_7
+#spawn S_GEM_KILL_BLOCK           Gem_Kill_Block
+#spawn S_SPARKLE                  Gem_Sparkle
+
+var
+mem1, mem2, mem3, mem4, GemID, GemColorR, GemColorG, GemColorB, GemColorFactor, mem10,
+mem11, GemOldX, GemOldY, GemOldZ, GemMoveSpeed, ClearGemCount
+
+sub SetColorGemID () {
+	if (spawn == S_GEM_RED) {
+		GemID = 12
+	}
+	else if (spawn == S_GEM_BLUE) {
+		GemID = 21
+	}
+	else if (spawn == S_GEM_GREEN) {
+		GemID = 8
+	}
+	else if (spawn == S_GEM_PURPLE) {
+		GemID = 25
+	}
+	else if (spawn == S_GEM_YELLOW) {
+		GemID = 29
+	}
+	else if (spawn == S_GEM_ORANGE) {
+		GemID = 20
+	}
+	else {
+		GemID = 6
+	}
+}
+
+state Gem_Spawn { // 0
+	code () {
+		zindex = 0
+		SetColorGemID()
+		if (vecy) {
+			GemID = vecy >> 8
+		}
+		if (vecx) {
+			scalex = vecx >> 8
+			scaley = scalex
+			scalez = scalex
+		}
+		if (pathlen > 1.0) {
+			if (vecz) {
+				GemMoveSpeed = vecz >> 8
+			}
+			else {
+				GemMoveSpeed = 10.0
+			}
+		}
+		else {
+			zindex = vecz >> 8
+		}
+		groundy = y
+		vely = rand(0.25m)
+		mem10 = rand(0.3s)
+		GemColorFactor = 0.5
+		vecx = GemColorR * GemColorFactor >> 8
+		vecy = GemColorG * GemColorFactor >> 8
+		vecz = GemColorB * GemColorFactor >> 8
+		colra = vecx
+		colga = vecy
+		colba = vecz
+		colr1 = vecx
+		colg1 = vecy
+		colb1 = vecz
+		colr2 = vecx
+		colg2 = vecy
+		colb2 = vecz
+		colr3 = vecx
+		colg3 = vecy
+		colb3 = vecz
+		if (spawn == S_GEM_CLEAR) {
+			CountClearGems()
+			changestateif(Gem_Active, ClearGemCount >= GemID)
+		}
+		else {
+			if (GemID >= 32) {
+				misc = ITEMPOOL2 & (1 << GemID-32)
+			}
+			else {
+				misc = ITEMPOOL1 & (1 << GemID)
+			}
+			changestateif(Gem_Active, misc)
+		}
+		changestateif(Gem_Active, DEBUG)
+		changestate(Gem_Inactive)
+	}
+}
+
+sub GemInactiveTransLongDist () {
+	var dist = distance(player, 0)
+	if (dist > 7m) {
+		scalex = 0.35S
+	}
+	else if (dist < 5m) {
+		scalex = 0.0S
+	}
+	else {
+		scalex = ((dist - 5m) >> 10) * 7
+	}
+	scalez = scalex
+	scaley = scalex
+	roty += 10deg
+	y = groundy + loopseek(vely, 0.25m, 0.25m / 32)
+}
+
+state Gem_Inactive { // 1
+	code () {
+		scalex = 0.35S
+		scaley = 0.35S
+		scalez = 0.35S
+		if (LEVEL == LEVEL_JungleRollers) {
+			settrans(GemInactiveTransLongDist)
+		}
+		sleepanim(0, GEM)
+	}
+	trans {		
+		var dist = distance(player, 0)
+		if (dist > 5m) {
+			scalex = 0.35S
+		}
+		else if (dist < 3m) {
+			scalex = 0.0S
+		}
+		else {
+			scalex = ((dist - 3m) >> 10) * 7
+		}
+		scalez = scalex
+		scaley = scalex
+		roty += 10deg
+		y = groundy + loopseek(vely, 0.25m, 0.25m / 32)
+	}
+}
+
+inline sub SpawnGemSparkle() {
+	if (!rand(1s) && FRAMETIME < 30) {
+		spawn(GemsC, S_SPARKLE, 1, rand(10) << 8)
+	}
+}
+
+sub GemActiveTransMoveForwards () {
+	roty += 1deg
+	v0 = 0
+	if (player->y > y) {
+		statusb &= ~FLAG_SOLID_SIDES
+		if (collider, collider->statusa \ FLAG_GROUNDLAND, !(collider->statusa \ 0x80)) {
+			GEMTIME = frametime
+			v0 = 1.0
+			pathprog = seek(pathprog, pathlen - 1.0, spd(GemMoveSpeed))
+		}
+	}
+	else {
+		statusb |= FLAG_SOLID_SIDES
+	}
+	if (!v0) {
+		pathprog = seek(pathprog, 0, spd(GemMoveSpeed * 3 / 4))
+	}
+	GemOldX = x
+	GemOldY = y
+	GemOldZ = z
+	calcpath()
+	if (v0) {
+		player->x += x - GemOldX
+		player->y += y - GemOldY
+		player->z += z - GemOldZ
+	}
+	SpawnGemSparkle()
+}
+
+sub GemActiveTransMoveBackwards () {
+	roty += 1deg
+	v0 = 0
+	if (player->y > y) {
+		statusb &= ~FLAG_SOLID_SIDES
+		if (collider, collider->statusa \ FLAG_GROUNDLAND) {
+			GEMTIME = frametime
+			v0 = 1.0
+		}
+	}
+	else {
+		statusb |= FLAG_SOLID_SIDES
+	}
+	GemOldX = x
+	GemOldY = y
+	GemOldZ = z
+	var movespd = spd(GemMoveSpeed)
+	calcpath(sin(loopseek(pathprog, pathlen + movespd + -1.0, movespd), (pathlen + movespd + -1.0) - movespd))
+	if (v0) {
+		player->x += x - GemOldX
+		player->y += y - GemOldY
+		player->z += z - GemOldZ
+	}
+	SpawnGemSparkle()
+}
+
+state Gem_Active { // 2
+	code () {
+		if (pathlen > 1.0) {
+			if (GemMoveSpeed > 0) {
+				settrans(GemActiveTransMoveForwards)
+			}
+			else {
+				GemMoveSpeed = -GemMoveSpeed
+				settrans(GemActiveTransMoveBackwards)
+			}
+		}
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP | FLAG_SOLID_SIDES | FLAG_SOLID_BOTTOM
+		sleepanim(0, GEM)
+	}
+	trans {
+		roty += 1deg
+		y = groundy + sin(loopseek(vely, 100.0, 100.0 / 32), 24800)
+		if (player->y > y) {
+			statusb &= ~FLAG_SOLID_SIDES
+			if (collider, collider->statusa \ FLAG_GROUNDLAND) {
+				GEMTIME = frametime
+			}
+		}
+		else {
+			statusb |= FLAG_SOLID_SIDES
+		}
+		SpawnGemSparkle()
+	}
+}
+
+state Gem_Kill_Block { // 3
+	stateflag 0x801
+	code () {
+		if (vecx) scalex = vecx;
+		if (vecy) scaley = vecy;
+		if (vecz) scalez = vecz;
+		statusb = FLAG_COLLIDABLE
+		sleepanim(0, GEM)
+	}
+	trans {
+		if (frametime - GEMTIME >= 0.5s) {
+			statusb |= FLAG_COLLIDABLE
+		}
+		else {
+			statusb &= ~FLAG_COLLIDABLE
+		}
+		if (collider) {
+			sendeventif(EventFallKill, player, frametime - GEMTIME >= 0.5s && !(ZONEFLAGS & 0x10000), 0)
+		}
+	}
+}
+
+state Gem_Sparkle { // 4
+	code (v) {
+		rotx = 0
+		roty = 0
+		rotz = 0
+		scalex = 0
+		scaley = 0
+		scalez = 0
+		getvert(vtrans, creator, v)
+		playanim(0, SPARKLE, 0.3s)
+	}
+	trans {
+		once {
+			v0 = 0.3
+		}
+		scalex = seek(scalex, v0, 0.3S)
+		scaley = seek(scaley, v0, 0.3S)
+		scalez = seek(scalez, v0, 0.3S)
+		if (frametime - statetime >= 0.2s) {
+			v0 = 0
+		}
+	}
+}
+
+sub CountClearGems () {
+	ClearGemCount = 0
+	if (ITEM_CLEAR_GEM1) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM2) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM3) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM4) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM5) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM6) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM7) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM8) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM9) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM10) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM11) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM12) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM13) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM14) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM15) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM16) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM17) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM18) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM19) ClearGemCount += 1;
+	if (ITEM_CLEAR_GEM20) ClearGemCount += 1;
+}

@@ -1,0 +1,313 @@
+#gool TurtC 19 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#iflev 9
+#anim TURTLE_WALK [Tu19V] 17
+#anim TURTLE_HIDE [Tu29V] 10
+#anim TURTLE_UNHIDE [Tu39V] 7
+#anim TURTLE_SHELL [Tu59V] 22
+#eliflev bcl
+#anim TURTLE_WALK [Tu1bV] 17
+#anim TURTLE_HIDE [Tu2bV] 10
+#anim TURTLE_UNHIDE [Tu3bV] 7
+#anim TURTLE_SHELL [Tu5bV] 22
+#eliflev iq
+#anim TURTLE_WALK [Tu1iV] 17
+#anim TURTLE_HIDE [Tu2iV] 10
+#anim TURTLE_UNHIDE [Tu3iV] 7
+#anim TURTLE_SHELL [Tu5iV] 22
+#eliflev km
+#anim TURTLE_WALK [Tu1kV] 17
+#anim TURTLE_HIDE [Tu2kV] 10
+#anim TURTLE_UNHIDE [Tu3kV] 7
+#anim TURTLE_SHELL [Tu5kV] 22
+#else
+#anim TURTLE_WALK [Tu19V] 17
+#anim TURTLE_HIDE [Tu29V] 10
+#anim TURTLE_UNHIDE [Tu39V] 7
+#anim TURTLE_SHELL [Tu59V] 22
+#endif
+
+#spawn S_TURTLE_PATH_TRACK        Turtle_Spawn
+#spawn S_TURTLE_PATH              Turtle_Spawn
+#spawn S_TURTLE_SHELL             Turtle_Spawn
+#spawn S_TURTLE_WANDER            Turtle_Wander_Spawn
+
+var TurtleWalkDirOff, TurtleCantUnhideTime, TurtleBounceCount, TurtlePathSpeed, TurtleBouncePropulsion, TurtleTrackOffset
+
+event EventJumpedOn      => state Turtle_Shell
+event EventHit           => state Turtle_Fling
+event EventSpinHit       => state Turtle_Fling
+event EventHitInvincible => state Turtle_Fling
+event EventFling         => state Turtle_Fling
+
+#include "ShadC.gooh"
+
+state Turtle_Spawn {
+	statusc 0x10
+	code () {
+		spawn(ShadC, ShadC_S_SHADOW_STATIONARY, 1, 0, 1.6S, 5)
+		density = 60.0
+		if (vecx) {
+			field_61 = vecx
+		}
+		else {
+			field_61 = 1.6m
+		}
+		if (vecy) {
+			TurtleBouncePropulsion = vecy
+		}
+		else {
+			TurtleBouncePropulsion = 12.64912m
+		}
+		if (vecz) {
+			TurtlePathSpeed = vecz * 0.12 >> 8
+		}
+		else {
+			TurtlePathSpeed = 8.7
+		}
+		TurtleWalkDirOff = 0
+		zindex = 25
+		TurtleTrackOffset = 0
+		if (spawn == S_TURTLE_SHELL) {
+			roty = rand(360deg)
+			statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+			changestate(Turtle_Shell)
+		}
+		else if (spawn == S_TURTLE_PATH_TRACK) {
+			statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+			changestate(Turtle_Path)
+		}
+		else if (spawn == S_TURTLE_PATH) {
+			statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
+			changestate(Turtle_Path)
+		}
+		else {
+			statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | 0x2000 | FLAG_SOLID_GROUND | FLAG_PATH_CALCS | FLAG_SOLID_ALL
+			changestate(Turtle_Wander)
+		}
+	}
+}
+
+state Turtle_Wander {
+	stateflag 0x5
+	statusc 0
+	code () {
+		trotx = 180deg
+		yzapproach = 120deg
+		do {
+			playframeslt(TURTLE_WALK, 5.0, 16.0)
+			playframeslt(0, 4.0)
+		} while (1)
+	}
+	trans {
+		troty += loopseek(TurtleWalkDirOff, 4deg, 0.25deg) - 2deg
+		if (abs(degdist(roty, troty)) < 30deg) {
+			if (statusa \ 0x200) {
+				troty -= 100deg + rand(1.8deg)
+			}
+			setvel(0.7m)
+		}
+		else {
+			velx >>= 2
+			velz >>= 2
+		}
+		sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
+	}
+}
+
+state Turtle_Path {
+	stateflag 0x5
+	statusc 0
+	code () {
+		trotx = 180deg
+		yzapproach = 120deg
+		do {
+			playframeslt(TURTLE_WALK, 10.0, 16.0)
+			playframeslt(0, 9.0)
+		} while (1)
+	}
+	trans {
+		if (STATUS_PATH_END) {
+			if (statusa \ 0x800) {
+				trotx = 180deg
+				statusb |= 0x20000000
+				statusa &= ~FLAG_PATH_END
+			}
+		}
+		else {
+			calcpath(loopseek(pathprog, pathlen + spd(TurtlePathSpeed) + -1.0, spd(TurtlePathSpeed)))
+			if (STATUS_PATH_END) {
+				trotx = 720deg
+				statusb &= ~0x20000000
+			}
+			y += 0.25m
+			if (spawn == S_TURTLE_PATH_TRACK) {
+				var path_rot, deg_to_player
+				save (troty, statusa, statusb, x, y, z, pathprog) {
+					statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+					x = player->x
+					y = player->y
+					z = player->z
+					calcpath(0)
+					troty += 90deg
+					setvel(TurtleTrackOffset)
+				}
+				x += velx
+				z += velz
+				path_rot = troty
+				if (abs(TurtleTrackOffset - vecy) > 0.1m) {
+					deg_to_player = degdist(troty, atan2(player->trans))
+					if (deg_to_player < -20deg) {
+						deg_to_player = -20deg
+					}
+					else if (deg_to_player > 20deg) {
+						deg_to_player = 20deg
+					}
+					troty += deg_to_player
+				}
+				TurtleTrackOffset = seek(TurtleTrackOffset, vecy, spd(2m))
+				if (TurtleTrackOffset < -field_61) {
+					troty = path_rot
+					TurtleTrackOffset = -field_61
+				}
+				else if (TurtleTrackOffset > field_61) {
+					troty = path_rot
+					TurtleTrackOffset = field_61
+				}
+			}
+			troty += loopseek(TurtleWalkDirOff, 4deg, 0.25deg) - 2deg
+		}
+		if (STATUS_PLAYER_D_COLLIDER) {
+			sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+		}
+	}
+}
+
+state Turtle_Shell {
+	stateflag 0x2
+	statusc 0x2
+	code (h) {
+		if (spawn == S_TURTLE_SHELL) {
+			setanim(TURTLE_SHELL)
+		}
+		else {
+			sendevent(EventCombo, player, h)
+			velx = 0
+			vely = 0
+			velz = 0
+			trotx = 180deg
+			soundpitch(4.0)
+			sounddelay(0.08s)
+			soundplay([Tfl9A], 0.5V)
+			playframes(TURTLE_HIDE, 0, 9.0)
+			playframes(TURTLE_SHELL, 0, 21.0)
+			TurtleCantUnhideTime = frametime
+		}
+		do {
+			do {
+				do {
+					do {
+						do {
+							do {
+							playframe(21.0, 2s)
+							playframe(21.0, 1.5s)
+							} while (spawn == S_TURTLE_SHELL)
+						} until (frametime - TurtleCantUnhideTime >= 3s)
+						troty += 15deg
+						playframe(21.0, 0.8s)
+					} until (frametime - TurtleCantUnhideTime >= 3s)
+					troty -= 15deg
+					playframe(21.0, 0.8s)
+				} until (frametime - TurtleCantUnhideTime >= 3s)
+				troty += 15deg
+				playframe(21.0, 0.4s)
+				trotx = 180deg
+				troty -= 15deg
+				playframe(21.0, 0.4s)
+			} until (frametime - TurtleCantUnhideTime >= 3s)
+			troty += 30deg
+			playframe(21.0, 0.2s)
+			troty -= 30deg
+			playframe(21.0, 0.2s)
+		} until (frametime - TurtleCantUnhideTime >= 3s)
+		playframesback(TURTLE_SHELL, 21.0, 0)
+		soundpitch(4.0)
+		soundplay([Tup9A], 0.5V)
+		playframesback(TURTLE_UNHIDE, 6.0, 0)
+		scalex = 1.0S
+		scaley = 1.0S
+		scalez = 1.0S
+		zindex = 25
+		statusb &= ~0x400000
+		if (spawn == S_TURTLE_WANDER) {
+			changestate(Turtle_Wander)
+		}
+		else {
+			changestate(Turtle_Path)
+		}
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			rejev()
+			soundpitch(4.0)
+			soundplay([Tbo9A], 0.5V)
+			sendevent(Event21, interrupter, TurtleBouncePropulsion)
+			TurtleCantUnhideTime = frametime
+			TurtleBounceCount += 1.0
+			sendevent(EventStatus, interrupter, 8.0)
+		}
+	}
+	trans {
+		once {
+			statusb |= 0x400000
+			zindex = 15
+			TurtleBounceCount = 0
+		}
+		if (player->statusa \ FLAG_GROUNDLAND || player->statusa \ 0x80) {
+			TurtleBounceCount = 0
+		}
+		if (collider) {
+			TurtleCantUnhideTime = frametime
+		}
+		if (collider && player->y > y + 0.25m) {
+			if (scaley > 0.8S) {
+				scaley -= 0.05S
+				scalex += 0.05S
+				scalez += 0.05S
+			}
+		}
+		else {
+			if (scaley < 1.0S) {
+				scaley += 0.05S
+				scalex -= 0.05S
+				scalez -= 0.05S
+			}
+		}
+	}
+}
+
+state Turtle_Fling {
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingCombo(h)
+		EnemyFlingSetDir()
+		if (LEVEL == LEVEL_RoadToNowhere || LEVEL == LEVEL_TheHighRoad) {
+			if (troty == 180deg) {
+				troty += !rand(2) ? 45deg + rand(0) : -(45deg + rand(0))
+			}
+		}
+		vely = 3m
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		while (scalex > 0 && scaley > 0 && scalez > 0) {
+			playframe()
+		}
+	}
+	trans {
+		EnemyFlingTrans()
+	}
+}
+

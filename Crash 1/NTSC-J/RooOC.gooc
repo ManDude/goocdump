@@ -1,0 +1,325 @@
+#gool RooOC 39 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim BIG_TNT [BT2nV] 1
+#anim BOX_EXPLODE [BE10V] 14
+
+#sprite TNT_EXPLOSION [WillT]
+#tex 0x9C9C9C 1 1 0 3 0 4 32 16
+#tex 0x9C9C9C 1 1 0 3 8 4 32 16
+#tex 0x9C9C9C 1 1 0 3 16 4 32 16
+#tex 0x9C9C9C 1 1 0 3 24 4 32 16
+#tex 0x9C9C9C 1 1 0 3 32 4 32 16
+#tex 0x9C9C9C 1 1 0 3 40 4 32 16
+#tex 0x9C9C9C 1 1 0 3 48 4 32 16
+#tex 0x9C9C9C 1 1 0 3 56 20 32 16
+#tex 0x9C9C9C 0 1 5 8 96 24 32 32
+#tex 0x888888 0 1 5 8 96 24 32 32
+#tex 0x747474 0 1 5 8 96 24 32 32
+#tex 0x606060 0 1 5 8 96 24 32 32
+#tex 0x4C4C4C 0 1 5 8 96 24 32 32
+#tex 0x383838 0 1 5 8 96 24 32 32
+#tex 0x242424 0 1 5 8 96 24 32 32
+#tex 0x1A1A1A 0 1 5 8 96 24 32 32
+#tex 0x101010 0 1 5 8 96 24 32 32
+#tex 0x060606 0 1 5 8 96 24 32 32
+
+#spawn S_BIG_TNT_SPAWNER          Big_TNT_Spawner
+#spawn S_BIG_TNT                  Big_TNT_Spawn
+#spawn S_BIG_TNT_PARTICLE         Big_TNT_Particle
+#spawn S_ROO_AMBIENCE             Roo_Ambience
+#spawn S_ROO_WATERFALL            Roo_Waterfall
+
+var RooObjCycle, RooObjCycleOffset, BigTNTStopZ, mem4, BigTNTWaveY, WaterfallVoice, BigTNTSpawnerFirstTNT
+
+state Roo_Ambience {
+	code () {
+		loadfile([RooOC])
+		statusb = FLAG_INVISIBLE | FLAG_2D
+		sleepanim(0, 0)
+	}
+	event (e, a) {
+		if (e == EventDespawn) {
+			voice = WaterfallVoice
+			soundsetup(0, voice, 5)
+			voice = WaterfallVoice
+			soundfadet(0.5s, voice)
+			soundfadev(0, voice, 2)
+		}
+	}
+}
+
+state Roo_Waterfall {
+	code () {
+		statusb = FLAG_INVISIBLE | FLAG_2D
+		soundpitch(4.0)
+		soundfadet(4s)
+		soundfadev(0.15V, 0, 2)
+		soundplay([WflfA], 0)
+		WaterfallVoice = voice
+		sleepanim(0, 0)
+	}
+}
+
+state Big_TNT_Spawner {
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, 0)
+	}
+	trans {
+		once {
+			BigTNTSpawnerFirstTNT = 1
+			RooObjCycle = 13.2s
+			if (x < 0) {
+				RooObjCycleOffset = (RooObjCycle - time(RooObjCycle)) % RooObjCycle
+			}
+			else {
+				RooObjCycleOffset = RooObjCycle - time(RooObjCycle) + -(RooObjCycle / 2)
+			}
+		}
+		if (!time(RooObjCycle, RooObjCycleOffset)) {
+			if (BigTNTSpawnerFirstTNT == 1) {
+				spawn(RooOC, S_BIG_TNT, 1, 0)
+				BigTNTSpawnerFirstTNT = 0
+			}
+			else {
+				spawn(RooOC, S_BIG_TNT, 1, 1)
+			}
+		}
+	}
+}
+
+state Big_TNT_Spawn {
+	code (splash) {
+		zindex = 35
+		yzapproach = 360deg
+		trotx = 50deg
+		troty = 0
+		CopyParentPath()
+		pathprog = 0
+		BigTNTWaveY = rand(0.1m)
+		SetScale(1.0S)
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL
+		RooObjCycle = 0.5s
+		RooObjCycleOffset = rand(0)
+		BigTNTStopZ = -8.94m
+		if (splash) {
+			sounddelay(1s/3)
+			SoundPlayDefault([BSpnA], 0.9V + rand(0.45V))
+		}
+		changestate(Big_TNT_Move)
+	}
+}
+
+inline sub PositionBigTNT(rate) {
+	calcpath()
+	x += 0.55m
+	z += 0.55m
+	y -= loopseek(BigTNTWaveY, 0.3m, rate) + -0.05m
+}
+
+inline sub PositionBigTNT() {
+	PositionBigTNT(0.3m/2s)
+}
+
+inline sub AdjustZMod() {
+	if (collider) {
+		zindex = 15
+	}
+	else {
+		zindex = 35
+	}
+}
+
+state Big_TNT_Move {
+	stateflag 0x81
+	statusc 0
+	code () {
+		troty = 0
+		do {
+			pathprog += 0.07
+			PositionBigTNT()
+			playanim(0, BIG_TNT)
+		} until (STATUS_PATH_END)
+	}
+	event (e, a) {
+		accevcstate(Big_TNT_Explode, e == EventHit || e == EventSpinHit)
+		rejevret(e == EventJumpedOn && BigTNTStopZ == 25m)
+		rejevcstate(Big_TNT_Countdown, e == EventJumpedOn)
+	}
+	trans {
+		changestateif(Big_TNT_Stop, z >= BigTNTStopZ)
+		AdjustZMod()
+	}
+}
+
+inline sub BigTNTWaveRotate(rot) {
+	if (!time(0.4s)) {
+		troty = randi(-rot, rot)
+	}
+}
+
+state Big_TNT_Stop {
+	stateflag 0x81
+	statusc 0
+	code () {
+		playanim(0, BIG_TNT, 2s)
+		playanim(0, BIG_TNT, 2s)
+		if (BigTNTStopZ == -8.94m) {
+			BigTNTStopZ = -3.825m
+		}
+		else if (BigTNTStopZ == -3.825m) {
+			BigTNTStopZ = 1m
+		}
+		else if (BigTNTStopZ == 1m) {
+			BigTNTStopZ = 25m
+		}
+		changestate(Big_TNT_Move)
+	}
+	event => state Big_TNT_Move
+	trans {
+		PositionBigTNT()
+		BigTNTWaveRotate(10deg)
+		AdjustZMod()
+	}
+}
+
+inline sub TNTFlashColor() {
+	colra = 2.0
+	colga = 0x96
+	colba = 0x96
+	colr1 = 2.0
+	colg1 = 0x96
+	colb1 = 0x96
+	colr2 = 2.0
+	colg2 = 0x96
+	colb2 = 0x96
+	colr3 = 2.0
+	colg3 = 0x96
+	colb3 = 0x96
+}
+
+state Big_TNT_Countdown {
+	stateflag 0x3
+	code () {
+		soundpitch(4.0)
+		soundplay([ld10A], 0.35V)
+		while (z < BigTNTStopZ || RooObjCycle > 0) {
+			if (z < BigTNTStopZ) {
+				pathprog += 0.07
+				PositionBigTNT(0.04m)
+			}
+			playanim(0, BIG_TNT)
+		}
+		changestate(Big_TNT_Explode)
+	}
+	trans {
+		if (STATUS_FIRSTFRAME || frametime - statetime >= RooObjCycle) {
+			soundpitch(4.0)
+			soundplay([Ttb0A], 0.8V)
+			TNTFlashColor()
+			if (z >= BigTNTStopZ) {
+				RooObjCycle = RooObjCycle * 59 / 64
+			}
+			statetime = frametime
+		}
+		else {
+			SetDefaultColor()
+		}
+		BigTNTWaveRotate(20deg)
+		AdjustZMod()
+	}
+}
+
+state Big_TNT_Explode {
+	code () {
+		soundpitch(4.0)
+		soundplay([tnt0A], 1.0V)
+		soundsetup(0, voice, 5)
+		statusb &= ~FLAG_COLLIDABLE
+		playanim(0, BOX_EXPLODE)
+		spawn(RooOC, S_BIG_TNT_PARTICLE, 3, 1)
+		spawn(RooOC, S_BIG_TNT_PARTICLE, 5, 0)
+		playanim(1, BOX_EXPLODE)
+		spawn(RooOC, S_BIG_TNT_PARTICLE, 2, 1)
+		spawn(RooOC, S_BIG_TNT_PARTICLE, 3, 0)
+		playanim(2, BOX_EXPLODE)
+		spawn(RooOC, S_BIG_TNT_PARTICLE, 1, 1)
+		playframeslt(3.0, 13.0)
+	}
+	trans {
+		creator = GLOBALOBJ
+		if (creator) {
+			sendeventif(EventHit, creator, abs(x - creator->x) < 4.5m && abs(z - creator->z) < 2.1m-1, 1)
+		}
+		if (frametime - statetime >= 1s/6) {
+			sendeventif(EventExplode, player, distance(player, DIST_EXACT) < 4m, 100.0)
+		}
+	}
+}
+
+state Big_TNT_Particle {
+	stateflag 0x80
+	code (t) {
+		movetolist(3.0)
+		zindex = 50
+		rotx = 0
+		roty = 0
+		rotz = rand(360deg)
+		y += 0.75m
+		statusb = FLAG_PHYSICS_ENGINE
+		if (t == 0) { // small particle
+			scalex = 0.5S
+			scaley = 0.5S
+			scalez = 0.5S
+			animframe = 0
+			if (!rand(2)) {
+				velx = 10m + rand(5m)
+			}
+			else {
+				velx = -(10m + rand(5m))
+			}
+			vely = 0 + rand(10m)
+			if (!rand(2)) {
+				velz = 10m + rand(5m)
+			}
+			else {
+				velz = -(10m + rand(5m))
+			}
+			playframes(TNT_EXPLOSION, 0, 17.0)
+		}
+		else if (t == 1) { // big explosion
+			scalex = 2.0S
+			scaley = 2.0S
+			scalez = 2.0S
+			x += randi(-0.5m, 0.5m)
+			z += randi(-0.5m, 0.5m)
+			animframe = rand(3) << 8
+			if (!rand(2)) {
+				velx = 0 + rand(2m)
+			}
+			else {
+				velx = -(0 + rand(2m))
+			}
+			vely = 2m + rand(5m)
+			if (!rand(2)) {
+				velz = 0 + rand(2m)
+			}
+			else {
+				velz = -(0 + rand(2m))
+			}
+			setanim(TNT_EXPLOSION)
+			while (animframe < 17.0) {
+				playframe()
+				animframe += 1.0
+			}
+		}
+	}
+	trans {
+		rotz += 10deg
+		scalex += 7.2deg
+		scaley += 7.2deg
+	}
+}
+

@@ -1,0 +1,537 @@
+#gool IsldC 59 1
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite PLACEHOLDER [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#anim WILLY_WALK [WiWaV] 10
+#anim WILLY_STAND [WiS1V] 13
+
+#font FONT [Fon0T]
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 //  
+#char 0x808080 0 0 1 0 80 4 16 16 400 0 // !
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // "
+#char 0x808080 1 0 0 1 24 4 32 16 400 0 // #
+#char 0x808080 0 0 1 0 90 20 16 16 400 0 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // %
+#char 0x282828 0 2 2 0 92 24 16 16 400 0 // &
+#char 0x808080 0 0 1 0 90 8 16 16 400 0 // '
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // (
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // )
+#char 0x808080 1 0 0 1 16 4 32 16 400 0 // *
+#char 0x808080 1 0 0 1 32 4 32 16 400 0 // +
+#char 0x808080 0 0 1 0 90 4 16 16 400 0 // ,
+#char 0x808080 0 0 1 0 90 16 16 16 400 0 // -
+#char 0x808080 0 0 1 0 90 12 16 16 400 0 // .
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // /
+#char 0x808080 0 0 1 0 68 4 16 16 400 0 // 0
+#char 0x808080 0 0 1 0 70 4 16 16 400 0 // 1
+#char 0x808080 0 0 1 0 72 4 16 16 400 0 // 2
+#char 0x808080 0 0 1 0 74 4 16 16 400 0 // 3
+#char 0x808080 0 0 1 0 76 4 16 16 400 0 // 4
+#char 0x808080 0 0 1 0 78 12 16 16 400 0 // 5
+#char 0x808080 0 0 1 0 78 8 16 16 400 0 // 6
+#char 0x808080 0 0 1 0 78 4 16 16 400 0 // 7
+#char 0x808080 0 0 1 0 80 12 16 16 400 0 // 8
+#char 0x808080 0 0 1 0 80 8 16 16 400 0 // 9
+#char 0x808080 0 0 1 0 92 28 16 16 400 0 // :
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // ;
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // <
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // =
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // >
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // ?
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // @
+#char 0x808080 0 0 1 0 82 12 16 16 400 0 // A
+#char 0x808080 0 0 1 0 82 8 16 16 400 0 // B
+#char 0x808080 0 0 1 0 82 4 16 16 400 0 // C
+#char 0x808080 0 0 1 0 84 28 16 16 400 0 // D
+#char 0x808080 0 0 1 0 84 24 16 16 400 0 // E
+#char 0x808080 0 0 1 0 84 20 16 16 400 0 // F
+#char 0x808080 0 0 1 0 84 16 16 16 400 0 // G
+#char 0x808080 0 0 1 0 84 12 16 16 400 0 // H
+#char 0x808080 0 0 1 0 84 8 16 16 400 0 // I
+#char 0x808080 0 0 1 0 84 4 16 16 400 0 // J
+#char 0x808080 0 0 1 0 86 28 16 16 400 0 // K
+#char 0x808080 0 0 1 0 86 24 16 16 400 0 // L
+#char 0x808080 0 0 1 0 86 20 16 16 400 0 // M
+#char 0x808080 0 0 1 0 86 16 16 16 400 0 // N
+#char 0x808080 0 0 1 0 86 12 16 16 400 0 // O
+#char 0x808080 0 0 1 0 86 8 16 16 400 0 // P
+#char 0x808080 0 0 1 0 86 4 16 16 400 0 // Q
+#char 0x808080 0 0 1 0 88 28 16 16 400 0 // R
+#char 0x808080 0 0 1 0 88 24 16 16 400 0 // S
+#char 0x808080 0 0 1 0 88 20 16 16 400 0 // T
+#char 0x808080 0 0 1 0 88 16 16 16 400 0 // U
+#char 0x808080 0 0 1 0 88 12 16 16 400 0 // V
+#char 0x808080 0 0 1 0 88 8 16 16 400 0 // W
+#char 0x808080 0 0 1 0 88 4 16 16 400 0 // X
+#char 0x808080 0 0 1 0 90 28 16 16 400 0 // Y
+#char 0x808080 0 0 1 0 90 24 16 16 400 0 // Z
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // [
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // \
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // ]
+#char 0x808080 1 0 0 1 40 4 32 16 400 0 // ^
+#char 0x000000 0 0 0 0 0 0 4 4 400 400 // _
+
+#text TEXT FONT [1014I]
+"めざめの　ビーチ" // nsanity beach
+"えんばんいわの　ジャングル" // jungle rollers
+"のぼれ！　クラッシュ" // great gate
+"おおいわ　ゴロゴロ" // boulders
+"さかなに　きをつけろ" // upstream
+"ふとっちょの　パプパプ" // papu papu
+"えんばんいわの　はて" // rolling stones
+"イノシシ　ダッシュ！" // hog wild
+"とりでの　てっぺんへ" // native fortress
+"じょうりゅうを　めざせ" // up the creek
+"いかれた　リパールー" // roo
+"とかげで　だいジャンプ" // the lost city
+"こだいの　しんでん" // temple ruins
+"きりの　つりばしで" // road to nowhere
+"また　おおいわだ！" // boulder dash
+"あらしの　こじょう" // slippery climb
+"コアラコングは　ちからもち" // kong
+"きかいか　けいかく" // heavy machinery
+"コルテックスの　はつでんしょ" // cortex power
+"はつでんしつ　しんにゅう" // generator room
+"ドラムかん　ステップ" // toxic waste
+"クールな　ピンストライプ" // pinstripe
+"カメカメ　ジャンプ" // high road
+"ゆうやけの　はいきょ" // sunset vista
+"くらやみで　ドッキリ" // lights out
+"しんでんの　おくふかく" // jaws of darkness
+"きかいかは　すすむ" // castle machinery
+"かがくの　ニトラス　ブリオ" // brio
+"ビリビリ　けんきゅういん" // the lab
+"しろダイヤの　いきさきは？" // great hall
+"コルテックスと　いっきうち" // cortex
+"ふかい　くらやみの　なかで" // fumbling in the dark
+"イノシシ　チャレンジ" // whole hog
+
+#spawn S_ISLAND_TRAVELER          Island_Traveler_Spawn
+#spawn S_1                        __s_1
+#spawn S_ISLAND_PATH              Island_Path
+#spawn S_ISLAND_TEXT              Island_Text
+
+var mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10,
+IslandCamRotOffset, IslandCamRot, IslandCanRotate, IslandCurrentPath,
+IslandTargetPath, IslandTargetPoint, IslandProgress, IslandLevel, IslandCanMove,
+IslandDirections, IslandForceProg, IslandEndOfPath, IslandTextFrame, IslandItem2, IslandTurnOffset
+
+#include "GamOC.gooh"
+
+sub SetIslandPath (path_id) {
+	if (IslandTargetPath != IslandCurrentPath) {
+		interrupter = objectget(path_id << 8)
+		if (interrupter) {
+			CopyInterrupterPath()
+			IslandTargetPath = path_id
+			if (IslandCurrentPath == 31) {
+				IslandTargetPoint = 48.0
+				pathprog = IslandTargetPoint
+			}
+			else if (IslandCurrentPath == 21) {
+				IslandTargetPoint = 124.0
+				pathprog = IslandTargetPoint
+			}
+			else if (IslandCurrentPath == -1) {
+				pathprog = IslandTargetPoint
+			}
+			else if (IslandEndOfPath) {
+				pathprog = pathlen - 1.0
+			}
+			else {
+				pathprog = 0
+			}
+			IslandCurrentPath = IslandTargetPath
+		}
+	}
+}
+
+inline sub MapLevelParams(path_id, level, map_point, map_dirs, cam_rot, text_frame) {
+	IslandTargetPath = path_id
+	IslandLevel = level
+	IslandTargetPoint = map_point
+	IslandDirections = map_dirs
+	IslandCamRot = cam_rot
+	IslandTextFrame = text_frame
+}
+
+sub MapSetLevelParams (lev) {
+	if (lev == 1)       MapLevelParams(10, LEVEL_NSanityBeach,         0,   0,   65deg, 0);
+	else if (lev == 2)  MapLevelParams(10, LEVEL_JungleRollers,     16.0,   0,   98deg, 1.0);
+	else if (lev == 3)  MapLevelParams(10, LEVEL_TheGreatGate,      24.0,   0,  122deg, 2.0);
+	else if (lev == 4)  MapLevelParams(10, LEVEL_Boulders,          40.0,   0,  160deg, 3.0);
+	else if (lev == 5)  MapLevelParams(10, LEVEL_Upstream,          52.0,   0,  194deg, 4.0);
+	else if (lev == 6)  MapLevelParams(10, LEVEL_PapuPapu,          68.0,   0,  213deg, 5.0);
+	else if (lev == 7)  MapLevelParams(10, LEVEL_RollingStones,     76.0,   0, -113deg, 6.0);
+	else if (lev == 8)  MapLevelParams(10, LEVEL_HogWild,           88.0,   0,  -38deg, 7.0);
+	else if (lev == 9)  MapLevelParams(10, LEVEL_NativeFortress,   104.0,   0,  -14deg, 8.0);
+	else if (lev == 10) MapLevelParams(20, LEVEL_UpTheCreek,           0, 1.0,   46deg, 9.0);
+	else if (lev == 11) MapLevelParams(20, LEVEL_RipperRoo,         24.0, 1.0,   46deg, 10.0);
+	else if (lev == 12) MapLevelParams(20, LEVEL_TheLostCity,       60.0, 1.0,   11deg, 11.0);
+	else if (lev == 13) MapLevelParams(20, LEVEL_TempleRuins,       80.0, 1.0,  -75deg, 12.0);
+	else if (lev == 14) MapLevelParams(20, LEVEL_RoadToNowhere,    112.0, 1.0, -137deg, 13.0);
+	else if (lev == 15) MapLevelParams(20, LEVEL_BoulderDash,      124.0, 3.0, -164deg, 14.0);
+	else if (lev == 16) MapLevelParams(20, LEVEL_SlipperyClimb,    140.0, 1.0, -193deg, 15.0);
+	else if (lev == 17) MapLevelParams(20, LEVEL_KoalaKong,        160.0, 2.0,  116deg, 16.0);
+	else if (lev == 18) MapLevelParams(30, LEVEL_HeavyMachinery,       0,   0,  129deg, 17.0);
+	else if (lev == 19) MapLevelParams(30, LEVEL_CortexPower,        4.0,   0,  146deg, 18.0);
+	else if (lev == 20) MapLevelParams(30, LEVEL_GeneratorRoom,      8.0,   0,  158deg, 19.0);
+	else if (lev == 21) MapLevelParams(30, LEVEL_ToxicWaste,        16.0,   0,  161deg, 20.0);
+	else if (lev == 22) MapLevelParams(30, LEVEL_Pinstripe,         20.0,   0,  173deg, 21.0);
+	else if (lev == 23) MapLevelParams(30, LEVEL_TheHighRoad,       28.0,   0,  185deg, 22.0);
+	else if (lev == 24) MapLevelParams(30, LEVEL_SunsetVista,       40.0,   0,  197deg, 23.0);
+	else if (lev == 25) MapLevelParams(30, LEVEL_LightsOut,         48.0, 5.0,  210deg, 24.0);
+	else if (lev == 26) MapLevelParams(30, LEVEL_JawsOfDarkness,    68.0,   0,  218deg, 25.0);
+	else if (lev == 27) MapLevelParams(30, LEVEL_CastleMachinery,  120.0,   0,  290deg, 26.0);
+	else if (lev == 28) MapLevelParams(30, LEVEL_DrNBrio,          144.0,   0,  311deg, 27.0);
+	else if (lev == 29) MapLevelParams(30, LEVEL_TheLab,           160.0,   0,  311deg, 28.0);
+	else if (lev == 30) MapLevelParams(30, LEVEL_TheGreatHall,     168.0,   0,  353deg, 29.0);
+	else if (lev == 31) MapLevelParams(30, LEVEL_DrNeoCortex,      184.0,   0,  353deg, 30.0);
+	else if (lev == 40) MapLevelParams(31, LEVEL_FumblingInTheDark,  4.0,   0,  210deg, 31.0);
+	else if (lev == 41) MapLevelParams(31, LEVEL_LightsOut,            0, 4.0,  210deg, 24.0);
+	else if (lev == 50) MapLevelParams(21, LEVEL_WholeHog,           8.0,   0, -164deg, 32.0);
+	else if (lev == 51) MapLevelParams(21, LEVEL_BoulderDash,          0, 3.0, -164deg, 14.0);
+	else {}
+}
+
+sub GotoIslandProg (lev, end_of_path) {
+	if (lev > 31 && lev < 40) {
+		return
+	}
+	IslandCurrentPath = IslandTargetPath
+	IslandEndOfPath = end_of_path
+	MapSetLevelParams(lev)
+	IslandProgress = lev
+	if (lev == 15) {
+		IslandItem2 = 52
+	}
+	else if (lev == 25) {
+		IslandItem2 = 42
+	}
+	else {
+		IslandItem2 = 0
+	}
+	if (IslandCurrentPath == 10) {
+		if (IslandTargetPath == 20) {
+			ISLANDCAMSTATUS = 5
+		}
+	}
+	else if (IslandCurrentPath == 20) {
+		if (IslandTargetPath == 10) {
+			ISLANDCAMSTATUS = 6
+		}
+		if (IslandTargetPath == 30) {
+			ISLANDCAMSTATUS = 5
+		}
+	}
+	else if (IslandCurrentPath == 30) {
+		if (IslandTargetPath == 20) {
+			ISLANDCAMSTATUS = 6
+		}
+	}
+	else {
+		ISLANDCAMSTATUS = 1
+	}
+	IslandCanMove = false
+	IslandCanRotate = false
+	IslandTurnOffset = 0
+}
+
+state Island_Traveler_Spawn {
+	code () {
+		GLOBAL_50 = 0x755037
+		GLOBAL_51 = 0x755037
+		GLOBAL_52 = 0x50321E
+		GLOBAL_53 = 0x50321E
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | 0x1000000
+		trotx = 720deg
+		if (CURRENTLEVEL == 99) {
+			IslandForceProg = false
+			CURRENTLEVEL = 1
+		}
+		else if (GAMESTATE == GAME_STATE_CONTINUE) {
+			IslandForceProg = true
+		}
+		else {
+			IslandForceProg = false
+		}
+		if (LEVELSUNLOCKED >= 31) {
+			MAPLEVELLINKS = 0xFFFFFFFF
+		}
+		else {
+			MAPLEVELLINKS = (1 << (LEVELSUNLOCKED+1)) - 1
+		}
+		MAPKEYLINKS = ITEMPOOL2
+		zindex = 0
+		SetScale(0.3S)
+		IslandCamRotOffset = 0
+		IslandCamRot = 0
+		ISLANDCAMANGLE = 0
+		IslandTurnOffset = 0
+		IslandTargetPath = 0xFFFFFFFF
+		GotoIslandProg(CURRENTLEVEL, 0)
+		ISLANDCAMSTATUS = -1
+		pathprog = IslandTargetPoint
+		spawn(IsldC, S_ISLAND_TEXT)
+		spawn(GamOC, GamOC_S_ISLAND_GEM_DISPLAY, 1, -200.0, 60.0, offsetof(IslandProgress))
+		spawn(GamOC, GamOC_S_ISLAND_GEM_DISPLAY, 1, -150.0, 60.0, offsetof(IslandItem2))
+		TITLEPAUSESTATE = true
+		changestate(Island_Traveler_Stand)
+	}
+}
+
+inline sub PlaySoundMenuButton() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddelay(1)
+	sounddecay(0.9375)
+	soundplay([Mb1iA], 0.5V)
+	statusb &= ~FLAG_2D
+}
+
+inline sub PlaySoundYeah() {
+	statusb |= FLAG_2D
+	soundpitch(5.805)
+	sounddecay(0.75)
+	soundplay([YeahA], 0.8V)
+	soundsetup(0, voice, 5)
+	statusb &= ~FLAG_2D
+}
+
+sub Sub_453 () {
+	misc = 0
+	if (IslandDirections == 1.0) {
+		if (dirhold(PAD_W) || dirhold(PAD_N)) {
+			misc = 1
+		}
+		else if (dirhold(PAD_E) || dirhold(PAD_S)) {
+			misc = -1
+		}
+	}
+	else if (IslandDirections == 0) {
+		if (dirhold(PAD_E) || dirhold(PAD_N)) {
+			misc = 1
+		}
+		else if (dirhold(PAD_W) || dirhold(PAD_S)) {
+			misc = -1
+		}
+	}
+	else if (IslandDirections == 2.0) {
+		if (dirhold(PAD_W) || dirhold(PAD_S)) {
+			misc = 1
+		}
+		else if (dirhold(PAD_N) || dirhold(PAD_E)) {
+			misc = -1
+		}
+	}
+	else if (IslandDirections == 5.0) {
+		if (dirhold(PAD_E) || dirhold(PAD_S)) {
+			misc = 1
+		}
+		else if (dirhold(PAD_W)) {
+			misc = -1
+		}
+	}
+	else if (IslandDirections == 3.0) {
+		if (dirhold(PAD_W)) {
+			misc = 1
+		}
+		else if (dirhold(PAD_E)) {
+			misc = -1
+		}
+	}
+	else if (IslandDirections == 4.0) {
+		if (dirhold(PAD_W)) {
+			misc = -1
+		}
+		else if (dirhold(PAD_E)) {
+			misc = 1
+		}
+	}
+	if (misc == 1 && IslandCanMove && IslandProgress < LEVELSUNLOCKED && IslandTargetPath != 21 && IslandTargetPath != 31) {
+		if (IslandProgress < 31) {
+			PlaySoundMenuButton()
+			GotoIslandProg(IslandProgress+1, 0)
+		}
+	}
+	else if (misc == -1 && IslandCanMove && IslandTargetPath != 21 && IslandTargetPath != 31) {
+		if (IslandProgress > 1) {
+			PlaySoundMenuButton()
+			GotoIslandProg(IslandProgress-1, true)
+			IslandTurnOffset = 180deg
+		}
+	}
+	else if (dirhold(PAD_N) && IslandCanMove && IslandProgress == 15) {
+		if (ITEM_KEY2) {
+			PlaySoundMenuButton()
+			GotoIslandProg(50, 0)
+		}
+	}
+	else if (dirhold(PAD_S) && IslandCanMove && IslandProgress == 50) {
+		PlaySoundMenuButton()
+		GotoIslandProg(51, 0)
+		IslandTurnOffset = 180deg
+	}
+	else if (dirhold(PAD_N) && IslandCanMove && IslandProgress == 25) {
+		if (ITEM_KEY1) {
+			PlaySoundMenuButton()
+			GotoIslandProg(40, 0)
+		}
+	}
+	else if (dirhold(PAD_S) && IslandCanMove && IslandProgress == 40) {
+		PlaySoundMenuButton()
+		GotoIslandProg(41, 0)
+		IslandTurnOffset = 180deg
+	}
+	else if (buttonhold(PAD_L1) && IslandCanRotate) {
+		IslandCamRotOffset = spd(IslandCamRotOffset, -90deg)
+	}
+	else if (buttonhold(PAD_R1) && IslandCanRotate) {
+		IslandCamRotOffset = spd(IslandCamRotOffset, 90deg)
+	}
+	else if ((buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) && IslandCanMove) {
+		PlaySoundYeah()
+		SAVEDSCREEN = GAMESCREEN
+		GLOBAL_48 = IslandProgress
+		GLOBAL_20 = IslandProgress
+		loadlevel(IslandLevel)
+	}
+	else if (!IslandCanMove) {
+		IslandCamRotOffset = degseek(IslandCamRotOffset, 0, 90deg)
+	}
+	if (buttonhold(PAD_L1) && buttonhold(PAD_L2) && buttonpress(PAD_R1) && buttonhold(PAD_R2) && (dirhold(PAD_W) || dirhold(PAD_E)) && DEBUG) {
+		PlaySoundYeah()
+		LEVELSUNLOCKED = 31
+		if (dirhold(PAD_W)) {
+			ITEMPOOL2 = 1<<10 | 1<<20
+			ITEMPOOL1 = 1<<8 | 1<<12 | 1<<20 | 1<<21 | 1<<25 | 1<<29
+		}
+		MAPLEVELLINKS = 0xFFFFFFFF
+		MAPKEYLINKS = ITEMPOOL2
+	}
+	ISLANDCAMANGLE = IslandCamRot + IslandCamRotOffset
+	SetIslandPath(IslandTargetPath)
+	if (IslandCurrentPath == IslandTargetPath) {
+		if (!IslandCamRotOffset) {
+			pathprog = seek(pathprog, IslandTargetPoint, spd(32.0))
+		}
+		calcpath()
+		troty += IslandTurnOffset
+	}
+	if (IslandCurrentPath == IslandTargetPath && pathprog == IslandTargetPoint && !(ZONEFLAGS & 0x10000) && ISLANDCAMSTATUS == 1 && degdist(ISLANDCAMANGLE, GAMEDIR) <= 3deg) {
+		IslandCanRotate = true
+		IslandCanMove = true
+		GAMESTATE = GAME_STATE_CUTSCENE
+		if (IslandProgress == 51) {
+			GotoIslandProg(15, 0)
+		}
+		else if (IslandProgress == 41) {
+			GotoIslandProg(25, 0)
+		}
+		if (IslandForceProg) {
+			IslandForceProg = false
+			if (IslandProgress < LEVELSUNLOCKED) {
+				GotoIslandProg(IslandProgress+1, 0)
+			}
+		}
+	}
+}
+
+state Island_Traveler_Stand {
+	code () {
+		playanim(11, WILLY_STAND, 1s)
+		do {
+			playanim(11, WILLY_STAND)
+			if (!rand(4)) {
+				playanim(12, WILLY_STAND, 0.1s)
+				playanim(11, WILLY_STAND, 0.1s)
+				playanim(12, WILLY_STAND, 0.1s)
+				playanim(11, WILLY_STAND, 0.2s)
+			}
+			if (!rand(4)) {
+				playanim(11, WILLY_STAND, 1s)
+			}
+			scalex = -scalex
+			playanim(0, WILLY_STAND)
+			playanim(1, WILLY_STAND)
+			playanim(2, WILLY_STAND)
+			playanim(3, WILLY_STAND)
+			playanim(4, WILLY_STAND)
+			do {
+				playanim(5, WILLY_STAND, 1s)
+				playanim(6, WILLY_STAND)
+				playanim(7, WILLY_STAND)
+				playanim(8, WILLY_STAND)
+				if (rand(8)) break;
+				playanim(7, WILLY_STAND)
+				playanim(6, WILLY_STAND)
+			} while (1)
+			playanim(9, WILLY_STAND)
+			playanim(10, WILLY_STAND)
+		} while (1)
+	}
+	trans {
+		changestateifn(Island_Traveler_Move, self->IslandCanMove)
+		Sub_453()
+	}
+}
+
+state Island_Traveler_Move {
+	code () {
+		do {
+			playanim_nm(0, WILLY_WALK)
+			playanim_nm(1, WILLY_WALK)
+			playanim_nm(2, WILLY_WALK)
+			playanim_nm(3, WILLY_WALK)
+			playanim_nm(4, WILLY_WALK)
+			playanim_nm(5, WILLY_WALK)
+			playanim_nm(6, WILLY_WALK)
+			playanim_nm(7, WILLY_WALK)
+			playanim_nm(8, WILLY_WALK)
+			playanim_nm(9, WILLY_WALK)
+			playanim_m(0, WILLY_WALK)
+			playanim_m(1, WILLY_WALK)
+			playanim_m(2, WILLY_WALK)
+			playanim_m(3, WILLY_WALK)
+			playanim_m(4, WILLY_WALK)
+			playanim_m(5, WILLY_WALK)
+			playanim_m(6, WILLY_WALK)
+			playanim_m(7, WILLY_WALK)
+			playanim_m(8, WILLY_WALK)
+			playanim_m(9, WILLY_WALK)
+		} while (1)
+	}
+	trans {
+		changestateif(Island_Traveler_Stand, self->IslandCanMove)
+		Sub_453()
+	}
+}
+
+state Island_Path {
+	code () {
+		statusb = FLAG_INVISIBLE
+		sleepanim(0, PLACEHOLDER)
+	}
+}
+
+state Island_Text {
+	code () {
+		statusb = FLAG_2D | 0x1000000
+		SetScale(0.64, 1.015, 256.0)
+		x = -233.0
+		y = 95.0
+		z = -233.0
+		setanim(TEXT)
+		TextDefaultColor()
+		do {
+			ISLANDTEXTOBJ = self
+			ISLANDTEXTANIM = animseq
+			ISLANDTEXTFRAME = creator->IslandTextFrame
+			playframe(creator->IslandTextFrame)
+		} while (1)
+	}
+}
+

@@ -1,0 +1,177 @@
+#gool BaraC 16 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim BARREL_DANGER [BaD7V] 1
+#anim BARREL_VOLATILE [BaV7V] 1
+
+#sprite BARREL_SHADOW [Lev7T]
+#tex 0x141414 1 2 0 4 0 24 64 32
+
+#spawn S_BARREL_OLD               Barrel_Spawn
+#spawn S_BARREL                   Barrel_Spawn
+#spawn S_BARREL_SHADOW_OLD        Barrel_Shadow
+#spawn S_BARREL_SHADOW            Barrel_Shadow
+#spawn S_BARREL_NO_RAND_BOB       Barrel_Spawn
+#spawn S_BARREL_PARTICLE_OLD      Barrel_Particle_Old
+#spawn S_BARREL_BOUNCY            Barrel_Spawn
+
+var BarrelYOff, BarrelZOff, BarrelPathSpeed, BarrelBobAngle, BarrelHasSound
+
+state Barrel_Spawn {
+	code () {
+		zindex = 35
+		trotx = 150deg
+		BarrelYOff = 2.4m
+		BarrelZOff = 0
+		vely = 0
+		BarrelPathSpeed = 6.0
+		BarrelBobAngle = randi(-10deg, 10deg)
+		CopyParentPath()
+		pathprog = 0.8
+		scalex = 1.0S
+		scaley = 1.0S
+		scalez = 1.0S
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | FLAG_GRAVITY | FLAG_SOLID_ALL
+		if (spawn == S_BARREL_BOUNCY) {
+			setanim(BARREL_DANGER)
+		}
+		else if (spawn == S_BARREL || spawn == S_BARREL_NO_RAND_BOB) {
+			setanim(BARREL_VOLATILE)
+		}
+		changestate(Barrel)
+		BarrelPathSpeed = 0
+		changestate(Barrel_Old)
+	}
+}
+
+state Barrel {
+	stateflag 0x81
+	statusc 0
+	code () {
+		spawn(BaraC, S_BARREL_SHADOW, 1, 90deg, -0.1)
+		do {
+			pathprog = spd(pathprog, BarrelPathSpeed)
+			calcpath()
+			y += BarrelYOff + 0.5m
+			troty = troty + (loopseek(BarrelBobAngle, 20deg, 1deg) - 10deg)
+			playframe(0)
+		} until (STATUS_PATH_END)
+	}
+	trans {
+		once {
+			BarrelHasSound = 0
+		}
+		if (pathprog < pathlen - 5.0 && abs(x - player->x) < 1.1m) {
+			sendevent(EventSquash, collider, 100.0)
+			if (eventaccepted) {
+				statusb &= ~(FLAG_COLLIDABLE | FLAG_SOLID_ALL)
+			}
+		}
+		rotx += 12deg
+		BarrelYOff = spd(BarrelYOff, vely)
+		if (BarrelYOff < 0) {
+			BarrelYOff = 0
+			if (spawn == S_BARREL_BOUNCY && pathprog < pathlen - 10.0) {
+				vely = 16m
+			}
+			else {
+				vely /= -2
+			}
+			if (vely > 3m) {
+				if (!rand(3)) {
+					soundpitch(3.6 + rand(0.8))
+					soundplay([bn27A], (vely >> 14) * 0.01V)
+				}
+				else {
+					soundpitch(3.6 + rand(0.8))
+					soundplay([bnc7A], (vely >> 14) * 0.01V)
+				}
+			}
+			if (vely > 0 && vely < 3m && !BarrelHasSound) {
+				soundpitch(4.0)
+				soundfadet(0.1s)
+				soundfadev(0.15V, 0, 2)
+				soundpitch(3.6 + rand(0.8), 0, 2)
+				soundplay([brl7A], 0)
+				BarrelHasSound = 1
+			}
+		}
+		if (spawn == S_BARREL, BarrelYOff <= 0, !rand(100)) {
+			vely += 5m
+		}
+		if (pathprog > pathlen - 8.0, zindex > -40) {
+			zindex -= 5
+		}
+	}
+}
+
+state Barrel_Shadow {
+	stateflag 0x81
+	statusc 0
+	code (rot, poff) {
+		zindex = 5
+		CopyParentPath()
+		rotx = rot
+		scalex = 1.75S
+		do {
+			v0 = parent->pathprog + poff
+			if (v0 < 0) {
+				v0 = 0
+			}
+			calcpath(v0)
+			x += 0.2m
+			statusb = parent->statusb & FLAG_INVISIBLE
+			playanim(0, BARREL_SHADOW)
+		} until (STATUS_PATH_END)
+	}
+}
+
+state Barrel_Particle_Old {
+	code (anim, xoff, yoff, zoff) {
+		zindex = creator->zindex
+		x += xoff
+		y += yoff
+		z += zoff
+		animseq = &anim
+		trotx = randi(-30deg, 30deg)
+		troty = randi(-30deg, 30deg)
+		trotz = randi(-3deg, 3deg)
+		velx = randi(-4m, 4m)
+		velz = randi(-4m, 4m)
+		vely = 10m
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		playframe(0, 1s)
+	}
+	trans {
+		rotx += trotx
+		roty += troty
+		rotz += trotz
+	}
+}
+
+state Barrel_Old {
+	stateflag 0x81
+	statusc 0
+	code () {
+		spawn(BaraC, S_BARREL_SHADOW_OLD, 1, 0, 0.6)
+		do {
+			pathprog += BarrelPathSpeed
+			calcpath()
+			y += BarrelYOff + 0.5m
+			z += BarrelZOff
+			playframe(0)
+		} until (STATUS_PATH_END)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		rotx += 12deg
+		if (BarrelZOff < 1.2m) {
+			BarrelZOff += 0.2m
+		}
+		if (BarrelPathSpeed < 0.6) {
+			BarrelPathSpeed += 0.01
+		}
+	}
+}
+

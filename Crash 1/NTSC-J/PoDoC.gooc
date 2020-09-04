@@ -1,0 +1,264 @@
+#gool PoDoC 8 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim POWER_DOOR_UP_1 [PoD1V] 1
+#anim POWER_DOOR_UP_2 [PoD4V] 1
+#anim POWER_DOOR_1_LEFT [PoD2V] 1
+#anim POWER_DOOR_1_RIGHT [PoD3V] 1
+#anim POWER_DOOR_2_LEFT [PoD5V] 1
+#anim POWER_DOOR_2_RIGHT [PoD6V] 1
+
+#spawn S_POWER_DOOR_1             Power_Door_Spawn
+#spawn S_POWER_DOOR_DOUBLE_1      Power_Door_Double_Spawn
+#spawn S_POWER_DOOR_DOUBLE_1_R    Power_Door_Double_1_Right
+#spawn S_POWER_DOOR_DOUBLE_2      Power_Door_Double_Spawn
+#spawn S_POWER_DOOR_DOUBLE_2_R    Power_Door_Double_2_Right
+#spawn S_POWER_DOOR_2             Power_Door_Spawn
+#spawn S_POWER_DOOR_LOCKED        Power_Door_Spawn
+
+var PowerDoorStartY, PowerDoorMiddle, PowerDoorOffset
+
+event EventTriggered => state Power_Door_Closed
+
+state Power_Door_Spawn { // 0
+	code () {
+		statusb = FLAG_SOLID_SIDES | FLAG_COLLIDABLE
+		PowerDoorStartY = y
+		vecx = x
+		vecy = y
+		vecz = z + 2m
+		zindex = -10
+		if (spawn == S_POWER_DOOR_1) {
+			setanim(POWER_DOOR_UP_1)
+		}
+		else {
+			setanim(POWER_DOOR_UP_2)
+		}
+		changestateif(Power_Door_Opened, player->z <= vecz)
+		changestateif(Power_Door_Locked, spawn == S_POWER_DOOR_LOCKED && !entitygetstate(3))
+		changestate(Power_Door_Closed)
+	}
+}
+
+state Power_Door_Locked { // 1
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		y = PowerDoorStartY
+		sleepframe(0)
+	}
+}
+
+state Power_Door_Closed { // 2
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		y = PowerDoorStartY
+		sleepframe(0)
+	}
+	trans {
+		once {
+			entitysetstate(3)
+		}
+		changestateif(Power_Door_Open, player->z < vecz)
+	}
+}
+
+state Power_Door_Open { // 3
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			soundpitch(3.84 + rand(0.32))
+			soundplay([do13A], 0.5V)
+		}
+		y += 0.25m
+		changestateif(Power_Door_Close, player->z > z + 3m)
+		changestateif(Power_Door_Opened, y > PowerDoorStartY + 5m)
+	}
+}
+
+state Power_Door_Opened { // 4
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			v0 = 0
+		}
+		changestateif(Power_Door_Close, player->z > z + 3m)
+		if (player->z > vecz && frametime - statetime >= 1s) {
+			if (!v0) {
+				v0 = 1.0
+				soundpitch(3.36 + rand(0.32))
+				soundplay([do13A], 0.3V)
+			}
+			y -= 0.25m
+			statusb &= ~FLAG_INVISIBLE
+		}
+		else {
+			y = PowerDoorStartY + 5m
+			statetime = frametime
+			statusb |= FLAG_INVISIBLE
+		}
+		changestateif(Power_Door_Closed, y <= PowerDoorStartY)
+	}
+}
+
+state Power_Door_Close { // 5
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			soundpitch(3.6 + rand(0.8))
+			soundplay([do23A], 0.6V)
+			soundsetup(0, voice, 5)
+		}
+		y -= 0.5m
+		changestateif(Power_Door_Closed, y <= PowerDoorStartY)
+	}
+}
+
+state Power_Door_Double_Spawn { // 6
+	code () {
+		statusb = FLAG_SOLID_SIDES | FLAG_COLLIDABLE
+		PowerDoorMiddle = x
+		PowerDoorOffset = 0
+		vecx = x
+		vecy = y
+		vecz = z + 2m
+		zindex = -10
+		if (spawn == S_POWER_DOOR_DOUBLE_2) {
+			//return
+			zindex = -20
+			z -= 0.2m
+			y += 0.2m
+			spawn(PoDoC, S_POWER_DOOR_DOUBLE_2_R)
+			setanim(POWER_DOOR_2_LEFT)
+			statusb |= 0x40000
+			changestate(Power_Door_Double_Closed)
+		}
+		spawn(PoDoC, S_POWER_DOOR_DOUBLE_1_R)
+		setanim(POWER_DOOR_1_LEFT)
+		if (player->z > vecz) {
+			changestate(Power_Door_Double_Closed)
+		}
+		else {
+			changestate(Power_Door_Double_Open)
+		}
+	}
+}
+
+state Power_Door_Double_1_Right { // 7
+	code () {
+		zindex = creator->zindex
+		sleepanim(0, POWER_DOOR_1_RIGHT)
+	}
+	trans {
+		x = getfield(creator, offsetof(PowerDoorMiddle)) + getfield(creator, offsetof(PowerDoorOffset))
+		statusb = creator->statusb
+	}
+}
+
+state Power_Door_Double_2_Right { // 8
+	code () {
+		zindex = creator->zindex
+		sleepanim(0, POWER_DOOR_2_RIGHT)
+	}
+	trans {
+		x = getfield(creator, offsetof(PowerDoorMiddle)) + getfield(creator, offsetof(PowerDoorOffset))
+		statusb = creator->statusb
+	}
+}
+
+state Power_Door_Double_Closed { // 9
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			PowerDoorOffset = 0
+		}
+		changestateif(Power_Door_Double_Open, player->z < vecz)
+		x = PowerDoorMiddle - PowerDoorOffset
+	}
+}
+
+state Power_Door_Double_Open { // 10
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			v0 = 0
+			soundpitch(3.52 + rand(0.32))
+			soundplay([do33A], 0.9V)
+		}
+		changestateif(Power_Door_Double_Close, player->z > z + 3m)
+		PowerDoorOffset += 0.25m
+		x = PowerDoorMiddle - PowerDoorOffset
+		changestateif(Power_Door_Double_Opened, PowerDoorOffset > 3m)
+	}
+}
+
+state Power_Door_Double_Opened { // 11
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		changestateif(Power_Door_Double_Close, player->z > vecz)
+		PowerDoorOffset -= 0.25m
+		x = PowerDoorMiddle - PowerDoorOffset
+		if (player->z > vecz) {
+			if (!v0) {
+				v0 = 1.0
+				soundpitch(3.36 + rand(0.32))
+				soundplay([do33A], 0.5V)
+			}
+			statusb &= ~FLAG_INVISIBLE
+		}
+		else {
+			PowerDoorOffset = 3m
+			if (spawn != S_POWER_DOOR_DOUBLE_2) {
+				statusb = FLAG_INVISIBLE
+			}
+		}
+		changestateif(Power_Door_Double_Closed, PowerDoorOffset <= 0)
+	}
+}
+
+state Power_Door_Double_Close { // 12
+	statusc 0
+	code () {
+		statusb &= ~FLAG_INVISIBLE
+		sleepframe(0)
+	}
+	trans {
+		once {
+			if (!v0) {
+				v0 = 1.0
+			}
+			soundpitch(3.6 + rand(0.8))
+			soundplay([do33A], 1.0V)
+		}
+		PowerDoorOffset -= 0.5m
+		x = PowerDoorMiddle - PowerDoorOffset
+		changestateif(Power_Door_Double_Closed, PowerDoorOffset <= 0)
+	}
+}
+

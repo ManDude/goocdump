@@ -1,0 +1,371 @@
+#gool ShadC 29 1
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim SHADOW [Sha0V] 10
+
+#sprite BOSS_HEALTH [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+#sprite BOSS_HEALTH_OLD [WillT]
+#tex 0x808080 0 1 2 0 64 24 32 32
+
+#iflev 8
+#sprite BOSS_SPRITES [Pin4T]
+#tex 0x808080 0 0 1 0 0 24 64 32
+#tex 0x808080 0 3 5 0 64 4 32 16
+#tex 0x808080 0 3 6 0 68 4 32 16
+#tex 0x808080 0 3 7 0 72 4 32 16
+#tex 0x808080 0 3 8 0 76 4 32 16
+#tex 0x808080 0 3 9 0 80 4 32 16
+#tex 0x808080 0 3 10 0 84 4 32 16
+#tex 0x808080 0 3 7 0 72 4 32 16
+#tex 0x808080 0 3 7 0 72 4 32 16
+#tex 0x808080 0 3 7 0 72 4 32 16
+#eliflev a
+#sprite BOSS_SPRITES [Ju2aT]
+#tex 0x808080 0 0 8 0 96 16 64 64
+#tex 0x808080 0 3 3 0 8 4 32 16
+#tex 0x808080 0 3 4 0 12 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 6 0 20 4 32 16
+#tex 0x808080 0 3 7 0 24 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#eliflev n
+#sprite BOSS_SPRITES [Ju2fT]
+#tex 0x808080 0 0 5 0 0 16 64 64
+#tex 0x808080 0 3 6 0 0 4 32 16
+#tex 0x808080 0 3 7 0 4 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#tex 0x808080 0 3 8 0 8 4 32 16
+#eliflev r
+#sprite BOSS_SPRITES [Nb7rT]
+#tex 0x808080 0 0 15 0 120 16 64 64
+#tex 0x808080 0 3 0 3 0 4 32 16
+#tex 0x808080 0 3 1 3 4 4 32 16
+#tex 0x808080 0 3 2 3 8 4 32 16
+#tex 0x808080 0 3 3 3 12 4 32 16
+#tex 0x808080 0 3 4 3 16 4 32 16
+#tex 0x808080 0 3 5 3 20 4 32 16
+#tex 0x808080 0 3 6 3 24 4 32 16
+#tex 0x808080 0 3 7 3 28 4 32 16
+#tex 0x808080 0 3 8 3 32 4 32 16
+#eliflev v
+#sprite BOSS_SPRITES [Cr2vT]
+#tex 0x808080 0 0 6 9 56 16 64 32
+#tex 0x808080 0 3 7 9 88 4 32 16
+#tex 0x808080 0 3 8 9 92 4 32 16
+#tex 0x808080 0 3 9 9 96 4 32 16
+#tex 0x808080 0 3 10 9 100 4 32 16
+#tex 0x808080 0 3 11 9 104 4 32 16
+#tex 0x808080 0 3 11 9 104 4 32 16
+#tex 0x808080 0 3 11 9 104 4 32 16
+#tex 0x808080 0 3 11 9 104 4 32 16
+#tex 0x808080 0 3 11 9 104 4 32 16
+#eliflev x
+#sprite BOSS_SPRITES [Ko3xT]
+#tex 0x808080 0 0 1 0 112 8 64 32
+#tex 0x808080 0 3 2 0 120 12 32 16
+#tex 0x808080 0 3 3 0 120 8 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#tex 0x808080 0 3 5 0 124 24 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#tex 0x808080 0 3 4 0 124 28 32 16
+#else
+#sprite BOSS_SPRITES [Ju2aT]
+#tex 0x808080 0 0 8 0 96 16 64 64
+#tex 0x808080 0 3 3 0 8 4 32 16
+#tex 0x808080 0 3 4 0 12 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 6 0 20 4 32 16
+#tex 0x808080 0 3 7 0 24 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#tex 0x808080 0 3 5 0 16 4 32 16
+#endif
+
+
+#spawn S_SHADOW              Shadow_Spawn
+#spawn S_SHADOW_STATIONARY   Shadow_Stationary
+#spawn S_BOSS_HEALTH_OLD     Boss_Health_Old
+#spawn S_SHADOW_GROUND       Shadow_Stationary_Ground
+#spawn S_BOSS_HEALTH         Boss_Health
+#spawn S_BOSS_HEALTH_POINT   Boss_Health_Point
+
+var
+mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, ShadowY,
+ShadowLastY, ShadowBaseY, ShadowSize, ShadowZMod, ShadowField, ShadowMaxSize, ShadowMinY
+
+state Shadow_Spawn {
+	code (hdif, maxsize, zdif) {
+		ShadowZMod = zdif
+		scalex = maxsize
+		scaley = maxsize
+		scalez = maxsize
+		ShadowMaxSize = maxsize
+		rotx = 0
+		roty = 0
+		rotz = 0
+		parent->field_60 = 0
+		ShadowMinY = -0x7FFFFFFF
+		if (LEVEL == LEVEL_RoadToNowhere || LEVEL == LEVEL_TheHighRoad) {
+			ShadowMinY = -0.1m
+			colra = 2.0
+			colga = 2.0
+			colba = 2.0
+		}
+		changestate(Shadow)
+	}
+}
+
+state Shadow {
+	code () {
+		setanim(SHADOW)
+		do {
+			ShadowPlayFrame()
+		} while (1)
+	}
+	trans {
+		zindex = parent->zindex + ShadowZMod
+		statusb = 0x4000000 | 0x400
+		ShadowLastY = y
+		x = parent->x
+		y = parent->y
+		z = parent->z
+		projectobjshadow(v0)
+		projectzoneshadow(v0)
+		if (eventaccepted && parent->statusb \ 0x4000000) {
+			if (abs(ShadowLastY - vecy) > 0.5m) {
+				y = vecy
+			}
+			else {
+				y = seek(ShadowLastY, vecy, 0.1m)
+			}
+			player->ShadowY = y
+		}
+		else {
+			statusb = 0x4000000 | 0x400 | FLAG_INVISIBLE
+			player->ShadowY = -0x7FFFFFFF
+		}
+		if (getfield(player, 73.0) < ShadowMinY) {
+			if (player->y > ShadowMinY) {
+				y = ShadowMinY
+				player->ShadowY = y
+				statusb = 0x4000000 | 0x400
+			}
+		}
+		if (parent->statusa \ FLAG_GROUNDLAND) {
+			y = parent->y
+		}
+		x = parent->x
+		z = parent->z
+		roty = parent->roty
+		scaley = ShadowMaxSize - (abs(y - parent->y) >> 8)
+		if (scaley < 0.5S) {
+			scaley = 0.5S
+		}
+		scalex = scaley
+		scalez = scaley
+	}
+}
+
+state Shadow_Stationary {
+	code (hdif, size, zdif) {
+		setanim(SHADOW)
+		ShadowBaseY = hdif
+		parent->field_60 = 0
+		ShadowSize = size
+		ShadowZMod = zdif
+		do {
+			field_60 = parent->field_60 & 0xFF
+			if (parent->scalex < 0) {
+				playframe_m(field_60)
+			}
+			else {
+				playframe_nm(field_60)
+			}
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			zindex = parent->zindex + ShadowZMod
+			x = parent->x
+			y = parent->y + ShadowBaseY
+			z = parent->z
+			rotx = parent->rotx
+			roty = parent->roty
+			rotz = parent->rotz
+			scalex = parent->scalex * ShadowSize >> 12
+			scaley = parent->scaley * ShadowSize >> 12
+			scalez = parent->scalez * ShadowSize >> 12
+		}
+	}
+}
+
+state Shadow_Stationary_Ground {
+	code => state Shadow_Stationary
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			zindex = parent->zindex + ShadowZMod
+			x = parent->x
+			y = ShadowBaseY
+			z = parent->z
+			rotx = parent->rotx
+			roty = parent->roty
+			rotz = parent->rotz
+			scalex = parent->scalex * ShadowSize >> 12
+			scaley = parent->scaley * ShadowSize >> 12
+			scalez = parent->scalez * ShadowSize >> 12
+		}
+	}
+}
+
+state Boss_Health_Old {
+	statusc 0
+	code (tx, ty, tz, sx, sy, sz, field) {
+		x = tx
+		y = ty
+		z = tz
+		scalex = sx
+		scaley = sy
+		scalez = sz
+		ShadowField = field
+		statusb = FLAG_INVISIBLE | FLAG_COLLIDABLE
+		sleepanim(0, BOSS_HEALTH)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			field_62 = getfield(parent, ShadowField)
+		}
+	}
+}
+
+#module [ShabC]
+
+state Boss_Health_Point {
+	statusc 0
+	code (hp) {
+		statusb = creator->statusb
+		zindex = creator->zindex
+		scalex = 1.275
+		scaley = 1.015
+		scalez = 512.0
+		setanim(BOSS_SPRITES)
+		x = creator->vecx + creator->x + 31.0 * ((hp >> 8) * 1)
+		y = creator->y + creator->vecy
+		while (health > hp) {
+			playframe(hp + 1.0)
+		}
+		do (var i = 0) {
+			playnull()
+			setanim(BOSS_SPRITES)
+			playframe(hp + 1.0)
+			i += 1.0
+		} while (i < 6.0)
+	}
+	trans {
+		health = creator->health
+	}
+}
+
+state Boss_Health {
+	statusc 0
+	code (hp, type) {
+		zindex = -30
+		field_61 = type
+		v0 = hp
+		x = -209.0
+		y = 70.0
+		z = 0.0
+		rotx = 0deg
+		roty = 0deg
+		rotz = 0deg
+		statusb = FLAG_2D
+		health = creator->health
+		if (field_61 == 1) {
+			health = v0 - (health << 8)
+		}
+		else if (field_61 == 2) {
+			health = v0 - health
+		}
+		while (GAMESTATE == GAME_STATE_CUTSCENE) {
+			playnull()
+		}
+		vecx = 39.0
+		scalex = 2.5525
+		scaley = 4.055
+		scalez = 1024.0
+		if (var level = LEVEL; level == LEVEL_PapuPapu) {
+			y = -75.0
+			vecy = -10.0
+		}
+		else if (level == LEVEL_RipperRoo) {
+			vecx = 32.0
+			vecy = 13.0
+		}
+		else if (level == LEVEL_KoalaKong) {
+			y = -86.0
+			vecy = -4.0
+			scalex = 2.5525
+			scaley = 4.055 / 2
+			scalez = 1024.0
+		}
+		else if (level == LEVEL_Pinstripe) {
+			y = 80.0
+			vecy = 1.0
+			scalex = 2.5525
+			scaley = 4.055 / 2
+			scalez = 1024.0
+		}
+		else if (level == LEVEL_DrNBrio) {
+			vecx = 27.0
+			y = 80.0
+			vecy = 6.0
+		}
+		else if (level == LEVEL_DrNeoCortex) {
+			y = 82.0
+			vecx = 34.0
+			vecy = 4.0
+			scalex = 2.5525
+			scaley = 4.055 / 2
+			scalez = 1024.0
+		}
+		do (var tick = 0) {
+			spawn2(ShadC, S_BOSS_HEALTH_POINT, 1, tick)
+			tick += 1.0
+		} while (tick < hp)
+		while (health) {
+			playanim(0, BOSS_SPRITES)
+		}
+		do {
+			scalex -= 0.32
+			scaley -= 0.505
+			playanim(0, BOSS_SPRITES)
+		} while (scalex > 0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			health = creator->health
+			if (field_61 == 1) {
+				health = v0 - (health << 8)
+			}
+			else if (field_61 == 2) {
+				health = v0 - health
+			}
+		}
+	}
+}
+
+#module default
+

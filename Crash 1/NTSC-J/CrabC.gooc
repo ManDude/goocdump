@@ -1,0 +1,137 @@
+#gool CrabC 31 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim CRAB [Cr19V] 19
+#anim CRAB_DEAD [Cr29V] 1
+
+#spawn S_CRAB           Crab_Spawn
+
+var mem1
+
+event EventJumpedOn      => state Crab_Die
+event EventHit           => state Crab_Die
+event EventSpinHit       => state Crab_Fling
+event EventHitInvincible => state Crab_Fling
+event EventFling         => state Crab_Die
+
+#include "ShadC.gooh"
+
+state Crab_Spawn {
+	statusc 0x12
+	code () {
+		spawn(ShadC, ShadC_S_SHADOW_STATIONARY, 1, 0, 1.6S, 10)
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL
+		if (vecx) {
+			pathprog = (vecx - 128.0) * pathlen >> 15
+		}
+		density = 20.0
+		yzapproach = 90deg
+		zindex = 14
+		changestate(Crab_Walk)
+	}
+}
+
+state Crab_Walk {
+	stateflag 0x5
+	statusc 0
+	code () {
+		do {
+			playanim(0, CRAB)
+			playanim(1, CRAB)
+			playanim(2, CRAB)
+			playanim(3, CRAB)
+			playanim(4, CRAB)
+			playanim(5, CRAB)
+			soundpitch(3.6 + rand(0.8))
+			soundplay([CC19A], 0.07V)
+			playanim(6, CRAB)
+			playanim(7, CRAB)
+			playanim(8, CRAB)
+			playanim(9, CRAB)
+			playanim(10, CRAB)
+			playanim(11, CRAB)
+			playanim(12, CRAB)
+			playanim(13, CRAB)
+			playanim(14, CRAB)
+			playanim(15, CRAB)
+			soundpitch(3.6 + rand(0.8))
+			soundplay([CC29A], 0.07V)
+			playanim(16, CRAB)
+			playanim(17, CRAB)
+			playanim(18, CRAB)
+		} while (1)
+	}
+	trans {
+		calcpath(sin(loopseek(pathprog, pathlen + spd(4.0) + -1.0, spd(4.0)), (pathlen + spd(4.0) + -1.0) - spd(4.0)))
+		if (STATUS_PLAYER_D_COLLIDER) {
+			sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+		}
+	}
+}
+
+inline sub SetCrabDeadAngles() {
+	statusb |= 0x2000
+	trotz = 180deg
+	yzapproach = 720deg
+}
+
+state Crab_Die { // 2
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		EnemyDieCombo(h)
+		SetCrabDeadAngles()
+		while (scalex > 0.04S) {
+			playanim(0, CRAB_DEAD)
+		}
+	}
+	trans {
+		EnemyDieTrans()
+		rotz = roty
+	}
+}
+
+state Crab_Fling { // 3
+	stateflag 0x30
+	statusc 0x12
+	code (h) {
+		EnemyFlingCombo(h)
+		troty = (((atan2(player->trans) + (180deg + -GAMEDIR)) + 22.5deg) & ~(45deg-1)) % 360deg + GAMEDIR
+		vely = 0
+		speed = 10m
+		statusb = FLAG_PHYSICS_ENGINE
+		SetCrabDeadAngles()
+		while (abs(scalex) > 0 && scaley > 0 && scalez > 0) {
+			playanim(0, CRAB_DEAD)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			interrupter = getvalideventobj(EventFling, 0b11000)
+			if (interrupter) {
+				sendeventif(EventFling, interrupter, distance(interrupter, 0) < 2m, health)
+			}
+			else {
+				eventaccepted = false
+			}
+			if (eventaccepted) {
+				health += 1.0
+			}
+			vecy = y - 1m
+			do {
+				y = vecy + 1m
+				projectzoneshadow(v0)
+			} until (!eventaccepted || y >= vecy + 1m)
+			scalex -= 1.0S / 30
+			scaley -= 1.0S / 30
+			scalez -= 1.0S / 30
+			speed += 3m
+			if (speed < 40m) {
+				speed += 3m
+			}
+			setvel(speed < 40m + 3m ? speed : 40m)
+		}
+	}
+}
+

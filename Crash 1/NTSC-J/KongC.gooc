@@ -1,0 +1,237 @@
+#gool KongC 45 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim KONG_STAND_1 [KS1xV] 24
+#anim KONG_STAND_2 [KS2xV] 21
+#anim KONG_STAND_3 [KS3xV] 8
+#anim KONG_STAND_4 [KS4xV] 23
+#anim KONG_STAND_5 [KS5xV] 25
+#anim KONG_STAND_6 [KS6xV] 15
+#anim KONG_STAND_7 [KS7xV] 21
+#anim KONG_STAND_8 [KS8xV] 10
+#anim KONG_LIFT_1 [KL1xV] 15
+#anim KONG_LIFT_2 [KL2xV] 22
+#anim KONG_LIFT_3 [KL3xV] 24
+#anim KONG_WALK [KW1xV] 15
+#anim KONG_THROW_1 [KT1xV] 21
+#anim KONG_THROW_2 [KT2xV] 20
+#anim KONG_THROW_3 [KT3xV] 18
+#anim KONG_HOP [KH1xV] 16
+#anim ANIM_32 [Kh1xV] 14
+#anim ANIM_34 [Kh2xV] 16
+#anim ANIM_36 [KD1xV] 18
+#anim ANIM_38 [KD2xV] 18
+
+#spawn S_KOALA_KONG               Kong_Spawn
+#spawn S_DONKEYKONG               DonkeyKong_Spawner
+
+var KongAnimSet, mem2, mem3
+
+event EventHit => state Kong_Hit
+event EventRespawn => sub KongDeloadAnims
+
+#include "ShadC.gooh"
+#include "BoxsC.gooh"
+
+state DonkeyKong_Spawner {
+	code () {
+		x = parent->x + randi(-10m, 10m)
+		z = parent->x + randi(-10m, 10m)
+		mem2 = rand(5)
+		mem3 = 1.5s + rand(4s)
+		statusb = FLAG_INVISIBLE
+		do { WaitFrame(0, KONG_HOP, mem3) } while (1)
+	}
+}
+
+state Kong_Spawn {
+	code () {
+		GLOBALOBJ = self
+		statusb = 0
+		health = 0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, 4.0, 2)
+		zindex = -20
+		pathprog = pathlen / 2
+		calcpath()
+		GLOBALVAL = health
+		KongAnimSet = 0
+		LoadAnim([Kh1xV], [KS1xG])
+		LoadAnim([Kh2xV], [KS1xG])
+		changestate(Kong_Stand)
+	}
+}
+
+state Kong_Stand {
+	statusc 0
+	code () {
+		playframes(KONG_STAND_1, 0, 23.0)
+		wait(1s/3)
+		playframes(KONG_STAND_2, 0, 20.0)
+		playframes(KONG_STAND_3, 0, 7.0)
+		wait(1s/3)
+		playframes(KONG_STAND_4, 0, 22.0)
+		playframes(KONG_STAND_5, 0, 24.0)
+		playframes(KONG_STAND_6, 0, 14.0)
+		wait(1s/3)
+		playframes(KONG_STAND_7, 0, 20.0)
+		playframes(KONG_STAND_8, 0, 9.0)
+		changestate(Kong_Throw_Rocks)
+	}
+	event (e, a) {
+		accevcstate(Kong_Throw_Rocks, e == EventTriggered)
+	}
+}
+
+inline sub KongSpawnTNT(xoff) {
+	spawn(BoxsC, BoxsC_S_BOX_TNT_AUTO, 1, 5m, 2s, xoff, y, 4.5m)
+}
+
+sub KongSpawnTNTStep (step) {
+	if (step == 0) {
+		if (player->x < 0) {
+			v0 = 3m
+		}
+		else {
+			v0 = -3m
+		}
+		KongSpawnTNT(v0)
+	}
+	else if (step == 1.0) {
+		if (health >= 2.0) {
+			KongSpawnTNT(0)
+		}
+	}
+	else if (step == 2.0 || step == 3.0) {
+		if (health >= 4.0) {
+			v0 = -v0
+			KongSpawnTNT(v0)
+		}
+	}
+}
+
+inline sub SoundKongThrow() {
+	sounddecay(0.375)
+	SoundPlayDefault([jmp0A], 0.2V + rand(0.2V))
+}
+
+state Kong_Throw_Rocks {
+	statusc 0
+	code () {
+		if (!(pathprog >= pathlen + 1)) {
+			velx = (pathlen - pathprog) * 30 / 12
+			playframes(KONG_HOP, 0, 15.0)
+		}
+		velx = 0
+		do (var i = 0) {
+			playframes(KONG_LIFT_1, 2.0, 0, 14.0)
+			wait(0.1s)
+			playframes(KONG_LIFT_2, 2.0, 0, 21.0)
+			playframes(KONG_LIFT_3, 2.0, 0, 23.0)
+			playframes(KONG_THROW_1, 2.0, 0, 20.0)
+			playframes(KONG_THROW_2, 0, 19.0)
+			interrupter = objectget(13.0)
+			sendeventif(Event27, interrupter, interrupter, x, vecy, 0)
+			KongSpawnTNTStep(i)
+			SoundKongThrow()
+			playframes(KONG_THROW_3, 2.0, 0, 17.0)
+			i += 1.0
+		} while (i < 3.0)
+		playframes(KONG_LIFT_1, 0, 14.0)
+		wait(1s/3)
+		playframes(KONG_LIFT_2, 0, 21.0)
+		playframes(KONG_LIFT_3, 0, 23.0)
+		statetime = frametime
+		velx = -2.0
+		do (var walk_time = 1.5s + rand(3.5s), i = 1.0) {
+			KongSpawnTNTStep(i)
+			i += 1.0
+			playframes(KONG_WALK, 0, 14.0)
+		} until (frametime - statetime >= walk_time)
+		changestate(Kong_Throw_Heavy)
+	}
+	event (e, a) {
+		if (e == EventHit) {
+			accev()
+			sendevent(EventHit, interrupter, 1)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			pathprog = spd(pathprog, velx)
+			if (pathprog >= pathlen) {
+				pathprog = pathlen - 1
+			}
+			calcpath()
+		}
+	}
+}
+
+state Kong_Throw_Heavy {
+	stateflag 0x81
+	statusc 0
+	code () {
+		playframes(KONG_THROW_1, 0, 20.0)
+		playframes(KONG_THROW_2, 0, 19.0)
+		interrupter = objectget(11.0)
+		sendeventif(Event27, interrupter, interrupter, x, vecy, 1)
+		SoundKongThrow()
+		playframes(KONG_THROW_3, 0, 17.0)
+		changestate(Kong_Stand)
+	}
+	event => state Kong_Throw_Rocks
+}
+
+state Kong_Hit {
+	stateflag 0x3
+	statusc 0
+	code () {
+		SetColor(0xFF, 0x80, 0x80)
+		sendevent(EventHit, interrupter, 0)
+		health += 1.0
+		GLOBALVAL = health
+		changestateif(Kong_Dead, health >= 4.0)
+		sounddecay(0.5625)
+		soundpitch(1.92 + rand(0.32))
+		soundplay([hit0A], 1.0V)
+		playframes(ANIM_32, 0, 13.0)
+		playframes(ANIM_34, 0, 15.0)
+		SetDefaultColor()
+		if (health >= 3.0) {
+			DeloadAnim([Kh1xV], [KS1xG])
+			DeloadAnim([Kh2xV], [KS1xG])
+			LoadAnim([KD1xV], [KS1xG])
+			LoadAnim([KD2xV], [KS1xG])
+			KongAnimSet = 1.0
+		}
+		changestate(Kong_Throw_Rocks)
+	}
+}
+
+state Kong_Dead {
+	stateflag 0x21
+	statusc 0
+	code () {
+		KillEntity()
+		playframes(ANIM_36, 0, 17.0)
+		sounddecay(0.625)
+		SoundPitchDefault()
+		sounddelay(0.3s)
+		soundplay([BSlaA], 1.0V)
+		playframes(ANIM_38, 0, 17.0)
+		sendevent(EventWarp, player, 0)
+		sleep()
+	}
+}
+
+sub KongDeloadAnims () {
+	if (KongAnimSet == 0) {
+		DeloadAnim([Kh1xV], [KS1xG])
+		DeloadAnim([Kh2xV], [KS1xG])
+	}
+	else if (KongAnimSet == 1.0) {
+		DeloadAnim([KD1xV], [KS1xG])
+		DeloadAnim([KD2xV], [KS1xG])
+	}
+}
+

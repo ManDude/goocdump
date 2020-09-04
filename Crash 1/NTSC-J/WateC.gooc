@@ -1,0 +1,185 @@
+#gool WateC 55 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite TEST [WillT]
+#tex 0x808080 0 1 6 0 108 4 8 8
+
+#iflev 7
+#sprite DROP [Lev7T]
+#tex 0x646464 0 1 4 0 48 4 16 16
+
+#sprite SPLASH [Lev7T]
+#tex 0x646464 0 1 5 0 68 16 32 32
+#tex 0x646464 0 1 5 0 68 8 32 32
+#tex 0x646464 0 1 5 0 72 24 32 32
+#tex 0x646464 0 1 5 0 72 16 32 32
+#tex 0x646464 0 1 5 0 72 8 32 32
+#tex 0x646464 0 1 5 0 76 24 32 32
+#tex 0x646464 0 1 5 0 76 16 32 32
+#tex 0x646464 0 1 5 0 76 8 32 32
+#tex 0x646464 0 1 5 0 80 24 32 32
+#tex 0x646464 0 1 5 0 80 16 32 32
+#tex 0x646464 0 1 5 0 80 8 32 32
+#tex 0x646464 0 1 5 0 84 24 32 32
+#tex 0x646464 0 1 5 0 84 16 32 32
+#tex 0x646464 0 1 5 0 84 8 32 32
+#tex 0x646464 0 1 5 0 88 24 32 32
+#tex 0x646464 0 1 5 0 88 16 32 32
+#tex 0x646464 0 1 5 0 88 8 32 32
+#tex 0x646464 0 1 5 0 92 24 32 32
+#tex 0x646464 0 1 5 0 92 16 32 32
+#tex 0x646464 0 1 5 0 92 8 32 32
+#tex 0x646464 0 1 5 0 96 24 32 32
+#tex 0x646464 0 1 5 0 96 16 32 32
+#tex 0x646464 0 1 5 0 96 8 32 32
+#tex 0x646464 0 1 5 0 100 24 32 32
+#tex 0x646464 0 1 5 0 100 16 32 32
+#tex 0x646464 0 1 5 0 100 8 32 32
+#tex 0x646464 0 1 5 0 104 24 32 32
+#tex 0x646464 0 1 5 0 104 16 32 32
+#tex 0x646464 0 1 5 0 104 8 32 32
+#tex 0x646464 0 1 5 0 108 24 32 32
+#tex 0x646464 0 1 5 0 108 16 32 32
+#tex 0x646464 0 1 5 0 108 8 32 32
+#eliflev fo
+#sprite DROP [Ju4fT]
+#tex 0x646464 0 1 2 0 0 4 16 16
+
+#sprite SPLASH [Ju3fT]
+#tex 0x646464 0 1 3 4 84 24 32 32
+#tex 0x646464 0 1 3 4 84 16 32 32
+#tex 0x646464 0 1 3 4 84 8 32 32
+#tex 0x646464 0 1 3 4 88 24 32 32
+#tex 0x646464 0 1 3 4 88 16 32 32
+#tex 0x646464 0 1 3 4 88 8 32 32
+#tex 0x646464 0 1 3 4 92 24 32 32
+#tex 0x646464 0 1 3 4 92 16 32 32
+#tex 0x646464 0 1 3 4 92 8 32 32
+#tex 0x646464 0 1 3 4 96 24 32 32
+#tex 0x646464 0 1 3 4 96 16 32 32
+#tex 0x646464 0 1 3 4 96 8 32 32
+#tex 0x646464 0 1 3 4 100 24 32 32
+#tex 0x646464 0 1 3 4 100 16 32 32
+#tex 0x646464 0 1 3 4 100 8 32 32
+#tex 0x646464 0 1 3 4 104 24 32 32
+#tex 0x646464 0 1 3 4 104 16 32 32
+#tex 0x646464 0 1 3 4 104 8 32 32
+#tex 0x646464 0 1 3 4 108 24 32 32
+#tex 0x646464 0 1 3 4 108 16 32 32
+#tex 0x646464 0 1 3 4 108 8 32 32
+#tex 0x646464 0 1 3 4 112 24 32 32
+#tex 0x646464 0 1 3 4 112 16 32 32
+#tex 0x646464 0 1 3 4 112 8 32 32
+#tex 0x646464 0 1 3 4 116 24 32 32
+#tex 0x646464 0 1 3 4 116 16 32 32
+#tex 0x646464 0 1 3 4 116 8 32 32
+#tex 0x646464 0 1 3 4 120 24 32 32
+#tex 0x646464 0 1 3 4 120 16 32 32
+#tex 0x646464 0 1 3 4 120 8 32 32
+#tex 0x646464 0 1 3 4 124 24 32 32
+#tex 0x646464 0 1 3 4 124 16 32 32
+#eliflev 3
+#sprite DROP [PowAT]
+#tex 0x646464 0 1 15 0 8 4 16 16
+
+#sprite SPLASH [PowAT]
+#tex 0x646464 0 1 0 13 84 24 32 32
+#tex 0x646464 0 1 0 13 84 16 32 32
+#tex 0x646464 0 1 0 13 84 8 32 32
+#tex 0x646464 0 1 0 13 88 24 32 32
+#tex 0x646464 0 1 0 13 88 16 32 32
+#tex 0x646464 0 1 0 13 88 8 32 32
+#tex 0x646464 0 1 0 13 92 24 32 32
+#tex 0x646464 0 1 0 13 92 16 32 32
+#tex 0x646464 0 1 0 13 92 8 32 32
+#tex 0x646464 0 1 0 13 96 24 32 32
+#tex 0x646464 0 1 0 13 96 16 32 32
+#tex 0x646464 0 1 0 13 96 8 32 32
+#tex 0x646464 0 1 0 13 100 24 32 32
+#tex 0x646464 0 1 0 13 100 16 32 32
+#tex 0x646464 0 1 0 13 100 8 32 32
+#tex 0x646464 0 1 0 13 104 24 32 32
+#tex 0x646464 0 1 0 13 104 16 32 32
+#tex 0x646464 0 1 0 13 104 8 32 32
+#tex 0x646464 0 1 0 13 108 24 32 32
+#tex 0x646464 0 1 0 13 108 16 32 32
+#tex 0x646464 0 1 0 13 108 8 32 32
+#tex 0x646464 0 1 0 13 112 24 32 32
+#tex 0x646464 0 1 0 13 112 16 32 32
+#tex 0x646464 0 1 0 13 112 8 32 32
+#tex 0x646464 0 1 0 13 116 24 32 32
+#tex 0x646464 0 1 0 13 116 16 32 32
+#tex 0x646464 0 1 0 13 116 8 32 32
+#tex 0x646464 0 1 0 13 120 24 32 32
+#tex 0x646464 0 1 0 13 120 16 32 32
+#tex 0x646464 0 1 0 13 120 8 32 32
+#tex 0x646464 0 1 0 13 124 24 32 32
+#tex 0x646464 0 1 0 13 124 16 32 32
+#endif
+
+#spawn S_DROP                     Drop
+#spawn S_1                        __s_1
+#spawn S_SPLASH                   Splash
+
+var WaterY, mem2
+
+state Drop { // 0
+	stateflag 0x10
+	code (h) {
+		y += h - 0.7m
+		unless (FRAMETIME < 30) {
+			stalltime = rand(1, 4)
+			statusb = FLAG_STALL | FLAG_INVISIBLE
+			playanim(0, DROP)
+		}
+		WaterY = y
+		rotx = 0
+		roty = 0
+		rotz = 0
+		scalex = 0.25S + rand(0.2S)
+		scaley = 0.25S + rand(0.2S)
+		scalez = 0.25S + rand(0.2S)
+		troty = rand(360deg)
+		setvel(2m)
+		if (var level = LEVEL; level == LEVEL_ToxicWaste || level == LEVEL_CortexPower) {
+			vely = 17m + rand(3m)
+		}
+		else {
+			vely = 10m + rand(3m)
+		}
+		statusb = FLAG_PHYSICS_ENGINE | FLAG_GRAVITY
+		while (y > WaterY - 0.3m) {
+			playanim(0, DROP)
+		}
+		changestate(Splash)
+	}
+}
+
+state Splash { // 1
+	stateflag 0x10
+	code (h) {
+		if (spawn == S_DROP) {
+			scalex = 0.4S + rand(0.9S)
+			scaley = 0.4S + rand(0.9S)
+			scalez = 0.4S + rand(0.9S)
+		}
+		else {
+			y += h - 0.7m
+			scalex = 1.6S
+			scaley = 1.6S
+			scalez = 1.6S
+		}
+		if (!rand(2)) {
+			scalex = -abs(scalex)
+		}
+		roty = 0
+		rotx = 45deg
+		rotz = 0
+		statusb = 0
+		if (LEVEL != LEVEL_RipperRoo) {
+			playframes(SPLASH, 0, 31.0)
+		}
+	}
+}
+

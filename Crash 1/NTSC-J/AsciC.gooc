@@ -1,0 +1,252 @@
+#gool AsciC 60 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#font FONT [AsciT]
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 //  
+#char 0x808080 0 3 1 0 46 28 16 16 410 0 // !
+#char 0x808080 0 3 1 0 52 28 16 16 410 0 // "
+#char 0x808080 0 3 1 0 50 12 16 16 410 0 // #
+#char 0x808080 0 3 1 0 48 28 16 16 410 0 // $
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // %
+#char 0x141414 0 2 2 0 92 24 16 16 400 0 // &
+#char 0x808080 0 3 1 0 52 20 16 16 410 0 // '
+#char 0x808080 0 3 1 0 48 4 16 16 410 0 // (
+#char 0x808080 0 3 1 0 46 16 16 16 410 0 // )
+#char 0x808080 0 3 1 0 44 8 16 16 410 0 // *
+#char 0x808080 0 3 1 0 50 16 16 16 410 0 // +
+#char 0x808080 0 3 1 0 46 4 16 16 410 0 // ,
+#char 0x808080 0 3 1 0 48 12 16 16 410 0 // -
+#char 0x808080 0 3 1 0 50 20 16 16 410 0 // .
+#char 0x808080 0 3 1 0 52 8 16 16 410 0 // /
+#char 0x808080 0 3 1 0 42 24 16 16 410 0 // 0
+#char 0x808080 0 3 1 0 42 20 16 16 410 0 // 1
+#char 0x808080 0 3 1 0 42 16 16 16 410 0 // 2
+#char 0x808080 0 3 1 0 42 12 16 16 410 0 // 3
+#char 0x808080 0 3 1 0 42 8 16 16 410 0 // 4
+#char 0x808080 0 3 1 0 42 4 16 16 410 0 // 5
+#char 0x808080 0 3 1 0 44 28 16 16 410 0 // 6
+#char 0x808080 0 3 1 0 44 24 16 16 410 0 // 7
+#char 0x808080 0 3 1 0 44 20 16 16 410 0 // 8
+#char 0x808080 0 3 1 0 44 16 16 16 410 0 // 9
+#char 0x808080 0 3 1 0 46 8 16 16 410 0 // :
+#char 0x808080 0 3 1 0 52 24 16 16 410 0 // ;
+#char 0x808080 0 3 1 0 48 16 16 16 410 0 // <
+#char 0x808080 0 3 1 0 48 24 16 16 410 0 // =
+#char 0x808080 0 3 1 0 48 20 16 16 410 0 // >
+#char 0x808080 0 3 1 0 50 4 16 16 410 0 // ?
+#char 0x808080 0 3 1 0 44 4 16 16 410 0 // @
+#char 0x808080 0 3 1 0 34 16 16 16 410 0 // A
+#char 0x808080 0 3 1 0 34 12 16 16 410 0 // B
+#char 0x808080 0 3 1 0 34 8 16 16 410 0 // C
+#char 0x808080 0 3 1 0 34 4 16 16 410 0 // D
+#char 0x808080 0 3 1 0 36 28 16 16 410 0 // E
+#char 0x808080 0 3 1 0 36 24 16 16 410 0 // F
+#char 0x808080 0 3 1 0 36 20 16 16 410 0 // G
+#char 0x808080 0 3 1 0 36 16 16 16 410 0 // H
+#char 0x808080 0 3 1 0 36 12 16 16 410 0 // I
+#char 0x808080 0 3 1 0 36 8 16 16 410 0 // J
+#char 0x808080 0 3 1 0 36 4 16 16 410 0 // K
+#char 0x808080 0 3 1 0 38 28 16 16 410 0 // L
+#char 0x808080 0 3 1 0 38 24 16 16 410 0 // M
+#char 0x808080 0 3 1 0 38 20 16 16 410 0 // N
+#char 0x808080 0 3 1 0 38 16 16 16 410 0 // O
+#char 0x808080 0 3 1 0 38 12 16 16 410 0 // P
+#char 0x808080 0 3 1 0 38 8 16 16 410 0 // Q
+#char 0x808080 0 3 1 0 38 4 16 16 410 0 // R
+#char 0x808080 0 3 1 0 40 28 16 16 410 0 // S
+#char 0x808080 0 3 1 0 40 24 16 16 410 0 // T
+#char 0x808080 0 3 1 0 40 20 16 16 410 0 // U
+#char 0x808080 0 3 1 0 40 16 16 16 410 0 // V
+#char 0x808080 0 3 1 0 40 12 16 16 410 0 // W
+#char 0x808080 0 3 1 0 40 8 16 16 410 0 // X
+#char 0x808080 0 3 1 0 40 4 16 16 410 0 // Y
+#char 0x808080 0 3 1 0 42 28 16 16 410 0 // Z
+#char 0x808080 0 3 1 0 48 8 16 16 410 0 // [
+#char 0x808080 0 3 1 0 52 12 16 16 410 0 // \
+#char 0x808080 0 3 1 0 46 20 16 16 410 0 // ]
+#char 0x808080 0 3 1 0 50 8 16 16 410 0 // ^
+#char 0x808080 0 3 1 0 44 12 16 16 410 0 // _
+#char 0x808080 0 3 1 0 52 16 16 16 410 0 // `
+#char 0x808080 0 3 1 0 0 4 16 16 410 0 // a
+#char 0x808080 0 3 1 0 2 4 16 16 410 0 // b
+#char 0x808080 0 3 1 0 4 4 16 16 410 0 // c
+#char 0x808080 0 3 1 0 6 4 16 16 410 0 // d
+#char 0x808080 0 3 1 0 8 4 16 16 410 0 // e
+#char 0x808080 0 3 1 0 10 4 16 16 410 0 // f
+#char 0x808080 0 3 1 0 12 4 16 16 410 0 // g
+#char 0x808080 0 3 1 0 14 4 16 16 410 0 // h
+#char 0x808080 0 3 1 0 16 4 16 16 410 0 // i
+#char 0x808080 0 3 1 0 18 4 16 16 410 0 // j
+#char 0x808080 0 3 1 0 20 4 16 16 410 0 // k
+#char 0x808080 0 3 1 0 22 4 16 16 410 0 // l
+#char 0x808080 0 3 1 0 24 4 16 16 410 0 // m
+#char 0x808080 0 3 1 0 26 4 16 16 410 0 // n
+#char 0x808080 0 3 1 0 28 4 16 16 410 0 // o
+#char 0x808080 0 3 1 0 30 4 16 16 410 0 // p
+#char 0x808080 0 3 1 0 32 28 16 16 410 0 // q
+#char 0x808080 0 3 1 0 32 24 16 16 410 0 // r
+#char 0x808080 0 3 1 0 32 20 16 16 410 0 // s
+#char 0x808080 0 3 1 0 32 16 16 16 410 0 // t
+#char 0x808080 0 3 1 0 32 12 16 16 410 0 // u
+#char 0x808080 0 3 1 0 32 8 16 16 410 0 // v
+#char 0x808080 0 3 1 0 32 4 16 16 410 0 // w
+#char 0x808080 0 3 1 0 34 28 16 16 410 0 // x
+#char 0x808080 0 3 1 0 34 24 16 16 410 0 // y
+#char 0x808080 0 3 1 0 34 20 16 16 410 0 // z
+#char 0x808080 0 3 1 0 54 28 16 16 410 0 // {
+#char 0x808080 0 3 1 0 46 24 16 16 410 0 // |
+#char 0x808080 0 3 1 0 50 24 16 16 410 0 // }
+#char 0x000000 0 0 0 0 0 0 4 4 400 420 // ~
+
+#fraganim BIOS_TEXT_BUF [AsciT] 32
+#frag 0x808080 0 3 1 0 54 20 16 16 0 -200 400 200
+#frag 0x808080 0 3 1 0 54 16 16 16 400 -200 800 200
+#frag 0x808080 0 3 1 0 54 12 16 16 800 -200 1200 200
+#frag 0x808080 0 3 1 0 54 8 16 16 1200 -200 1600 200
+#frag 0x808080 0 3 1 0 54 4 16 16 1600 -200 2000 200
+#frag 0x808080 0 3 1 0 56 28 16 16 2000 -200 2400 200
+#frag 0x808080 0 3 1 0 56 24 16 16 2400 -200 2800 200
+#frag 0x808080 0 3 1 0 56 20 16 16 2800 -200 3200 200
+#frag 0x808080 0 3 1 0 56 16 16 16 3200 -200 3600 200
+#frag 0x808080 0 3 1 0 56 12 16 16 3600 -200 4000 200
+#frag 0x808080 0 3 1 0 56 8 16 16 4000 -200 4400 200
+#frag 0x808080 0 3 1 0 56 4 16 16 4400 -200 4800 200
+#frag 0x808080 0 3 1 0 58 28 16 16 4800 -200 5200 200
+#frag 0x808080 0 3 1 0 58 24 16 16 5200 -200 5600 200
+#frag 0x808080 0 3 1 0 58 20 16 16 5600 -200 6000 200
+#frag 0x808080 0 3 1 0 58 16 16 16 6000 -200 6400 200
+#frag 0x808080 0 3 1 0 58 12 16 16 6400 -200 6800 200
+#frag 0x808080 0 3 1 0 58 8 16 16 6800 -200 7200 200
+#frag 0x808080 0 3 1 0 58 4 16 16 7200 -200 7600 200
+#frag 0x808080 0 3 1 0 60 28 16 16 7600 -200 8000 200
+#frag 0x808080 0 3 1 0 60 24 16 16 8000 -200 8400 200
+#frag 0x808080 0 3 1 0 60 20 16 16 8400 -200 8800 200
+#frag 0x808080 0 3 1 0 60 16 16 16 8800 -200 9200 200
+#frag 0x808080 0 3 1 0 60 12 16 16 9200 -200 9600 200
+#frag 0x808080 0 3 1 0 60 8 16 16 9600 -200 10000 200
+#frag 0x808080 0 3 1 0 60 4 16 16 10000 -200 10400 200
+#frag 0x808080 0 3 1 0 62 28 16 16 10400 -200 10800 200
+#frag 0x808080 0 3 1 0 62 24 16 16 10800 -200 11200 200
+#frag 0x808080 0 3 1 0 62 20 16 16 11200 -200 11600 200
+#frag 0x808080 0 3 1 0 62 16 16 16 11600 -200 12000 200
+#frag 0x808080 0 3 1 0 62 12 16 16 12000 -200 12400 200
+#frag 0x808080 0 3 1 0 62 8 16 16 12400 -200 12800 200
+
+#text TEXT FONT [1004I]
+"00                                      "
+"01                                      "
+"02                                      "
+"03                                      "
+"04                                      "
+"05                                      "
+"06                                      "
+"07                                      "
+"08                                      "
+"09                                      "
+"10                                      "
+"11                                      "
+"12                                      "
+"13                                      "
+"14                                      "
+
+#spawn S_0                        __s_0
+#spawn S_ASCII_TEXT_MASTER        Ascii_Text_Master
+#spawn S_ASCII_TEXT               Ascii_Text_Stance
+#ifreg "ntsc-j"
+#spawn S_ASCII_TEXT_BIOS          Ascii_Text_Bios_Stance
+#endif
+
+var TextFlash, TextCentered, TextBackdrop, mem4
+
+event Event30 => state Die_Fast
+
+state Ascii_Text_Master {
+	stateflag 0x60001
+	statusc 0
+	code () {
+		CARDTEXTBUF = getanim(TEXT)
+		CARDBIOSTEXTBUF = getanim(BIOS_TEXT_BUF)
+	}
+}
+
+state Ascii_Text_Stance {
+	stateflag 0x60001
+	statusc 0
+	code (x_pos, y_pos, frame_var, fmt2, size_x, size_y, r1, g1, b1, r2, g2, b2, flash, centered, backdrop) {
+		TextFlash = flash
+		TextCentered = centered
+		TextBackdrop = backdrop
+		SetTrans(x_pos, y_pos, 0)
+		SetScale(size_x, size_y, 0)
+		SetTextColor(r1, g1, b1, r2, g2, b2)
+		statusb = FLAG_INVISIBLE | FLAG_2D
+		setanim(TEXT)
+		if (TextCentered) {
+			x = 0
+			statusb |= FLAG_STRING_CENTER
+		}
+		if (TextBackdrop) {
+			statusb |= FLAG_HAS_SHADOW
+		}
+		do {
+			var0 = getfield(creator, frame_var)
+			var1 = getfield(creator, fmt2)
+			if (var0 < 0 || !var1) {
+				var0 = 0
+				statusb |= FLAG_INVISIBLE
+			}
+			else {
+				if (!TextFlash) {
+					statusb &= ~FLAG_INVISIBLE
+				}
+			}
+			playframe(var0 << 8)
+		} while (1)
+	}
+	trans {
+		if (TextFlash) {
+			if ((frametime - statetime) % 1s > 0.5s) {
+				statusb |= FLAG_INVISIBLE
+			}
+			else {
+				statusb &= ~FLAG_INVISIBLE
+			}
+		}
+	}
+}
+
+#ifreg "ntsc-j"
+state Ascii_Text_Bios_Stance {
+	stateflag 0x60001
+	statusc 0
+	code (x_pos, y_pos, fmt1, fmt2) {
+		mem4 = -1
+		SetTrans(x_pos, y_pos, 0)
+		SetScale(0.64, 1.015, 256.0)
+		statusb = FLAG_2D
+		do {
+			var0 = getfield(creator, fmt1)
+			var1 = getfield(creator, fmt2)
+			if (mem4 != var0) {
+				mem4 = var0
+				memcardfn(11, mem4)
+			}
+			if (mem4 < 0 || !var1) {
+				statusb |= FLAG_INVISIBLE
+			}
+			else {
+				statusb &= ~FLAG_INVISIBLE
+			}
+			playanim(0, BIOS_TEXT_BUF)
+		} while (1)
+	}
+}
+#endif
+
+state Die_Fast {
+	stateflag 0x64000
+	statusc 0
+	code () {}
+}
+

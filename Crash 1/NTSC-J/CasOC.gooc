@@ -1,0 +1,796 @@
+#gool CasOC 53 5
+
+#include "..\\GOOL_EXPR.gooc"
+
+#sprite RAIN [Cs1yT]
+#tex 0x5A5A5A 0 1 1 0 0 16 64 64
+#tex 0x5A5A5A 0 1 2 0 8 16 64 64
+#tex 0x5A5A5A 0 1 3 0 16 16 64 64
+#tex 0x5A5A5A 0 1 4 0 24 16 64 64
+#tex 0x5A5A5A 0 1 5 0 32 16 64 64
+#tex 0x5A5A5A 0 1 6 0 40 16 64 64
+#tex 0x5A5A5A 0 1 7 0 48 16 64 64
+#tex 0x5A5A5A 0 1 8 0 56 16 64 64
+#tex 0x5A5A5A 0 1 9 0 64 16 64 64
+#tex 0x5A5A5A 0 1 10 0 72 16 64 64
+#tex 0x5A5A5A 0 1 11 0 80 16 64 64
+#tex 0x5A5A5A 0 1 12 0 88 16 64 64
+#tex 0x5A5A5A 0 1 13 0 96 16 64 64
+#tex 0x5A5A5A 0 1 14 0 104 16 64 64
+#tex 0x5A5A5A 0 1 15 0 112 16 64 64
+#tex 0x5A5A5A 0 1 0 2 120 16 64 64
+
+#iflev yK
+#anim GATE [1014I] 23
+#anim GUILLOTINE [1016I] 1
+#anim PICKET [1018I] 1
+//#anim CHANDELIER [1005I] 1
+#anim FLOOR [1020I] 5
+#anim FLOOR_NOFRONT [1022I] 5
+#anim STEP [Cs1yV] 4
+#eliflev EG
+#anim GATE [CG1EV] 23
+#anim GUILLOTINE [Cg1EV] 1
+#anim PICKET [CP1EV] 1
+//#anim CHANDELIER [CC1EV] 1
+#anim FLOOR [CF1EV] 5
+#anim FLOOR_NOFRONT [Cf1EV] 5
+#anim STEP [Cs1EV] 4
+#eliflev F
+#anim GATE [CG1FV] 23
+#anim GUILLOTINE [Cg1FV] 1
+#anim PICKET [CP1FV] 1
+//#anim CHANDELIER [1005I] 1
+#anim FLOOR [CF1FV] 5
+#anim FLOOR_NOFRONT [Cf1FV] 5
+#anim STEP [1025I] 4
+#endif
+
+#iflev y
+#anim BIRD [Cb1yV] 19
+#anim BIRD_DIE [Cb2yV] 6
+#anim GRABBER [Cg1yV] 96
+#else
+#anim BIRD [1028I] 19
+#anim BIRD_DIE [1031I] 6
+#anim GRABBER [1034I] 96
+#endif
+
+#spawn S_CHANDELIER               Chandelier_Spawn
+#spawn S_GATE                     Gate_Spawn
+#spawn S_GUILLOTINE               Guillotine
+#spawn S_GATE_OLD                 Gate_Spawn
+#spawn S_FLOOR_TIMED              Floor_Spawn
+#spawn S_FLOOR_NOFRONT_TIMED      Floor_Spawn
+#spawn S_FLOOR_TRIGGER            Floor_Spawn
+#spawn S_FLOOR_NOFRONT_TRIGGER    Floor_Spawn
+#spawn S_FLOOR_NOFRONT_MIRROR     Floor_Mirror
+#spawn S_STEP_ARRAY               Step_Array_Spawn
+#spawn S_STEP                     Step
+#spawn S_FLOOR_MIRROR             Floor_Mirror
+#spawn S_12                       __s_12
+#spawn S_RAIN_MASTER              Rain_Master
+#spawn S_RAIN_COPY                Rain_Copy
+#spawn S_BIRD_VERTICAL            Bird_Spawn
+#spawn S_BIRD_HORIZONTAL          Bird_Spawn
+#spawn S_GRABBER                  Grabber_Spawn
+#spawn S_CASTLE_DARK              __s_18
+#spawn S_19                       __s_19
+
+var CycleLen, CycleOff, CycleActiveDur, NextObjTrigger, SwingX, SwingY, SwingZ, SpawnX, SpawnY,
+SpawnZ, ChandelierWait1, ChandelierWait2, ChandelierWait3, BirdCycleLen, BirdCycleOff, BirdPathSpeed, BirdPropulsion, BirdRotOff, GateSoundOnOpen,
+GateVoice
+
+state Floor_Spawn { // 0
+	code () {
+		zindex = 12
+		statusb = 0x80000000 | FLAG_SOLID_TOP | FLAG_COLLIDABLE
+		if (spawn == S_FLOOR_NOFRONT_TIMED || spawn == S_FLOOR_TIMED) {
+			if (vecx) CycleLen = vecx >> 8;
+			     else CycleLen = 3.5s;
+			if (vecy) CycleOff = vecy >> 8;
+			     else CycleOff = 0;
+			CycleActiveDur = CycleLen - 1.333s
+		}
+		else if (spawn == S_FLOOR_NOFRONT_TRIGGER || spawn == S_FLOOR_TRIGGER) {
+			if (vecx) CycleActiveDur = vecx >> 8;
+			     else CycleActiveDur = 2.167s;
+			NextObjTrigger = vecz
+		}
+		if (spawn == S_FLOOR_NOFRONT_TIMED || spawn == S_FLOOR_NOFRONT_TRIGGER) {
+			spawn(CasOC, S_FLOOR_NOFRONT_MIRROR)
+			setanim(FLOOR_NOFRONT)
+			changestate(Floor_Wait)
+		}
+		else if (spawn == S_FLOOR_TIMED || spawn == S_FLOOR_TRIGGER) {
+			spawn(CasOC, S_FLOOR_MIRROR)
+			setanim(FLOOR)
+			changestate(Floor_Wait)
+		}
+	}
+}
+
+state Floor_Mirror { // 1
+	code () {
+		scalex = -abs(scalex)
+		do { playframe() } while (1)
+	}
+	trans {
+		zindex = parent->zindex
+		statusb = parent->statusb
+		animframe = parent->animframe
+		animseq = parent->animseq
+	}
+}
+
+state Floor_Wait { // 2
+	code () {
+		if (spawn == S_FLOOR_NOFRONT_TRIGGER) {
+			tpc = 0
+		}
+		sleepframe(4.0)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			if (NextObjTrigger) {
+				interrupter = objectget(NextObjTrigger)
+				sendevent(EventTriggered, interrupter)
+			}
+			accevcstate(Floor_Active)
+		}
+	}
+	trans {
+		if (spawn == S_FLOOR_NOFRONT_TIMED || spawn == S_FLOOR_TIMED) {
+			unless (STATUS_FIRSTFRAME) {
+				changestateifn(Floor_Active, time(CycleLen, CycleOff))
+			}
+		}
+	}
+}
+
+state Floor_Active { // 3
+	code () {
+		playframesback(4.0, 0)
+		WaitFrame(CycleActiveDur)
+		playframeslt(0, 4.0)
+		changestate(Floor_Wait)
+	}
+}
+
+state Gate_Spawn { // 4
+	code () {
+		zindex = 0
+		statusb = FLAG_SOLID_SIDES | FLAG_COLLIDABLE | 0x40000
+		GateSoundOnOpen = false
+		if (spawn == S_GATE_OLD) {
+			y -= 4m
+		}
+		z += 0.4m
+		if (vecx) CycleActiveDur = vecx >> 8;
+		     else CycleActiveDur = 2.5s;
+		NextObjTrigger = vecz
+		changestateif(Gate_Force_Open, player->z < z + 0)
+		setanim(GATE)
+		changestate(Gate_Closed)
+	}
+}
+
+state Gate_Closed { // 5
+	code () {
+		sleepframe(22.0)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			GateSoundOnOpen = true
+			if (NextObjTrigger) {
+				interrupter = objectget(NextObjTrigger)
+				sendevent(EventTriggered, interrupter)
+			}
+			accevcstate(Gate_Open)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Gate_Open, player->z < z + 0)
+		}
+	}
+}
+
+inline sub KillVoice() {	
+	if (GateVoice) {
+		voice = GateVoice
+		soundfadet(0.08s, voice)
+		soundfadev(0, voice, 3)
+		GateVoice = 0
+	}
+}
+
+state Gate_Open { // 6
+	code () {
+		KillVoice()
+		if (GateSoundOnOpen) {
+			SoundPlayDefault([gopEA], 1.0V)
+			GateVoice = voice
+		}
+		setanim(GATE)
+		while (animframe > 0) {
+			playframe(animframe-1.0)
+		}
+		KillVoice()
+		if (GateSoundOnOpen) {
+			SoundPlayDefault([gclEA], 1.0V)
+		}
+		statusb &= ~FLAG_COLLIDABLE
+		WaitFrame(CycleActiveDur)
+		while (player->z < z + 0) {
+			playframe()
+		}
+		var0 = true
+		statusb |= FLAG_COLLIDABLE
+		SoundPlayDefault([gopEA], 1.0V)
+		GateVoice = voice
+		animframe = -1.0
+		do {
+			animframe += 1.0
+			if (abs(z - player->z) < 1.5m) {
+				if (player->statusa \ FLAG_GROUNDLAND) {
+					sendevent(Event24, collider, 100.0)
+				}
+				else if (abs(x - player->x) < 1m) {
+					player->z = z + 1.5m
+				}
+			}
+			playframe()
+		} while (animframe + 1.0 <= 22.0)
+		KillVoice()
+		SoundPlayDefault([gclEA], 1.0V)
+		changestate(Gate_Closed)
+	}
+	trans {
+		once {
+			var0 = false
+			GateVoice = 0
+		}
+		changestateif(Gate_Open, var0 && player->z < z+0)
+	}
+}
+
+state Gate_Force_Open { // 7
+	code () {
+		statusb &= ~FLAG_COLLIDABLE
+		setanim(GATE, 0)
+		changestate(Gate_Open)
+	}
+}
+
+state Gate_Old_Spawn { // 8
+	code () {
+		zindex = 0
+		statusb = FLAG_SOLID_SIDES | 0x40000 | FLAG_COLLIDABLE
+		y -= 4m
+		groundy = y
+		if (vecx) CycleLen = vecx >> 8;
+		     else CycleLen = 9.5s;
+		if (vecy) CycleOff = vecy >> 8;
+		     else CycleOff = 0;
+		NextObjTrigger = vecz
+		CycleActiveDur = (CycleLen - 10s) / 2
+		setanim(GATE, 22.0)
+		if (player->z < z+0) {
+			y = groundy + 4.5m
+			changestate(Gate_Old_Open)
+		}
+		changestate(Gate_Old_Closed)
+	}
+}
+
+state Gate_Old_Closed { // 9
+	code () {
+		setanim(GATE)
+		sleepframe(22.0)
+	}
+	event (e, a) {
+		if (e == EventTriggered) {
+			if (NextObjTrigger) {
+				interrupter = objectget(NextObjTrigger)
+				sendevent(EventTriggered, interrupter)
+			}
+			accevcstate(Gate_Old_Open)
+		}
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Gate_Old_Open, player->z < z+0)
+		}
+	}
+}
+
+state Gate_Old_Open { // 10
+	code () {
+		while (y < groundy + 4.5m) {
+			y = seek(y, groundy + 4.5m, spd(0.5m))
+			playframe()
+		}
+		statusb &= ~FLAG_COLLIDABLE
+		WaitFrame(CycleActiveDur)
+		while (player->z < z+0) {
+			playframe()
+		}
+		var0 = true
+		do (var start = frametime) {
+			y += 0.1m
+			playframe()
+			y -= 0.1m
+			playframe()
+		} while (frametime - start < 0.5s)
+		statusb |= FLAG_COLLIDABLE
+		while (y > groundy) {
+			sendeventif(Event24, collider, abs(z - player->z) < 2m, 100.0)
+			y = seek(y, groundy, spd(20m))
+			playframe()
+		}
+		changestate(Gate_Old_Closed)
+	}
+	trans {
+		once {
+			var0 = false
+		}
+		changestateif(Gate_Old_Open, var0 && player->z < z+0)
+	}
+}
+
+inline sub CheckGuillotineClip() {
+	getvert(vvec, self, 0)
+	var0 = pointclip(vec, player)
+	getvert(vvec, self, 1.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 2.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 3.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 4.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 5.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 6.0)
+	var0 += pointclip(vec, player)
+	getvert(vvec, self, 7.0)
+	var0 += pointclip(vec, player)
+	sendeventif(EventHit, player, var0, 100.0)
+}
+
+/* state Chandelier_Spawn { // 11
+	code () {
+		density = 0.3m
+		statusb = FLAG_SOLID_SIDES | FLAG_COLLIDABLE
+		if (vecx) CycleLen = vecx >> 8;
+		     else CycleLen = 6s;
+		if (vecy) CycleOff = vecy >> 8;
+		     else CycleOff = 0;
+		y += 2.5m
+		SpawnY = y
+		CycleActiveDur = (CycleLen - 2.5s - 1) << 8
+		ChandelierWait1 = CycleActiveDur * -2.08
+		ChandelierWait2 = CycleActiveDur * -6.4
+		ChandelierWait3 = CycleActiveDur * -2.56
+		changestate(Chandelier_Wait)
+	}
+}
+
+state Chandelier_Wait { // 12
+	code () {
+		sleepanim(0, CHANDELIER)
+	}
+	trans {
+		once {
+			sendevent(EventHit, collider, 100.0)
+			SwingY = 0
+		}
+		changestateifn(Chandelier_Active, time(CycleLen, CycleOff))
+	}
+}
+
+state Chandelier_Active { // 13
+	code () {
+		do (var i = 0) {
+			SwingY += 0.02m
+			playanim(0, CHANDELIER)
+			SwingY -= 0.02m
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < 9.0)
+		do (var i = 0) {
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < ChandelierWait1)
+		do (var i = 0) {
+			SwingY += 0.84m
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < 3.0)
+		var0 = 0.11m
+		do (var i = 0) {
+			var0 -= 0.01m
+			SwingY += var0
+			playanim(0, CHANDELIER)
+			SwingY -= var0
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < 6.0)
+		do (var i = 0) {
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < ChandelierWait2)
+		var0 = 0.005m
+		while (SwingY > 0.1m) {
+			SwingY -= var0
+			var0 += 0.005m
+			playanim(0, CHANDELIER)
+		}
+		SwingY = 0.1m
+		do (var i = 0) {
+			playanim(0, CHANDELIER)
+			i += 1.0
+		} while (i < ChandelierWait3)
+		while (SwingY > 0) {
+			SwingY -= 0.01m
+			playanim(0, CHANDELIER)
+		}
+		changestate(Chandelier_Wait)
+	}
+	trans {
+		y = SpawnY - SwingY
+		sendevent(EventHit, collider, 100.0)
+	}
+} */
+
+state Guillotine { // 11
+	code () {
+		sleepanim(0, GUILLOTINE)
+	}
+	trans {
+		once {
+			zindex = 24
+			statusb = 0x40000
+			if (vecx) CycleLen = vecx >> 9;
+				 else CycleLen = 2s;
+			CycleActiveDur = (120deg-1) / (CycleLen+1)
+			if (vecy) CycleOff = vecy >> 8;
+				 else CycleOff = 0;
+			rotz = 90deg
+			setanim(GUILLOTINE)
+		}
+		rotx = time(CycleLen*2, CycleOff)
+		if (rotx >= CycleLen) {
+			rotx = CycleLen/2 - sin(rotx - CycleLen, CycleLen)
+		}
+		else {
+			rotx = sin(rotx, CycleLen) - CycleLen/2
+		}
+		rotx *= CycleActiveDur
+		if (abs(rotx) < 1deg && frametime - statetime >= 0.5s) {
+			soundpitch(7.2 + rand(1.6))
+			soundplay([scrEA], 0.1V + rand(0.05V))
+			statetime = 0
+		}
+		CheckGuillotineClip()
+	}
+}
+
+inline sub SlipperyStepCode(path_dist, speed_mul) {
+	calcpath(0, vvec)
+	calcpath(1.0, vvel)
+	if (velx < vecx) {
+		scalex = -abs(scalex)
+	}
+	velx = (velx - vecx) * speed_mul
+	vely = (vely - vecy) * speed_mul
+	velz = (velz - vecz) * speed_mul
+	pathdist = path_dist
+	statusb = FLAG_PHYSICS_ENGINE | FLAG_INVISIBLE | FLAG_PATH_CALCS | FLAG_TRACK_PATH_SIGN
+}
+
+state Step_Array_Spawn { // 12
+	code () {
+		zindex = 24
+		if (vecx) CycleLen = vecx >> 8;
+		     else CycleLen = 6s;
+		if (vecy) CycleOff = vecy >> 8;
+		     else CycleOff = 0;
+		CycleActiveDur = (CycleLen - 0.28s) / 2
+		do (var i = 1.0) {
+			calcpath(i)
+			spawn(CasOC, S_STEP)
+			i += 1.0
+		} while (i < pathlen - 1.0)
+		SlipperyStepCode(1.2m, 10)
+		ChandelierWait1 = false
+		changestate(Step_Array_Wait)
+	}
+}
+
+state Step_Array_Wait { // 13
+	code () {
+		sleepanim(0, STEP)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateifn(Step_Array_Active, time(CycleLen, CycleOff))
+		}
+	}
+}
+
+state Step_Array_Active { // 14
+	code () {
+		SoundPlayDefault([ssuyA], 0.03V)
+		playframes(STEP, 0, 3.0)
+		WaitFrame(CycleActiveDur)
+		SoundPlayDefault([ssuyA], 0.2V)
+		playframesback(STEP, 3.0, 0)
+		if (ChandelierWait1 && !(player->stateflag \ 0x20)) {
+			sendevent(Event21, player, 0)
+			if (eventaccepted) {
+				ChandelierWait1 = false
+			}
+		}
+		changestate(Step_Array_Wait)
+	}
+	trans {
+		if (!STATUS_FIRSTFRAME && (ChandelierWait1 || (player->statusa \ FLAG_GROUNDLAND && y > groundy - 0.5m && y < groundy + 0.75m)) && !STATUS_INVALID_PATH) {
+			statetime = frametime
+			if (!(ChandelierWait1 || player->stateflag \ 0x20)) {
+				sendevent(Event32, player, troty, 6m)
+				if (eventaccepted) {
+					ChandelierWait1 = true
+				}
+			}
+		}
+		else if (ChandelierWait1 && frametime - statetime >= 0.4s && !(player->stateflag \ 0x20)) {
+			sendevent(Event21, player, 0)
+			if (eventaccepted) {
+				ChandelierWait1 = false
+			}
+		}
+		x = player->x
+		y = player->y
+		z = player->z
+	}
+}
+
+state Step { // 15
+	code () {
+		scalex = parent->scalex
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
+		setanim(STEP)
+		do { playframe(parent->animframe) } while (1)
+	}
+	trans {
+		if (animframe == 3.0) {
+			zindex = 0
+			statusb &= ~FLAG_COLLIDABLE
+		}
+		else {
+			zindex = 24
+			statusb |= FLAG_COLLIDABLE
+		}
+	}
+}
+
+state Rain_Master { // 16
+	statusc 0
+	code () {
+		loadfile([CasOC])
+		zindex = 0
+		SwingY = 2.0
+		trotz = 2deg
+		x = 0
+		y = 60.0
+		z = 0
+		var0 = x
+		SpawnY = y
+		SetScale(5.2, 7.2, 16.0)
+		statusb = FLAG_2D
+		soundpitch(4.0)
+		sounddecay(0.9375)
+		soundplay([ranyA], 0.05V)
+		spawn(CasOC, S_RAIN_COPY, 1, 0, -113.0)
+		spawn(CasOC, S_RAIN_COPY, 1, 129.0, -113.0)
+		spawn(CasOC, S_RAIN_COPY, 1, 129.0, 0)
+		spawn(CasOC, S_RAIN_COPY, 1, 258.0, -113.0)
+		spawn(CasOC, S_RAIN_COPY, 1, 258.0, 0)
+		spawn(CasOC, S_RAIN_COPY, 1, 387.0, -113.0)
+		spawn(CasOC, S_RAIN_COPY, 1, 387.0, 0)
+		spawn(CasOC, S_RAIN_COPY, 1, 516.0, -113.0)
+		spawn(CasOC, S_RAIN_COPY, 1, 516.0, 0)
+		sleepframes(RAIN, 0, 15.0)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			y = SpawnY + loopseek(SwingY, 3.0, 0.15)
+			x = 580.0 - (var0 + CAMTRANSX/8) % 640.0 + 256.0
+		}
+	}
+}
+
+state Rain_Copy { // 17
+	statusc 0
+	code (xoff, yoff) {
+		var0 = xoff
+		vecy = yoff
+		zindex = parent->zindex
+		statusb = parent->statusb
+		scalex = parent->scalex
+		scaley = parent->scaley
+		playanim(0, RAIN)
+		sleep()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			x = 580.0 - (var0 + CAMTRANSX/8) % 640.0 + 256.0
+			y = parent->y + vecy
+			animseq = parent->animseq
+			if (vecy) {
+				animframe = (parent->animframe + 8.0) % 16.0
+			}
+			else {
+				animframe = parent->animframe
+			}
+		}
+	}
+}
+
+state Bird_Spawn { // 18
+	statusc 0
+	code () {
+		if (vecx) BirdCycleLen = vecx >> 8;
+		     else BirdCycleLen = 3s;
+		if (vecz) BirdPropulsion = vecz;
+		     else BirdPropulsion = 15m;
+		BirdCycleOff = vecy >> 8
+		BirdPathSpeed = pathlen*2 / (BirdCycleLen+1)
+		changestate(Bird_Fly)
+	}
+}
+
+inline sub BirdSetRotNew() {
+	roty = abs(BirdRotOff) - 15deg
+}
+
+state Bird_Fly { // 19
+	statusc 0
+	code () {
+		density = 0.3m
+		BirdRotOff = rand(30deg) - 15deg
+		setanim(BIRD, rand(19.0))
+		statusb = FLAG_SOLID_TOP | FLAG_COLLIDABLE
+		do {
+			TimePathProg(time(BirdCycleLen, BirdCycleOff), BirdCycleLen, BirdPathSpeed)
+			if (animframe >> 8 == 3) {
+				sounddecay(0.25)
+				SoundPlayDefault([bflyA], 0.1V)
+			}
+			animframe = (animframe+1.0) % 19.0
+			playframe()
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventJumpedOn && interrupter == player) {
+			sendevent(EventBounce, interrupter, BirdPropulsion)
+			rejevcstate(Bird_Die, eventaccepted)
+		}
+		accevcstate(Bird_Die, e == EventSpinHit || e == EventHit || e == EventFling)
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		/*sin(*/null = loopseek(BirdRotOff, 30deg, spd(10deg))/*, 30deg - spd(10deg))*/
+		BirdSetRotNew()
+	}
+}
+
+state Bird_Die { // 20
+	stateflag 0x23
+	statusc 0x12
+	code (h) {
+		sendevent(EventCombo, player, h)
+		statusb &= ~(FLAG_COLLIDABLE | FLAG_SOLID_TOP)
+		setanim(BIRD_DIE, 0)
+		SoundPlayDefault([bncyA], 0.2V + rand(0.2V))
+		while (scalex > 0.04S) {
+			playframe()
+			if (animframe < 5.0) {
+				animframe += 1.0
+			}
+		}
+		changestate(Bird_Dead)
+	}
+	trans {
+		EnemyDieTrans()
+	}
+}
+
+state Bird_Dead { // 21
+	statusc 0x12
+	code () {
+		statusb |= FLAG_INVISIBLE
+		setanim(BIRD, rand(19.0))
+		do (var i = 0) {
+			wait(1s)
+			i += 1.0
+		} while (i < 10.0)
+		BirdRotOff = 0
+		BirdSetRotNew()
+		SetScale(0)
+		statusb &= ~FLAG_INVISIBLE
+		while (scalex < 1.0S) {
+			SetScale(scalex+0.1S, scaley+0.1S, scalez+0.1S)
+			TimePathProg(time(BirdCycleLen, BirdCycleOff), BirdCycleLen, BirdPathSpeed)
+			animframe = (animframe+1.0) % 19.0
+			playframe()
+		}
+		changestate(Bird_Fly)
+	}
+}
+
+state Grabber_Spawn { // 22
+	code () {
+		SpawnX = x
+		SpawnY = y
+		SpawnZ = z
+		setanim(GRABBER, rand(96.0))
+		changestate(Grabber_Attack)
+	}
+}
+
+inline sub CastleGrabberAnim() {
+	do {
+		animframe = (animframe+1.0) % 96.0
+		playframe()
+	} while (1)
+}
+
+state Grabber_Attack { // 23
+	statusc 0
+	code () {
+		statusb = FLAG_COLLIDABLE
+		wait(2s)
+		CastleGrabberAnim()
+	}
+	event (e, a) {
+		accevcstate(Grabber_Hide, e == EventJumpedOn || e == EventFling || e == EventHitInvincible || e == EventHit || e == EventSpinHit)
+	}
+	trans {
+		/* sendeventif(EventHit, player, pointclip(getvert(vvec, self, 0), player) || pointclip(getvert(vvec, self, 1.0), player), 100.0) */
+		getvert(vvec, self, 0)
+		var0 = pointclip(vec, player)
+		getvert(vvec, self, 1.0)
+		var0 += pointclip(vec, player)
+		sendeventif(EventHit, player, var0, 100.0)
+		if (z < SpawnZ) {
+			z += spd(6m)
+		}
+	}
+}
+
+state Grabber_Hide { // 24
+	code () {
+		CastleGrabberAnim()
+	}
+	trans {
+		if (z > SpawnZ - 2m) {
+			z -= spd(12m)
+		}
+		else {
+			changestate(Grabber_Kill)
+		}
+	}
+}
+
+state Grabber_Kill { // 25
+	code () {
+		statusb |= FLAG_INVISIBLE
+		KillEntity()
+	}
+}
+
+
+

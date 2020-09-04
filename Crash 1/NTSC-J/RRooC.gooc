@@ -1,0 +1,247 @@
+#gool RRooC 37 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim ROO_JUMP [RS1nV] 28
+#anim ROO_HOP [RS2nV] 12
+#anim ROO_DEAD_1 [RS3nV] 20
+#anim ROO_DEAD_2 [RS4nV] 25
+
+#spawn S_RIPPER_ROO               Roo_Spawn
+#spawn S_RIPPER_ROO_INTRO         Roo_Intro
+
+var CurTileX, CurTileY, CurTileZ, TargetTileX, TargetTileY,
+TargetTileZ, RooCurrentTile, RooDamageTaken, RooNextDamage, RooHitTime,
+mem11, RooBoxTile, RooBoxTime, RooTilesInUse
+
+event EventHit => sub RooHit
+
+#include "ShadC.gooh"
+#include "BoxsC.gooh"
+
+inline sub SoundRooJump() {
+	soundpitch(3.2 + rand(0.8))
+	soundplay([rjpnA], 0.2V + rand(0.1V))
+}
+
+sub RooJump (tile) {
+	calcpath((RooCurrentTile + 41) << 8, vvec)
+	CurTileX = vecx
+	CurTileY = vecy
+	CurTileZ = vecz
+	calcpath((tile + 41) << 8, vvec)
+	TargetTileX = vecx
+	TargetTileY = vecy
+	TargetTileZ = vecz
+	troty = atan2(TargetTileX)
+	v0 = troty
+	if (health < RooNextDamage) {
+		setanim(ROO_HOP)
+		do (var f = 29.0) {
+			calcpath(f - 1.0, vvec)
+			y = vecy
+			playframe(f - 29.0)
+			f += 1.0
+		} while (f <= 40.0)
+	}
+	else {
+		statusb &= ~FLAG_ROT_Y
+	}
+	RooCurrentTile = tile
+	setanim(ROO_JUMP)
+	SoundRooJump()
+	do (var i = 1.0) {
+		calcpath(i - 1.0, vvec)
+		y = vecy
+		if (i >= 3.0 && i <= 26.0) {
+			x = CurTileX + ((TargetTileX - CurTileX) * (i - 2.0 >> 8) / 24)
+			z = CurTileZ + ((TargetTileZ - CurTileZ) * (i - 2.0 >> 8) / 24)
+			if (health >= RooNextDamage) {
+				roty = spd(roty, trotx)
+			}
+		}
+		playframe(i - 1.0)
+		i += 1.0
+	} while (i <= 28.0)
+	SoundPlayDefault([ld30A], 0.25V)
+	statusb |= FLAG_ROT_Y
+	troty = v0
+}
+
+sub SetHealthStatus () {
+	RooNextDamage = RooDamageTaken + 1
+	if (health >= RooNextDamage) {
+		colra = 0xff
+		colga = 0x20
+		colba = 0x20
+		colr1 = 0xff
+		colg1 = 0x20
+		colb1 = 0x20
+		colr2 = 0xff
+		colg2 = 0x20
+		colb2 = 0x20
+		colr3 = 0xff
+		colg3 = 0x20
+		colb3 = 0x20
+	}
+	else {
+		SetDefaultColor()
+	}
+}
+
+state Roo_Spawn {
+	code () {
+		zindex = 24
+		trotx = 720deg
+		statusb = FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_SOLID_SIDES
+		health = 0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, 3.0, 1) // health type 1: health -> damage taken
+		RooDamageTaken = 0
+		RooHitTime = 0
+		GLOBALOBJ = self
+		RooBoxTile = -1
+		RooBoxTime = frametime
+		mem11 = 0
+		RooCurrentTile = 5
+		calcpath((RooCurrentTile + 41) << 8, vvec)
+		x = vecx
+		z = vecz
+		spawn(ShadC, ShadC_S_SHADOW, 1, 0, 2.0S, 10) // needs FLAG_HAS_SHADOW!!!
+		while (GAMESTATE == GAME_STATE_CUTSCENE) {
+			playanim(0, ROO_JUMP)
+		}
+		changestate(Roo_Boss)
+	}
+}
+
+state Roo_Boss {
+	statusc 0
+	code () {
+		RooTilesInUse = 1<<4 | 1<<6 | 1<<8
+		while (health < RooNextDamage) {
+			RooJump(4) if (health >= RooNextDamage) break;
+			RooJump(6) if (health >= RooNextDamage) break;
+			RooJump(4) if (health >= RooNextDamage) break;
+			RooJump(8) if (health >= RooNextDamage) break;
+		}
+		RooJump(RooCurrentTile)
+		RooJump(RooCurrentTile)
+		RooDamageTaken += 1
+		SetHealthStatus()
+		RooTilesInUse = 1<<3 | 1<<4 | 1<<5 | 1<<7
+		while (health < RooNextDamage) {
+			RooJump(4) if (health >= RooNextDamage) break;
+			RooJump(3) if (health >= RooNextDamage) break;
+			RooJump(7) if (health >= RooNextDamage) break;
+			RooJump(5) if (health >= RooNextDamage) break;
+		}
+		RooJump(RooCurrentTile)
+		RooJump(RooCurrentTile)
+		RooDamageTaken += 1
+		SetHealthStatus()
+		RooTilesInUse = 1<<1 | 1<<3 | 1<<5 | 1<<7
+		while (health < RooNextDamage) {
+			RooJump(7) if (health >= RooNextDamage) break;
+			RooJump(3) if (health >= RooNextDamage) break;
+			RooJump(1) if (health >= RooNextDamage) break;
+			RooJump(5) if (health >= RooNextDamage) break;
+		}
+		RooJump(9)
+		troty = 0
+		statusb &= ~FLAG_COLLIDABLE
+		changestate(Roo_Dead)
+	}
+	event (e, a) {
+		rejevret(e == EventHit && (!(frametime - RooHitTime >= 1s) || health >= RooNextDamage))
+	}
+	trans {
+		sendevent(EventHit, collider, 100.0)
+		SetHealthStatus()
+		RooDropBoxes()
+	}
+}
+
+sub RooHit () {
+	SoundPitchDefault()
+	soundsetup(0, 9)
+	soundplay([CrznA], 0.6V + rand(0.2V))
+	health += 1
+	RooHitTime = frametime
+}
+
+state Roo_Dead {
+	stateflag 0x21
+	code () {
+		entitysetspawn(0)
+		SoundPitchDefault()
+		sounddelay(1.334s)
+		soundplay([ld00A], 0.3V + rand(0.1V))
+		playframes(ROO_DEAD_1, 0, 19.0)
+		playframes(ROO_DEAD_2, 0, 24.0)
+		GLOBALOBJ = 0
+		sendevent(EventWarp, player, 0)
+		sleepframe(24.0)
+	}
+}
+
+state Roo_Intro {
+	statusc 0
+	code () {
+		pathprog = 1.0
+		statusb = 0x40000
+		changestateif(Roo_Intro_Kill, RESPAWNCOUNT > 0)
+		setanim(ROO_JUMP)
+		do {
+			SoundRooJump()
+			SoundPitchDefault()
+			sounddelay(0.85s)
+			soundplay([ld30A], 0.3V + rand(0.1V))
+			playframes(1.0, 26.0)
+		} while (1)
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			changestateif(Roo_Intro_Kill, pathprog >= pathlen || GAMESTATE != GAME_STATE_CUTSCENE)
+			pathprog += 1.0
+			calcpath()
+		}
+	}
+}
+
+state Roo_Intro_Kill {
+	statusc 0
+	code () {
+		entitysetspawn(0)
+	}
+}
+
+sub RooDropBoxes () {
+	/* var min_player_dist = 99999.0, player_dist, closest_player_tile = -1, pickup_tile = rand(9) << 8
+	do (var t = 41.0) {
+		calcpath(t, vvec)
+		player_dist = distance(vec, player, DISTANCE_NO_Y)
+		if (player_dist < min_player_dist) {
+			min_player_dist = player_dist
+			closest_player_tile = t
+		}
+		t += 1.0
+	} while (t < 50.0)
+	if (closest_player_tile != RooBoxTile) {
+		RooBoxTile = closest_player_tile
+		RooBoxTime = frametime
+	}
+	if (frametime - RooBoxTime >= 6s) {
+		calcpath(RooBoxTile, vvec)
+		vecx -= 0.5m
+		vecz -= 0.5m
+		spawn(BoxsC, BoxsC_S_BOX_TNT_AUTO, 1, 15m, 3s, vecx, vecy, vecz)
+		RooBoxTime = frametime
+	}
+	if (!(time(4.9s) || RooBoxTile == 41.0 + pickup_tile || 1 << (pickup_tile >> 8) & RooTilesInUse)) {
+		calcpath(41.0 + pickup_tile, vvec)
+		vecx -= 0.5m
+		vecz -= 0.5m
+		spawn(BoxsC, BoxsC_S_BOX_PICKUP_AUTO, 1, 15m, 5s, vecx, vecy, vecz)
+	} */
+}
+

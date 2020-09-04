@@ -1,0 +1,564 @@
+#gool BrioC 40 3
+
+#include "..\\GOOL_EXPR.gooc"
+
+#anim BRIO_PREPARE_1 [BP1rV] 16
+#anim BRIO_PREPARE_2 [BP2rV] 16
+#anim BRIO_PREPARE_3 [BP3rV] 28
+#anim BRIO_PREPARE_4 [BP4rV] 27
+#anim BRIO_LOOK_1 [BL1rV] 29
+#anim BRIO_LOOK_2 [BL2rV] 20
+#anim BRIO_LOOK_3 [BL3rV] 11
+#anim BRIO_SCARE_EXPLODE [BS1rV] 18
+#anim BRIO_SCARE_PREPARE [BS2rV] 13
+#anim BRIO_THROW_1 [BT1rV] 19
+#anim BRIO_THROW_2 [BT2rV] 4
+#anim BRIO_THROW_3 [BT3rV] 11
+#anim BRIO_THROW_4 [BT4rV] 15
+#anim BRIO_DRINK_1 [BD1rV] 29
+#anim BRIO_DRINK_2 [BD2rV] 23
+#anim BRIO_DRINK_3 [BD3rV] 4
+#anim BRIO_MONSTER_TRANSFORM [BM1rV] 19
+#anim BRIO_MONSTER_DIE_1 [BM3rV] 19
+#anim BRIO_MONSTER_DIE_2 [BM4rV] 17
+#anim BRIO_MONSTER_ROAR_1 [BM5rV] 22
+#anim BRIO_MONSTER_ROAR_2 [BM6rV] 6
+#anim BRIO_MONSTER_PUNCH [BM7rV] 16
+#anim BRIO_MONSTER_HIT [BM8rV] 23
+
+#spawn S_BRIO                     Brio_Spawn
+
+var mem1, BrioVialsThrown, BrioVialsUsed, BrioPathTrack, BrioPathSpeed, mem6, BrioCantTrigger, BrioAnimSet, BrioHitsTallied
+
+event Event1 => sub BrioTally
+event EventTriggered => sub BrioTallyHurt
+event EventRespawn => sub DeloadAnims
+
+#include "ShadC.gooh"
+#include "BriOC.gooh"
+#include "BoxsC.gooh"
+
+state Brio_Spawn {
+	code () {
+		LoadAnim2([BP1rV], [BS1rG])
+		LoadAnim2([BP2rV], [BS1rG])
+		LoadAnim2([BP3rV], [BS1rG])
+		LoadAnim2([BP4rV], [BS1rG])
+		LoadAnim2([BL1rV], [BS1rG])
+		LoadAnim2([BL2rV], [BS1rG])
+		LoadAnim2([BL3rV], [BS1rG])
+		LoadAnim2([BS1rV], [BS1rG])
+		LoadAnim2([BS2rV], [BS1rG])
+		LoadAnim([BT1rV], [BS1rG])
+		LoadAnim([BT2rV], [BS1rG])
+		LoadAnim([BT3rV], [BS1rG])
+		LoadAnim([BT4rV], [BS1rG])
+		BrioAnimSet = 0
+		zindex = 24
+		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_SOLID_SIDES | FLAG_COLLIDABLE | 0x40000
+		mem1 = frametime
+		BrioVialsThrown = 0
+		BrioVialsUsed = 0
+		density = 0.1m
+		health = 0
+		BrioHitsTallied = 0
+		GLOBALVAL = 0
+		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, 9.0, 2) // health type 2: health (as gool number) -> damage taken
+		changestate(Brio_Mix)
+	}
+}
+
+state Brio_Mix {
+	code () {
+		do {
+			playframes(BRIO_PREPARE_1, 0, 15.0)
+			playframes(BRIO_PREPARE_2, 0, 15.0)
+			changestateif(Brio_Throw, GAMESTATE == GAME_STATE_PLAYING && BrioVialsUsed >= BrioVialsThrown && BrioVialsThrown < 16.0 && !(player->stateflag \ 0x20))
+			if (!rand(3) && BrioVialsThrown < 16.0 && tryload([BS1rG]) && tryload([BL3rV]) && tryload([BS1rG]) && tryload([BL2rV]) && tryload([BS1rG]) && tryload([BL1rV])) {
+				playframes(BRIO_LOOK_1, 0, 28.0)
+				playframes(BRIO_LOOK_2, 0, 19.0)
+				playframes(BRIO_LOOK_3, 0, 10.0)
+			}
+			else {
+				playframes(BRIO_PREPARE_3, 0, 27.0)
+				if (BrioVialsUsed >= 16.0 && tryload([BS1rG]) && tryload([BD3rV]) && tryload([BS1rG]) && tryload([BD2rV]) && tryload([BS1rG]) && tryload([BD1rV])) {
+					playframeslt(BRIO_PREPARE_4, 0, 14.0)
+					changestate(Brio_Drink)
+				}
+				playframes(BRIO_PREPARE_4, 0, 26.0)
+			}
+		} while (1)
+	}
+	trans {
+		EnemyHitPlayerGround()
+		changestateif(Brio_Scare, GAMESTATE == GAME_STATE_PLAYING && distance(player) < 4m && !(player->stateflag \ 0x20))
+		if (GAMESTATE == GAME_STATE_CUTSCENE) {
+			if (frametime - statetime >= 5s) {
+				GAMEFLAGS |= 0x2
+			}
+			else {
+				GAMEFLAGS &= ~0x2
+			}
+		}
+	}
+}
+
+sub BrioThrowAnimLoop () {
+	sounddecay(0.375)
+	SoundPlayDefault([jmp0A], 0.2V + rand(0.1V))
+	playframes(BRIO_THROW_3, 0, 10.0)
+	playframes(BRIO_THROW_2, 0, 3.0)
+}
+
+inline sub BrioThrowVialGreen(xoff) {	
+	spawn(BriOC, BriOC_S_VIAL_GREEN, 1, 0, x+xoff, y+0, avg(z, player->z))
+	BrioVialsThrown += 1.0
+}
+
+inline sub BrioThrowVialGreenAtPlayer(xoff) {	
+	spawn(BriOC, BriOC_S_VIAL_GREEN, 1, 0, x+xoff, y+0, player->z)
+	BrioVialsThrown += 1.0
+}
+
+inline sub BrioThrowVialRed() {	
+	spawn(BriOC, BriOC_S_VIAL_RED, 1, 0, player->x, y, player->z)
+	BrioVialsThrown += 1.0
+}
+
+state Brio_Throw {
+	code () {
+		playframes(BRIO_THROW_1, 0, 18.0)
+		playframes(BRIO_THROW_2, 0, 3.0)
+		if (BrioVialsThrown == 0) {
+			BrioHitsTallied = 0
+			BrioThrowVialGreen(1m)
+		}
+		else if (BrioVialsThrown == 1.0) {
+			BrioThrowVialRed()
+		}
+		else if (BrioVialsThrown == 2.0) {
+			BrioHitsTallied = 0
+			BrioThrowVialGreen(2m)
+			BrioThrowAnimLoop()
+			BrioThrowVialGreen(-2m)
+		}
+		else if (BrioVialsThrown == 4.0) {
+			BrioThrowVialRed()
+			BrioThrowAnimLoop()
+			BrioThrowVialRed()
+			BrioThrowAnimLoop()
+			BrioThrowVialRed()
+		}
+		else if (BrioVialsThrown == 7.0) {
+			BrioHitsTallied = 0
+			do (var i = 0) {
+				BrioThrowVialGreen(2m)
+				BrioThrowAnimLoop()
+				i += 1.0
+			} while (i < 2.0)
+			BrioThrowVialGreenAtPlayer(-2m)
+		}
+		else if (BrioVialsThrown == 10.0) {
+			do (var i = 0) {
+				BrioThrowVialRed()
+				BrioThrowAnimLoop()
+				i += 1.0
+			} while (i < 5.0)
+			BrioThrowVialRed()
+		}
+		sounddecay(0.375)
+		SoundPlayDefault([jmp0A], 0.2V + rand(0.1V))
+		playframes(BRIO_THROW_3, 0, 10.0)
+		playframes(BRIO_THROW_4, 0, 14.0)
+		if (BrioVialsThrown >= 16.0) {
+			DeloadAnim([BT1rV], [BS1rG])
+			DeloadAnim([BT2rV], [BS1rG])
+			DeloadAnim([BT3rV], [BS1rG])
+			DeloadAnim([BT4rV], [BS1rG])
+			LoadAnim([BD1rV], [BS1rG])
+			LoadAnim([BD2rV], [BS1rG])
+			LoadAnim([BD3rV], [BS1rG])
+			BrioAnimSet = 1.0
+		}
+		changestate(Brio_Mix)
+	}
+	trans {
+		EnemyHitPlayerGround()
+	}
+}
+
+state Brio_Scare {
+	code () {
+		soundpitch(3.84 + rand(0.32))
+		sounddecay(0.5625)
+		sounddelay(2)
+		soundplay([BgbrA], 0.35V)
+		playframes(BRIO_SCARE_EXPLODE, 0, 12.0)
+		while (distance(player) > 3m) {
+			if (distance(player) > 4m) {
+				playframes(BRIO_SCARE_PREPARE, 0, 12.0)
+				changestate(Brio_Mix)
+			}
+			playanim(12, BRIO_SCARE_EXPLODE)
+		}
+		playframes(13.0, 17.0)
+		soundpitch(4.0)
+		sounddecay(0.625)
+		soundplay([tnt0A], 1.0V)
+		sendeventif(EventExplode, player, distance(player) < 3m, 100.0)
+		save (x, y, z) {
+			getvert(vtrans, self, 0)
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 4, 1)
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 6, 0)
+			y += 1m
+			spawn(BoxsC, BoxsC_S_POW_PARTICLE, 2, 1)
+			spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 0)
+		}
+		playframesback(17.0, 13.0)
+		playframes(BRIO_SCARE_PREPARE, 0, 12.0)
+		changestate(Brio_Mix)
+	}
+}
+
+state Brio_Drink {
+	code () {
+		v0 = false
+		BrioHitsTallied = 0
+		DeloadAnim([BP1rV], [BS1rG])
+		DeloadAnim([BP2rV], [BS1rG])
+		DeloadAnim([BP3rV], [BS1rG])
+		DeloadAnim([BP4rV], [BS1rG])
+		DeloadAnim([BL1rV], [BS1rG])
+		DeloadAnim([BL2rV], [BS1rG])
+		DeloadAnim([BL3rV], [BS1rG])
+		DeloadAnim([BS1rV], [BS1rG])
+		DeloadAnim([BS2rV], [BS1rG])
+		LoadAnim([BM1rV], [BM1rG])
+		LoadAnim([BM3rV], [BM1rG])
+		LoadAnim([BM4rV], [BM1rG])
+		LoadAnim([BM5rV], [BM1rG])
+		LoadAnim([BM6rV], [BM1rG])
+		LoadAnim([BM7rV], [BM1rG])
+		LoadAnim([BM8rV], [BM1rG])
+		BrioAnimSet = 2.0
+		GLOBALVAL = 1.0
+		playframes(BRIO_DRINK_1, 0, 28.0)
+		soundpitch(4.0)
+		sounddecay(0.75)
+		soundplay([XfmrA], 1.0V)
+		playanim(0, BRIO_DRINK_2, 0.5s)
+		playframes(BRIO_DRINK_2, 0, 22.0)
+		v0 = true
+		do (var i = 0) {
+			playframes(BRIO_DRINK_3, 0, 3.0)
+			i += 1.0
+		} while (i < 10.0)
+		soundpitch(2.88)
+		sounddecay(0.75)
+		soundplay([tnt0A], 1.0V)
+		SetDefaultColor()
+		v0 = false
+		setanim(BRIO_MONSTER_TRANSFORM, -1.0)
+		do (var i = 0) {
+			do (var j = 0) {
+				save (x, y, z) {
+					x += randi(-1.5m, 1.5m)
+					z += 2m
+					y += rand(2.5m)
+					if (!rand(3)) {
+						sounddecay(0.375)
+						soundpitch(3.2 + rand(1.6))
+						soundplay([tnt0A], 0.8V)
+					}
+					if (!rand(2)) {
+						spawn(BoxsC, BoxsC_S_POW_PARTICLE, 1, 1)
+					}
+					else {
+						spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 1, 1)
+					}
+					spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 1, 0)
+					spawn(BoxsC, BoxsC_S_POW_PARTICLE, 1, 0)
+				}
+				j += 1.0
+			} while (j < 3.0)
+			playanim(0, BRIO_MONSTER_TRANSFORM)
+			i += 1.0
+		} while (i < 10.0)
+		playanim(0, BRIO_MONSTER_TRANSFORM)
+		playframes(1.0, 18.0)
+		changestate(Brio_Monster_Start)
+	}
+	trans {
+		EnemyHitPlayerGround()
+		if (!STATUS_FIRSTFRAME && v0) {
+			colra = seek(colra, 0, 10)
+			colga = seek(colga, 255, 10)
+			colba = seek(colba, 0, 10)
+			SetColor(colra, colga, colba)
+		}
+	}
+}
+
+sub SpawnStone (stone_z) {
+	stone_z += z
+	if (stone_z > 4.3m) {
+		stone_z = 4.3m
+	}
+	BrioVialsThrown += 1.0
+	var stone_x
+	if (player->x > 0) {
+		stone_x = -2.2m
+	}
+	else {
+		stone_x = 2.2m
+	}
+	spawn(BriOC, BriOC_S_STONE, 1, stone_x, y, stone_z)
+	creator = child
+}
+
+state Brio_Monster_Start {
+	statusc 0
+	code () {
+		BrioVialsThrown = 0
+		BrioVialsUsed = 0
+		BrioPathTrack = 0
+		field_61 = 0
+		pathprog = 0
+		BrioPathSpeed = 0.8
+		BrioCantTrigger = false
+		statusb |= FLAG_ROT_Y
+		trotx = 360deg
+		sounddecay(0.625)
+		SoundPlayDefault([BrorA], 0.8V) // brormanis was is brio ?
+		playframes(BRIO_MONSTER_ROAR_1, 0, 21.0)
+		playframes(BRIO_MONSTER_ROAR_2, 0, 5.0)
+		SpawnStone(7m)
+		changestate(Brio_Monster_Punch)
+	}
+	trans {
+		sendevent(EventHit, collider)
+	}
+}
+
+inline sub BrioMonsterCancelVoice() {	
+	if (voice) {
+		soundfadet(1s/6, voice)
+		soundfadev(0, voice, 3)
+	}
+}
+
+inline sub SoundBrioPunch() {
+	BrioMonsterCancelVoice()
+	sounddecay(0.5625)
+	soundpitch(3.2 + rand(0.8))
+	soundplay([brprA], 0.5V + rand(0.1V))
+}
+
+inline sub BrioMonsterTrackPath() {
+	var old_troty, rot_dist
+	save (troty, statusa, statusb, x, y, z, pathprog) {
+		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
+		x = player->x
+		y = player->y
+		z = player->z
+		calcpath(0)
+		troty += 90deg
+		setvel(BrioPathTrack)
+	}
+	x += velx
+	z += velz
+	old_troty = troty
+	if (abs(BrioPathTrack - vecy) > 0.1m) {
+		rot_dist = degdist(troty, atan2(player->trans))
+		if (rot_dist < -20deg) {
+			rot_dist = -20deg
+		}
+		else if (rot_dist > 20deg) {
+			rot_dist = 20deg
+		}
+		troty += rot_dist
+	}
+	BrioPathTrack = seek(BrioPathTrack, vecy, spd(3m))
+	if (BrioPathTrack < -3m) {
+		troty = old_troty
+		BrioPathTrack = -3m
+	}
+	else if (BrioPathTrack > 3m) {
+		troty = old_troty
+		BrioPathTrack = 3m
+	}
+}
+
+state Brio_Monster_Punch {
+	statusc 0
+	code () {
+		do {
+			SoundBrioPunch()
+			if (!SHAKEY) {
+				SHAKEY = 3.0
+			}
+			if (rand(2)) {
+				spawn(BriOC, BriOC_S_DEBRIS, 1, 1)
+				spawn(BriOC, BriOC_S_DEBRIS, 2, 0)
+			}
+			else {
+				spawn(BriOC, BriOC_S_DEBRIS, 3, 0)
+			}
+			playframes(BRIO_MONSTER_PUNCH, 0, 7.0)
+			SoundBrioPunch()
+			if (!SHAKEY) {
+				SHAKEY = 3.0
+			}
+			spawn(BriOC, BriOC_S_DEBRIS, 2, 0)
+			playframes(BRIO_MONSTER_PUNCH, 8.0, 15.0)
+		} while (1)
+	}
+	event (e, a) {
+		if (e == EventTriggered && !BrioCantTrigger) {
+			BrioPathSpeed += 2.5
+			SpawnStone(6m)
+		}
+		if (e == EventJumpedOn && interrupter == player && field_61) {
+			accev() {
+				interrupter->velx = 0
+				interrupter->vely = 0
+				interrupter->velz = 0
+				interrupter->troty = 0
+				interrupter->speed = 20m
+				interrupter->velz = 20m
+				statetime = frametime
+				BrioHitsTallied += 1.0
+				health += 1.0
+				sendevent(EventTriggered, creator)
+				SpawnStone(6m)
+				BrioPathSpeed += 0.8
+				accevcstate(Brio_Dead, BrioHitsTallied >= 3.0)
+				field_61 = 0
+				accevcstate(Brio_Monster_Hit)
+			}
+		}
+	}
+	trans {
+		if (player->stateflag \ 0x20) {
+			BrioCantTrigger = true
+			statusb &= ~FLAG_COLLIDABLE
+		}
+		changestateif(Brio_Monster_Hit, z > player->z)
+		if (field_61 && player->statusa \ 0x40000) {
+			field_61 = 0
+		}
+		if (player->statusa \ FLAG_GROUNDLAND || !field_61 || vely < 0) {
+			sendevent(Event24, collider, 100.0)
+			changestateif(Brio_Monster_Hit, eventaccepted)
+		}
+		LoopPathProg(spd(BrioPathSpeed))
+		BrioMonsterTrackPath()
+	}
+}
+
+state Brio_Monster_Hit {
+	code () {
+		soundpitch(4.0)
+		sounddecay(0.5625)
+		soundplay([BhtrA], 50) // typo? meant to be 0.5V?
+		playframes(BRIO_MONSTER_HIT, 0, 22.0)
+		sounddecay(0.625)
+		SoundPlayDefault([BrorA], 0.8V)
+		playframes(BRIO_MONSTER_ROAR_1, 0, 21.0)
+		playframes(BRIO_MONSTER_ROAR_2, 0, 5.0)
+		changestate(Brio_Monster_Punch)
+	}
+	event (e, a) {
+		if (e == EventTriggered && !BrioCantTrigger) {
+			SpawnStone(6m)
+		}
+	}
+	trans {
+		if (field_61 && player->statusa \ 0x40000) {
+			field_61 = 0
+		}
+		if (pathprog > 0) {
+			pathprog = seek(pathprog, 0, spd(-9.0))
+		}
+		calcpath()
+		BrioPathTrack = seek(BrioPathTrack, 0, spd(1.5m))
+		x += BrioPathTrack
+	}
+}
+
+state Brio_Dead {
+	statusc 0
+	code () {
+		KillEntity()
+		soundpitch(4.0)
+		sounddecay(0.75)
+		soundplay([BkorA], 1.0V)
+		playframes(BRIO_MONSTER_DIE_1, 0, 18.0)
+		playframes(BRIO_MONSTER_DIE_2, 0, 9.0)
+		soundpitch(4.0)
+		sounddecay(0.9375)
+		soundplay([bslrA], 1.0V)
+		if (!SHAKEY) {
+			SHAKEY = 20.0
+		}
+		playframes(10.0, 16.0)
+		sendevent(EventWarp, player, 0)
+		sleep()
+	}
+}
+
+sub BrioTally () {
+	BrioVialsUsed += 1.0
+	BrioHitsTallied += 1.0
+}
+
+sub BrioTallyHurt () {
+	BrioVialsUsed += 1.0
+	health += 1.0
+	BrioHitsTallied += 1.0
+}
+
+sub DeloadAnims () {
+	if (BrioAnimSet == 0) {
+		DeloadAnim([BP1rV], [BS1rG])
+		DeloadAnim([BP2rV], [BS1rG])
+		DeloadAnim([BP3rV], [BS1rG])
+		DeloadAnim([BP4rV], [BS1rG])
+		DeloadAnim([BL1rV], [BS1rG])
+		DeloadAnim([BL2rV], [BS1rG])
+		DeloadAnim([BL3rV], [BS1rG])
+		DeloadAnim([BS1rV], [BS1rG])
+		DeloadAnim([BS2rV], [BS1rG])
+		DeloadAnim([BT1rV], [BS1rG])
+		DeloadAnim([BT2rV], [BS1rG])
+		DeloadAnim([BT3rV], [BS1rG])
+		DeloadAnim([BT4rV], [BS1rG])
+	}
+	else if (BrioAnimSet == 1.0) {
+		DeloadAnim([BP1rV], [BS1rG])
+		DeloadAnim([BP2rV], [BS1rG])
+		DeloadAnim([BP3rV], [BS1rG])
+		DeloadAnim([BP4rV], [BS1rG])
+		DeloadAnim([BL1rV], [BS1rG])
+		DeloadAnim([BL2rV], [BS1rG])
+		DeloadAnim([BL3rV], [BS1rG])
+		DeloadAnim([BS1rV], [BS1rG])
+		DeloadAnim([BS2rV], [BS1rG])
+		DeloadAnim([BD1rV], [BS1rG])
+		DeloadAnim([BD2rV], [BS1rG])
+		DeloadAnim([BD3rV], [BS1rG])
+	}
+	else if (BrioAnimSet == 2.0) {
+		DeloadAnim([BD1rV], [BS1rG])
+		DeloadAnim([BD2rV], [BS1rG])
+		DeloadAnim([BD3rV], [BS1rG])
+		DeloadAnim([BM1rV], [BM1rG])
+		DeloadAnim([BM3rV], [BM1rG])
+		DeloadAnim([BM4rV], [BM1rG])
+		DeloadAnim([BM5rV], [BM1rG])
+		DeloadAnim([BM6rV], [BM1rG])
+		DeloadAnim([BM7rV], [BM1rG])
+		DeloadAnim([BM8rV], [BM1rG])
+	}
+}
+
