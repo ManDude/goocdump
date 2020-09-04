@@ -89,7 +89,6 @@
 "%d"
 "セレクトボタンでゲームがおわる"
 "セレクトボタンでマップにもどる"
-/* "%d~n~n" */
 
 #include "..\\GOOL_FruiC.gooh"
 
@@ -428,15 +427,6 @@ sub MakePickupIcons(r, p) {
 			DisplayIconsLeft += 1.0
 		}
 	}
-	/* while (var i = 0, iconx = (iconcount-1.0) * -32; i < iconcount) {
-		spawn2(DispC, S_PICKUP_ICON, 1, r, p + iconx)
-		if (child_temp != child) {
-			DisplayIconsLeft += 1.0
-			child_temp = child
-		}
-		iconx += 64.0
-		i += 1.0
-	} */
 }
 
 state Pickup_Display { // 11
