@@ -696,9 +696,7 @@ inline sub SoundShockPart2(vol_variance) {
 state State_16 { // 16
 	statusc 0x12
 	code () {
-		scalex = 1.5S
-		scaley = 0.75S
-		scalez = 0.75S
+		SetScale(1.5S, .75S, .75S)
 		spawn(PoRoC, S_SHOCK_EFFECT)
 		do {
 			if (!rand(5)) {
@@ -723,9 +721,7 @@ state LabAss_Shock { // 17
 	statusc 0x12
 	code (vert) {
 		v0 = vert
-		scalex = 1.5S
-		scaley = 0.75S
-		scalez = 0.75S
+		SetScale(1.5S, .75S, .75S)
 		do (var start = frametime) {
 			if (!rand(5)) {
 				statusb = FLAG_INVISIBLE
