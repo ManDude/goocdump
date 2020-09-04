@@ -31,13 +31,12 @@ event Event19 => sub DeloadAnims
 
 #include "ShadC.gooh"
 
-inline sub ChiefSpinKnockback(e) {
+inline sub ChiefCheckSpin(e) {
 	if (e == EventSpinHit && interrupter == player && frametime - ChiefSpinnedTime > 0.1s) {
 		SoundPitchDefault()
 		soundplay([sht0A], 0.4V)
 		ChiefSpinnedTime = frametime
 	}
-	SpinKnockback(e, 16m)
 }
 
 state Chief_Spawn {
@@ -130,7 +129,8 @@ state Chief_Spawn {
 		changestate(Chief_Attack)
 	}
 	event (e, a) {
-		ChiefSpinKnockback(e)
+		ChiefCheckSpin(e)
+		SpinKnockback(e, 16m)
 	}
 }
 
@@ -264,7 +264,8 @@ state Chief_Attack {
 				rejevret()
 			}
 		}
-		ChiefSpinKnockback(e)
+		ChiefCheckSpin(e)
+		SpinKnockback(e, 16m)
 	}
 	trans {
 		DoJumpKnockback()
@@ -316,7 +317,8 @@ state Chief_Hit {
 				accevret()
 			}
 		}
-		ChiefSpinKnockback(e)
+		ChiefCheckSpin(e)
+		SpinKnockback(e, 16m)
 	}
 	trans {
 		DoJumpKnockback()
