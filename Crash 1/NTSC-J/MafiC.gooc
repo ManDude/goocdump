@@ -181,9 +181,9 @@ state Slim_Enemy_Fling { // 5
 
 state Bullet_Spawn { // 6
 	statusc 0x12
-	code (a, b, c) {
-		if (b >= 0) {
-			getvert(vtrans, parent, b)
+	code (rotation, vert, velocity) {
+		if (vert >= 0) {
+			getvert(vtrans, parent, vert)
 		}
 		else {
 			y += 1.5m
@@ -205,9 +205,9 @@ state Bullet_Spawn { // 6
 			sendevent(EventHit, player, 100.0)
 			changestateif(Bullet_Hit, eventaccepted)
 		}
-		troty = a
+		troty = rotation
 		setvel(0.125m)
-		vely = c
+		vely = velocity
 		checkzonecollision(vvec)
 		velx *= 8
 		vely *= 4

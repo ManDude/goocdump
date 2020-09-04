@@ -741,15 +741,9 @@ state Wumpa_IdleAnim_Part { // 15
 		else {
 			trotz = -15deg
 		}
-		rotx = 0
-		roty = 0
-		rotz = 0
-		scalex = 2.4 + rand(0.8)
-		scaley = 2.4 + rand(0.8)
-		scalez = 2.4 + rand(0.8)
-		velx = rand(-10m, 10m+1)
-		vely = rand(6m)
-		velz = rand(-10m, 10m+1)
+		SetRot(0, 0, 0)
+		SetScale(.15S + rand(.05S))
+		SetVel(rand(-10m, 10m+1), rand(6m), rand(-10m, 10m+1))
 		statusb = FLAG_PHYSICS_ENGINE
 		do (var start_t = frametime) {
 			vely = spd(vely, -20m)

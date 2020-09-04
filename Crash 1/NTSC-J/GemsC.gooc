@@ -89,21 +89,8 @@ state Gem_Spawn { // 0
 		vely = rand(0.25m)
 		mem10 = rand(0.3s)
 		GemColorFactor = 0.5
-		vecx = GemColorR * GemColorFactor >> 8
-		vecy = GemColorG * GemColorFactor >> 8
-		vecz = GemColorB * GemColorFactor >> 8
-		colra = vecx
-		colga = vecy
-		colba = vecz
-		colr1 = vecx
-		colg1 = vecy
-		colb1 = vecz
-		colr2 = vecx
-		colg2 = vecy
-		colb2 = vecz
-		colr3 = vecx
-		colg3 = vecy
-		colb3 = vecz
+		SetVec(GemColorR * GemColorFactor >> 8, GemColorG * GemColorFactor >> 8, GemColorB * GemColorFactor >> 8)
+		SetColor(vecx, vecy, vecz)
 		if (spawn == S_GEM_CLEAR) {
 			CountClearGems()
 			changestateif(Gem_Active, ClearGemCount >= GemID)
@@ -264,7 +251,7 @@ state Gem_Kill_Block { // 3
 		if (vecx) scalex = vecx;
 		if (vecy) scaley = vecy;
 		if (vecz) scalez = vecz;
-		statusb = FLAG_COLLIDABLE
+		statusb = FLAG_COLLIDABLE | FLAG_INVISIBLE
 		sleepanim(0, GEM)
 	}
 	trans {
