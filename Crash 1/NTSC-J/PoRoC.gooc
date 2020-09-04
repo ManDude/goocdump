@@ -199,16 +199,10 @@ sub KillVoice () {
 state Power_Robot_Spawn { // 0
 	code () {
 		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
-		if (vecx) {
-			field_61 = vecx
-		}
-		else {
-			field_61 = 1.5m
-		}
+		if (vecx) var1 = vecx;
+		     else var1 = 1.5m;
 		if (vecy) {
-			scalex = vecy
-			scaley = vecy
-			scalez = vecy
+			SetScale(vecy)
 		}
 		ShockMoveCount = 12.5 * (scalex / 64)
 		ShockMaxMoveCount = 0
@@ -240,12 +234,12 @@ state Power_Robot { // 1
 			}
 		}
 		else {
-			calcpath(loopseek(pathprog, pathlen + (spd(1.0) + -1.0), spd(1.0)))
+			LoopPathProg(spd(1.0))
 			if (STATUS_PATH_END) {
 				trotx = 720deg
 				statusb &= ~0x20000000
 			}
-			if (field_61) {
+			if (var1) {
 				var path_rot, deg_to_player
 				save (troty, statusa, statusb, x, y, z, pathprog) {
 					statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
@@ -270,20 +264,18 @@ state Power_Robot { // 1
 					troty += deg_to_player
 				}
 				PowerRobotStrafe = seek(PowerRobotStrafe, vecy, spd(2m))
-				if (PowerRobotStrafe < -field_61) {
+				if (PowerRobotStrafe < -var1) {
 					troty = path_rot
-					PowerRobotStrafe = -field_61
+					PowerRobotStrafe = -var1
 				}
-				else if (PowerRobotStrafe > field_61) {
+				else if (PowerRobotStrafe > var1) {
 					troty = path_rot
-					PowerRobotStrafe = field_61
+					PowerRobotStrafe = var1
 				}
 			}
 			troty += loopseek(ShockMaxMoveCount, 4deg, 0.25deg) - 2deg
 		}
-		if (STATUS_PLAYER_D_COLLIDER) {
-			sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
-		}
+		EnemyHitPlayerGround()
 	}
 }
 
@@ -326,40 +318,22 @@ state Power_Robot_Fling { // 3
 state Shock_Spawn { // 4
 	statusc 0x12
 	code () {
-		scalex = 1.3S
-		scaley = 0.7S
-		scalez = 0.7S
+		SetScale(1.3S, .7S, .7S)
 		ShockMoveCount = 0
 		if (LEVEL == LEVEL_TheLab) {
 			ShockMaxMoveCount = 3.0
-			if (vecx) {
-				ShockCycleTime = vecx >> 8
-			}
-			else {
-				ShockCycleTime = 3s
-			}
+			if (vecx) ShockCycleTime = vecx >> 8;
+			     else ShockCycleTime = 3s;
 		}
 		else {
 			ShockMaxMoveCount = 1.0
-			if (vecx) {
-				ShockCycleTime = vecx >> 8
-			}
-			else {
-				ShockCycleTime = 1.5s
-			}
+			if (vecx) ShockCycleTime = vecx >> 8;
+			     else ShockCycleTime = 1.5s;
 		}
-		if (vecy) {
-			ShockCycleOffset = vecy >> 8
-		}
-		else {
-			ShockCycleOffset = 0
-		}
-		if (vecz) {
-			ShockSpeed = vecz >> 8
-		}
-		else {
-			ShockSpeed = 0.5
-		}
+		if (vecy) ShockCycleOffset = vecy >> 8;
+		     else ShockCycleOffset = 0;
+		if (vecz) ShockSpeed = vecz >> 8;
+		     else ShockSpeed = 0.5;
 		zindex = 45
 		spawn(PoRoC, S_SHOCK_EFFECT)
 		changestate(Shock_Wait)
@@ -370,9 +344,7 @@ state Shock_Effect { // 5
 	stateflag 0x80001
 	statusc 0x12
 	code () {
-		scalex = 0.8S
-		scaley = 0.4S
-		scalez = 0.4S
+		SetScale(.8S, .4S, .4S)
 		zindex = creator->zindex
 		do {
 			if (creator->statusa \ FLAG_PATH_END) {
@@ -432,7 +404,7 @@ state Shock_Move { // 7
 		playanim(2, SHOCK_START)
 		setanim(SHOCK_STRAIGHT)
 		do {
-			calcpath(loopseek(pathprog, pathlen + ShockSpeed + -1.0, ShockSpeed))
+			LoopPathProg(ShockSpeed)
 			playframe(0 + rand(4.0))
 		} until (STATUS_PATH_END)
 		scalex = -scalex
@@ -510,17 +482,13 @@ state State_9 { // 9
 state Power_Mist { // 10
 	statusc 0
 	code () {
-		loadfile([PoRoC]) // ?
+		loadfile([PoRoC])
 		zindex = 0
 		PowerMistYOff = 2.0
 		trotz = 2deg
-		x = 0
-		y = 0
-		z = 0
+		SetTrans(0, 0, 0)
 		PowerMistY = y
-		scalex = 1.3S
-		scaley = 0.9S
-		scalez = 1.0S
+		SetScale(1.3S, .9S, 1S)
 		statusb = FLAG_2D
 		do {
 			playframes(POWER_MIST_1, 0, 29.0)
@@ -534,14 +502,36 @@ state Power_Mist { // 10
 	}
 }
 
+inline sub SoundSurveillance1() {
+	sounddecay(.25)
+	soundpitch(4.8 + rand(1.92))
+	soundplay([sv16A], .05V + rand(.03V))
+}
+
+inline sub SoundSurveillance2() {
+	sounddecay(.25)
+	soundpitch(4.8 + rand(1.92))
+	soundplay([sv26A], .05V + rand(.03V))
+}
+
+inline sub SoundSurveillanceHi1() {
+	sounddecay(.25)
+	soundpitch(5.44 + rand(.64))
+	soundplay([sv16A], .05V + rand(.15V))
+}
+
+inline sub SoundSurveillanceHi2() {
+	sounddecay(.25)
+	soundpitch(5.44 + rand(.64))
+	soundplay([sv26A], .05V + rand(.15V))
+}
+
 state Power_Surveillance_Circle { // 11
 	code () {
 		zindex = 24
 		density = 40.0
 		statusb = FLAG_COLLIDABLE
-		trotx = 0
-		troty = 0
-		trotz = 0
+		SetTRot(0, 0, 0)
 		trotz = abs(vecx)
 		if (vecx < 0) {
 			v0 = -180deg
@@ -549,32 +539,18 @@ state Power_Surveillance_Circle { // 11
 		else {
 			v0 = 180deg
 		}
-		if (vecy) {
-			trotx = vecy
-		}
-		else {
-			trotx = 0
-		}
-		if (vecz) {
-			creator = objectget(vecz)
-		}
-		else {
-			creator = 0
-		}
-		vecx = x
-		vecy = y
-		vecz = z
+		if (vecy) trotx = vecy;
+		     else trotx = 0;
+		if (vecz) creator = objectget(vecz);
+		     else creator = 0;
+		SetVec(x, y, z)
 		do {
 			if (rand(100) > 30) {
 				if (!rand(4)) {
-					sounddecay(0.25)
-					soundpitch(4.8 + rand(1.92))
-					soundplay([sv16A], 0.05V + rand(0.03V))
+					SoundSurveillance1()
 				}
 				else {
-					sounddecay(0.25)
-					soundpitch(4.8 + rand(1.92))
-					soundplay([sv26A], 0.05V + rand(0.03V))
+					SoundSurveillance2()
 				}
 			}
 			playframes(POWER_SURVEILLANCE, 0, 14.0)
@@ -613,14 +589,6 @@ sub PowerSurveillanceLookAtPlayer () {
 	}
 }
 
-inline sub PowerSurveillanceMovePath() {
-	var t = time(PowerSurvCycleTime, PowerSurvCycleOffset)
-	calcpath(abs((t - PowerSurvCycleTime / 2) * PowerSurvSpeed))
-	if (t >= PowerSurvCycleTime / 2) {
-		statusa |= 0x4
-	}
-}
-
 state Power_Surveillance_Path { // 12
 	code () {
 		statusb = FLAG_COLLIDABLE
@@ -633,19 +601,15 @@ state Power_Surveillance_Path { // 12
 		}
 		PowerSurvSpeed = (pathlen * 2) / (PowerSurvCycleTime + 1)
 		PowerSurvCycleOffset = vecy * (PowerSurvCycleTime + 1) >> 16
-		PowerSurveillanceMovePath()
-		density = 40.0
+		TimePathProg(time(PowerSurvCycleTime, PowerSurvCycleOffset), PowerSurvCycleTime, PowerSurvSpeed)
+		density = .1m
 		do {
 			if (!rand(3)) {
 				if (!rand(3)) {
-					sounddecay(0.25)
-					soundpitch(5.44 + rand(0.64))
-					soundplay([sv16A], 0.05V + rand(0.15V))
+					SoundSurveillanceHi1()
 				}
 				else {
-					sounddecay(0.25)
-					soundpitch(5.44 + rand(0.64))
-					soundplay([sv26A], 0.05V + rand(0.15V))
+					SoundSurveillanceHi2()
 				}
 			}
 			playframes(POWER_SURVEILLANCE, 0, 14.0)
@@ -657,7 +621,7 @@ state Power_Surveillance_Path { // 12
 	event => state Power_Surveillance_Circle
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			PowerSurveillanceMovePath()
+			TimePathProg(time(PowerSurvCycleTime, PowerSurvCycleOffset), PowerSurvCycleTime, PowerSurvSpeed)
 			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
 			PowerSurveillanceLookAtPlayer()
 		}
@@ -715,6 +679,20 @@ state Smoke_Spawner { // 15
 	}
 }
 
+inline sub SoundShockPart(sound, vol_min, vol_variance) {
+	sounddecay(.375)
+	soundpitch(6.4 + rand(3.2))
+	soundplay(sound, vol_min + rand(vol_variance))
+}
+
+inline sub SoundShockPart1(vol_variance) {
+	SoundShockPart([sp13A], .5V, vol_variance)
+}
+
+inline sub SoundShockPart2(vol_variance) {
+	SoundShockPart([sp23A], .5V, vol_variance)
+}
+
 state State_16 { // 16
 	statusc 0x12
 	code () {
@@ -727,14 +705,10 @@ state State_16 { // 16
 				statusb = FLAG_INVISIBLE
 				playanim(0, SHOCK_START, 0.1s)
 				if (!rand(2)) {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp23A], 0.5V + rand(0.2V))
+					SoundShockPart2(.2V)
 				}
 				else {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp13A], 0.5V + rand(0.2V))
+					SoundShockPart1(.2V)
 				}
 			}
 			statusb = 0
@@ -757,14 +731,10 @@ state LabAss_Shock { // 17
 				statusb = FLAG_INVISIBLE
 				playanim(0, SHOCK_START, 0.1s)
 				if (!rand(2)) {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp23A], 0.5V + rand(0.1V))
+					SoundShockPart2(.1V)
 				}
 				else {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp13A], 0.5V + rand(0.1V))
+					SoundShockPart1(.1V)
 				}
 			}
 			statusb = 0
@@ -784,30 +754,22 @@ state Willy_Shock { // 18
 	statusc 0x12
 	code (vert1, vert2) {
 		v0 = vert1
-		field_61 = vert2
+		var1 = vert2
 		pathprog = randi(-0.99, 0.99)
 		zindex = 40
 		rotx = 0
 		roty = 0
-		scalex = 1.3S
-		scaley = 0.5S
-		scalez = 0.5S
-		sounddecay(0.375)
-		soundpitch(6.4 + rand(3.2))
-		soundplay([sp13A], 0.3V + rand(0.3V))
+		SetScale(1.3S, .5S, .5S)
+		SoundShockPart([sp13A], .3V, .3V)
 		do (var start = frametime) {
 			if (!rand(5)) {
 				statusb = FLAG_INVISIBLE
 				playanim(0, SHOCK_START, 0.1s)
 				if (!rand(2)) {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp23A], 0.3V + rand(0.3V))
+					SoundShockPart2(.3V)
 				}
 				else {
-					sounddecay(0.375)
-					soundpitch(6.4 + rand(3.2))
-					soundplay([sp13A], 0.3V + rand(0.3V))
+					SoundShockPart1(.3V)
 				}
 			}
 			statusb = 0
@@ -819,7 +781,7 @@ state Willy_Shock { // 18
 		unless (STATUS_FIRSTFRAME) {
 			null = loopseek(pathprog, 1.0, 0.05)
 			getvert(vtrans, creator, v0)
-			getvert(vvec, creator, field_61)
+			getvert(vvec, creator, var1)
 			x += (vecx - x) * abs(pathprog) >> 8
 			y += (vecy - y) * abs(pathprog) >> 8
 			z += (vecz - z) * abs(pathprog) >> 8
