@@ -48,9 +48,7 @@ var mem1, FlameBaseSize, FlameTargetSize, FlameBaseY
 
 state Chief_Flame {
 	code () {
-		scalex = 0.7S
-		scaley = 1.4S
-		scalez = 0.7S
+		SetScale(.7S, 1.4S, .7S)
 		zindex = 30
 		FlameBaseSize = scaley
 		FlameBaseY = y - 0.5m
