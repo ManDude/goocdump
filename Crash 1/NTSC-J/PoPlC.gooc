@@ -188,9 +188,7 @@ state Power_Platform_Drop { // 1
 		else if (level == LEVEL_ToxicWaste) {
 			statusb |= FLAG_SOLID_BOTTOM
 		}
-		velx = 0
-		vely = 100m
-		velz = 0
+		SetVel(0, 100m, 0)
 		do {
 			if (PlatformBaseY - y > 1m) {
 				playframe(0)
@@ -235,7 +233,7 @@ state Power_Platform_Drop_Touched { // 2
 			DoPowerPlatformAnim(PlatformTouchWait)
 		}
 		else {
-			PlatformTouchSpeed = player->groundvel / 2
+			PlatformTouchSpeed = player->groundvel >> 1
 		}
 		statusb |= FLAG_PHYSICS_ENGINE
 		vely = PlatformTouchSpeed
@@ -256,7 +254,7 @@ state Power_Platform_Drop_Wait { // 3
 	stateflag 0x801
 	statusc 0
 	code () {
-		vely = PlatformTouchSpeed / 2
+		vely = PlatformTouchSpeed >> 1
 		sleepframe(0)
 	}
 	trans {
@@ -326,7 +324,7 @@ state Platform_Path_Spawn { // 5
 		else {
 			PlatformMoveSpeed = 6.0
 		}
-		calcpath(loopseek(pathprog, pathlen + spd(PlatformMoveSpeed) + -1.0, spd(PlatformMoveSpeed)))
+		LoopPathProg(spd(PlatformMoveSpeed))
 		roty = vecz >> 8
 		changestate(Platform_Path_Wait)
 	}
@@ -380,7 +378,7 @@ state Platform_Path_Active { // 7
 		PlatformTouchWait = y
 		PlatformKillY = z
 		unless (STATUS_FIRSTFRAME) {
-			calcpath(loopseek(pathprog, pathlen + spd(PlatformMoveSpeed) + -1.0, spd(PlatformMoveSpeed)))
+			LoopPathProg(spd(PlatformMoveSpeed))
 			if (PlatformRotSpeed) {
 				roty = spd(roty, PlatformRotSpeed) & 0xFFF
 				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
@@ -458,12 +456,8 @@ state Platform_Path_Auto { // 8
 			setanim(PLATFORM_PATH)
 		}
 		if (spawn == S_PLATFORM_UP_AUTO || spawn == S_PLATFORM_PATH_AUTO) {
-			if (vecx != 0) {
-				PlatformMoveSpeed = abs(vecx) >> 8
-			}
-			else {
-				PlatformMoveSpeed = 0.5-1
-			}
+			if (vecx != 0) PlatformMoveSpeed = abs(vecx) >> 8;
+			          else PlatformMoveSpeed = 0.5-1;
 			PlatformMoveFactor = (pathlen * 2) / (PlatformMoveSpeed + 1)
 			PlatformMoveOffset = vecy * (PlatformMoveSpeed + 1) >> 16
 			var v1 = time(PlatformMoveSpeed, PlatformMoveOffset)
@@ -473,24 +467,16 @@ state Platform_Path_Auto { // 8
 			}
 		}
 		else {
-			if (vecx) {
-				PlatformMoveSpeed = abs(vecx) >> 8
-			}
-			else {
-				PlatformMoveSpeed = 6.0
-			}
-			calcpath(loopseek(pathprog, pathlen + PlatformMoveSpeed + -1.0, PlatformMoveSpeed))
+			if (vecx) PlatformMoveSpeed = abs(vecx) >> 8;
+			     else PlatformMoveSpeed = 6.0;
+			LoopPathProg(PlatformMoveSpeed)
 		}
 		roty = vecz >> 8
 		sleepframe(0)
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			var v1 = time(PlatformMoveSpeed, PlatformMoveOffset)
-			calcpath(abs((v1 - (PlatformMoveSpeed >> 1)) * PlatformMoveFactor))
-			if (v1 >= PlatformMoveSpeed >> 1) {
-				statusa |= 0x4
-			}
+			TimePathProg(time(PlatformMoveSpeed, PlatformMoveOffset), PlatformMoveSpeed, PlatformMoveFactor)
 			if (collider && player->y - y > -0.2m) {
 				collider->statusa |= FLAG_GROUNDLAND
 				collider->groundtime = collider->frametime
@@ -511,30 +497,18 @@ state Platform_Path_Auto { // 8
 state Platform_Drop_Hidden { // 9
 	code () {
 		PlatformBaseY = y
-		if (vecx) {
-			PlatformKillY = vecx * 400
-		}
-		else {
-			PlatformKillY = -11m
-		}
-		if (vecy) {
-			mem12 = 1.0
-		}
-		else {
-			mem12 = 0
-		}
+		if (vecx) PlatformKillY = vecx * 400;
+		     else PlatformKillY = -11m;
+		if (vecy) mem12 = 1.0;
+		     else mem12 = 0;
 		if (vecz) {
-			scalex = (vecz << 4) / 100
-			scaley = (vecz << 4) / 100
-			scalez = (vecz << 4) / 100
+			SetScale((vecz << 4) / 100)
 		}
 		else {
-			scalex = 1.0S
-			scaley = 1.0S
-			scalez = 1.0S
+			SetScale(1S)
 		}
 		trotz = 30m
-		PlatformFallWait = 0.5s
+		PlatformFallWait = .5s
 		statusb = FLAG_INVISIBLE | FLAG_COLLIDABLE | FLAG_SOLID_ALL
 		sleepanim(0, PLATFORM_DROP)
 	}
