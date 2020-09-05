@@ -134,12 +134,8 @@ state Drop { // 0
 			playanim(0, DROP)
 		}
 		WaterY = y
-		rotx = 0
-		roty = 0
-		rotz = 0
-		scalex = 0.25S + rand(0.2S)
-		scaley = 0.25S + rand(0.2S)
-		scalez = 0.25S + rand(0.2S)
+		SetRot(0, 0, 0)
+		SetScale(.25S + rand(.2S))
 		troty = rand(360deg)
 		setvel(2m)
 		if (var level = LEVEL; level == LEVEL_ToxicWaste || level == LEVEL_CortexPower) {
@@ -160,22 +156,16 @@ state Splash { // 1
 	stateflag 0x10
 	code (h) {
 		if (spawn == S_DROP) {
-			scalex = 0.4S + rand(0.9S)
-			scaley = 0.4S + rand(0.9S)
-			scalez = 0.4S + rand(0.9S)
+			SetScale(.4S + rand(.9S))
 		}
 		else {
 			y += h - 0.7m
-			scalex = 1.6S
-			scaley = 1.6S
-			scalez = 1.6S
+			SetScale(1.6S)
 		}
 		if (!rand(2)) {
 			scalex = -abs(scalex)
 		}
-		roty = 0
-		rotx = 45deg
-		rotz = 0
+		SetRot(0, 45deg, 0)
 		statusb = 0
 		if (LEVEL != LEVEL_RipperRoo) {
 			playframes(SPLASH, 0, 31.0)
