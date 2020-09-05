@@ -9,8 +9,9 @@
 #sprite BOSS_HEALTH_OLD [WillT]
 #tex 0x808080 0 1 2 0 64 24 32 32
 
+#sprite BOSS_SPRITES
 #iflev 8
-#sprite BOSS_SPRITES [Pin4T]
+[Pin4T]
 #tex 0x808080 0 0 1 0 0 24 64 32
 #tex 0x808080 0 3 5 0 64 4 32 16
 #tex 0x808080 0 3 6 0 68 4 32 16
@@ -22,7 +23,7 @@
 #tex 0x808080 0 3 7 0 72 4 32 16
 #tex 0x808080 0 3 7 0 72 4 32 16
 #eliflev a
-#sprite BOSS_SPRITES [Ju2aT]
+[Ju2aT]
 #tex 0x808080 0 0 8 0 96 16 64 64
 #tex 0x808080 0 3 3 0 8 4 32 16
 #tex 0x808080 0 3 4 0 12 4 32 16
@@ -34,7 +35,7 @@
 #tex 0x808080 0 3 5 0 16 4 32 16
 #tex 0x808080 0 3 5 0 16 4 32 16
 #eliflev n
-#sprite BOSS_SPRITES [Ju2fT]
+[Ju2fT]
 #tex 0x808080 0 0 5 0 0 16 64 64
 #tex 0x808080 0 3 6 0 0 4 32 16
 #tex 0x808080 0 3 7 0 4 4 32 16
@@ -46,7 +47,7 @@
 #tex 0x808080 0 3 8 0 8 4 32 16
 #tex 0x808080 0 3 8 0 8 4 32 16
 #eliflev r
-#sprite BOSS_SPRITES [Nb7rT]
+[Nb7rT]
 #tex 0x808080 0 0 15 0 120 16 64 64
 #tex 0x808080 0 3 0 3 0 4 32 16
 #tex 0x808080 0 3 1 3 4 4 32 16
@@ -58,7 +59,7 @@
 #tex 0x808080 0 3 7 3 28 4 32 16
 #tex 0x808080 0 3 8 3 32 4 32 16
 #eliflev v
-#sprite BOSS_SPRITES [Cr2vT]
+[Cr2vT]
 #tex 0x808080 0 0 6 9 56 16 64 32
 #tex 0x808080 0 3 7 9 88 4 32 16
 #tex 0x808080 0 3 8 9 92 4 32 16
@@ -70,7 +71,7 @@
 #tex 0x808080 0 3 11 9 104 4 32 16
 #tex 0x808080 0 3 11 9 104 4 32 16
 #eliflev x
-#sprite BOSS_SPRITES [Ko3xT]
+[Ko3xT]
 #tex 0x808080 0 0 1 0 112 8 64 32
 #tex 0x808080 0 3 2 0 120 12 32 16
 #tex 0x808080 0 3 3 0 120 8 32 16
@@ -82,7 +83,7 @@
 #tex 0x808080 0 3 4 0 124 28 32 16
 #tex 0x808080 0 3 4 0 124 28 32 16
 #else
-#sprite BOSS_SPRITES [Ju2aT]
+[Ju2aT]
 #tex 0x808080 0 0 8 0 96 16 64 64
 #tex 0x808080 0 3 3 0 8 4 32 16
 #tex 0x808080 0 3 4 0 12 4 32 16
@@ -258,9 +259,7 @@ state Boss_Health_Point {
 	code (hp) {
 		statusb = creator->statusb
 		zindex = creator->zindex
-		scalex = 1.275
-		scaley = 1.015
-		scalez = 512.0
+		SetScale(1.275, 1.015, 512.0)
 		setanim(BOSS_SPRITES)
 		x = creator->vecx + creator->x + 31.0 * ((hp >> 8) * 1)
 		y = creator->y + creator->vecy
@@ -285,12 +284,8 @@ state Boss_Health {
 		zindex = -30
 		field_61 = type
 		v0 = hp
-		x = -209.0
-		y = 70.0
-		z = 0.0
-		rotx = 0deg
-		roty = 0deg
-		rotz = 0deg
+		SetTrans(-209.0, 70.0, 0)
+		SetRot(0, 0, 0)
 		statusb = FLAG_2D
 		health = creator->health
 		if (field_61 == 1) {
@@ -303,9 +298,7 @@ state Boss_Health {
 			playnull()
 		}
 		vecx = 39.0
-		scalex = 2.5525
-		scaley = 4.055
-		scalez = 1024.0
+		SetScale(2.552, 4.055, 1024.0)
 		if (var level = LEVEL; level == LEVEL_PapuPapu) {
 			y = -75.0
 			vecy = -10.0
@@ -317,16 +310,12 @@ state Boss_Health {
 		else if (level == LEVEL_KoalaKong) {
 			y = -86.0
 			vecy = -4.0
-			scalex = 2.5525
-			scaley = 4.055 / 2
-			scalez = 1024.0
+			SetScale(2.552, 4.055/2, 1024.0)
 		}
 		else if (level == LEVEL_Pinstripe) {
 			y = 80.0
 			vecy = 1.0
-			scalex = 2.5525
-			scaley = 4.055 / 2
-			scalez = 1024.0
+			SetScale(2.552, 4.055/2, 1024.0)
 		}
 		else if (level == LEVEL_DrNBrio) {
 			vecx = 27.0
@@ -337,9 +326,7 @@ state Boss_Health {
 			y = 82.0
 			vecx = 34.0
 			vecy = 4.0
-			scalex = 2.5525
-			scaley = 4.055 / 2
-			scalez = 1024.0
+			SetScale(2.552, 4.055/2, 1024.0)
 		}
 		do (var tick = 0) {
 			spawn2(ShadC, S_BOSS_HEALTH_POINT, 1, tick)
@@ -349,8 +336,8 @@ state Boss_Health {
 			playanim(0, BOSS_SPRITES)
 		}
 		do {
-			scalex -= 0.32
-			scaley -= 0.505
+			scalex -= .32
+			scaley -= .505
 			playanim(0, BOSS_SPRITES)
 		} while (scalex > 0)
 	}
