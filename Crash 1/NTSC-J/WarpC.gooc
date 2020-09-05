@@ -23,9 +23,7 @@
 
 state Warp_Out { // 0
 	code () {
-		scalex = 0.0S
-		scaley = 1.0S
-		scalez = 0.0S
+		SetScale(0, 1S, 0)
 		y += 1m
 		zindex = 24
 		spawn(WarpC, S_WARP_SMOKE_MASTER, 1, 0, -0.1m, 0)
@@ -67,8 +65,8 @@ state Warp_Out { // 0
 				}
 			}
 			roty = GAMEDIR
-			if (scalex < 1.0S) {
-				scalex += 0.05S
+			if (scalex < 1S) {
+				scalex += .05S
 				scalez = scalex
 			}
 		}
@@ -88,12 +86,12 @@ state Warp_Out_Used { // 0
 		groundy = vecy
 		x = seek(x, player->x, spd(1m))
 		z = seek(z, player->z, spd(1m))
-		if (frametime - statetime >= 0.8s) {
+		if (frametime - statetime >= .8s) {
 			if (FRAMETIME < 32) {
-				spawn(DoctC, DoctC_S_DOCTOR_SPARKLE, 3, 250.0, player, 0.6s)
+				spawn(DoctC, DoctC_S_DOCTOR_SPARKLE, 3, 250.0, player, .6s)
 			}
 		}
-		scalex += 0.05S
+		scalex += .05S
 		scalez = scalex
 	}
 }
@@ -107,8 +105,8 @@ state Warp_Smoke_Master { // 0
 		x += vecx
 		y += vecy
 		z += vecz
-		vely = rand(0.25m)
-		SetScale(1.0S)
+		vely = rand(.25m)
+		SetScale(1S)
 		if (!rand(2)) {
 			trotz = 15deg + rand(5deg)
 		}
@@ -122,14 +120,13 @@ state Warp_Smoke_Master { // 0
 		spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, -0.2m, 12.8)
 		spawn(WarpC, S_WARP_SMOKE_SLAVE, 1, -0.4m, 19.2)
 		FlipRand()
-		setanim(WARP_SMOKE)
-		animframe = rand(3.0)
+		setanim(WARP_SMOKE, rand(3.0))
 		sleep()
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
 			groundy = parent->y + vecy
-			y = groundy + sin(loopseek(vely, 1m, 1m/128), 1m-800)
+			y = groundy + sin(loopseek(vely, 1m, 1m>>7), 1m-800)
 			rotz += trotz
 			x = parent->x + vecx
 			z = parent->z + vecz
@@ -141,25 +138,18 @@ state Warp_Smoke_Slave { // 0
 	statusc 0x22
 	code (drift, size) {
 		zindex = 48
-		scalex = 0
-		scaley = 0
-		scalez = size
-		field_61 = size
+		SetScale(0, 0, size)
+		var1 = size
 		if (!rand(2)) {
 			trotz = 15deg + rand(5deg)
 		}
 		else {
 			trotz = -(15deg + rand(5deg))
 		}
-		v0 = rand(0.5s)
-		velx = 0
-		vely = 0
-		velz = drift
-		vecx = rand(-0.5m, 0.5m+1)
-		vecy = rand(0.5m)
-		vecz = drift
-		setanim(WARP_SMOKE)
-		animframe = rand(3.0)
+		var0 = rand(.5s)
+		SetVel(0, 0, drift)
+		SetVec(randi(-.5m, .5m), rand(.5m), drift)
+		setanim(WARP_SMOKE, 3.0)
 		sleep()
 	}
 	trans {
@@ -167,23 +157,23 @@ state Warp_Smoke_Slave { // 0
 			x = creator->x + velx
 			y = creator->y + vely
 			z = creator->z + velz
-			velx = seek(velx, vecx, 0.02m)
-			vely = seek(vely, vecy, 0.02m)
-			velz = seek(velz, vecz, 0.02m)
-			if (!time(0.5s, v0)) {
-				vecx = rand(-0.8m, 0.8m+1)
-				vecy = rand(-0.4m, 0.4m+1)
-				vecz = rand(-0.8m, 0.8m+1)
+			velx = seek(velx, vecx, .02m)
+			vely = seek(vely, vecy, .02m)
+			velz = seek(velz, vecz, .02m)
+			if (!time(.5s, var0)) {
+				vecx = randi(-.8m, .8m)
+				vecy = randi(-.4m, .4m)
+				vecz = randi(-.8m, .8m)
 			}
 			rotz += trotz
 			if (FRAMETIME < 30) {
-				scalez = seek(scalez, field_61, 0.05S)
+				scalez = seek(scalez, var1, .05S)
 			}
 			else {
-				scalez = seek(scalez, 0.1S, 0.05S)
+				scalez = seek(scalez, .1S, .05S)
 			}
-			scalex = seek(scalex, scalez, 0.1S)
-			scaley = seek(scaley, scalez, 0.1S)
+			scalex = seek(scalex, scalez, .1S)
+			scaley = seek(scaley, scalez, .1S)
 		}
 	}
 	
@@ -192,13 +182,11 @@ state Warp_Smoke_Slave { // 0
 state Warp_Whirl { // 0
 	statusc 0x22
 	code (size, yoff, rotspd) {
-		statusb |= 0x400
+		statusb |= FLAG_STRING_CENTER
 		zindex = 24
-		v0 = 0
-		field_61 = size
-		scalex = 0.0
-		scaley = 0.75S
-		scalez = 0.0
+		var0 = false
+		var1 = size
+		SetScale(0, .75S, 0)
 		y += yoff
 		troty = rotspd
 		sleepanim(0, WARP_WHIRL_PARTICLE)
@@ -206,37 +194,27 @@ state Warp_Whirl { // 0
 	event (e, a) {
 		if (e == EventTriggered) {
 			accev()
-			v0 = 1.0
+			var0 = true
 		}
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			scalex = parent->scalex * field_61 >> 12
-			scalez = parent->scalez * field_61 >> 12
+			scalex = parent->scalex * var1 >> 12
+			scalez = parent->scalez * var1 >> 12
 			roty = spd(roty, troty)
-			if (v0) {
+			if (var0) {
 				colra = seek(colra, 0, 8)
 				colga = seek(colga, 0, 8)
 				colba = seek(colba, 0, 8)
-				colra = colra
-				colga = colga
-				colba = colba
-				colr1 = colra
-				colg1 = colga
-				colb1 = colba
-				colr2 = colra
-				colg2 = colga
-				colb2 = colba
-				colr3 = colra
-				colg3 = colga
-				colb3 = colba
-				changestateif(Kill, !colra)
+				SetColor(colra, colga, colba)
+				changestateif(Die_Fast, !colra)
 			}
 		}
 	}
 }
 
-state Kill { // 0
+state Die_Fast { // 0
 	statusc 0
 	code () {}
 }
+
