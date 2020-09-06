@@ -113,7 +113,7 @@ state Wall_Platform_Array { // 0
 		if (spawn != S_WALL_PLAT_ARRAY_SHOW) {
 			statusb = FLAG_INVISIBLE
 		}
-		PlatCycleDur = PlatRotCycleDur / 2
+		PlatCycleDur = PlatRotCycleDur >> 1
 		if (PlatNoRotSync) {
 			PlatCycleOff = 0
 		}
@@ -121,7 +121,7 @@ state Wall_Platform_Array { // 0
 			PlatCycleOff = PlatRotCycleOff
 		}
 		if (PlatCycleIsOffset) {
-			PlatCycleOff += PlatCycleDur / 2
+			PlatCycleOff += PlatCycleDur >> 1
 		}
 		WallPlatPathSpeed = pathlen*2 / (PlatCycleDur+1)
 		rotz = 90deg
@@ -199,7 +199,7 @@ state Wall_Platform_Move { // 2
 			WallPlatCopyVec()
 			trotx = parent->PlatOriginRot + PlatRotOffset
 			vectransf2(vvec, vtrans, 0, PlatDist, 0)
-			if (!(player->statusa \ 0x40000)) {
+			unless (player->statusa \ 0x40000) {
 				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
 					CarryCollider(OldX, OldY, OldZ)
 				}
@@ -371,8 +371,7 @@ state Orbit_Platform { // 5
 		SetOldTrans()
 		unless (STATUS_FIRSTFRAME) {
 			if (collider && player->y > y - 0.2m) {
-				var ang_boost = (1920.0 + 10.0 * (64.0*((abs(player->x - parent->x)/400 << 8)/(PlatMaxDist/400)) >> 16)) >> 8, // dividend shifted by 8 to give division 8-bit precision
-				ang_land_boost = !PlatLastCollider ? 100.0 : 0
+				var ang_boost = (1920.0 + 10.0 * (64.0*((abs(player->x - parent->x)/400 << 8)/(PlatMaxDist/400)) >> 16)) >> 8, ang_land_boost = !PlatLastCollider ? 100.0 : 0
 				parent->PlatIndexTouched = PlatIndex
 				if (trotx < 90deg || trotx > 270deg) {
 					parent->PlatForce = spd(ang_boost)
@@ -444,7 +443,7 @@ state Iguana_Spawn { // 7
 		IguanaSpinTime = 0
 		spawn(ShadC, ShadC_S_SHADOW_STATIONARY, 1, 0, 1.0S, 10)
 		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
-		changestate(Iguana_Move)
+		changestate(Iguana_Stance)
 	}
 }
 
@@ -492,7 +491,7 @@ inline sub IguanaTrackPath() {
 	}
 }
 
-state Iguana_Move { // 8
+state Iguana_Stance { // 8
 	stateflag 0x5
 	statusc 0
 	code () {
@@ -632,17 +631,10 @@ state Slide_Platform_Active { // 12
 
 state Wiggle_Platform_Spawn { // 13
 	code () {
-		#ifnreg "pal"
-		if (vecx) WigglePlatWiggleDur = vecx >> 8;
+		if (vecx) WigglePlatWiggleDur = autopal(vecx >> 8);
 		     else WigglePlatWiggleDur = 0.69s;
-		if (vecy) WigglePlatWaitDur = vecy >> 8;
+		if (vecy) WigglePlatWaitDur = autopal(vecy >> 8);
 		     else WigglePlatWaitDur = 2s;
-		#else
-		if (vecx) WigglePlatWiggleDur = (vecx >> 8) * 25/30;
-		     else WigglePlatWiggleDur = 0.69s;
-		if (vecy) WigglePlatWaitDur = (vecy >> 8) * 25/30;
-		     else WigglePlatWaitDur = 2s;
-		#endif
 		if (vecz) WigglePlatIsLong = vecz >> 8;
 		     else WigglePlatIsLong = 0;
 		#ifreg "ntsc-j"
@@ -678,7 +670,7 @@ state Wiggle_Platform_Active { // 15
 			playframe(rand(3) << 8)
 			playframe()
 			i += 1.0
-		} while (i < (WigglePlatWiggleDur << 8) / 2)
+		} while (i < (WigglePlatWiggleDur << 8) >> 1)
 		SoundSlidePlatRetract()
 		playframes(0, 9.0)
 		SlidePlatEndSound()
@@ -703,7 +695,7 @@ state Pusher_Spawn { // 16
 			PlatCycleDur = spd(1s*PlatCycleDur)
 			PlatCycleOff = spd(1s*PlatCycleOff)
 		}
-		SlidePlatWaitDur = (PlatCycleDur-1s*2/3) / 2
+		SlidePlatWaitDur = (PlatCycleDur-1s*2/3) >> 1
 		if (PusherHasTop) {
 			playanim(0, PUSHER_TOP)
 		}
