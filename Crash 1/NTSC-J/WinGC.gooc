@@ -1415,7 +1415,7 @@ state Intro_Brio_Stance { // 18
 		LoadAnim([BP4IV], [BS1IG])
 		do {
 			playnull()
-		} until (tryload([BS1IG]) && tryload([BP4IV]) && tryload([BS1IG]) && tryload([BP3IV]) && tryload([BS1IG]) && tryload([BP2IV]) && tryload([BS1IG]) && tryload([BP1IV]))
+		} until (isloaded([BP1IV], [BS1IG], [BP2IV], [BS1IG], [BP3IV], [BS1IG], [BP4IV], [BS1IG]))
 		x += 0.5m
 		y += 1m
 		z += 1m

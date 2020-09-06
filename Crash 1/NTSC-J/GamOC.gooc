@@ -515,7 +515,7 @@ state GameOver_Master { // 2
 		LogoAnimSet = 0
 		do {
 			playnull()
-		} until (tryload([LogoT]) && tryload([GO2pG]) && tryload([GO2pV]) && tryload([GO2pG]) && tryload([GO2pV]) && tryload([Go1pG]) && tryload([Go1pV]))
+		} until (isloaded([Go1pV], [Go1pG], [GO2pV], [GO2pG], [GO2pV], [GO2pG], [LogoT]))
 		soundpitch(16000Hz)
 		soundplay([go1pA], 0.75V)
 		soundpitch(16000Hz)
@@ -539,7 +539,7 @@ state GameOver_Master { // 2
 		playnull(1s)
 		do {
 			playnull()
-		} until (tryload([Cr2vT]) && tryload([Co1pG]) && tryload([Co1pV]) && tryload([WillG]) && tryload([WiWaV]))
+		} until (isloaded([WiWaV], [WillG], [Co1pV], [Co1pG], [Cr2vT]))
 		SetTrans(CAMTRANSX-10m, CAMTRANSY-2m, CAMTRANSZ-6m)
 		SetVel(6m, 0, 0)
 		SetRot(0, 90deg, 0)
@@ -1301,41 +1301,7 @@ state Logo_NDI { // 14
 		do {
 			statetime = frametime
 			playnull()
-		} until (
-		tryload([NDcpG]) &&
-		tryload([NDcpV]) &&
-		tryload([NDbpG]) &&
-		tryload([NDbpV]) &&
-		tryload([NDapG]) &&
-		tryload([NDapV]) &&
-		tryload([ND9pG]) &&
-		tryload([ND9pV]) &&
-		tryload([ND8pG]) &&
-		tryload([ND8pV]) &&
-		tryload([ND7pG]) &&
-		tryload([ND7pV]) &&
-		tryload([ND6pG]) &&
-		tryload([ND6pV]) &&
-		tryload([ND5pG]) &&
-		tryload([ND5pV]) &&
-		tryload([ND4pG]) &&
-		tryload([ND4pV]) &&
-		tryload([NDdpG]) &&
-		tryload([NDdpV]) &&
-		tryload([ND2pG]) &&
-		tryload([NDhpV]) &&
-		tryload([ND2pG]) &&
-		tryload([ND2pV]) &&
-		tryload([ND1pG]) &&
-		tryload([NDgpV]) &&
-		tryload([ND1pG]) &&
-		tryload([NDfpV]) &&
-		tryload([ND1pG]) &&
-		tryload([ND1pV]) &&
-		tryload([NDepG]) &&
-		tryload([NDepV]) &&
-		tryload([ND3pG]) &&
-		tryload([ND3pV]))
+		} until (isloaded([ND3pV], [ND3pG], [NDepV], [NDepG], [ND1pV], [ND1pG], [NDfpV], [ND1pG], [NDgpV], [ND1pG], [ND2pV], [ND2pG], [NDhpV], [ND2pG], [NDdpV], [NDdpG], [ND4pV], [ND4pG], [ND5pV], [ND5pG], [ND6pV], [ND6pG], [ND7pV], [ND7pG], [ND8pV], [ND8pG], [ND9pV], [ND9pG], [NDapV], [NDapG], [NDbpV], [NDbpG], [NDcpV], [NDcpG]))
 		spawn(GamOC, S_LOGO_ANIM, 1, 20)
 		spawn(GamOC, S_LOGO_ANIM, 1, 21)
 		spawn(GamOC, S_LOGO_ANIM, 1, 22)

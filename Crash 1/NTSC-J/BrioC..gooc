@@ -74,14 +74,14 @@ state Brio_Mix {
 			playframes(BRIO_PREPARE_1, 0, 15.0)
 			playframes(BRIO_PREPARE_2, 0, 15.0)
 			changestateif(Brio_Throw, GAMESTATE == GAME_STATE_PLAYING && BrioVialsUsed >= BrioVialsThrown && BrioVialsThrown < 16.0 && !(player->stateflag \ 0x20))
-			if (!rand(3) && BrioVialsThrown < 16.0 && tryload([BS1rG]) && tryload([BL3rV]) && tryload([BS1rG]) && tryload([BL2rV]) && tryload([BS1rG]) && tryload([BL1rV])) {
+			if (!rand(3) && BrioVialsThrown < 16.0 && isloaded([BL1rV], [BS1rG], [BL2rV], [BS1rG], [BL3rV], [BS1rG])) {
 				playframes(BRIO_LOOK_1, 0, 28.0)
 				playframes(BRIO_LOOK_2, 0, 19.0)
 				playframes(BRIO_LOOK_3, 0, 10.0)
 			}
 			else {
 				playframes(BRIO_PREPARE_3, 0, 27.0)
-				if (BrioVialsUsed >= 16.0 && tryload([BS1rG]) && tryload([BD3rV]) && tryload([BS1rG]) && tryload([BD2rV]) && tryload([BS1rG]) && tryload([BD1rV])) {
+				if (BrioVialsUsed >= 16.0 && isloaded([BD1rV], [BS1rG], [BD2rV], [BS1rG], [BD3rV], [BS1rG])) {
 					playframeslt(BRIO_PREPARE_4, 0, 14.0)
 					changestate(Brio_Drink)
 				}

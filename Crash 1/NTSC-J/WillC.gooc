@@ -390,7 +390,7 @@ sub WillyDoStance () {
 				else if (statusa \ 0x40000) {
 					if (!rand(50)) {
 						if (!rand(2)) {
-							if (ntry5(&[WiS4V], &[WillG], &[WiS5V], &[WillG]) <= ntry4() && ntry5(&[WiS5V], &[WillG], &[WiS6V], &[WillG]) <= ntry4() && ntry5(&[WiS6V], &[WillG], &[WiFrV], &[WiFrG]) <= ntry4()) {
+							if (getpayload(&[WiS4V], &[WillG], &[WiS5V], &[WillG]) <= getfreepages() && getpayload(&[WiS5V], &[WillG], &[WiS6V], &[WillG]) <= getfreepages() && getpayload(&[WiS6V], &[WillG], &[WiFrV], &[WiFrG]) <= getfreepages()) {
 								onstateexit(WillyEndStance)
 								LoadAnim([WiS4V], [WillG])
 								LoadAnim([WiS5V], [WillG])
@@ -398,7 +398,7 @@ sub WillyDoStance () {
 							}
 						}
 						else {
-							if (ntry5(&[WiS2V], &[WillG], &[WiS3V], &[WillG]) <= ntry4()) {
+							if (getpayload(&[WiS2V], &[WillG], &[WiS3V], &[WillG]) <= getfreepages()) {
 								onstateexit(WillyEndStance)
 								LoadAnim([WiS2V], [WillG])
 								LoadAnim([WiS3V], [WillG])
@@ -833,12 +833,12 @@ state Willy_Jump_Flip { // 10
 		WillyPlayMoveFrame(355deg, 15, WILLY_JUMP)
 		WillyPlayMoveFrame(0, 16, WILLY_JUMP)
 		onstateexit(WillyDeloadFallAnim)
-		if (ntry5(&[WiC0V], &[WillG]) <= ntry4() && GLOBAL_105 == 0) {
+		if (getpayload(&[WiC0V], &[WillG]) <= getfreepages() && GLOBAL_105 == 0) {
 			LoadAnim([WiC0V], [WillG])
 			WillyAnimSet = 9.0
 			do {
 				WillyPlayMoveFrame(355deg, 16, WILLY_JUMP)
-			} until (tryload([WillG]) && tryload([WiC0V]))
+			} until (isloaded([WiC0V], [WillG]))
 			playanim(15, WILLY_JUMP)
 			do {
 				playframes(WILLY_JUMP_CONTINUE, 0, 4.0)
@@ -887,12 +887,12 @@ state Willy_Jump_Stand { // 11
 	code () {
 		playframes(WILLY_JUMP_STANCE, 0, 5.0)
 		onstateexit(WillyDeloadFallAnim)
-		if (ntry5(&[WiC0V], &[WillG]) <= ntry4()) {
+		if (getpayload(&[WiC0V], &[WillG]) <= getfreepages()) {
 			WillyAnimSet = 9.0
 			LoadAnim([WiC0V], [WillG])
 			do {
 				WillyPlayMoveFrame(355deg, 15, WILLY_JUMP)
-			} until (tryload([WillG]) && tryload([WiC0V]))
+			} until (isloaded([WiC0V], [WillG]))
 			do {
 				playframes(WILLY_JUMP_CONTINUE, 0, 4.0)
 				playanim(15, WILLY_JUMP)
@@ -1393,7 +1393,7 @@ state Willy_Death_Spin { // 23
 			statusb &= ~(FLAG_PHYSICS_FULL)
 			statusb |= FLAG_HAS_SHADOW
 		}
-		if (ntry5(&[WiK2V], &[WillG], &[WiK3V], &[WillG], &[WiK4V], &[WillG]) <= ntry4()) {
+		if (getpayload(&[WiK2V], &[WillG], &[WiK3V], &[WillG], &[WiK4V], &[WillG]) <= getfreepages()) {
 			LoadAnim([WiK2V], [WillG])
 			LoadAnim([WiK3V], [WillG])
 			LoadAnim([WiK4V], [WillG])
@@ -1417,7 +1417,7 @@ state Willy_Death_Spin { // 23
 				roty += var0
 				playframe(5.0)
 			} while ({i += 1.0}; i < 19.0)
-		} until (WillyAnimSet != 8.0 || (tryload([WillG]) && tryload([WiK2V])))
+		} until (WillyAnimSet != 8.0 || isloaded([WiK2V], [WillG]))
 		if (scalex < 0) {
 			rotz = roty + 110deg
 		}
@@ -1468,7 +1468,7 @@ state Willy_Death_TNT { // 24
 		statusb |= FLAG_INVISIBLE | FLAG_PHYSICS_FULL
 		statusb &= ~(FLAG_ROT_Y | 0x2000)
 		SoundWillyArgument()
-		if (ntry5(&[WT10V], &[WT10G], &[WT20V], &[WT10G]) <= ntry4()) {
+		if (getpayload(&[WT10V], &[WT10G], &[WT20V], &[WT10G]) <= getfreepages()) {
 			LoadAnim([WT10V], [WT10G])
 			LoadAnim([WT20V], [WT10G])
 			var1 = true
@@ -1479,7 +1479,7 @@ state Willy_Death_TNT { // 24
 		if (var1) {
 			do {
 				playanim(0, WILLY_KILLED_1)
-			} until (tryload([WT10G]) && tryload([WT10V]))
+			} until (isloaded([WT10V], [WT10G]))
 			SetScale(1.4S)
 			statusb &= ~(FLAG_INVISIBLE | FLAG_GRAVITY | FLAG_PHYSICS_TEST)
 			statusb |= FLAG_PHYSICS_ENGINE | FLAG_SOLID_GROUND
@@ -1593,7 +1593,7 @@ state Willy_Death_Fire { // 27
 		statusb &= ~(FLAG_HAS_SHADOW | FLAG_ROT_Y)
 		GAMEFLAGS &= ~0x2
 		statusb |= FLAG_ROT_Y
-		if (ntry4() >= 3) {
+		if (getfreepages() >= 3) {
 			var1 = true
 			LoadAnim([WF10V], [WF10G])
 		}
@@ -1610,7 +1610,7 @@ state Willy_Death_Fire { // 27
 			SoundWillyBlink(.35V, 4.16)
 			playanim(12, WILLY_STANCE1, 2)
 			playanim(11, WILLY_STANCE1, .2s)
-		} until (!var1, tryload([WF10G]) && tryload([WF10V]))
+		} until (!var1, isloaded([WF10V], [WF10G]))
 		if (var1) {
 			LoadAnim([WF20V], [WF10G])
 		}
@@ -1846,7 +1846,7 @@ inline sub AnimWillyWarpOut () {
 }
 
 sub AnimWillyWarpOut1 () {
-	if (ntry5(&[WW20V], &[WiWoG], &[WW30V], &[WiWoG]) <= ntry4()) {
+	if (getpayload(&[WW20V], &[WiWoG], &[WW30V], &[WiWoG]) <= getfreepages()) {
 		LoadAnim([WW20V], [WiWoG])
 		WillyAnimSet = 10.0
 		playframes(WILLY_WARP_OUT1_1, 0, 19.0)
@@ -1875,7 +1875,7 @@ inline sub GetLevelGem() {
 }
 
 sub AnimWillyWarpOut2 (warp_out) {
-	if (ntry5(&[WW50V], &[WiWoG], &[WW60V], &[WiWoG]) <= ntry4()) {
+	if (getpayload(&[WW50V], &[WiWoG], &[WW60V], &[WiWoG]) <= getfreepages()) {
 		LoadAnim([WW50V], [WiWoG])
 		WillyAnimSet = 12.0
 		SoundWillyLevelEnd([Wpe0A], .7V)
@@ -2121,7 +2121,7 @@ state Willy_Warthog_Spawn { // 36
 		yzapproach = 180deg
 		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_SIGN | FLAG_PHYSICS_FULL | 0x800 | 0x2000 | 0x40000 | FLAG_HAS_SHADOW
 		calcpath()
-		if (ntry5(&[WH5hV], &[WH1hG], &[WH6hV], &[WH1hG], &[WH7hV], &[WH1hG]) <= ntry4()) {
+		if (getpayload(&[WH5hV], &[WH1hG], &[WH6hV], &[WH1hG], &[WH7hV], &[WH1hG]) <= getfreepages()) {
 			LoadAnim2([WH5hV], [WH1hG])
 			LoadAnim2([WH6hV], [WH1hG])
 			LoadAnim2([WH7hV], [WH1hG])
@@ -2368,7 +2368,7 @@ state Willy_Death_Warthog { // 40
 		GAMEFLAGS &= ~0x2
 		statusb |= FLAG_PHYSICS_FULL
 		statusb &= ~(FLAG_HAS_SHADOW | FLAG_DPAD_CONTROL)
-		if (ntry5(&[WHbhV], &[WH1hG]) <= ntry4()) {
+		if (getpayload(&[WHbhV], &[WH1hG]) <= getfreepages()) {
 			LoadAnim([WHbhV], [WH1hG])
 			sounddecay(.625)
 			SoundPitchDefault()
@@ -2414,7 +2414,7 @@ state Willy_Warp_In { // 41
 				sendevent(Event6, creator, self)
 			}
 		}
-		changestateif(Willy_Force_Fall, !(ntry5(&[Ww10V], &[Ww10G]) <= ntry4()) || LEVEL == LEVEL_Pinstripe || LEVEL == LEVEL_KoalaKong)
+		changestateif(Willy_Force_Fall, !(getpayload(&[Ww10V], &[Ww10G]) <= getfreepages()) || LEVEL == LEVEL_Pinstripe || LEVEL == LEVEL_KoalaKong)
 		onstateexit(WillySetPlayableParams)
 		if (GLOBAL_105 == 0) {
 			LoadAnim([Ww10V], [Ww10G])
@@ -2427,7 +2427,7 @@ state Willy_Warp_In { // 41
 		statusb |= FLAG_INVISIBLE
 		do {
 			playanim(0, WILLY_STANCE1)
-		} until (tryload([Ww10G]) && tryload([Ww10V]))
+		} until (isloaded([Ww10V], [Ww10G]))
 		playanim(0, WILLY_STANCE1, 1s/3)
 		spawn(WillC, S_WILLY_EFFECT, 1, .4m, 1.4S)
 		spawn(WillC, S_WILLY_EFFECT, 1, .2m, 1.6S)

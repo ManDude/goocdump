@@ -48,7 +48,7 @@ state Tawna_Wait { // 0
 		z += 1.5m
 		do {
 			playnull()
-		} until (tryload([Ta1BG]) && tryload([Ta2BV]) && tryload([Ta1BG]) && tryload([Ta1BV]))
+		} until (isloaded([Ta1BV], [Ta1BG], [Ta2BV], [Ta1BG]))
 		spawn(BonoC, S_CLIP)
 		TawnaLoaded = true
 		sleepanim(0, TAWNA_CONGRATS)
