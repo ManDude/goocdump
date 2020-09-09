@@ -9,3 +9,5 @@ The compiled result of these files __is NOT byte-perfect__. It is, however, _fun
 The names of most structures have been deduced based on patterns seen in actual named structures. States, spawns, graphics and variables do not have names when compiled, and were deduced. In Crash 2 and onwards, entities have names in them.
 
 A list of GOOL executables per-game and where they can be found is located [here](https://wiki.cbhacks.com/w/User:Mddass/List_of_GOOL_Executables).
+
+For information on how the _gooc_ language works, please refer to the manual that comes with the gooc program.
