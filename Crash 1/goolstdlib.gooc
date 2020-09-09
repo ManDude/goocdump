@@ -1,0 +1,1167 @@
+expr FLAG_GROUNDLAND         = 0x1 // statusa
+expr FLAG_PATH_END           = 0x10 // statusa
+expr FLAG_FIRSTFRAME         = 0x20 // statusa
+expr FLAG_INVALID_PATH       = 0x200 // statusa
+expr FLAG_REACHED_TROT       = 0x800 // statusa
+expr FLAG_PLAYER_D_COLLIDER  = 0x1000 // statusa
+
+expr FLAG_ROT_Y              = 0x1 // statusb
+expr FLAG_TRACK_PATH_ROT     = 0x2 // statusb
+expr FLAG_TRACK_PATH_SIGN    = 0x4 // statusb
+expr FLAG_PHYSICS_TEST       = 0x8 // statusb
+expr FLAG_COLLIDABLE         = 0x10 // statusb
+expr FLAG_COLLIDEABLE        = 0x10 // statusb
+expr FLAG_GRAVITY            = 0x20 // statusb
+expr FLAG_PHYSICS_ENGINE     = 0x40 // statusb
+expr FLAG_DPAD_CONTROL       = 0x80 // statusb
+expr FLAG_INVISIBLE          = 0x100 // statusb
+expr FLAG_2D                 = 0x200 // statusb
+expr FLAG_STRING_CENTER      = 0x400 // statusb
+expr FLAG_SOLID_GROUND       = 0x4000 // statusb
+expr FLAG_PATH_CALCS         = 0x8000 // statusb
+expr FLAG_SOLID_SIDES        = 0x10000 // statusb
+expr FLAG_SOLID_TOP          = 0x20000 // statusb
+expr FLAG_ROT_Y2             = 0x80000 // statusb
+expr FLAG_HAS_SHADOW         = 0x4000000 // statusb
+expr FLAG_SOLID_BOTTOM       = 0x8000000 // statusb
+expr FLAG_STALL              = 0x10000000 // statusb
+expr FLAG_SOLID_ALL          = FLAG_SOLID_TOP | FLAG_SOLID_SIDES // statusb
+expr FLAG_SOLID_ALL2         = FLAG_SOLID_BOTTOM | FLAG_SOLID_ALL // statusb
+expr FLAG_PHYSICS_FULL       = FLAG_PHYSICS_TEST | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE // statusb
+
+expr STATUS_GROUNDLAND         = statusa \ FLAG_GROUNDLAND
+expr STATUS_PATH_END           = statusa \ FLAG_PATH_END
+expr STATUS_FIRSTFRAME         = statusa \ FLAG_FIRSTFRAME
+expr STATUS_INVALID_PATH       = statusa \ FLAG_INVALID_PATH
+expr STATUS_REACHED_TROT       = statusa \ FLAG_REACHED_TROT
+expr STATUS_PLAYER_D_COLLIDER  = statusa \ FLAG_PLAYER_D_COLLIDER
+
+expr STATUS_GRAVITY            = statusb \ FLAG_GRAVITY
+expr STATUS_PHYSICS_ENGINE     = statusb \ FLAG_PHYSICS_ENGINE
+expr STATUS_INVISIBLE          = statusb \ FLAG_INVISIBLE
+expr STATUS_SOLID_TOP          = statusb \ FLAG_SOLID_TOP
+
+expr FADE_TO                 = -1.0
+expr FADE_FROM               = 1.0
+expr FADE_FULL               = -1
+
+expr DIST_EXACT = 1
+expr DIST_NO_Y  = 2
+
+/* memcard i/o flags
+ * 1 - accessing?
+ * 2 - ???
+ * 4 - removed?
+ * 8 - unformatted?
+ * 10 - in use?
+ * 20 - ???
+ */
+
+/* card block format
+ * b0 - has icon?
+ * b1
+ * b2
+ * b3 - valid block?
+ * b4
+ * b5-10 - levels complete
+ */
+
+expr GFLAG_CAM_TRACK         = 0x2
+
+#ifver 1
+expr GAME_STATE_CUTSCENE = 0
+expr GAME_STATE_PLAYING  = 1.0
+expr GAME_STATE_GAMEOVER = 2.0
+expr GAME_STATE_CONTINUE = 3.0
+expr GAME_STATE_NEW_GEM  = 5.0
+expr GAME_STATE_TITLE    = 6.0
+
+expr ITEM_HAS_GEM1     = ITEMPOOL1 >>  1 & 1
+expr ITEM_HAS_GEM2     = ITEMPOOL1 >>  2 & 1
+expr ITEM_HAS_GEM3     = ITEMPOOL1 >>  3 & 1
+expr ITEM_HAS_GEM4     = ITEMPOOL1 >>  4 & 1
+expr ITEM_HAS_GEM5     = ITEMPOOL1 >>  5 & 1
+expr ITEM_HAS_GEM6     = ITEMPOOL1 >>  7 & 1
+expr ITEM_HAS_GEM7     = ITEMPOOL1 >>  8 & 1
+expr ITEM_HAS_GEM8     = ITEMPOOL1 >>  9 & 1
+expr ITEM_HAS_GEM9     = ITEMPOOL1 >> 10 & 1
+expr ITEM_HAS_GEM10    = ITEMPOOL1 >> 12 & 1
+expr ITEM_HAS_GEM11    = ITEMPOOL1 >> 13 & 1
+expr ITEM_HAS_GEM12    = ITEMPOOL1 >> 15 & 1
+expr ITEM_HAS_GEM13    = ITEMPOOL1 >> 24 & 1
+expr ITEM_HAS_GEM14    = ITEMPOOL1 >> 26 & 1
+expr ITEM_HAS_GEM15    = ITEMPOOL1 >> 19 & 1
+expr ITEM_HAS_GEM16    = ITEMPOOL1 >> 18 & 1
+expr ITEM_HAS_GEM17    = ITEMPOOL1 >> 20 & 1
+expr ITEM_HAS_GEM18    = ITEMPOOL1 >> 21 & 1
+expr ITEM_HAS_GEM19    = ITEMPOOL1 >> 14 & 1
+expr ITEM_HAS_GEM20    = ITEMPOOL1 >> 23 & 1
+expr ITEM_HAS_GEM21    = ITEMPOOL1 >> 25 & 1
+expr ITEM_HAS_GEM22    = ITEMPOOL1 >> 16 & 1
+expr ITEM_HAS_GEM23    = ITEMPOOL1 >> 29 & 1
+expr ITEM_HAS_GEM24    = ITEMPOOL1 >> 27 & 1
+expr ITEM_HAS_GEM25    = ITEMPOOL2 >>  8 & 1
+expr ITEM_HAS_GEM26    = ITEMPOOL2 >> 18 & 1
+
+expr ITEM_HAS_KEY1     = ITEMPOOL2 >> 10 & 1 // jaws of darkness key
+expr ITEM_HAS_KEY2     = ITEMPOOL2 >> 20 & 1 // sunset vista key
+
+expr ITEM_GEM1     = ITEMPOOL1 & (1 <<  1)
+expr ITEM_GEM2     = ITEMPOOL1 & (1 <<  2)
+expr ITEM_GEM3     = ITEMPOOL1 & (1 <<  3)
+expr ITEM_GEM4     = ITEMPOOL1 & (1 <<  4)
+expr ITEM_GEM5     = ITEMPOOL1 & (1 <<  5)
+expr ITEM_GEM6     = ITEMPOOL1 & (1 <<  7)
+expr ITEM_GEM7     = ITEMPOOL1 & (1 <<  8)
+expr ITEM_GEM8     = ITEMPOOL1 & (1 <<  9)
+expr ITEM_GEM9     = ITEMPOOL1 & (1 << 10)
+expr ITEM_GEM10    = ITEMPOOL1 & (1 << 12)
+expr ITEM_GEM11    = ITEMPOOL1 & (1 << 13)
+expr ITEM_GEM12    = ITEMPOOL1 & (1 << 15)
+expr ITEM_GEM13    = ITEMPOOL1 & (1 << 24)
+expr ITEM_GEM14    = ITEMPOOL1 & (1 << 26)
+expr ITEM_GEM15    = ITEMPOOL1 & (1 << 19)
+expr ITEM_GEM16    = ITEMPOOL1 & (1 << 18)
+expr ITEM_GEM17    = ITEMPOOL1 & (1 << 20)
+expr ITEM_GEM18    = ITEMPOOL1 & (1 << 21)
+expr ITEM_GEM19    = ITEMPOOL1 & (1 << 14)
+expr ITEM_GEM20    = ITEMPOOL1 & (1 << 23)
+expr ITEM_GEM21    = ITEMPOOL1 & (1 << 25)
+expr ITEM_GEM22    = ITEMPOOL1 & (1 << 16)
+expr ITEM_GEM23    = ITEMPOOL1 & (1 << 29)
+expr ITEM_GEM24    = ITEMPOOL1 & (1 << 27)
+expr ITEM_GEM25    = ITEMPOOL2 & (1 <<  8)
+expr ITEM_GEM26    = ITEMPOOL2 & (1 << 18)
+
+expr ITEM_KEY1     = ITEMPOOL2 & (1 << 10) // jaws of darkness key
+expr ITEM_KEY2     = ITEMPOOL2 & (1 << 20) // sunset vista key
+
+#ifreg "ntsc-j"
+expr ITEM_GEM_RED        = ITEM_GEM10
+expr ITEM_GEM_GREEN      = ITEM_GEM7
+expr ITEM_GEM_BLUE       = ITEM_GEM18
+expr ITEM_GEM_PURPLE     = ITEM_GEM21
+expr ITEM_GEM_YELLOW     = ITEM_GEM23
+expr ITEM_GEM_ORANGE     = ITEM_GEM17
+#else
+expr ITEM_GEM_RED        = ITEM_GEM13
+expr ITEM_GEM_GREEN      = ITEM_GEM10
+expr ITEM_GEM_BLUE       = ITEM_GEM18
+expr ITEM_GEM_PURPLE     = ITEM_GEM21
+expr ITEM_GEM_YELLOW     = ITEM_GEM23
+expr ITEM_GEM_ORANGE     = ITEM_GEM17
+#endif
+
+expr DOCTOR_STATUS_GET_HEALTH = 4.0
+expr DOCTOR_STATUS_SET_LIGHT  = 7.0
+
+expr WILLY_STATUS_REMOVE_BOUNCE = 3.0
+
+expr SAVE_TYPE_LEVEL = 0
+expr SAVE_TYPE_GEM = 1
+expr SAVE_TYPE_KEY = 2
+
+#elifver 2
+expr GFLAG_WHITE_FADE        = 0x800000
+expr GFLAG_DIRT_MOUND        = 0x1000000
+
+expr ENTITY_FIELD_NAME            = 0x2C00
+expr ENTITY_FIELD_ZINDEX          = 0x3200
+expr ENTITY_FIELD_DDA_LIVES       = 0x27700
+expr ENTITY_FIELD_DDA_DEATHS      = 0x27700
+expr ENTITY_FIELD_DDA_SECTION     = 0x28800
+expr ENTITY_FIELD_BOXCOUNT        = 0x28B00
+expr ENTITY_FIELD_PARENT_ID       = 0x2A000
+expr ENTITY_FIELD_TIMETRIAL_REWARD= 0x33600
+expr ENTITY_FIELD_BONUS_BOXCOUNT  = 0x33600
+
+expr BONUS_UNVISITED = 0.0
+expr BONUS_CURRENT   = 1.0
+expr BONUS_COMPLETED = 2.0
+expr BONUS_KILLED    = 3.0
+#endif
+
+expr PAD_L2       = 0x0001
+expr PAD_R2       = 0x0002
+expr PAD_L1       = 0x0004
+expr PAD_R1       = 0x0008
+expr PAD_TRIANGLE = 0x0010
+expr PAD_CIRCLE   = 0x0020
+expr PAD_X        = 0x0040
+expr PAD_SQUARE   = 0x0080
+expr PAD_SELECT   = 0x0100
+expr PAD_L3       = 0x0200
+expr PAD_R3       = 0x0400
+expr PAD_START    = 0x0800
+expr PAD_DUP      = 0x1000
+expr PAD_DRIGHT   = 0x2000
+expr PAD_DDOWN    = 0x4000
+expr PAD_DLEFT    = 0x8000
+expr PAD_NONE     =  8
+expr PAD_UP       =  9
+expr PAD_RIGHT    = 10
+expr PAD_DOWN     = 11
+expr PAD_LEFT     = 12
+expr PAD_SPIN     = PAD_CIRCLE | PAD_SQUARE
+expr PAD_N        =  0
+expr PAD_NE       =  1
+expr PAD_E        =  2
+expr PAD_SE       =  3
+expr PAD_S        =  4
+expr PAD_SW       =  5
+expr PAD_W        =  6
+expr PAD_NW       =  7
+expr PAD_O        = PAD_CIRCLE
+
+#ifver 1
+expr LEVEL_Test              = L'1'
+expr LEVEL_LavaCave          = L'2'
+expr LEVEL_Cave              = L'4'
+expr LEVEL_NSanityBeach      = L'9'
+expr LEVEL_JungleRollers     = L'c'
+expr LEVEL_TheGreatGate      = L'i'
+expr LEVEL_Boulders          = L'e'
+expr LEVEL_Upstream          = L'f'
+expr LEVEL_PapuPapu          = L'a'
+expr LEVEL_RollingStones     = L'l'
+expr LEVEL_HogWild           = L'h'
+expr LEVEL_NativeFortress    = L'q'
+expr LEVEL_UpTheCreek        = L'o'
+expr LEVEL_RipperRoo         = L'n'
+expr LEVEL_TheLostCity       = L'w'
+expr LEVEL_TempleRuins       = L's'
+expr LEVEL_RoadToNowhere     = L'k'
+expr LEVEL_BoulderDash       = L'j'
+expr LEVEL_SunsetVista       = L'z'
+expr LEVEL_KoalaKong         = L'x'
+expr LEVEL_HeavyMachinery    = L'6'
+expr LEVEL_CortexPower       = L'3'
+expr LEVEL_GeneratorRoom     = L'5'
+expr LEVEL_ToxicWaste        = L'7'
+expr LEVEL_Pinstripe         = L'8'
+expr LEVEL_TheHighRoad       = L'm'
+expr LEVEL_SlipperyClimb     = L'K'
+expr LEVEL_LightsOut         = L'E'
+expr LEVEL_JawsOfDarkness    = L't'
+expr LEVEL_CastleMachinery   = L'T'
+expr LEVEL_DrNBrio           = L'r'
+expr LEVEL_TheLab            = L'F'
+expr LEVEL_StormyAscent      = L'y'
+expr LEVEL_TheGreatHall      = L'I'
+expr LEVEL_DrNeoCortex       = L'v'
+expr LEVEL_WholeHog          = L'u'
+expr LEVEL_FumblingInTheDark = L'G'
+expr LEVEL_Map               = L'p'
+expr LEVEL_Intro             = L'U'
+expr LEVEL_BonusTawna1       = L'A'
+expr LEVEL_BonusTawna2       = L'P'
+expr LEVEL_BonusBrio         = L'B'
+expr LEVEL_BonusCortex       = L'Q'
+expr LEVEL_Bonus             = L'C'
+expr LEVEL_GameWin           = L'V'
+expr LEVEL_LevelEnd          = L'J'
+
+inline sub SoundPitchDefault() {
+	SoundPitchDefault()
+}
+
+inline sub SoundPlayDefault(sound, vol) {
+	SoundPitchDefault()
+	soundplay(sound, vol)
+}
+#elifver 2
+expr LEVEL_WarpRoom          = L'2'
+expr LEVEL_BossTazTiger      = L'3'
+expr LEVEL_BossRipperRoo     = L'6'
+expr LEVEL_BossCortex        = L'7'
+expr LEVEL_BossKimodo        = L'8'
+expr LEVEL_BossNGin          = L'9'
+expr LEVEL_SewerOrLater      = L'a'
+expr LEVEL_JungleTest        = L'c'
+expr LEVEL_NightFight        = L'c'
+expr LEVEL_HanginOut         = L'd'
+expr LEVEL_SnowGo            = L'e'
+expr LEVEL_Ruination         = L'f'
+expr LEVEL_PistonItAway      = L'g'
+expr LEVEL_SnowBiz           = L'h'
+expr LEVEL_RockIt            = L'i'
+expr LEVEL_ColdHardCrash     = L'j'
+expr LEVEL_RiverTest         = L'k'
+expr LEVEL_DigginIt          = L'l'
+expr LEVEL_RoadToRuin        = L'm'
+expr LEVEL_Unbearable        = L'n'
+expr LEVEL_CrashDash         = L'o'
+expr LEVEL_HangEight         = L'p'
+expr LEVEL_PackAttack        = L'q'
+expr LEVEL_CrashCrush        = L'r'
+expr LEVEL_Intro             = L's'
+expr LEVEL_BearIt            = L't'
+expr LEVEL_TurtleWoods       = L'u'
+expr LEVEL_ThePits           = L'v'
+expr LEVEL_AirCrash          = L'w'
+expr LEVEL_PlantFood         = L'x'
+expr LEVEL_BearDown          = L'y'
+expr LEVEL_TheEelDeal        = L'z'
+expr LEVEL_BeeHaving         = L'A'
+expr LEVEL_TotallyBear       = L'B'
+expr LEVEL_SpacedOut         = L'C'
+expr LEVEL_TotallyFly        = L'D'
+expr LEVEL_GameWin           = L'E'
+expr LEVEL_GameEnd           = L'F'
+expr LEVEL_WarpRoomEs        = L'J'
+expr LEVEL_WarpRoomFr        = L'K'
+expr LEVEL_WarpRoomDe        = L'L'
+expr LEVEL_WarpRoomIt        = L'M'
+expr LEVEL_GameOver          = L'X'
+expr LEVEL_Title             = L'Y'
+
+inline sub PlaySoundDefault(pitchmod, decay, sound, vol) {
+	soundpitch((14.4 + rand(3.2)) * pitchmod >> 8)
+	sounddecay(decay)
+	soundplay(sound, vol)
+}
+
+inline sub SoundPitchDefault() {
+	soundpitch((14.4 + rand(3.2)) * 0.205 >> 8)
+}
+
+inline sub SoundPitchDefault(p) {
+	soundpitch((14.4 + rand(3.2)) * p >> 8)
+}
+#endif
+
+inline sub FadeToBlack() {
+	FADECONTROL = -1.0
+}
+
+inline sub FadeToBlack(amt) {
+	FADEAMOUNT = amt
+	FADECONTROL = -1.0
+}
+
+inline sub FadeFromBlack() {
+	FADECONTROL = 1.0
+}
+
+inline sub FadeFromBlack(amt) {
+	FADEAMOUNT = amt
+	FADECONTROL = 1.0
+}
+
+inline sub SetInvincible(itype, itime) {
+	invincible = itype
+	invincibletime = itime
+}
+
+inline sub SetInvincible(itype) {
+	invincible = itype
+	invincibletime = frametime
+}
+
+inline sub CopyParentPath() {
+	entity = parent->entity
+	pathlen = parent->pathlen
+}
+
+inline sub CopyCreatorPath() {
+	entity = creator->entity
+	pathlen = creator->pathlen
+}
+
+inline sub CopyInterrupterPath() {
+	entity = interrupter->entity
+	pathlen = interrupter->pathlen
+}
+
+inline sub setanim(anim) {
+	animseq = getanim(anim)
+}
+
+inline sub setanim(anim, frame) {
+	animseq = getanim(anim)
+	animframe = frame
+}
+
+inline sub wait(t) {
+	playframe(animframe, t)
+}
+
+inline sub playframe_m() {
+	playframe(animframe, 1, 1)
+}
+
+inline sub playframe_nm() {
+	playframe(animframe, 1, 0)
+}
+
+inline sub playframe_m(f) {
+	playframe(f, 1, 1)
+}
+
+inline sub playframe_nm(f) {
+	playframe(f, 1, 0)
+}
+
+inline sub playanim_m(f, anim) {
+	playanim(f, anim, 1, 1)
+}
+
+inline sub playanim_nm(f, anim) {
+	playanim(f, anim, 1, 0)
+}
+
+inline sub playframes(anim, speed, start, end) {
+	setanim(anim)
+	animframe = start - speed
+	do {
+		playframe(animframe + speed)
+	} while (animframe <= end - speed)
+}
+
+inline sub playframes(anim, start, end) {
+	setanim(anim)
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub playframes(start, end) {
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub playframesdur(anim, start, end, dur) {
+	setanim(anim)
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0, dur)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub playframesdur(start, end, dur) {
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0, dur)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub playframeslt(anim, start, end) {
+	setanim(anim)
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0)
+	} while (animframe < end - 1.0)
+}
+
+inline sub playframeslt(start, end) {
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0)
+	} while (animframe < end - 1.0)
+}
+
+inline sub playframesbacklt(anim, start, end) {
+	setanim(anim)
+	animframe = start + 1.0
+	do {
+		playframe(animframe - 1.0)
+	} while (animframe > end + 1.0)
+}
+
+inline sub playframesbacklt(start, end) {
+	animframe = start + 1.0
+	do {
+		playframe(animframe - 1.0)
+	} while (animframe > end + 1.0)
+}
+
+inline sub playframest(anim, start, end, t) {
+	setanim(anim)
+	animframe = start - 1.0
+	do {
+		playframe(animframe + 1.0, t)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub sleepframes(anim, speed, start, end) {
+	do {
+		setanim(anim)
+		animframe = start - speed
+		do {
+			playframe(animframe + speed)
+		} while (animframe <= end - speed)
+	} while (1)
+}
+
+inline sub sleepframes(anim, start, end) {
+	do {
+		setanim(anim)
+		animframe = start - 1.0
+		do {
+			playframe(animframe + 1.0)
+		} while (animframe <= end - 1.0)
+	} while (1)
+}
+
+inline sub playframes3(speed, end) {
+	do {
+		playframe(animframe + speed)
+	} while (animframe <= end - speed)
+}
+
+inline sub playframes3(end) {
+	do {
+		playframe(animframe + 1.0)
+	} while (animframe <= end - 1.0)
+}
+
+inline sub playframesback(anim, speed, start, end) {
+	setanim(anim)
+	animframe = start + speed
+	do {
+		playframe(animframe - speed)
+	} while (animframe >= end + speed)
+}
+
+inline sub playframesback(anim, start, end) {
+	setanim(anim)
+	animframe = start + 1.0
+	do {
+		playframe(animframe - 1.0)
+	} while (animframe >= end + 1.0)
+}
+
+inline sub playframesback(start, end) {
+	animframe = start + 1.0
+	do {
+		playframe(animframe - 1.0)
+	} while (animframe >= end + 1.0)
+}
+
+inline sub playnull(t) {
+	animseq = 0
+	playframe(0, t)
+}
+
+inline sub playnull() {
+	animseq = 0
+	playframe(0)
+}
+
+inline sub sleepframe(frame) {
+	do {
+		playframe(frame, 2.1s)
+	} while (true)
+}
+
+inline sub sleepanim(frame, anim, t) {
+	do {
+		playanim(frame, anim, t)
+	} while (true)
+}
+
+inline sub sleepanim(frame, anim) {
+	sleepanim(frame, anim, 2.1s)
+}
+
+inline sub sleepnull() {
+	do {
+		playnull(2.1s)
+	} while (true)
+}
+
+inline sub sleep() {
+	do {
+		playframe(animframe, 2.1s)
+	} while (true)
+}
+
+inline sub sleep(anim) {
+	setanim(anim)
+	sleep()
+}
+
+inline sub FlipRand() {
+	if (!rand(2)) {
+		scalex = -scalex
+	}
+}
+
+inline sub WaitNull(t) {
+	do (var start = frametime) {
+		playnull()
+	} while (frametime - start < t)
+}
+
+inline sub WaitFrame(t) {
+	do (var start = frametime) {
+		playframe()
+	} while (frametime - start < t)
+}
+
+inline sub WaitFrame(frame, t) {
+	do (var start = frametime) {
+		playframe(frame)
+	} while (frametime - start < t)
+}
+
+inline sub WaitFrame(frame, anim, t) {
+	do (var start = frametime) {
+		playanim(frame, anim)
+	} while (frametime - start < t)
+}
+
+inline sub LoadAnim(anim, model) {
+	loadfile(anim)
+	loadfile(model)
+}
+
+inline sub LoadAnim2(anim, model) {
+	loadfile2(anim)
+	loadfile2(model)
+}
+
+inline sub DeloadAnim(anim, model) {
+	deloadfile(anim)
+	deloadfile(model)
+}
+
+inline sub KillEntity() {
+	entitysetspawn(0)
+}
+
+#ifver 1
+inline sub LoopPathProg(path_speed) {
+	calcpath(loopseek(pathprog, pathlen + path_speed + -1.0, path_speed))
+}
+
+inline sub LoopPathProg2(path_speed) {
+	calcpath(loopseek(pathprog, pathlen + -(255-path_speed), path_speed))
+}
+
+inline sub SinePathProg(path_speed) {
+	calcpath(sin(loopseek(pathprog, pathlen + -(255-path_speed), path_speed), (pathlen - (255-path_speed)) - path_speed))
+}
+
+inline sub TimePathProg(t_expr, path_time, path_spd) {
+	var t = t_expr
+	calcpath(abs((t - (path_time >> 1)) * path_spd))
+	if (t >= (path_time >> 1)) {
+		statusa |= 0x4
+	}
+}
+
+inline sub EnemyDieClearFlags() {
+	statusb &= ~(FLAG_ROT_Y | FLAG_GRAVITY | FLAG_PHYSICS_ENGINE | FLAG_COLLIDABLE | FLAG_PATH_CALCS)
+}
+
+inline sub EnemyDieCombo(h) {
+	KillEntity()
+	sendevent(EventCombo, player, h)
+	EnemyDieClearFlags()
+}
+
+inline sub EnemyDieWaitScale() {
+	while (scalex > 0.04S) {
+		playframe()
+	}
+}
+
+inline sub EnemyDie(h) {
+	EnemyDieCombo(h)
+	EnemyDieWaitScale()
+}
+
+inline sub EnemyDieTrans() __trans {
+	once {
+		var0 = 1.0S
+	}
+	scalex = loopseek(var0, 1.2S, 0.1S)
+	scaley = scalex
+	scalez = scalex
+	roty += 60deg
+}
+
+inline sub EnemyDieTransSound() __trans {
+	once {
+		sounddecay(0.625)
+		SoundPlayDefault([bnk0A], 0.4V)
+		var0 = 1.0S
+	}
+	scalex = loopseek(var0, 1.2S, 0.1S)
+	scaley = scalex
+	scalez = scalex
+	roty += 60deg
+}
+
+inline sub EnemyDieTransNoRot() __trans {
+	once {
+		var0 = 1.0S
+	}
+	scalex = loopseek(var0, 1.2S, 0.1S)
+	scaley = scalex
+	scalez = scalex
+}
+
+inline sub SoundEnemyFling() {
+	SoundPlayDefault([fli0A], 0.17V + rand(0.05V))
+}
+
+inline sub EnemyFlingCombo(h) {
+	KillEntity()
+	health = h + 1.0
+	sendevent(EventCombo, player, h)
+	SoundEnemyFling()
+}
+
+inline sub EnemyFlingComboReplaceVoice(h) {
+	KillEntity()
+	health = h + 1.0
+	sendevent(EventCombo, player, h)
+	if (voice) soundsetup(0, voice, 5);
+	SoundEnemyFling()
+}
+
+inline sub EnemyFlingSetDirNoZone() {
+	troty = (((atan2(player->trans) + (180deg + -GAMEDIR)) + 22.5deg) & ~(45deg-1)) % 360deg + GAMEDIR
+}
+
+inline sub EnemyFlingSetDir() {
+	var dir = (((atan2(player->trans) + (180deg + -GAMEDIR)) + 22.5deg) & ~(45deg-1)) % 360deg
+	if (ZONEFLAGS & 0x800) {
+		if (dir > 90deg && dir <= 180deg) {
+			dir = 180deg - dir
+		}
+		else if (dir > 180deg && dir < 270deg) {
+			dir = (180deg + 360deg) - dir
+		}
+		if (dir <= 180deg) {
+			dir /= 2
+		}
+		else {
+			dir = 360deg - (360deg - dir) / 2
+		}
+	}
+	troty = dir + GAMEDIR
+}
+
+inline sub EnemyFlingWaitScale() {
+	while (scalex > 0 && scaley > 0 && scalez > 0) {
+		playframe()
+	}
+}
+
+inline sub EnemyFlingWaitScale(frame) {
+	while (scalex > 0 && scaley > 0 && scalez > 0) {
+		playframe(frame)
+	}
+}
+
+inline sub EnemyFlingWaitScale(frame, anim) {
+	while (scalex > 0 && scaley > 0 && scalez > 0) {
+		playanim(frame, anim)
+	}
+}
+
+inline sub EnemyFlingWaitScaleAbs() {
+	while (abs(scalex) > 0 && scaley > 0 && scalez > 0) {
+		playframe()
+	}
+}
+
+inline sub EnemyFlingSetVel(vy) {
+	vely = vy
+	speed = 10m
+	statusb = FLAG_PHYSICS_ENGINE
+}
+
+inline sub EnemyFlingSetVel() {
+	EnemyFlingSetVel(0)
+}
+
+inline sub EnemyFling(h) {
+	EnemyFlingCombo(h)
+	EnemyFlingSetDir()
+	EnemyFlingSetVel()
+	EnemyFlingWaitScale()
+}
+
+inline sub EnemyFlingReplaceVoice(h) {
+	EnemyFlingComboReplaceVoice(h)
+	EnemyFlingSetDir()
+	EnemyFlingSetVel()
+	EnemyFlingWaitScale()
+}
+
+inline sub EnemyFlingAbs(h) {
+	EnemyFlingCombo(h)
+	EnemyFlingSetDir()
+	EnemyFlingSetVel()
+	EnemyFlingWaitScaleAbs()
+}
+
+inline sub EnemyFlingTransSendEv(enemy_size, ev) {
+	interrupter = getvalideventobj(ev, 0b11000)
+	if (interrupter) {
+		sendeventif(ev, interrupter, distance(interrupter) < enemy_size, health)
+	}
+	else {
+		eventaccepted = false
+	}
+}
+
+inline sub EnemyFlingAccel() {
+	speed += 3m
+	if (speed < 40m) {
+		speed += 3m
+	}
+	setvel(speed < 40m + 3m ? speed : 40m)
+}
+
+inline sub EnemyFlingTransNoZone(enemy_size, ev) {
+	unless (STATUS_FIRSTFRAME) {
+		interrupter = getvalideventobj(ev, 0b11000)
+		if (interrupter) {
+			sendeventif(ev, interrupter, distance(interrupter, 0) < enemy_size, health)
+		}
+		else {
+			eventaccepted = false
+		}
+		if (eventaccepted) {
+			health += 1.0
+		}
+		vecy = y - 1m
+		do {
+			y = vecy + 1m
+			projectzoneshadow(var0)
+		} until (!eventaccepted || y >= vecy + 1m)
+		scalex -= 1.0S / 30
+		scaley -= 1.0S / 30
+		scalez -= 1.0S / 30
+		speed += 3m
+		if (speed < 40m) {
+			speed += 3m
+		}
+		setvel(speed < 40m + 3m ? speed : 40m)
+	}
+}
+
+inline sub EnemyFlingTrans(enemy_size, ev) {
+	unless (STATUS_FIRSTFRAME) {
+		EnemyFlingTransSendEv(enemy_size, ev)
+		if (eventaccepted) {
+			health += 1.0
+		}
+		unless (ZONEFLAGS & 0x800) {
+			vecy = y - 1m
+			do {
+				y = vecy + 1m
+				projectzoneshadow(var0)
+			} until (!eventaccepted || y >= vecy + 1m)
+		}
+		scalex -= 1.0S / 30
+		scaley -= 1.0S / 30
+		scalez -= 1.0S / 30
+		EnemyFlingAccel()
+	}
+}
+
+inline sub EnemyFlingTransNoZone() {
+	EnemyFlingTransNoZone(2m, EventFling)
+}
+
+inline sub EnemyFlingTrans(enemy_size) {
+	EnemyFlingTrans(enemy_size, EventFling)
+}
+
+inline sub EnemyFlingTrans() {
+	EnemyFlingTrans(2m, EventFling)
+}
+
+inline sub SpinKnockbackDie(e, knock_speed, dead_state) {
+	if (e == EventSpinHit && interrupter == player) {
+		if (player->stateflag \ 0x8) {
+			accevcstate(dead_state)
+		}
+		else {
+			interrupter->velx = 0
+			interrupter->velz = 0
+			if (interrupter->x < x) {
+				interrupter->troty = 270deg
+				interrupter->speed = knock_speed
+				interrupter->velx = -knock_speed
+			}
+			else {
+				interrupter->troty = 90deg
+				interrupter->speed = knock_speed
+				interrupter->velx = knock_speed
+			}
+			interrupter->statusb &= ~FLAG_DPAD_CONTROL
+		}
+	}
+}
+
+inline sub SpinKnockback(e, knock_speed) {
+	if (e == EventSpinHit && interrupter == player) {
+		interrupter->velx = 0
+		interrupter->velz = 0
+		if (interrupter->x < x) {
+			interrupter->troty = 270deg
+			interrupter->speed = knock_speed
+			interrupter->velx = -knock_speed
+		}
+		else {
+			interrupter->troty = 90deg
+			interrupter->speed = knock_speed
+			interrupter->velx = knock_speed
+		}
+		interrupter->statusb &= ~FLAG_DPAD_CONTROL
+	}
+}
+
+inline sub KnockbackPlayerCollider(knock_speed, invinc_type) {
+	collider->velx = 0
+	collider->velz = 0
+	if (collider->x < x) {
+		collider->troty = 270deg
+		collider->speed = knock_speed
+		collider->velx = -knock_speed
+	}
+	else {
+		collider->troty = 90deg
+		collider->speed = knock_speed
+		collider->velx = knock_speed
+	}
+	if (collider->invincible != 5) {
+		collider->statusb &= ~FLAG_DPAD_CONTROL
+		collider->invincible = invinc_type
+		collider->invincibletime = frametime
+	}
+	
+}
+
+inline sub SetVillageObjPathProg() {
+	var0 = vecx >> 8
+	pathprog = var0 * (pathlen >> 8)
+	calcpath(abs(pathprog))
+}
+
+inline sub SlipperyObjCode(anim, path_dist, speed_mul) {
+	calcpath(0, vvec)
+	calcpath(1.0, vvel)
+	velx = (velx - vecx) * speed_mul
+	vely = (vely - vecy) * speed_mul
+	velz = (velz - vecz) * speed_mul
+	pathdist = path_dist
+	statusb = FLAG_PHYSICS_ENGINE | FLAG_INVISIBLE | FLAG_PATH_CALCS
+	sleepanim(0, anim)
+}
+
+inline sub SlipperyObjCode(anim, path_dist) {
+	SlipperyObjCode(anim, path_dist, 2)
+}
+
+inline sub SlipperyObjTrans(min_y, max_y) {
+	if (!STATUS_FIRSTFRAME && !(frametime - player->groundtime >= 0.2s) && !STATUS_INVALID_PATH && y > groundy - min_y && y < groundy + max_y) {
+		player->x = spd(player->x, velx)
+		player->y = spd(player->y, vely)
+		player->z = spd(player->z, velz)
+	}
+	x = player->x
+	y = player->y
+	z = player->z
+}
+
+inline sub EnemyHitPlayerGround() {
+	if (STATUS_PLAYER_D_COLLIDER) {
+		sendeventif(EventHit, collider, player->statusa \ FLAG_GROUNDLAND, 100.0)
+	}
+}
+
+inline sub ExplodeParticleSetSpeed(xmin, xrand, ymin, yrand, zmin, zrand) {	
+	if (!rand(2)) {
+		velx = xmin + rand(xrand)
+	}
+	else {
+		velx = -(xmin + rand(xrand))
+	}
+	vely = ymin + rand(yrand)
+	if (!rand(2)) {
+		velz = zmin + rand(zrand)
+	}
+	else {
+		velz = -(zmin + rand(zrand))
+	}
+}
+
+inline sub ExplodeParticleSetSpeed(xmin, xrand, ymin, yrand) {	
+	ExplodeParticleSetSpeed(xmin, xrand, ymin, yrand, xmin, xrand)
+}
+#endif
+
+inline sub WaitFadeNull() {
+	do {
+		playnull()
+	} until (FADECONTROL == -1)
+}
+
+inline sub WaitFadeFrame() {
+	do {
+		playframe()
+	} until (FADECONTROL == -1)
+}
+
+inline sub WaitFadeFrame(frame_num) {
+	do {
+		playframe(frame_num)
+	} until (FADECONTROL == -1)
+}
+
+inline sub WaitFadeFrame(frame_num, anim) {
+	do {
+		playanim(frame_num, anim)
+	} until (FADECONTROL == -1)
+}
+
+inline sub GroundCollider() {
+	collider->statusa |= FLAG_GROUNDLAND
+	collider->groundtime = collider->frametime
+	if (collider->vely < 0) collider->groundvel = collider->vely;
+}
+
+inline sub CarryCollider(oldx, oldy, oldz) {
+	GroundCollider()
+	collider->x += x - oldx
+	collider->y += y - oldy
+	collider->z += z - oldz
+}
+
+inline sub CarryColliderNoGround(oldx, oldy, oldz) {
+	collider->x += x - oldx
+	collider->y += y - oldy
+	collider->z += z - oldz
+}
+
+expr RotPlatCarryAmount = 0.985
+inline sub RotPlatCarryPlayer(oldx, oldy, oldz, rotspd) {
+	CarryCollider(oldx, oldy, oldz)
+	player->troty = spd(player->troty, rotspd)
+	troty = spd(rotspd)
+	vectransf2(vtrans, vvec, (player->z - z) * RotPlatCarryAmount >> 8, (player->x - x) * RotPlatCarryAmount >> 8, 0)
+	player->x = vecx
+	player->z = vecz
+}
+
+inline sub SetTrans(tx, ty, tz) {
+	x = tx
+	y = ty
+	z = tz
+}
+
+inline sub SetScale(sx, sy, sz) {
+	scalex = sx
+	scaley = sy
+	scalez = sz
+}
+
+inline sub SetScale(size) {
+	SetScale(size, size, size)
+}
+
+inline sub SetRot(rx, ry, rz) {
+	rotx = rx
+	roty = ry
+	rotz = rz
+}
+
+inline sub SetRot(rot) {
+	SetRot(rot, rot, rot)
+}
+
+inline sub SetTRot(rx, ry, rz) {
+	trotx = rx
+	troty = ry
+	trotz = rz
+}
+
+inline sub SetTRot(rot) {
+	SetTRot(rot, rot, rot)
+}
+
+inline sub SetVel(vx, vy, vz) {
+	velx = vx
+	vely = vy
+	velz = vz
+}
+
+inline sub SetVec(mx, my, mz) {
+	vecx = mx
+	vecy = my
+	vecz = mz
+}
+
+inline sub SetColor(r, g, b) {
+	colra = r
+	colga = g
+	colba = b
+	colr1 = r
+	colg1 = g
+	colb1 = b
+	colr2 = r
+	colg2 = g
+	colb2 = b
+	colr3 = r
+	colg3 = g
+	colb3 = b
+}
+
+inline sub SetTextColor(r1, g1, b1, r2, g2, b2) {
+	colr1 = r1
+	colg1 = g1
+	colb1 = b1
+	colr2 = r1
+	colg2 = g1
+	colb2 = b1
+	colr3 = r2
+	colg3 = g2
+	colb3 = b2
+	colr4 = r2
+	colg4 = g2
+	colb4 = b2
+}
+
+inline sub SetChildTextColor(r1, g1, b1, r2, g2, b2) {
+	child->colr1 = r1
+	child->colg1 = g1
+	child->colb1 = b1
+	child->colr2 = r1
+	child->colg2 = g1
+	child->colb2 = b1
+	child->colr3 = r2
+	child->colg3 = g2
+	child->colb3 = b2
+	child->colr4 = r2
+	child->colg4 = g2
+	child->colb4 = b2
+}
+
+inline sub SetDefaultColor() {
+	SetColor(0xff, 0xff, 0xff)
+}
+
+inline sub TextDefaultColor() {
+	SetTextColor(0x1FF, 0x190, 0x000, 0x1FF, 0x000, 0x000)
+}
+
+inline sub ShadowPlayFrame() {
+	field_60 = parent->field_60 & 0xFF
+	if (parent->scalex < 0) {
+		playframe_m(field_60)
+	}
+	else {
+		playframe_nm(field_60)
+	}
+}
