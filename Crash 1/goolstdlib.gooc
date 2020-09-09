@@ -262,7 +262,7 @@ expr LEVEL_GameWin           = L'V'
 expr LEVEL_LevelEnd          = L'J'
 
 inline sub SoundPitchDefault() {
-	SoundPitchDefault()
+	soundpitch(3.6 + rand(.8))
 }
 
 inline sub SoundPlayDefault(sound, vol) {
