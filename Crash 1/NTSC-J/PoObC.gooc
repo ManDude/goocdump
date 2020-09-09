@@ -1,6 +1,6 @@
 #gool PoObC 14 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim POWER_SPRING [PoSpV] 5
 

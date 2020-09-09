@@ -1,6 +1,6 @@
 #gool RivOC 28 6
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim RIVER_BRANCH [RB1fV] 29
 #anim RIVER_TREE [RD1fV] 16

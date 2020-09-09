@@ -1,6 +1,6 @@
 #gool PinOC 18 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #sprite PINSTRIPE_SPRITES [Pin1T]
 #tex 0x808080 1 1 0 12 48 16 64 64

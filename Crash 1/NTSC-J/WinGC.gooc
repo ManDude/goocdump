@@ -1,6 +1,6 @@
 #gool WinGC 61 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim CORTEX_RUN [Co1UV] 24
 

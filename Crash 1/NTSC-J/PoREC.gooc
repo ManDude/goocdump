@@ -1,6 +1,6 @@
 #gool PoREC 10 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim POWER_ROBOT_ENEMY_STAND [PRESV] 32
 #anim POWER_ROBOT_ENEMY_ATTACK [PREAV] 32

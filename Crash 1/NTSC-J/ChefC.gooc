@@ -1,6 +1,6 @@
 #gool ChefC 20 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim CHIEF_ATTACK_PREPARE [ChA1V] 8
 #anim CHIEF_ATTACK_WHACK_1 [ChA2V] 18

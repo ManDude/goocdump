@@ -1,6 +1,6 @@
 #gool WarpC 32 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim WARP_WHIRL_PARTICLE [WWP0V] 1
 

@@ -1,6 +1,6 @@
 #gool RWaOC 46 6
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev wz
 #anim PUSHER [Rp1wV] 10

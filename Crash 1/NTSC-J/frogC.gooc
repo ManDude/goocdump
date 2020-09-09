@@ -1,6 +1,6 @@
 #gool frogC 36 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim FROG_STAND [Fr1rV] 104
 #anim FROG_ANGRY [Fr2rV] 24

@@ -1,6 +1,6 @@
 #gool WartC 7 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim WARTHOG_RUN [WarRV] 16
 #anim WARTHOG_HIT [WarHV] 24

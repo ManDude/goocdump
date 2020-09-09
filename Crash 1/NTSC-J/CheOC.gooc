@@ -1,6 +1,6 @@
 #gool CheOC 21 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #sprite FLAME_1 [Ju3aT]
 #tex 0x808080 1 1 0 1 0 24 64 32 ! 2 1

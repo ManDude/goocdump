@@ -1,6 +1,6 @@
 #gool BaraC 16 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BARREL_DANGER [BaD7V] 1
 #anim BARREL_VOLATILE [BaV7V] 1

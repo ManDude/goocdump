@@ -1,6 +1,6 @@
 #gool AsciC 60 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #font FONT [AsciT]
 #char 0x000000 0 0 0 0 0 0 4 4 400 420 //  

@@ -1,6 +1,6 @@
 #gool CrabC 31 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim CRAB [Cr19V] 19
 #anim CRAB_DEAD [Cr29V] 1

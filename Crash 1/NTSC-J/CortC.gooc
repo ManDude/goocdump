@@ -1,6 +1,6 @@
 #gool CortC 49 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim CORTEX_DEAD [CD1vV] 30
 #anim HOVERBOARD_DEAD [Cd1vV] 30

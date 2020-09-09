@@ -1,6 +1,6 @@
 #gool PlanC 25 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev cl
 #anim JUNGLE_PLANT_STAND [JuPcV] 26

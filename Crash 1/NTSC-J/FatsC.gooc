@@ -1,6 +1,6 @@
 #gool FatsC 17 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim FAT_STANDARD_1 [FaS1V] 30
 #anim FAT_STANDARD_2 [FaS2V] 30

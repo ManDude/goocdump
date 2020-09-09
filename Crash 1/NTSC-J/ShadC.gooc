@@ -1,6 +1,6 @@
 #gool ShadC 29 1
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim SHADOW [Sha0V] 10
 

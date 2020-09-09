@@ -1,6 +1,6 @@
 #gool GemsC 58 4
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev 3lt
 #anim GEM [Ge10V] 1 // blue

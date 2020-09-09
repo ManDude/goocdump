@@ -1,6 +1,6 @@
 #gool CasOC 53 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #sprite RAIN [Cs1yT]
 #tex 0x5A5A5A 0 1 1 0 0 16 64 64

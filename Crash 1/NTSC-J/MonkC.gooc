@@ -1,6 +1,6 @@
 #gool MonkC 1 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim MONKEY_ROLL [Mo1fV] 6
 #anim MONKEY_STANCE [Mo2fV] 33

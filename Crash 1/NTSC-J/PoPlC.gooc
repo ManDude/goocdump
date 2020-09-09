@@ -1,6 +1,6 @@
 #gool PoPlC 11 6
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev 3
 #anim PLATFORM_PATH [PlP0V] 1

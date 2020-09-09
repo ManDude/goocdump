@@ -1,6 +1,6 @@
 #gool LabAC 54 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim LABASS_VIAL_THROW [LW1EV] 24
 #anim LABASS_VIAL_MIX [LW2EV] 30

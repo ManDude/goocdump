@@ -1,6 +1,6 @@
 #gool PinsC 15 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim PINSTRIPE_STAND [PinSV] 1
 #anim PINSTRIPE_HIT_1 [PiF1V] 20

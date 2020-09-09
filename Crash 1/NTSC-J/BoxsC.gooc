@@ -1,6 +1,6 @@
 #gool BoxsC 34 4
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BOX_NORMAL [BN10V] 1
 #anim BOX_EXPLODE [BE10V] 12

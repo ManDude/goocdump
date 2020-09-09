@@ -1,6 +1,6 @@
 #gool JunOC 22 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev 9
 #anim BUTTERFLY_1 [JuB9V] 8

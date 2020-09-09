@@ -1,6 +1,6 @@
 #gool SheNC 38 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim WALL_NATIVE_WALK #iflev iq [Na1iV] #else [1001I] #endif 29
 #anim WALL_NATIVE_COVER #iflev iq [Na2iV] #else [1002I] #endif 18

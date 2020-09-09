@@ -1,6 +1,6 @@
 #gool DispC 4 2
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #sprite FRUIT_WUMPA [WillT]
 #tex 0x808080 1 0 0 4 8 16 32 32

@@ -1,6 +1,6 @@
 #gool FruiC 3 4
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 /* #sprite FRUIT_LIME [Wil2T]
 #tex 0x808080 1 3 0 2 16 8 32 32

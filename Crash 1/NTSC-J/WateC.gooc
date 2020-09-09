@@ -1,6 +1,6 @@
 #gool WateC 55 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #sprite TEST [WillT]
 #tex 0x808080 0 1 6 0 108 4 8 8

@@ -1,6 +1,6 @@
 #gool CardC 57 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim GEM_CLEAR [Gc10V] 1
 #anim KEY [Gk10V] 1
@@ -2913,3 +2913,242 @@ state Menu_Return_To_Block_Select { // 66
 	}
 }
 
+#text TEST_TEXT FONT [NONE!]
+"PASSWORD GENERATOR!"
+"~c0~sx800~+~sx400~~c1: ADD LEVEL OR TOGGLE KEY"
+"~c0~sx800~*~sx400~~c1: REMOVE LEVEL"
+">"
+"LEVELS: %2d"
+"KEY 1: %d"
+"KEY 2: %d"
+"GEMS"
+"GEM %2d"
+
+#spawn S_PASSWORD_TEST_PASSWORD   Password_Test_Password_Master
+#spawn S_PASSWORD_TEST_BACKGROUND Password_Test_Background_Master
+#spawn S_PASSWORD_TEST_GEM_TEXT   Password_Test_Gem_Text
+
+state Test_Password_Generator {
+	stateflag 0x60001
+	statusc 0
+	code () {
+		var last_child
+		spawn(CardC, S_CARD_TEXT_CENTER_FLASH, 1, 0, 80.0, TEST_TEXT, 0, offsetof(var0), .64, 1.015, 0x1FF, 0x1F4, 0, 0x1FF, 0, 0x100, true)
+		spawn(CardC, S_CARD_TEXT_CENTER, 1, 0, -64.0, TEST_TEXT, 1.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true)
+		spawn(CardC, S_CARD_TEXT_CENTER, 1, 0, -80.0, TEST_TEXT, 2.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true)
+		spawn(CardC, S_PASSWORD_TEST_PASSWORD)
+		pathprog = 0
+		groundy = 0
+		groundvel = 0
+		spawn(CardC, S_CARD_TEXT, 1, -200.0, 32.0, TEST_TEXT, 4.0, offsetof(pathprog), .64, 1.015, 0x80, 0x1FF, 0x80, 0x40, 0x100, 0x40, false)
+		spawn(CardC, S_CARD_TEXT, 1, -200.0, 16.0, TEST_TEXT, 5.0, offsetof(groundy), .64, 1.015, 0x1FF, 0x1FF, 0x80, 0x100, 0x100, 0x40, false)
+		spawn(CardC, S_CARD_TEXT, 1, -200.0, 0, TEST_TEXT, 6.0, offsetof(groundvel), .64, 1.015, 0x1FF, 0x1FF, 0x80, 0x100, 0x100, 0x40, false)
+		spawn(CardC, S_CARD_TEXT, 1, -200.0, -16.0, TEST_TEXT, 7.0, offsetof(var0), .64, 1.015, 0x1FF, 0x1FF, 0x1FF, 0x100, 0x100, 0x100, false)
+		SAVETYPE = SAVE_TYPE_GEM
+		var0 = 0
+		spawn(CardC, S_CARD_TEXT, 1, -200.0-16.0, 32.0, TEST_TEXT, 3.0, offsetof(var1), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, false)
+		last_child = child
+		do {
+			if (buttonpress(PAD_TRIANGLE)) {
+				changestate(Menu_Return_To_Title)
+				sleepnull()
+			}
+			if (dirpress(PAD_S)) {
+				if (var0 < 3) {
+					SoundMenuButton()
+					var0 += 1
+				}
+			}
+			if (dirpress(PAD_N)) {
+				if (var0 > 0) {
+					SoundMenuButton()
+					var0 -= 1
+				}
+			}
+			if (dirpress(PAD_W)) {
+				if (var0 >= 13) {
+					SoundMenuButton()
+					var0 -= 13
+				}
+			}
+			if (dirpress(PAD_E)) {
+				if (var0 < 13) {
+					SoundMenuButton()
+					var0 += 13
+				}
+			}
+			if (var0 == 0) {
+				if (buttonpress(PAD_X)) {
+					if (pathprog < 30) {
+						SoundMenuSelect()
+						pathprog += 1
+					}
+				}
+				if (buttonpress(PAD_O)) {
+					if (pathprog > 0) {
+						SoundMenuSelect()
+						pathprog -= 1
+					}
+				}
+			}
+			else if (var0 == 1 || var0 == 2) {
+				if (buttonpress(PAD_X)) {
+					SoundMenuSelect()
+					if (var0 == 1) {
+						groundy ^= 1
+						ITEMPOOL2 ^= 1 << 10
+					}
+					else if (var0 == 2) {
+						groundvel ^= 1
+						ITEMPOOL2 ^= 1 << 20
+					}
+				}
+			}
+			else if (var0 == 3) {
+				if (buttonpress(PAD_X)) {
+					SoundMenuSelect()
+					var old_child = child
+					do (var i = 0) {
+						spawn(CardC, S_PASSWORD_TEST_GEM_TEXT, 1, i>>8)
+					} while ({i+=1.0}; i < 26.0)
+					spawn(CardC, S_CARD_TEXT, 1,-127.0 + (0/13)*128.0, 96.0 - (0%13)*15.0, TEST_TEXT, 3.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, false)
+					InvalidateConfirm()
+					save (var0) {
+						var0 = 0
+						do {
+							if (dirpress(PAD_S)) {
+								if (var0 < 25) {
+									SoundMenuButton()
+									var0 += 1
+								}
+							}
+							if (dirpress(PAD_N)) {
+								if (var0 > 0) {
+									SoundMenuButton()
+									var0 -= 1
+								}
+							}
+							child->x = -127.0 + (var0/13)*128.0
+							child->y = 96.0 - (var0%13)*15.0
+							playnull()
+						} until (buttonpress(PAD_TRIANGLE))
+					}
+					until ({var next_child = child}; next_child == old_child) {
+						interrupter = next_child
+						next_child = interrupter->sibling
+						sendevent(Event12, interrupter)
+					}
+				}
+			}
+			interrupter = last_child
+			interrupter->y = 32.0 - var0*16.0
+			CURRENTLEVEL = pathprog+1
+			LEVELCOUNT = CURRENTLEVEL
+			playnull()
+		} while (1)
+	}
+}
+
+state Password_Test_Password_Master {
+	stateflag 0x60001
+	statusc 0
+	code () {
+		var old_passcode1 = -1, old_passcode2 = -1
+		do {
+			old_passcode1 = velz
+			old_passcode2 = trotx
+			EncodePassword()
+			if (velz != old_passcode1 || trotx != old_passcode2) {
+				cascadeevent(Event12, self)
+				if (vely) {
+					spawn(CardC, S_CARD_SPRITE, 1, 96.0, 16.0, 2.552, 4.055, PASSWORD_BACKGROUND_SUPER, 0, -30)
+					playnull()
+					SpawnSuperPassword(96.0-110.0, 16.0+24.0) // type in super password
+				}
+				else {
+					spawn(CardC, S_CARD_SPRITE, 1, 96.0, 16.0, 2.552, 4.055, PASSWORD_BACKGROUND_NORMAL, 0, -30)
+					playnull()
+					SpawnNormalPassword(96.0-110.0, 16.0+8.0) // type in password
+				}
+			}
+			playnull()
+		} while (1)
+	}
+}
+
+state Password_Test_Gem_Text {
+	stateflag 0x60001
+	statusc 0
+	code (gem_id) {
+		var0 = gem_id+1
+		spawn(CardC, S_CARD_TEXT, 1, -111.0 + (gem_id/13)*128.0, 96.0 - (gem_id%13)*15.0, TEST_TEXT, 8.0, offsetof(var0), .64, 1.015, 0x100, 0x100, 0x100, 0x80, 0x80, 0x80, true)
+		sleepnull()
+	}
+	trans {
+		unless (STATUS_FIRSTFRAME) {
+			if (var gem = var0; gem == 1) var1 = ITEM_HAS_GEM1;
+			else if (gem == 2) var1 = ITEM_HAS_GEM2;
+			else if (gem == 3) var1 = ITEM_HAS_GEM3;
+			else if (gem == 4) var1 = ITEM_HAS_GEM4;
+			else if (gem == 5) var1 = ITEM_HAS_GEM5;
+			else if (gem == 6) var1 = ITEM_HAS_GEM6;
+			else if (gem == 7) var1 = ITEM_HAS_GEM7;
+			else if (gem == 8) var1 = ITEM_HAS_GEM8;
+			else if (gem == 9) var1 = ITEM_HAS_GEM9;
+			else if (gem == 10) var1 = ITEM_HAS_GEM10;
+			else if (gem == 11) var1 = ITEM_HAS_GEM11;
+			else if (gem == 12) var1 = ITEM_HAS_GEM12;
+			else if (gem == 13) var1 = ITEM_HAS_GEM13;
+			else if (gem == 14) var1 = ITEM_HAS_GEM14;
+			else if (gem == 15) var1 = ITEM_HAS_GEM15;
+			else if (gem == 16) var1 = ITEM_HAS_GEM16;
+			else if (gem == 17) var1 = ITEM_HAS_GEM17;
+			else if (gem == 18) var1 = ITEM_HAS_GEM18;
+			else if (gem == 19) var1 = ITEM_HAS_GEM19;
+			else if (gem == 20) var1 = ITEM_HAS_GEM20;
+			else if (gem == 21) var1 = ITEM_HAS_GEM21;
+			else if (gem == 22) var1 = ITEM_HAS_GEM22;
+			else if (gem == 23) var1 = ITEM_HAS_GEM23;
+			else if (gem == 24) var1 = ITEM_HAS_GEM24;
+			else if (gem == 25) var1 = ITEM_HAS_GEM25;
+			else if (gem == 26) var1 = ITEM_HAS_GEM26;
+			
+			if (creator->var0 == var0 - 1 && buttonpress(PAD_X|PAD_O)) {
+				SoundMenuSelect()
+				if (var gem = var0; gem == 1) ITEMPOOL1 ^= 1 <<  1;
+				else if (gem == 2) ITEMPOOL1 ^= 1 <<  2;
+				else if (gem == 3) ITEMPOOL1 ^= 1 <<  3;
+				else if (gem == 4) ITEMPOOL1 ^= 1 <<  4;
+				else if (gem == 5) ITEMPOOL1 ^= 1 <<  5;
+				else if (gem == 6) ITEMPOOL1 ^= 1 <<  7;
+				else if (gem == 7) ITEMPOOL1 ^= 1 <<  8;
+				else if (gem == 8) ITEMPOOL1 ^= 1 <<  9;
+				else if (gem == 9) ITEMPOOL1 ^= 1 << 10;
+				else if (gem == 10) ITEMPOOL1 ^= 1 << 12;
+				else if (gem == 11) ITEMPOOL1 ^= 1 << 13;
+				else if (gem == 12) ITEMPOOL1 ^= 1 << 15;
+				else if (gem == 13) ITEMPOOL1 ^= 1 << 24;
+				else if (gem == 14) ITEMPOOL1 ^= 1 << 26;
+				else if (gem == 15) ITEMPOOL1 ^= 1 << 19;
+				else if (gem == 16) ITEMPOOL1 ^= 1 << 18;
+				else if (gem == 17) ITEMPOOL1 ^= 1 << 20;
+				else if (gem == 18) ITEMPOOL1 ^= 1 << 21;
+				else if (gem == 19) ITEMPOOL1 ^= 1 << 14;
+				else if (gem == 20) ITEMPOOL1 ^= 1 << 23;
+				else if (gem == 21) ITEMPOOL1 ^= 1 << 25;
+				else if (gem == 22) ITEMPOOL1 ^= 1 << 16;
+				else if (gem == 23) ITEMPOOL1 ^= 1 << 29;
+				else if (gem == 24) ITEMPOOL1 ^= 1 << 27;
+				else if (gem == 25) ITEMPOOL2 ^= 1 <<  8;
+				else if (gem == 26) ITEMPOOL2 ^= 1 << 18;
+			}
+			
+			if (var1) {
+				SetChildTextColor(0x1FF, 0x1FF, 0x1FF, 0x100, 0x100, 0x100)
+			}
+			else {
+				SetChildTextColor(0x100, 0x100, 0x100, 0x80, 0x80, 0x80)
+			}
+		}
+	}
+}

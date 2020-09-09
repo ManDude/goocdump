@@ -1,6 +1,6 @@
 #gool GamOC 52 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BACKGROUND [Obg0V] 1
 

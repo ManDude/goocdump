@@ -1,6 +1,6 @@
 #gool RooOC 39 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BIG_TNT [BT2nV] 1
 #anim BOX_EXPLODE [BE10V] 14

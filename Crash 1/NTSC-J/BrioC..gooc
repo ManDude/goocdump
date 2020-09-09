@@ -1,6 +1,6 @@
 #gool BrioC 40 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BRIO_PREPARE_1 [BP1rV] 16
 #anim BRIO_PREPARE_2 [BP2rV] 16

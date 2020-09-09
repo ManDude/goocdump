@@ -1,6 +1,6 @@
 #gool WalOC 33 6
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim WALL_PLATFORM [WP1iV] 2
 #anim WALL_SHIELD [WS1iV] 18

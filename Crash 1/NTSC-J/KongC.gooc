@@ -1,6 +1,6 @@
 #gool KongC 45 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim KONG_STAND_1 [KS1xV] 24
 #anim KONG_STAND_2 [KS2xV] 21

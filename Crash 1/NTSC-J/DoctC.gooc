@@ -1,6 +1,6 @@
 #gool DoctC 5 1
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim WITCH_DOCTOR #iflev EG [WD1EV] #else [WD10V] #endif 1
 #anim WITCH_DOCTOR_GOLD [WD30V] 1

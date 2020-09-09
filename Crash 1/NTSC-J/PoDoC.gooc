@@ -1,6 +1,6 @@
 #gool PoDoC 8 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim POWER_DOOR_UP_1 [PoD1V] 1
 #anim POWER_DOOR_UP_2 [PoD4V] 1

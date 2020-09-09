@@ -1,6 +1,6 @@
 #gool KonOC 30 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim KONG_ROCK [KR1xV] 1
 #anim KONG_CART [KC1xV] 1

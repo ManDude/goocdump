@@ -1,6 +1,6 @@
 #gool MafiC 12 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim MAFIA_TRAIL [MTraV] 1
 #anim SLIM [SliMV] 1

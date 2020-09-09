@@ -1,6 +1,6 @@
 #gool TurtC 19 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #iflev 9
 #anim TURTLE_WALK [Tu19V] 17

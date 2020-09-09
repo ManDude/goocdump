@@ -1,6 +1,6 @@
 #gool RRooC 37 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim ROO_JUMP [RS1nV] 28
 #anim ROO_HOP [RS2nV] 12

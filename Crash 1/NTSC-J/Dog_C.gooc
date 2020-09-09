@@ -1,6 +1,6 @@
 #gool Dog_C 13 3
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim GUARD_DOG [GD15V] 1
 

@@ -1,6 +1,6 @@
 #gool BridC 23 5
 
-#include "..\\GOOL_EXPR.gooc"
+#include "..\\goolstdlib.gooc"
 
 #anim BRIDGE_STANDARD1 [BS1bV] 1
 #anim BRIDGE_EMPTY [BE1kV] 1
