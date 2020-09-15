@@ -92,7 +92,7 @@ state Pill_Spawn {
 		PillSpawnCycle = 2s
 		PillSpawnOffset = rand(2s)
 		PillTrackOffset = 0
-		density = 120.0
+		density = .3m
 		PillPathSpeed = getfield(parent, offsetof(PillPathSpeed))
 		CopyParentPath()
 		animseq = parent->animseq
@@ -103,8 +103,8 @@ state Pill_Spawn {
 			scaley = s
 			scalez = s
 			playframe(0)
-			s += 0.2S
-		} while (s < 1.0S)
+			s += .2S
+		} while (s < 1S)
 		changestate(Pill)
 	}
 }

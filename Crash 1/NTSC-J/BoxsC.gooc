@@ -290,7 +290,7 @@ sub BoxInit (r) { // 124
 	else {
 		zindex = 24
 	}
-	density = -40.0
+	density = -.1m
 	if (BoxFlag & BOX_FLAG_INVISIBLE && !entitygetstate(2)) {
 		statusb |= FLAG_INVISIBLE
 	}

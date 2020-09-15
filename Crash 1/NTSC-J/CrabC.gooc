@@ -25,7 +25,7 @@ state Crab_Spawn {
 		if (vecx) {
 			pathprog = (vecx - 128.0) * pathlen >> 15
 		}
-		density = 20.0
+		density = .05m
 		yzapproach = 90deg
 		zindex = 14
 		changestate(Crab_Walk)

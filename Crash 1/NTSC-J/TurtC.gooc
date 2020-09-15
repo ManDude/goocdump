@@ -48,25 +48,13 @@ state Turtle_Spawn {
 	statusc 0x10
 	code () {
 		spawn(ShadC, ShadC_S_SHADOW_STATIONARY, 1, 0, 1.6S, 5)
-		density = 60.0
-		if (vecx) {
-			field_61 = vecx
-		}
-		else {
-			field_61 = 1.6m
-		}
-		if (vecy) {
-			TurtleBouncePropulsion = vecy
-		}
-		else {
-			TurtleBouncePropulsion = 12.64912m
-		}
-		if (vecz) {
-			TurtlePathSpeed = vecz * 0.12 >> 8
-		}
-		else {
-			TurtlePathSpeed = 8.7
-		}
+		density = .15m
+		if (vecx) field_61 = vecx;
+		     else field_61 = 1.6m;
+		if (vecy) TurtleBouncePropulsion = vecy;
+		     else TurtleBouncePropulsion = 12.64912m;
+		if (vecz) TurtlePathSpeed = vecz * 0.12 >> 8;
+		     else TurtlePathSpeed = 8.7;
 		TurtleWalkDirOff = 0
 		zindex = 25
 		TurtleTrackOffset = 0

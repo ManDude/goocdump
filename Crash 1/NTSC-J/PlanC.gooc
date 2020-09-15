@@ -45,7 +45,7 @@ state Plant_Spawn {
 			return
 		}
 		zindex = 24
-		density = 120.0
+		density = .3m
 		scalex = 0
 		scaley = 0
 		scalez = 0

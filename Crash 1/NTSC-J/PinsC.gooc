@@ -72,7 +72,7 @@ state Pinstripe_Spawn {
 		PinstripeMiddleHits = 0
 		PinstripeRightHits = 0
 		PinstripeMovedToMiddle = 1.0
-		density = 40.0
+		density = .1m
 		mem1 = 0 // unused
 		PinstripePosition = PINNY_POSITION_MIDDLE
 		spawn(PinsC, S_PINSTRIPE_SHADOW)

@@ -207,7 +207,7 @@ state Power_Robot_Spawn { // 0
 		ShockMoveCount = 12.5 * (scalex / 64)
 		ShockMaxMoveCount = 0
 		zindex = 25
-		density = 80.0
+		density = .2m
 		PowerRobotStrafe = 0
 		soundpitch(3.84 + rand(0.32))
 		soundplay([srh3A], 0.03V + rand(0.07V))
@@ -529,7 +529,7 @@ inline sub SoundSurveillanceHi2() {
 state Power_Surveillance_Circle { // 11
 	code () {
 		zindex = 24
-		density = 40.0
+		density = .2m
 		statusb = FLAG_COLLIDABLE
 		SetTRot(0, 0, 0)
 		trotz = abs(vecx)
