@@ -296,9 +296,9 @@ state Power_Robot_Die { // 2
 			soundfadet(0.4s, voice)
 			soundpitch(6.0, voice, 2)
 			soundfadev(0.15V, voice, 2)
-			v0 = scalex
+			var0 = scalex
 		}
-		scalex = loopseek(v0, 1.2S, 0.1S)
+		scalex = loopseek(var0, 1.2S, 0.1S)
 		scaley = scalex
 		scalez = scalex
 	}
@@ -534,10 +534,10 @@ state Power_Surveillance_Circle { // 11
 		SetTRot(0, 0, 0)
 		trotz = abs(vecx)
 		if (vecx < 0) {
-			v0 = -180deg
+			var0 = -180deg
 		}
 		else {
-			v0 = 180deg
+			var0 = 180deg
 		}
 		if (vecy) trotx = vecy;
 		     else trotx = 0;
@@ -571,7 +571,7 @@ state Power_Surveillance_Circle { // 11
 				vecz = creator->z
 			}
 			vectransf2(vvec, vtrans, 0, 0, 2m)
-			trotx = spd(trotx, v0)
+			trotx = spd(trotx, var0)
 			PowerSurveillanceLookAtPlayer()
 			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
 		}
@@ -633,11 +633,11 @@ state Bubble_Spawner { // 13
 	statusc 0x22
 	code () {
 		statusb = FLAG_INVISIBLE
-		v0 = rand(2s)
+		var0 = rand(2s)
 		sleepanim(0, BUBBLE)
 	}
 	trans {
-		if (!time(2.15s, v0) && FRAMETIME < 30) {
+		if (!time(2.15s, var0) && FRAMETIME < 30) {
 			if (FRAMETIME < 27 && !rand(2)) {
 				spawn(PoRoC, S_BUBBLE)
 			}
@@ -655,12 +655,12 @@ state Bubble { // 14
 		roty = 0
 		rotz = 0
 		zindex = 0
-		v0 = 3s + rand(2s)
+		var0 = 3s + rand(2s)
 		statusb = FLAG_PHYSICS_ENGINE
 		velx = randi(-0.4m, 0.4m)
 		vely = 1m + rand(1.5m)
 		velz = randi(-0.2m, 0.2m)
-		WaitFrame(0, BUBBLE, v0)
+		WaitFrame(0, BUBBLE, var0)
 		playframest(BUBBLE, 0, 16.0, 0.1s)
 	}
 }
@@ -720,7 +720,7 @@ state LabAss_Shock { // 17
 	stateflag 0x80001
 	statusc 0x12
 	code (vert) {
-		v0 = vert
+		var0 = vert
 		SetScale(1.5S, .75S, .75S)
 		do (var start = frametime) {
 			if (!rand(5)) {
@@ -740,7 +740,7 @@ state LabAss_Shock { // 17
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			getvert(vtrans, creator, v0)
+			getvert(vtrans, creator, var0)
 		}
 	}
 }
@@ -749,7 +749,7 @@ state Willy_Shock { // 18
 	stateflag 0x80001
 	statusc 0x12
 	code (vert1, vert2) {
-		v0 = vert1
+		var0 = vert1
 		var1 = vert2
 		pathprog = randi(-0.99, 0.99)
 		zindex = 40
@@ -776,7 +776,7 @@ state Willy_Shock { // 18
 	trans {
 		unless (STATUS_FIRSTFRAME) {
 			null = loopseek(pathprog, 1.0, 0.05)
-			getvert(vtrans, creator, v0)
+			getvert(vtrans, creator, var0)
 			getvert(vvec, creator, var1)
 			x += (vecx - x) * abs(pathprog) >> 8
 			y += (vecy - y) * abs(pathprog) >> 8

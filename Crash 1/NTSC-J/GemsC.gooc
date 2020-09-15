@@ -161,26 +161,26 @@ inline sub SpawnGemSparkle() {
 
 sub GemActiveTransMoveForwards () {
 	roty += 1deg
-	v0 = 0
+	var0 = 0
 	if (player->y > y) {
 		statusb &= ~FLAG_SOLID_SIDES
 		if (collider, collider->statusa \ FLAG_GROUNDLAND, !(collider->statusa \ 0x80)) {
 			GEMTIME = frametime
-			v0 = 1.0
+			var0 = 1.0
 			pathprog = seek(pathprog, pathlen - 1.0, spd(GemMoveSpeed))
 		}
 	}
 	else {
 		statusb |= FLAG_SOLID_SIDES
 	}
-	if (!v0) {
+	if (!var0) {
 		pathprog = seek(pathprog, 0, spd(GemMoveSpeed * 3 / 4))
 	}
 	GemOldX = x
 	GemOldY = y
 	GemOldZ = z
 	calcpath()
-	if (v0) {
+	if (var0) {
 		player->x += x - GemOldX
 		player->y += y - GemOldY
 		player->z += z - GemOldZ
@@ -190,12 +190,12 @@ sub GemActiveTransMoveForwards () {
 
 sub GemActiveTransMoveBackwards () {
 	roty += 1deg
-	v0 = 0
+	var0 = 0
 	if (player->y > y) {
 		statusb &= ~FLAG_SOLID_SIDES
 		if (collider, collider->statusa \ FLAG_GROUNDLAND) {
 			GEMTIME = frametime
-			v0 = 1.0
+			var0 = 1.0
 		}
 	}
 	else {
@@ -206,7 +206,7 @@ sub GemActiveTransMoveBackwards () {
 	GemOldZ = z
 	var movespd = spd(GemMoveSpeed)
 	calcpath(sin(loopseek(pathprog, pathlen + movespd + -1.0, movespd), (pathlen + movespd + -1.0) - movespd))
-	if (v0) {
+	if (var0) {
 		player->x += x - GemOldX
 		player->y += y - GemOldY
 		player->z += z - GemOldZ
@@ -279,13 +279,13 @@ state Gem_Sparkle { // 4
 	}
 	trans {
 		once {
-			v0 = 0.3
+			var0 = 0.3
 		}
-		scalex = seek(scalex, v0, 0.3S)
-		scaley = seek(scaley, v0, 0.3S)
-		scalez = seek(scalez, v0, 0.3S)
+		scalex = seek(scalex, var0, .3S)
+		scaley = seek(scaley, var0, .3S)
+		scalez = seek(scalez, var0, .3S)
 		if (frametime - statetime >= 0.2s) {
-			v0 = 0
+			var0 = 0
 		}
 	}
 }

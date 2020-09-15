@@ -149,20 +149,20 @@ state Plant_Attack {
 		sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
 		if (PlantCanEat) {
 			getvert(vvec, self, 0)
-			v0 = pointclip(vec, player)
+			var0 = pointclip(vec, player)
 			getvert(vvec, self, 1.0)
-			v0 += pointclip(vec, player)
+			var0 += pointclip(vec, player)
 			getvert(vvec, self, 2.0)
-			v0 += pointclip(vec, player)
+			var0 += pointclip(vec, player)
 			getvert(vvec, self, 3.0)
-			v0 += pointclip(vec, player)
+			var0 += pointclip(vec, player)
 			getvert(vvec, self, 4.0)
-			v0 += pointclip(vec, player)
+			var0 += pointclip(vec, player)
 			getvert(vvec, self, 5.0)
-			v0 += pointclip(vec, player)
+			var0 += pointclip(vec, player)
 			getvert(vvec, self, 6.0)
-			v0 += pointclip(vec, player)
-			sendeventif(EventHit, player, v0, 100.0)
+			var0 += pointclip(vec, player)
+			sendeventif(EventHit, player, var0, 100.0)
 		}
 	}
 }

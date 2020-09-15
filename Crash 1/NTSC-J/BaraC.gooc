@@ -115,11 +115,11 @@ state Barrel_Shadow {
 		rotx = rot
 		scalex = 1.75S
 		do {
-			v0 = parent->pathprog + poff
-			if (v0 < 0) {
-				v0 = 0
+			var0 = parent->pathprog + poff
+			if (var0 < 0) {
+				var0 = 0
 			}
-			calcpath(v0)
+			calcpath(var0)
 			x += 0.2m
 			statusb = parent->statusb & FLAG_INVISIBLE
 			playanim(0, BARREL_SHADOW)

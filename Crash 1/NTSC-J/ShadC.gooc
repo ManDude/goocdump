@@ -144,8 +144,8 @@ state Shadow {
 		x = parent->x
 		y = parent->y
 		z = parent->z
-		projectobjshadow(v0)
-		projectzoneshadow(v0)
+		projectobjshadow(var0)
+		projectzoneshadow(var0)
 		if (eventaccepted && parent->statusb \ 0x4000000) {
 			if (abs(ShadowLastY - vecy) > 0.5m) {
 				y = vecy
@@ -283,16 +283,16 @@ state Boss_Health {
 	code (hp, type) {
 		zindex = -30
 		field_61 = type
-		v0 = hp
+		var0 = hp
 		SetTrans(-209.0, 70.0, 0)
 		SetRot(0, 0, 0)
 		statusb = FLAG_2D
 		health = creator->health
 		if (field_61 == 1) {
-			health = v0 - (health << 8)
+			health = var0 - (health << 8)
 		}
 		else if (field_61 == 2) {
-			health = v0 - health
+			health = var0 - health
 		}
 		while (GAMESTATE == GAME_STATE_CUTSCENE) {
 			playnull()
@@ -345,10 +345,10 @@ state Boss_Health {
 		unless (STATUS_FIRSTFRAME) {
 			health = creator->health
 			if (field_61 == 1) {
-				health = v0 - (health << 8)
+				health = var0 - (health << 8)
 			}
 			else if (field_61 == 2) {
-				health = v0 - health
+				health = var0 - health
 			}
 		}
 	}

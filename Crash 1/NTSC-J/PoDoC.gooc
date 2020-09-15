@@ -90,12 +90,12 @@ state Power_Door_Opened { // 4
 	}
 	trans {
 		once {
-			v0 = 0
+			var0 = 0
 		}
 		changestateif(Power_Door_Close, player->z > z + 3m)
 		if (player->z > vecz && frametime - statetime >= 1s) {
-			if (!v0) {
-				v0 = 1.0
+			if (!var0) {
+				var0 = 1.0
 				soundpitch(3.36 + rand(0.32))
 				soundplay([do13A], 0.3V)
 			}
@@ -203,7 +203,7 @@ state Power_Door_Double_Open { // 10
 	}
 	trans {
 		once {
-			v0 = 0
+			var0 = 0
 			soundpitch(3.52 + rand(0.32))
 			soundplay([do33A], 0.9V)
 		}
@@ -225,8 +225,8 @@ state Power_Door_Double_Opened { // 11
 		PowerDoorOffset -= 0.25m
 		x = PowerDoorMiddle - PowerDoorOffset
 		if (player->z > vecz) {
-			if (!v0) {
-				v0 = 1.0
+			if (!var0) {
+				var0 = 1.0
 				soundpitch(3.36 + rand(0.32))
 				soundplay([do33A], 0.5V)
 			}
@@ -250,8 +250,8 @@ state Power_Door_Double_Close { // 12
 	}
 	trans {
 		once {
-			if (!v0) {
-				v0 = 1.0
+			if (!var0) {
+				var0 = 1.0
 			}
 			SoundPitchDefault()
 			soundplay([do33A], 1.0V)

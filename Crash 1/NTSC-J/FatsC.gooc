@@ -24,8 +24,8 @@ state Fat_Wait {
 		zindex = 10
 		statusb = FLAG_INVISIBLE
 		do {
-			v0 = player->z - z
-			changestateifn(Fat_Attack, v0 > 90m || v0 < -1000m)
+			var0 = player->z - z
+			changestateifn(Fat_Attack, var0 > 90m || var0 < -1000m)
 			playanim(0, 0, 1s)
 		} while (1)
 	}
@@ -93,8 +93,8 @@ state Fat_Attack {
 	}
 	trans {
 		sendevent(EventHit, collider, 100.0)
-		v0 = player->z - z
-		changestateif(Fat_Wait, v0 > 90m || v0 < -1000m)
+		var0 = player->z - z
+		changestateif(Fat_Wait, var0 > 90m || var0 < -1000m)
 	}
 }
 

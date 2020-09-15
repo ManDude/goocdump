@@ -152,10 +152,10 @@ state Bridge_Fall {
 	}
 	trans {
 		if (y < BridgeObjBaseY - 0.25m) {
-			v0 = amb1 + 0.17S
-			amb1 = v0
-			amb2 = v0
-			amb3 = v0
+			var0 = amb1 + .17S
+			amb1 = var0
+			amb2 = var0
+			amb3 = var0
 		}
 	}
 }
@@ -181,7 +181,7 @@ state Bridge_Drop {
 		vely = 0
 		BridgeObjYOffset = 0
 		zindex = -10
-		v0 = 0
+		var0 = 0
 		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
 		BridgeFlipRand()
 		x += randi(-0.05m, 0.05m)
@@ -193,9 +193,9 @@ state Bridge_Drop {
 			if (BridgeObjYOffset >= 0) {
 				if (vely) {
 					statetime = frametime
-					v0 = 1.9s + rand(3s)
+					var0 = 1.9s + rand(3s)
 				}
-				if (frametime - statetime >= v0) {
+				if (frametime - statetime >= var0) {
 					vely = -1
 				}
 				else {
@@ -284,7 +284,7 @@ state Bridge_Fog_Main {
 	code () {
 		loadfile([BridC])
 		FogZMod = 0
-		v0 = 0
+		var0 = 0
 		BridgeObjYOffset = 0
 		trotz = 2deg
 		SetScale(1.3S, 0.2S, 1.0S)
@@ -301,13 +301,13 @@ state Bridge_Fog_Main {
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			if (FogZMod == v0) {
-				v0 = 192
+			if (FogZMod == var0) {
+				var0 = 192
 			}
-			if (FogZMod < v0) {
+			if (FogZMod < var0) {
 				FogZMod += 1
 			}
-			else if (FogZMod > v0) {
+			else if (FogZMod > var0) {
 				FogZMod -= 1
 			}
 			GLOBAL_3 = FogZMod

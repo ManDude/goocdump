@@ -99,9 +99,9 @@ state Power_Robot_Enemy_Die { // 2
 	}
 	trans {
 		once {
-			v0 = scalex
+			var0 = scalex
 		}
-		scalex = loopseek(v0, 1.2S, 0.1S)
+		scalex = loopseek(var0, 1.2S, 0.1S)
 		scaley = scalex
 		scalez = scalex
 	}

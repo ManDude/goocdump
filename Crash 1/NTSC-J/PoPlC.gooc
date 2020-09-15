@@ -295,7 +295,7 @@ state Power_Platform_Drop_Fall { // 4
 state Platform_Path_Spawn { // 5
 	code () {
 		mem12 = 0
-		v0 = 0
+		var0 = 0
 		statusb = FLAG_SOLID_ALL | FLAG_COLLIDABLE | 0x80000000
 		PlatformRotSpeed = 0
 		if (var level = LEVEL; level == LEVEL_BoulderDash) {
@@ -343,7 +343,7 @@ state Platform_Path_Wait { // 6
 		if (!collider) {
 			statetime = frametime
 		}
-		if ((collider || v0) && frametime - statetime >= 0.8s) {
+		if ((collider || var0) && frametime - statetime >= 0.8s) {
 			if (LEVEL == LEVEL_TempleRuins || LEVEL == LEVEL_JawsOfDarkness) {
 				PlatformRotSpeed = 70deg
 			}
@@ -372,7 +372,7 @@ state Platform_Path_Active { // 7
 	}
 	trans {
 		once {
-			v0 = 1.0
+			var0 = 1.0
 		}
 		PlatformFallWait = x
 		PlatformTouchWait = y

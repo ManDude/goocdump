@@ -121,7 +121,7 @@ state Crab_Fling { // 3
 			vecy = y - 1m
 			do {
 				y = vecy + 1m
-				projectzoneshadow(v0)
+				projectzoneshadow(var0)
 			} until (!eventaccepted || y >= vecy + 1m)
 			scalex -= 1.0S / 30
 			scaley -= 1.0S / 30

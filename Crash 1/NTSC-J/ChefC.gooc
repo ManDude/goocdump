@@ -180,18 +180,18 @@ inline sub DoLightEffect() {
 
 inline sub CheckStaffClip() {
 	getvert(vvec, self, 0)
-	v0 = pointclip(vec, player)
+	var0 = pointclip(vec, player)
 	getvert(vvec, self, 1.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 2.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 3.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 4.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 5.0)
-	v0 += pointclip(vec, player)
-	sendeventif(Event24, player, v0, 100.0)
+	var0 += pointclip(vec, player)
+	sendeventif(Event24, player, var0, 100.0)
 }
 
 state Chief_Attack {

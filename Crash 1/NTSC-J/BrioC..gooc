@@ -222,7 +222,7 @@ state Brio_Scare {
 
 state Brio_Drink {
 	code () {
-		v0 = false
+		var0 = false
 		BrioHitsTallied = 0
 		DeloadAnim([BP1rV], [BS1rG])
 		DeloadAnim([BP2rV], [BS1rG])
@@ -248,7 +248,7 @@ state Brio_Drink {
 		soundplay([XfmrA], 1.0V)
 		playanim(0, BRIO_DRINK_2, 0.5s)
 		playframes(BRIO_DRINK_2, 0, 22.0)
-		v0 = true
+		var0 = true
 		do (var i = 0) {
 			playframes(BRIO_DRINK_3, 0, 3.0)
 			i += 1.0
@@ -257,7 +257,7 @@ state Brio_Drink {
 		sounddecay(0.75)
 		soundplay([tnt0A], 1.0V)
 		SetDefaultColor()
-		v0 = false
+		var0 = false
 		setanim(BRIO_MONSTER_TRANSFORM, -1.0)
 		do (var i = 0) {
 			do (var j = 0) {
@@ -290,7 +290,7 @@ state Brio_Drink {
 	}
 	trans {
 		EnemyHitPlayerGround()
-		if (!STATUS_FIRSTFRAME && v0) {
+		if (!STATUS_FIRSTFRAME && var0) {
 			colra = seek(colra, 0, 10)
 			colga = seek(colga, 255, 10)
 			colba = seek(colba, 0, 10)

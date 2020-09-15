@@ -247,7 +247,7 @@ inline sub SeekScale() {
 
 sub FollowTarget () { // 0
 	/* Target position is in "vec" vector. */
-	v0 = distance(vec, self, 0)
+	var0 = distance(vec, self, 0)
 	if (DoctorHealth == 3.0) {
 		x = seek(x, vecx, spd(20m))
 		y = seek(y, vecy, spd(20m))
@@ -255,28 +255,28 @@ sub FollowTarget () { // 0
 		changestateif(Witch_Doctor_On_Willy, x == vecx && y == vecy && z == vecz)
 	}
 	else {
-		if (abs(v0) > 30m) {
+		if (abs(var0) > 30m) {
 			x = avg(x, vecx)
 			y = avg(y, vecy)
 			z = avg(z, vecz)
 		}
 		else if (DoctorFollowing) {
-			trotz = (abs(v0) >> 0) + 1m
+			trotz = (abs(var0) >> 0) + 1m
 			velx = spd(velx, (vecx-x) << 5)
 			vely = spd(vely, (vecy-y) << 5)
 			velz = spd(velz, (vecz-z) << 5)
 			DoctorXDistance = 1.5m
-			if (v0 < 0.75m) {
+			if (var0 < 0.75m) {
 				DoctorLookTime = frametime
 				DoctorFollowing = false
 			}
 		}
 		else {
-			trotz = (abs(v0) >> 3) + 0.2m
+			trotz = (abs(var0) >> 3) + 0.2m
 			velx = spd(velx, (vecx-x) << 2)
 			vely = spd(vely, (vecy-y) << 6)
 			velz = spd(velz, (vecz-z) << 2)
-			if (v0 > 1m) {
+			if (var0 > 1m) {
 				DoctorFollowing = true
 			}
 			DoctorXDistance = 1m
@@ -568,9 +568,9 @@ state Witch_Doctor_Die { // 3
 		once {
 			DoctorHealth = 0
 			seqplay(DoctorHealth)
-			v0 = 1.0S
+			var0 = 1.0S
 		}
-		scalex = loopseek(v0, 1.2S, 0.2S)
+		scalex = loopseek(var0, 1.2S, 0.2S)
 		scaley = scalex
 		scalez = scalex
 	}
@@ -635,14 +635,14 @@ state State_5 { // 5
 	statusc 0
 	code (v) {
 		statusb = 0x2000000
-		v0 = v
+		var0 = v
 		scalex = 0.5S
 		scaley = 0.5S
 		scalez = 0.5S
 		sleepanim(1, WITCH_DOCTOR_OLD)
 	}
 	trans {
-		getvert(vtrans, parent, v0)
+		getvert(vtrans, parent, var0)
 	}
 }
 
@@ -661,14 +661,14 @@ state Doctor_Sparkle { // 6
 	}
 	trans {
 		once {
-			v0 = 0.3S
+			var0 = 0.3S
 		}
 		unless (STATUS_FIRSTFRAME) {
-			scalex = seek(scalex, v0, 0.06S)
-			scaley = seek(scaley, v0, 0.06S)
-			scalez = seek(scalez, v0, 0.06S)
+			scalex = seek(scalex, var0, 0.06S)
+			scaley = seek(scaley, var0, 0.06S)
+			scalez = seek(scalez, var0, 0.06S)
 			if (frametime - statetime >= var1) {
-				v0 = 0
+				var0 = 0
 			}
 		}
 	}
@@ -707,7 +707,7 @@ state Doctor_Feather { // 8
 		scaley = 1.5S
 		scalez = 1.5S
 		DoctorFloatOffset = y
-		v0 = -(10m + rand(0))
+		var0 = -(10m + rand(0))
 		colra = r << 1
 		colga = g << 1
 		colba = b << 1
@@ -746,7 +746,7 @@ state Doctor_Feather { // 8
 			playframe((animframe + 1.0) % 16.0, 2)
 		} until(vely < 0)
 		vely = -0.2m
-		v0 /= 16
+		var0 /= 16
 		while (scalex > 0.1S) {
 			velx >>= 1
 			velz >>= 1
@@ -758,12 +758,12 @@ state Doctor_Feather { // 8
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			vely = spd(vely, v0)
+			vely = spd(vely, var0)
 			roty += 2deg
 			if (y < DoctorFloatOffset - 2m) {
-				scalex -= 0.2S
-				scaley -= 0.2S
-				scalez -= 0.2S
+				scalex -= .2S
+				scaley -= .2S
+				scalez -= .2S
 			}
 		}
 	}
@@ -777,14 +777,14 @@ state Doctor_Particle { // 9
 		rotx = 0
 		roty = 0
 		rotz = rand(360deg)
-		y += 0.75m
-		velx = rand(-10m, 10m+1)
-		vely = rand(-10m, 10m+1)
-		velz = rand(-10m, 10m+1)
+		y += .75m
+		velx = randi(-10m, 10m)
+		vely = randi(-10m, 10m)
+		velz = randi(-10m, 10m)
 		statusb = FLAG_PHYSICS_ENGINE
-		scalex = 0.4S
-		scaley = 0.4S
-		scalez = 0.4S
+		scalex = .4S
+		scaley = .4S
+		scalez = .4S
 		DoctorParticleAnim()
 	}
 	trans {
@@ -800,10 +800,10 @@ state Doctor_Particle { // 9
 sub DoctorStatus (t) { // 769
 	if (interrupter) {
 		if (t == DOCTOR_STATUS_GET_HEALTH) {
-			interrupter->v0 = DoctorHealth
+			interrupter->var0 = DoctorHealth
 		}
 		else if (t == DOCTOR_STATUS_SET_LIGHT) {
-			DoctorLightTimeLeft = interrupter->v0
+			DoctorLightTimeLeft = interrupter->var0
 		}
 	}
 }
@@ -846,7 +846,7 @@ state Witch_Doctor_Help {
 		DOCTORHELPCOUNT += 1.0
 		changestateif(Witch_Doctor, (misc == 7.0 && DOCTORHELPCOUNT > 1.0 && DOCTORHELPCOUNT < 7.0) || (LEVEL == LEVEL_LightsOut && (DOCTORHELPCOUNT == 2.0 || DOCTORHELPCOUNT == 4.0)))
 		save (GAMEFLAGS) {
-			unkget(field_61)
+			unkget(var1)
 			GAMEFLAGS &= ~0x14A2
 			spawn(DoctC, S_DOCTOR_HELP_TEXT)
 			do {
@@ -858,7 +858,7 @@ state Witch_Doctor_Help {
 				}
 			} until (buttonpress(PAD_X) || buttonpress(PAD_CIRCLE))
 		}
-		unkset(field_61)
+		unkset(var1)
 		cascadeevent(Event12, self)
 		changestate(Witch_Doctor)
 	}

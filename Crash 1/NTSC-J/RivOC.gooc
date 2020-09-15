@@ -154,18 +154,18 @@ state Venus_Wait { // 2
 
 inline sub CheckVenusClip() {	
 	getvert(vvec, self, 0)
-	v0 = pointclip(vec, player)
+	var0 = pointclip(vec, player)
 	getvert(vvec, self, 1.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 2.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 3.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 4.0)
-	v0 += pointclip(vec, player)
+	var0 += pointclip(vec, player)
 	getvert(vvec, self, 5.0)
-	v0 += pointclip(vec, player)
-	sendeventif(EventEat, player, v0, 100.0)
+	var0 += pointclip(vec, player)
+	sendeventif(EventEat, player, var0, 100.0)
 	if (eventaccepted) RiverObjVar1 += 1.0;
 }
 
@@ -375,7 +375,7 @@ state Fish_Move { // 8
 
 inline sub LoopBranchAnim() {
 	setanim(RIVER_BRANCH)
-	do { playframe(loopseek(v0, 29.0)) } while (1)
+	do { playframe(loopseek(var0, 29.0)) } while (1)
 }
 
 inline sub BranchStartPath() {

@@ -145,21 +145,10 @@ state Slim_Enemy_Die { // 4
 			sendevent(EventTriggered, player)
 		}
 		entitysetstate(3)
-		entitysetspawn(0)
-		sendevent(EventCombo, player, h)
-		statusb &= ~(FLAG_ROT_Y | FLAG_COLLIDABLE | FLAG_PHYSICS_ENGINE | FLAG_GRAVITY | 0x8000)
-		while (scalex > 0.04S) {
-			playframe()
-		}
+		EnemyDie(h)
 	}
 	trans {
-		once {
-			v0 = 1.0S
-		}
-		scalex = loopseek(v0, 1.2S, 0.2S)
-		scaley = scalex
-		scalez = scalex
-		roty += 60deg
+		EnemyDieTrans()
 	}
 }
 
@@ -209,17 +198,17 @@ state Bullet_Spawn { // 6
 		setvel(0.125m)
 		vely = velocity
 		checkzonecollision(vvec)
-		velx *= 8
-		vely *= 4
-		velz *= 8
+		velx <<= 3
+		vely <<= 2
+		velz <<= 3
 		if (getfield(parent, offsetof(MafiaVoice))) {
 			v0 = getfield(parent, offsetof(MafiaVoice))
-			soundfadet(0.1s, v0)
+			soundfadet(.1s, v0)
 			soundfadev(0, v0, 3)
 		}
 		soundpitch(3.84 + rand(0.32))
 		soundsetup(0, 9)
-		soundplay(SOUND_GUN, 0.14V + rand(0.02V))
+		soundplay(SOUND_GUN, .14V + rand(.02V))
 		parent->MafiaVoice = voice
 		changestate(Bullet)
 	}
@@ -256,23 +245,21 @@ state Bullet_Hit { // 8
 		rotx = 0
 		roty = 0
 		rotz = rand(360deg)
-		scalex = 0.75S
-		scaley = 0.75S
-		scalez = 0.75S
+		SetScale(.75S)
 		zindex = -50
 		if (LEVEL == LEVEL_Pinstripe) {
 			if (!rand(8)) {
 				if (var r = rand(3); r == 0) {
 					soundpitch(3.2 + rand(1.6))
-					soundplay(SOUND_RICCOCHET1, 0.17V)
+					soundplay(SOUND_RICCOCHET1, .17V)
 				}
 				else if (r == 1) {
 					soundpitch(3.2 + rand(1.6))
-					soundplay(SOUND_RICCOCHET2, 0.17V)
+					soundplay(SOUND_RICCOCHET2, .17V)
 				}
 				else if (r == 2) {
 					soundpitch(3.2 + rand(1.6))
-					soundplay(SOUND_RICCOCHET3, 0.08V)
+					soundplay(SOUND_RICCOCHET3, .08V)
 				}
 				soundsetup(0, voice, 5)
 			}

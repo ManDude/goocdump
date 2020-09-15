@@ -38,10 +38,10 @@ state Pill_Path {
 			PillPathSpeed = 2.7
 		}
 		if (vecz) {
-			v0 = vecz
+			var0 = vecz
 		}
 		else {
-			v0 = 3.0
+			var0 = 3.0
 		}
 		statusb = FLAG_INVISIBLE
 		calcpath(pathlen - 1.0, vvec)
@@ -65,7 +65,7 @@ state Pill_Path {
 				}
 				playframe(0)
 				i += 1.0
-			} while (i < v0)
+			} while (i < var0)
 			while (time(PillSpawnCycle, PillSpawnOffset)) {
 				playframe(0)
 			}

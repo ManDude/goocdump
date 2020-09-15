@@ -70,8 +70,8 @@ state Spider_Path_Spawner { // 1
 		SpiderCycleOffset = rand(4s)
 		if (vecy) SpiderBasePathSpeed = vecy >> 8;
 		     else SpiderBasePathSpeed = 1.0;
-		if (vecz) v0 = vecz;
-		     else v0 = 1.0;
+		if (vecz) var0 = vecz;
+		     else var0 = 1.0;
 		statusb = FLAG_INVISIBLE
 		calcpath(pathlen - 1.0, vvec)
 		setanim(SPIDER_MOVE)
@@ -84,7 +84,7 @@ state Spider_Path_Spawner { // 1
 				}
 				playframe(0)
 				i += 1.0
-			} while (i < v0)
+			} while (i < var0)
 			WaitSpiderCycle()
 			playframe(0)
 			WaitSpiderCycle()
@@ -122,7 +122,7 @@ state Spider_Path_Spawn { // 2
 
 inline sub SpiderTrackPath() {
 	var path_rot, deg_dist
-	pathprog = spd(pathprog, v0)
+	pathprog = spd(pathprog, var0)
 	calcpath()
 	save (troty, statusa, statusb, x, y, z, pathprog) {
 		statusb = FLAG_TRACK_PATH_SIGN | FLAG_PATH_CALCS
@@ -204,10 +204,10 @@ state Spider_Path { // 3
 		do {
 			SpiderAttackVal = pathprog
 			if ((SpiderAttackVal >> 8) & 1) {
-				v0 = SpiderBasePathSpeed * 2
+				var0 = SpiderBasePathSpeed * 2
 			}
 			else {
-				v0 = SpiderBasePathSpeed
+				var0 = SpiderBasePathSpeed
 			}
 			SpiderTrackPath()
 			if (pathprog >> 8 != SpiderAttackVal >> 8 && (pathprog >> 8) & 1) {

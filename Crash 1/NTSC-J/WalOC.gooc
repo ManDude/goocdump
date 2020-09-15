@@ -173,7 +173,7 @@ sub SpikeLogTransCommon () {
 	if (collider) {
 		interrupter = DOCTOR
 		sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
-		sendeventif(EventHit, collider, v0 <= 2.0, 100.0)
+		sendeventif(EventHit, collider, var0 <= 2.0, 100.0)
 		if (!(collider->stateflag \ 0x20)) {
 			if (collider->x > x) {
 				if (collider->x < x + 0.9m) {
@@ -228,20 +228,20 @@ state Spike_Log_Up_Active { // 5
 			playanim(0, SPIKE_LOG)
 			i += 1.0
 		} while (i < 4.0)
-		v0 = 0.11m
+		var0 = 0.11m
 		do (var i = 0) {
-			v0 -= 0.01m
-			LogYOff += v0
+			var0 -= 0.01m
+			LogYOff += var0
 			playanim(0, SPIKE_LOG)
-			LogYOff -= v0
+			LogYOff -= var0
 			playanim(0, SPIKE_LOG)
 			i += 1.0
 		} while (i < 8.0)
 		WaitLogAnim(LogActiveDur)
-		v0 = 0.01m
+		var0 = 0.01m
 		while (LogYOff > 0.1m) {
-			LogYOff -= v0
-			v0 += 0.01m
+			LogYOff -= var0
+			var0 += 0.01m
 			playanim(0, SPIKE_LOG)
 		}
 		LogYOff = 0.1m
@@ -309,20 +309,20 @@ state Spike_Log_Down_Active { // 8
 			playanim(0, SPIKE_LOG)
 			i += 1.0
 		} while (i < 3.0)
-		v0 = 0.11m
+		var0 = 0.11m
 		do (var i = 0) {
-			v0 -= 0.01m
-			LogYOff += v0
+			var0 -= 0.01m
+			LogYOff += var0
 			playanim(0, SPIKE_LOG)
-			LogYOff -= v0
+			LogYOff -= var0
 			playanim(0, SPIKE_LOG)
 			i += 1.0
 		} while (i < 6.0)
 		WaitLogAnim(LogActiveDur)
-		v0 = 0.01m
+		var0 = 0.01m
 		while (LogYOff > 0.1m) {
-			LogYOff -= v0
-			v0 += 0.01m
+			LogYOff -= var0
+			var0 += 0.01m
 			playanim(0, SPIKE_LOG)
 		}
 		LogYOff = 0.1m
@@ -495,7 +495,7 @@ state Torch_Flame_Lit { // 18
 			if (collider) {
 				interrupter = DOCTOR
 				sendevent(EventStatus, interrupter, DOCTOR_STATUS_GET_HEALTH)
-				sendeventif(EventBurn, collider, v0 <= 2.0, 100.0)
+				sendeventif(EventBurn, collider, var0 <= 2.0, 100.0)
 			}
 			getvert(vtrans, parent, 0)
 			y = LogBaseY + (scalex << 5)
@@ -537,7 +537,7 @@ state Cloud_Part { // 20
 			scalex = scalex * 3 / 2
 			scaley = scaley * 3 / 2
 		}
-		v0 = rand(0.5s)
+		var0 = rand(0.5s)
 		FlipRand()
 		velx = 0
 		vely = 0
@@ -559,7 +559,7 @@ state Cloud_Part { // 20
 			velx = seek(velx, vecx, 0.006m)
 			vely = seek(vely, vecy, 0.006m)
 			velz = seek(velz, vecz, 0.006m)
-			if (!time(0.5s, v0)) {
+			if (!time(0.5s, var0)) {
 				vecx = randi(-0.5m, 0.5m)
 				vecy = 0.25m + rand(0.3m)
 			}

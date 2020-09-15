@@ -402,7 +402,7 @@ state Bullet_Green_Hit_Cortex { // 7
 	stateflag 0x81
 	statusc 0
 	code () {
-		v0 = scalex
+		var0 = scalex
 		creator = objectget(10.0)
 		SetVel(0, 0, 0)
 		trotz = 5m
@@ -525,14 +525,14 @@ state Castle_Master { // 10
 state Castle_Explosion_Spawner { // 11
 	code (d) {
 		SetRot(0, 0, 0)
-		v0 = d
+		var0 = d
 		statetime = frametime - 2s
 		statusb = FLAG_INVISIBLE
 		sleepnull()
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME || GLOBAL_11) {
-			var1 = time(30s, v0)
+			var1 = time(30s, var0)
 			if (var1 > 2s) {
 				if (!rand(5s)) {
 					spawn(CorOC, S_CASTLE_SMOKE)

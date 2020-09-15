@@ -665,7 +665,7 @@ inline sub EnemyDieCombo(h) {
 }
 
 inline sub EnemyDieWaitScale() {
-	while (scalex > 0.04S) {
+	while (scalex > .04S) {
 		playframe()
 	}
 }
@@ -677,9 +677,9 @@ inline sub EnemyDie(h) {
 
 inline sub EnemyDieTrans() __trans {
 	once {
-		var0 = 1.0S
+		var0 = 1S
 	}
-	scalex = loopseek(var0, 1.2S, 0.1S)
+	scalex = loopseek(var0, 1.2S, .1S)
 	scaley = scalex
 	scalez = scalex
 	roty += 60deg
@@ -688,10 +688,10 @@ inline sub EnemyDieTrans() __trans {
 inline sub EnemyDieTransSound() __trans {
 	once {
 		sounddecay(0.625)
-		SoundPlayDefault([bnk0A], 0.4V)
-		var0 = 1.0S
+		SoundPlayDefault([bnk0A], .4V)
+		var0 = 1S
 	}
-	scalex = loopseek(var0, 1.2S, 0.1S)
+	scalex = loopseek(var0, 1.2S, .1S)
 	scaley = scalex
 	scalez = scalex
 	roty += 60deg
@@ -699,15 +699,15 @@ inline sub EnemyDieTransSound() __trans {
 
 inline sub EnemyDieTransNoRot() __trans {
 	once {
-		var0 = 1.0S
+		var0 = 1S
 	}
-	scalex = loopseek(var0, 1.2S, 0.1S)
+	scalex = loopseek(var0, 1.2S, .1S)
 	scaley = scalex
 	scalez = scalex
 }
 
 inline sub SoundEnemyFling() {
-	SoundPlayDefault([fli0A], 0.17V + rand(0.05V))
+	SoundPlayDefault([fli0A], .17V + rand(.05V))
 }
 
 inline sub EnemyFlingCombo(h) {

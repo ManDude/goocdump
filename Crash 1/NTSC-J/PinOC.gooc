@@ -45,8 +45,8 @@ state Generator_Master {
 		spawn(PinOC, S_GENERATOR_ENERGY, 8)
 		statusb = FLAG_INVISIBLE
 		do {
-			v0 = rand(1s)
-			WaitFrame(0, PINSTRIPE_SPRITES, v0)
+			var0 = rand(1s)
+			WaitFrame(0, PINSTRIPE_SPRITES, var0)
 			spawn(PinOC, S_GENERATOR_SHOCK)
 		} until (GLOBALVAL >= 90.0)
 		sleepanim(0, PINSTRIPE_SPRITES)

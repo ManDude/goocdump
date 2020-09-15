@@ -182,8 +182,8 @@ state Display_Hidden { // 2
 		}
 	}
 	trans {
-		v0 = getfield(player, DisplayVarField)
-		changestateif(Display_Show, v0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
+		var0 = getfield(player, DisplayVarField)
+		changestateif(Display_Show, var0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
 	}
 }
 
@@ -236,8 +236,8 @@ state Display_Hide { // 4
 	}
 	event => state Display_Hidden
 	trans {
-		v0 = getfield(player, DisplayVarField)
-		changestateif(Display_Show, v0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
+		var0 = getfield(player, DisplayVarField)
+		changestateif(Display_Show, var0 != getfield(self, DisplayVarField) || buttonhold(PAD_TRIANGLE) || DisplayStatus)
 		if (y < DISPLAY_BOUND_Y) {
 			y += 4.0
 		}
@@ -368,7 +368,7 @@ state Pickup_Icon { // 8
 	code (r, tx) {
 		statusb = FLAG_2D
 		SetPickupDisplay(r)
-		v0 = getfield(player, DisplayVarField)
+		var0 = getfield(player, DisplayVarField)
 		x = tx
 		y = -DISPLAY_BOUND_Y
 		changestate(Pickup_Icon_Show)
@@ -381,7 +381,7 @@ state Pickup_Icon_Show { // 9
 		sleepframe(DisplayFrame)
 	}
 	trans {
-		changestateif(Pickup_Icon_Hide, v0 != getfield(player, DisplayVarField) || frametime - statetime >= 1.5s)
+		changestateif(Pickup_Icon_Hide, var0 != getfield(player, DisplayVarField) || frametime - statetime >= 1.5s)
 		y = seek(y, -DISPLAY_BOUND_LOWER_Y, 10.0)
 	}
 }
@@ -396,7 +396,7 @@ state Pickup_Icon_Hide { // 10
 		sendevent(Event1, parent)
 	}
 	trans {
-		changestateif(Pickup_Icon_Show, buttonhold(PAD_TRIANGLE) && v0 == getfield(player, DisplayVarField))
+		changestateif(Pickup_Icon_Show, buttonhold(PAD_TRIANGLE) && var0 == getfield(player, DisplayVarField))
 	}
 }
 
@@ -569,7 +569,7 @@ state Pickup_Display_Show { // 13
 
 state Pickup_Display_Slave { // 14
 	code (sx, i) {
-		v0 = i
+		var0 = i
 		x += sx
 		sleep()
 	}
@@ -581,7 +581,7 @@ state Pickup_Display_Slave { // 14
 		DisplayVarField = getfield(parent, 74.0) //parent->DisplayVarField
 		scalex = parent->scalex
 		scaley = parent->scaley
-		if (getfield(parent, DisplayVarField) < v0) {
+		if (getfield(parent, DisplayVarField) < var0) {
 			statusb |= FLAG_INVISIBLE
 		}
 	}
