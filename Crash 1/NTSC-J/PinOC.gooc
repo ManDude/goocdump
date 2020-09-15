@@ -74,8 +74,8 @@ state Generator_Master {
 state Generator_Energy {
 	statusc 0
 	code () {
-		scalex = 3.0S
-		scaley = 3.0S
+		scalex = 3S
+		scaley = 3S
 		troty = rand(360deg)
 		DistanceToGenerator = 3m + rand(4m)
 		speed = 6deg + (rand(11deg) + -(DistanceToGenerator >> 14))
@@ -92,31 +92,27 @@ state Generator_Energy {
 		} until (GLOBALVAL >= 90.0)
 		while (DistanceToGenerator > 1m) {
 			DistanceToGenerator -= 1m
-			scalex -= 0.1S
-			scaley -= 0.1S
-			scalez -= 0.1S
+			scalex -= .1S
+			scaley -= .1S
+			scalez -= .1S
 			playanim(0, PINSTRIPE_SPRITES)
 		}
 		DistanceToGenerator = 8m
-		scalex = 3.0S
-		scaley = 3.0S
-		scalez = 3.0S
+		SetScale(3S)
 		while (DistanceToGenerator > 0) {
 			DistanceToGenerator -= 1m
-			scalex -= 0.1S
-			scaley -= 0.1S
-			scalez -= 0.1S
+			scalex -= .1S
+			scaley -= .1S
+			scalez -= .1S
 			playanim(0, PINSTRIPE_SPRITES)
 		}
 		DistanceToGenerator = 8m
-		scalex = 3.0S
-		scaley = 3.0S
-		scalez = 3.0S
+		SetScale(3S)
 		while (DistanceToGenerator > 0) {
 			DistanceToGenerator -= 1m
-			scalex -= 0.1S
-			scaley -= 0.1S
-			scalez -= 0.1S
+			scalex -= .1S
+			scaley -= .1S
+			scalez -= .1S
 			playanim(0, PINSTRIPE_SPRITES)
 		}
 	}
@@ -135,9 +131,7 @@ state Generator_Shock {
 		troty = rand(360deg)
 		trotz = rand(360deg)
 		vectransf2(vtrans, vtrans, 0, 2m + rand(1m), 0)
-		scalex = 3.0S + rand(2.0S)
-		scaley = 1.4S
-		scalez = 1.4S
+		SetScale(3S + rand(2S), 1.4S, 1.4S)
 		zindex = 200
 		rotz = rand(360deg)
 		if (!rand(3)) {
@@ -159,56 +153,52 @@ state Generator_Shock {
 	}
 }
 
+inline sub AnimLampVisible(dur) {
+	statusb = 0
+	playanim(0, LAMP, dur)
+}
+
+inline sub AnimLampInvisible(dur) {
+	statusb = 0
+	playanim(0, LAMP, dur)
+}
+
+inline sub AnimLampVisible() {
+	AnimLampVisible(1)
+}
+
+inline sub AnimLampInvisible() {
+	AnimLampInvisible(1)
+}
+
 state Lamp {
 	code () {
 		GLOBALOBJ = self
 		zindex = 20
-		statusb = FLAG_INVISIBLE
+		AnimLampInvisible(2s)
 		playanim(0, LAMP, 2s)
-		playanim(0, LAMP, 2s)
-		statusb = 0
-		playanim(0, LAMP)
-		statusb = FLAG_INVISIBLE
-		playanim(0, LAMP, 0.08s)
-		statusb = 0
-		playanim(0, LAMP)
-		statusb = FLAG_INVISIBLE
-		playanim(0, LAMP)
-		statusb = 0
-		playanim(0, LAMP)
-		statusb = FLAG_INVISIBLE
-		playanim(0, LAMP)
-		statusb = 0
-		playanim(0, LAMP)
+		AnimLampVisible()
+		AnimLampInvisible(.08s)
+		AnimLampVisible()
+		AnimLampInvisible()
+		AnimLampVisible()
+		AnimLampInvisible()
+		AnimLampVisible()
 		do {
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP, 0.18s)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP, 0.08s)
-			statusb = 0
-			playanim(0, LAMP, 0.3s)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP, 0.1s)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP)
-			statusb = FLAG_INVISIBLE
-			playanim(0, LAMP)
-			statusb = 0
-			playanim(0, LAMP, 0.15s)
+			AnimLampInvisible()
+			AnimLampVisible(.18s)
+			AnimLampInvisible()
+			AnimLampVisible()
+			AnimLampInvisible()
+			AnimLampVisible()
+			AnimLampInvisible(.08s)
+			AnimLampVisible(.3s)
+			AnimLampInvisible()
+			AnimLampVisible(.1s)
+			AnimLampInvisible()
+			AnimLampVisible()
+			AnimLampInvisible()
+			AnimLampVisible(.15s)
 		} while (1)
 	}
 	event (e, a) {
@@ -220,18 +210,7 @@ state Lamp_Broken {
 	code () {
 		playanim(0, LAMP, 1.5s)
 		while (var color = 0x80; color > 0) {
-			colra = color
-			colga = color
-			colba = color
-			colr1 = color
-			colg1 = color
-			colb1 = color
-			colr2 = color
-			colg2 = color
-			colb2 = color
-			colr3 = color
-			colg3 = color
-			colb3 = color
+			SetColor(color, color, color)
 			playanim(0, LAMP)
 			color -= 0x4
 		}
@@ -243,17 +222,10 @@ state Lamp_Broken {
 state Broken_Glass {
 	statusc 0
 	code (xoff, yoff, zoff) {
-		SoundPitchDefault()
-		soundplay([BrG8A], 1.0V)
-		rotx = 0
-		roty = 0
-		rotz = 0
-		x = xoff
-		y = yoff
-		z = zoff
-		scalex = 4.0S
-		scaley = 4.0S
-		scalez = 4.0S
+		SoundPlayDefault([BrG8A], 1V)
+		SetRot(0, 0, 0)
+		SetTrans(xoff, yoff, zoff)
+		SetScale(4S)
 		if (x < 0) scalex = -scalex;
 		sleepanim(1, PINSTRIPE_SPRITES)
 	}
