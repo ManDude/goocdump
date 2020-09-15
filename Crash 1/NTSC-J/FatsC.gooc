@@ -2,9 +2,9 @@
 
 #include "..\\goolstdlib.gooc"
 
-#anim FAT_STANDARD_1 [FaS1V] 30
-#anim FAT_STANDARD_2 [FaS2V] 30
-#anim FAT_STANDARD_3 [FaS3V] 15
+#anim FAT_STANCE_1 [FaS1V] 30
+#anim FAT_STANCE_2 [FaS2V] 30
+#anim FAT_STANCE_3 [FaS3V] 15
 #anim FAT_DANGER_1 [FaD1V] 30
 #anim FAT_DANGER_2 [FaD2V] 30
 #anim FAT_DANGER_3 [FaD3V] 15
@@ -53,8 +53,8 @@ state Fat_Attack {
 				statetime = 0
 			}
 			if (barrel_type == 0 || barrel_type == 2) {
-				playframes(FAT_STANDARD_1, 0, 29.0)
-				playframes(FAT_STANDARD_2, 0, 29.0)
+				playframes(FAT_STANCE_1, 0, 29.0)
+				playframes(FAT_STANCE_2, 0, 29.0)
 				barrel_count += 1.0
 				spawn(BaraC, BaraC_S_BARREL)
 				scalex = -scalex
@@ -62,7 +62,7 @@ state Fat_Attack {
 					playframeslt(FAT_DANGER_3, 0, 14.0)
 				}
 				else {
-					playframeslt(FAT_STANDARD_3, 0, 14.0)
+					playframeslt(FAT_STANCE_3, 0, 14.0)
 				}
 			}
 			else {
@@ -77,7 +77,7 @@ state Fat_Attack {
 				}
 				scalex = -scalex
 				if (vecx == 3.0) {
-					playframeslt(FAT_STANDARD_3, 0, 14.0)
+					playframeslt(FAT_STANCE_3, 0, 14.0)
 				}
 				else {
 					playframeslt(FAT_DANGER_3, 0, 14.0)
@@ -113,18 +113,10 @@ state Fat_Fling {
 	stateflag 0x30
 	statusc 0x12
 	code (h) {
-		entitysetspawn(0)
-		health = h + 1.0
-		sendevent(EventCombo, player, h)
-		SoundPitchDefault()
-		soundplay([fli0A], 0.17V + rand(0.05V))
+		EnemyFlingCombo(h)
 		troty = 180deg
-		vely = 0
-		speed = 10m
-		statusb = FLAG_PHYSICS_ENGINE
-		while (abs(scalex) > 0 && scaley > 0 && scalez > 0) {
-			playframe()
-		}
+		EnemyFlingSetVel()
+		EnemyFlingWaitScaleAbs()
 	}
 	event (e, a) {
 		if (e == EventDespawn) {
