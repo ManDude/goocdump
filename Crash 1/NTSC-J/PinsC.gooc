@@ -52,11 +52,11 @@ event EventRespawn => sub DeloadAnimSet
 #include "MafiC.gooh"
 #include "PinOC.gooh"
 
-expr PINNY_POSITION_LEFT = 0.0
-expr PINNY_POSITION_MIDDLE = 1.0
-expr PINNY_POSITION_RIGHT = 2.0
-expr PINNY_POSITION_MOVE_LEFT = 3.0
-expr PINNY_POSITION_MOVE_RIGHT = 4.0
+expr PINSTRIPE_POS_LEFT = 0.0
+expr PINSTRIPE_POS_MIDDLE = 1.0
+expr PINSTRIPE_POS_RIGHT = 2.0
+expr PINSTRIPE_POS_MOVE_LEFT = 3.0
+expr PINSTRIPE_POS_MOVE_RIGHT = 4.0
 
 state Pinstripe_Spawn {
 	stateflag 0x10001
@@ -74,7 +74,7 @@ state Pinstripe_Spawn {
 		PinstripeMovedToMiddle = 1.0
 		density = .1m
 		mem1 = 0 // unused
-		PinstripePosition = PINNY_POSITION_MIDDLE
+		PinstripePosition = PINSTRIPE_POS_MIDDLE
 		spawn(PinsC, S_PINSTRIPE_SHADOW)
 		LoadAnim([PiF1V], [Pin1G])
 		LoadAnim([PiF2V], [Pin1G])
@@ -97,12 +97,12 @@ state Pinstripe_Spawn {
 state Pinstripe_Shoot {
 	stateflag 0x10080
 	code () {
-		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+		if (PinstripePosition == PINSTRIPE_POS_MIDDLE) {
 			setanim(PINSTRIPE_GUN2)
 			SoundPitchDefault()
 			soundplay([laf8A], 0.3V + rand(0.2V))
 		}
-		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+		else if (PinstripePosition == PINSTRIPE_POS_RIGHT) {
 			setanim(PINSTRIPE_GUN3)
 		}
 		else {
@@ -111,7 +111,7 @@ state Pinstripe_Shoot {
 		do (var i = 0) {
 			animframe = -1.0
 			do (var j = 0) {
-				if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+				if (PinstripePosition == PINSTRIPE_POS_MIDDLE) {
 					var0 = -180deg + rand(360deg)
 				}
 				else {
@@ -159,7 +159,7 @@ state Pinstripe_Empty {
 	stateflag 0x10001
 	statusc 0
 	code () {
-		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+		if (PinstripePosition == PINSTRIPE_POS_MIDDLE) {
 			if (!PinstripeMiddleHits && health == 1.0) {
 				playframes(PINSTRIPE_EMPTY2_1, 0, 19.0)
 				playframes(PINSTRIPE_EMPTY2_2, 0, 19.0)
@@ -178,7 +178,7 @@ state Pinstripe_Empty {
 				changestate(Pinstripe_To_Left)
 			}
 		}
-		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+		else if (PinstripePosition == PINSTRIPE_POS_RIGHT) {
 			if (!PinstripeRightHits && health == 2.0) {
 				playframes(PINSTRIPE_EMPTY3_1, 0, 19.0)
 				playframes(PINSTRIPE_EMPTY3_2, 0, 19.0)
@@ -220,7 +220,7 @@ state Pinstripe_To_Left {
 	stateflag 0x10001
 	code () {
 		PinstripeMovedToMiddle = 1.0
-		PinstripePosition = PINNY_POSITION_LEFT
+		PinstripePosition = PINSTRIPE_POS_LEFT
 		playframes(PINSTRIPE_LEFT1_1, 0, 6.0)
 		setanim(PINSTRIPE_LEFT1_2, -1.0)
 		pathprog = 0
@@ -252,7 +252,7 @@ state Pinstripe_From_Left {
 			playframe()
 			pathprog += 1.0
 		} while (pathprog <= 30.0)
-		PinstripePosition = PINNY_POSITION_MIDDLE
+		PinstripePosition = PINSTRIPE_POS_MIDDLE
 		playframes(PINSTRIPE_LEFT2_3, 0, 6.0)
 		changestate(Pinstripe_Shoot)
 	}
@@ -266,7 +266,7 @@ state Pinstripe_To_Right {
 	stateflag 0x10001
 	code () {
 		PinstripeMovedToMiddle = 1.0
-		PinstripePosition = PINNY_POSITION_RIGHT
+		PinstripePosition = PINSTRIPE_POS_RIGHT
 		playframes(PINSTRIPE_RIGHT1_1, 0, 6.0)
 		setanim(PINSTRIPE_RIGHT1_2, -1.0)
 		pathprog = 30.0
@@ -298,7 +298,7 @@ state Pinstripe_From_Right {
 			pathprog += 1.0
 		} while (pathprog <= 60.0)
 		playframes(PINSTRIPE_RIGHT2_3, 0, 6.0)
-		PinstripePosition = PINNY_POSITION_MIDDLE
+		PinstripePosition = PINSTRIPE_POS_MIDDLE
 		changestate(Pinstripe_Shoot)
 	}
 	trans {
@@ -333,9 +333,9 @@ state Move_Left_Right {
 	statusc 0
 	code () {
 		zindex = 35
-		if (PinstripePosition == PINNY_POSITION_RIGHT || PinstripePosition == PINNY_POSITION_MOVE_LEFT) {
-			if (PinstripePosition != PINNY_POSITION_MOVE_LEFT) {
-				PinstripePosition = PINNY_POSITION_MOVE_LEFT
+		if (PinstripePosition == PINSTRIPE_POS_RIGHT || PinstripePosition == PINSTRIPE_POS_MOVE_LEFT) {
+			if (PinstripePosition != PINSTRIPE_POS_MOVE_LEFT) {
+				PinstripePosition = PINSTRIPE_POS_MOVE_LEFT
 				pathprog = 66.0
 				PinstripeMoveFrame = -1.0
 			}
@@ -348,11 +348,11 @@ state Move_Left_Right {
 				PinstripeMoveFrame += 1.0
 				PinstripePlayMoveFrame(PinstripeMoveFrame)
 			}
-			PinstripePosition = PINNY_POSITION_LEFT
+			PinstripePosition = PINSTRIPE_POS_LEFT
 		}
 		else {
-			if (PinstripePosition != PINNY_POSITION_MOVE_RIGHT) {
-				PinstripePosition = PINNY_POSITION_MOVE_RIGHT
+			if (PinstripePosition != PINSTRIPE_POS_MOVE_RIGHT) {
+				PinstripePosition = PINSTRIPE_POS_MOVE_RIGHT
 				pathprog = 95.0
 				PinstripeMoveFrame = 60.0
 			}
@@ -365,7 +365,7 @@ state Move_Left_Right {
 				PinstripeMoveFrame -= 1.0
 				PinstripePlayMoveFrame(PinstripeMoveFrame)
 			}
-			PinstripePosition = PINNY_POSITION_RIGHT
+			PinstripePosition = PINSTRIPE_POS_RIGHT
 		}
 		zindex = 14
 		if (health == 3.0 && PinstripeAnimSet < 1.0) {
@@ -388,13 +388,13 @@ state Pinstripe_Hit {
 	stateflag 0x10002
 	code () {
 		statusb &= ~FLAG_ROT_Y
-		if (PinstripePosition == PINNY_POSITION_MIDDLE) {
+		if (PinstripePosition == PINSTRIPE_POS_MIDDLE) {
 			PinstripeMiddleHits += 1.0
 		}
-		else if (PinstripePosition == PINNY_POSITION_RIGHT) {
+		else if (PinstripePosition == PINSTRIPE_POS_RIGHT) {
 			PinstripeRightHits += 1.0
 		}
-		else if (PinstripePosition >= PINNY_POSITION_MOVE_LEFT) {
+		else if (PinstripePosition >= PINSTRIPE_POS_MOVE_LEFT) {
 			nop() // debug instruction
 		}
 		else {
@@ -489,7 +489,7 @@ state Pinstripe_Hit {
 			PinstripeAnimSet = 4.0
 		}
 		statusb |= FLAG_ROT_Y
-		changestateif(Move_Left_Right, PinstripePosition >= PINNY_POSITION_MOVE_LEFT)
+		changestateif(Move_Left_Right, PinstripePosition >= PINSTRIPE_POS_MOVE_LEFT)
 		changestate(Pinstripe_Shoot)
 	}
 	trans {

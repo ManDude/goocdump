@@ -73,7 +73,7 @@
 
 var RiverObjVar1, RiverObjVar2, RiverObjVar3, BranchCycleTime, BranchCycleOff,
 BranchPathSpeed, RiverObjBaseY, LeafHitVel, LeafFloatY, WaterY,
-FishSplashed, RiverVoice, BranchWaitRange, BranchTimeBase, BranchNoTimeBase
+FishSplashed, RiverVoice, BranchActiveRange, BranchTimeBase, BranchNoTimeBase
 
 event EventDespawn => sub KillVoice
 
@@ -406,20 +406,20 @@ state Branch_Spawn { // 9
 		scaley = 1.0S
 		scalez = 1.2S
 		if (vecx) BranchCycleTime = vecx >> 8;
-		else BranchCycleTime = 6.67s;
+		     else BranchCycleTime = 6.67s;
 		BranchPathSpeed = pathlen * 2 / (BranchCycleTime + 1)
 		BranchCycleOff = vecy * (BranchCycleTime + 1) >> 16
 		BranchNoTimeBase = false
-		BranchWaitRange = 0
+		BranchActiveRange = 0
 		if (vecz == 1.0) {
 			BranchNoTimeBase = true
 		}
 		else if (vecz) {
-			BranchWaitRange = vecz / 100 * 400
+			BranchActiveRange = vecz / 100 * 400
 		}
 		BranchStartPath()
 		calcpath()
-		if (!BranchWaitRange) {
+		if (!BranchActiveRange) {
 			changestate(Branch_Move)
 		}
 		else {
@@ -428,7 +428,7 @@ state Branch_Spawn { // 9
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			changestateif(Branch_Move, abs(player->z - z) < BranchWaitRange)
+			changestateif(Branch_Move, abs(player->z - z) < BranchActiveRange)
 		}
 	}
 }
