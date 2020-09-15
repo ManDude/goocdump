@@ -142,13 +142,13 @@ state Pinstripe_Shoot {
 	}
 }
 
-inline sub PlayMinigunSound() {
+inline sub SoundMachineGun() {
 	SoundPitchDefault()
 	soundsetup(0, 9)
 	soundplay([MGn8A], 0.15V)
 }
 
-inline sub PlayMinigunSound(delay) {
+inline sub SoundMachineGun(delay) {
 	SoundPitchDefault()
 	sounddelay(delay)
 	soundsetup(0, 9)
@@ -163,9 +163,9 @@ state Pinstripe_Empty {
 			if (!PinstripeMiddleHits && health == 1.0) {
 				playframes(PINSTRIPE_EMPTY2_1, 0, 19.0)
 				playframes(PINSTRIPE_EMPTY2_2, 0, 19.0)
-				PlayMinigunSound(0.25s)
-				PlayMinigunSound(0.3s)
-				PlayMinigunSound(0.45s)
+				SoundMachineGun(0.25s)
+				SoundMachineGun(0.3s)
+				SoundMachineGun(0.45s)
 				playframes(PINSTRIPE_EMPTY2_3, 0, 19.0)
 			}
 			if (health == 3.0) {
@@ -182,9 +182,9 @@ state Pinstripe_Empty {
 			if (!PinstripeRightHits && health == 2.0) {
 				playframes(PINSTRIPE_EMPTY3_1, 0, 19.0)
 				playframes(PINSTRIPE_EMPTY3_2, 0, 19.0)
-				PlayMinigunSound(0.25s)
-				PlayMinigunSound(0.3s)
-				PlayMinigunSound(0.45s)
+				SoundMachineGun(0.25s)
+				SoundMachineGun(0.3s)
+				SoundMachineGun(0.45s)
 				playframes(PINSTRIPE_EMPTY3_3, 0, 19.0)
 			}
 			if (health <= 3.0 || !PinstripeMovedToMiddle) {
@@ -198,9 +198,9 @@ state Pinstripe_Empty {
 			if (!PinstripeLeftHits && health == 3.0) {
 				playframes(PINSTRIPE_EMPTY1_1, 0, 19.0)
 				playframes(PINSTRIPE_EMPTY1_2, 0, 19.0)
-				PlayMinigunSound(0.25s)
-				PlayMinigunSound(0.3s)
-				PlayMinigunSound(0.45s)
+				SoundMachineGun(0.25s)
+				SoundMachineGun(0.3s)
+				SoundMachineGun(0.45s)
 				playframes(PINSTRIPE_EMPTY1_3, 0, 19.0)
 			}
 			if (health <= 3.0 || !PinstripeMovedToMiddle) {
@@ -311,7 +311,7 @@ sub PinstripePlayMoveFrame (frame) {
 	if (frame < 20.0) {
 		setanim(PINSTRIPE_MOVE1)
 		if (frame == 7.0 || frame == 9.0) {
-			PlayMinigunSound()
+			SoundMachineGun()
 		}
 		playframe(frame)
 	}
@@ -322,7 +322,7 @@ sub PinstripePlayMoveFrame (frame) {
 	else {
 		setanim(PINSTRIPE_MOVE3)
 		if (frame == 47.0) {
-			PlayMinigunSound()
+			SoundMachineGun()
 		}
 		playframe(frame - 40.0)
 	}
@@ -520,23 +520,22 @@ state Pinstripe_Dead {
 		voice = PinstripeVoice
 		soundfadet(1.5s, voice)
 		soundfadev(0, voice, 2)
-		sounddelay(0.5s)
-		SoundPitchDefault()
-		soundplay([WDn8A], 0.03V)
+		sounddelay(.5s)
+		SoundPlayDefault([WDn8A], .03V)
 		player = GLOBALOBJ
 		sendevent(Event28, player)
 		GLOBALVAL = 90.0
 		playanim(4, PINSTRIPE_HIT_1)
 		playanim(0, PINSTRIPE_HIT_4)
 		playanim(1, PINSTRIPE_HIT_4)
-		PlayMinigunSound(0.15s)
+		SoundMachineGun(.15s)
 		playframeslt(2.0, 16.0)
 		playframe(16.0, 2s)
 		GLOBALVAL = 100.0
 		sleepframe(16.0)
 	}
 	trans {
-		if (!(frametime - statetime >= 1s)) {
+		unless (frametime - statetime >= 1s) {
 			roty += 24deg
 		}
 	}
