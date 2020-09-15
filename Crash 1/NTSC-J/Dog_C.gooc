@@ -23,7 +23,7 @@ state Guard_Dog_Spawn {
 		     else DogAngerDistance = 6m;
 		if (vecy) DogAttackSpeed = vecy;
 		     else DogAttackSpeed = 15.0;
-		density = 40.0
+		density = .1m
 		yzapproach = 360deg
 		trotx = 360deg
 		calcpath(0)
@@ -39,7 +39,7 @@ state Guard_Dog_Stance {
 	}
 	event => state Guard_Dog_Attack
 	trans {
-		changestateif(Guard_Dog_Angry, distance(player, 2) < DogAngerDistance)
+		changestateif(Guard_Dog_Angry, distance(player, DIST_NO_Y) < DogAngerDistance)
 		EnemyHitPlayerGround()
 	}
 }
@@ -53,8 +53,8 @@ state Guard_Dog_Angry {
 	}
 	event => state Guard_Dog_Attack
 	trans {
-		changestateif(Guard_Dog_Stance, distance(player, 2) > DogAngerDistance)
-		changestateif(Guard_Dog_Attack, distance(player, 2) < DogAngerDistance - 1m)
+		changestateif(Guard_Dog_Stance, distance(player, DIST_NO_Y) > DogAngerDistance)
+		changestateif(Guard_Dog_Attack, distance(player, DIST_NO_Y) < DogAngerDistance - 1m)
 		EnemyHitPlayerGround()
 	}
 }
