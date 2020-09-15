@@ -76,7 +76,7 @@ state Slim_Spawn { // 0
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			changestateif(Slim_Appear, distance(player, 0) < 16m && z - player->z < 5m)
+			changestateif(Slim_Appear, distance(player) < 16m && z - player->z < 5m)
 		}
 	}
 }
@@ -190,7 +190,7 @@ state Bullet_Spawn { // 6
 		else {
 			rotx = randi(-30deg, 30deg)
 		}
-		if (distance(player, 2) < 1.5m, abs(y - player->y) < 2m) {
+		if (distance(player, DIST_NO_Y) < 1.5m, abs(y - player->y) < 2m) {
 			sendevent(EventHit, player, 100.0)
 			changestateif(Bullet_Hit, eventaccepted)
 		}

@@ -60,7 +60,7 @@ state Pill_Path {
 				while (time(PillSpawnCycle, PillSpawnOffset)) {
 					playframe(0)
 				}
-				if (distance(player, 3) > PillPathDisableRange && player->z < vecz + 15m) {
+				if (distance(player, DIST_EXACT|DIST_NO_Y) > PillPathDisableRange && player->z < vecz + 15m) {
 					spawn(PillC, S_PILL)
 				}
 				playframe(0)

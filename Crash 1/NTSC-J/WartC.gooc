@@ -29,7 +29,7 @@ state Warthog_Spawn {
 			WarthogSquealTime = 0
 			WarthogGruntTime = 0
 		}
-		changestateif(Warthog_Run, distance(player, 0) < 10m)
+		changestateif(Warthog_Run, distance(player) < 10m)
 	}
 }
 
@@ -52,7 +52,7 @@ state Warthog_Run {
 				SoundPlayDefault([WH2kA], 0.2V + rand(0.4V))
 			}
 		}
-		changestateif(Warthog_Hit, (distance(player, 0) < 2m && abs(x - player->x) > 0.5m) || (player->z < z - 1m && STATUS_PATH_END))
+		changestateif(Warthog_Hit, (distance(player) < 2m && abs(x - player->x) > 0.5m) || (player->z < z - 1m && STATUS_PATH_END))
 		sendevent(Event24, collider, 50.0)
 		SinePathProg(0.09)
 		PathTrackX = seek(PathTrackX, player->x, 0.01m)
@@ -100,7 +100,7 @@ state Warthog_Hit {
 		if (animframe < 15.0) {
 			troty = atan2(player->trans)
 		}
-		if (distance(player, 0) < 2m && abs(atan2_obj(player)) < 60deg && animframe > 9.0) {
+		if (distance(player) < 2m && abs(atan2_obj(player)) < 60deg && animframe > 9.0) {
 			if (frametime - WarthogSquealTime > 1s) {
 				SoundPlayDefault([WH3kA], 0.4V)
 				WarthogSquealTime = frametime

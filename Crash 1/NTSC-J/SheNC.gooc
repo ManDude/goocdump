@@ -21,7 +21,7 @@ event EventFling         => state Wall_Native_Fling
 inline sub NativeSetPathStartPoint(yoff) {
 	var start_dist, end_dist
 	calcpath(0, vvec)
-	start_dist = distance(vec, player, 1)
+	start_dist = distance(vec, player, DIST_EXACT)
 	StartX = vecx
 	StartY = vecy
 	StartZ = vecz
@@ -29,7 +29,7 @@ inline sub NativeSetPathStartPoint(yoff) {
 	EndX = vecx
 	EndY = vecy
 	EndZ = vecz
-	end_dist = distance(vec, player, 1)
+	end_dist = distance(vec, player, DIST_EXACT)
 	if (start_dist > end_dist) {
 		pathprog = 0
 	}
@@ -84,7 +84,7 @@ state Wall_Native_Stand {
 		} while (1)
 	}
 	trans {
-		changestateif(Wall_Native_Attack, distance(player, 0) < 6m)
+		changestateif(Wall_Native_Attack, distance(player) < 6m)
 	}
 }
 
@@ -103,7 +103,7 @@ state Wall_Native_Attack {
 		rejevret(e == EventSpinHit)
 	}
 	trans {
-		changestateif(Wall_Native_Stand, distance(player, 0) > 7m)
+		changestateif(Wall_Native_Stand, distance(player) > 7m)
 		OldX = x
 		OldY = y
 		OldZ = z

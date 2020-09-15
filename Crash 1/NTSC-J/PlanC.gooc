@@ -40,7 +40,7 @@ state Plant_Spawn {
 			PlantAttackRange = 2.9m
 			PlantShowRange = 5m
 		}
-		if (distance(player, 3) < PlantAttackRange) {
+		if (distance(player, DIST_EXACT|DIST_NO_Y) < PlantAttackRange) {
 			entitysetspawn(0)
 			return
 		}
@@ -77,7 +77,7 @@ state Plant_Hide {
 		sleepanim(0, JUNGLE_PLANT_STAND)
 	}
 	trans {
-		changestateif(Plant_Show, distance(player, 0) < PlantShowRange)
+		changestateif(Plant_Show, distance(player) < PlantShowRange)
 	}
 }
 
@@ -110,10 +110,10 @@ state Plant_Show {
 		}
 	}
 	trans {
-		if (distance(player, 0) < PlantShowRange + 1m) {
+		if (distance(player) < PlantShowRange + 1m) {
 			SeekScale(PlantSize)
 			troty = atan2(player->trans)
-			changestateif(Plant_Attack, player->y > y - 2m && player->y < y + 3m && !(player->stateflag \ 0x20) && distance(player, 3) < PlantAttackRange)
+			changestateif(Plant_Attack, player->y > y - 2m && player->y < y + 3m && !(player->stateflag \ 0x20) && distance(player, DIST_EXACT|DIST_NO_Y) < PlantAttackRange)
 			sendeventif(EventHit, collider, STATUS_PLAYER_D_COLLIDER, 100.0)
 		}
 		else {

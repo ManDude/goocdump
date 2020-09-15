@@ -106,7 +106,7 @@ state Curtain_Closed {
 		sleepanim(26, CURTAIN)
 	}
 	trans {
-		changestateif(Curtain_Open, distance(player, 0) < 6m)
+		changestateif(Curtain_Open, distance(player) < 6m)
 	}
 }
 

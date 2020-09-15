@@ -248,7 +248,7 @@ state Fruit_Stand { // 7
 		accevcstate(Fruit_Collect, (e == EventHit || e == EventHitInvincible) && !a[0])
 		accevcstate(Fruit_Fling, (e == EventHit || e == EventHitInvincible) && a[0])
 		if (e == EventDespawn) {
-			if (distance(player, 0) < 5m) {
+			if (distance(player) < 5m) {
 				gamefunc4(self)
 			}
 		}
@@ -532,7 +532,7 @@ state Fruit_Spawn { // 11
 	code => sub FruitInit
 	event (e, a) {
 		if (e == Event26) {
-			if (distance(player, 0) < 5m) {
+			if (distance(player) < 5m) {
 				gamefunc4(self)
 			}
 		}

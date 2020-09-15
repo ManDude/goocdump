@@ -175,11 +175,11 @@ state Leaves { // 3
 		JungleObjStartX = x
 		JungleObjStartY = y
 		JungleObjStartZ = z
-		v0 = rand(3s)
+		var0 = rand(3s)
 		playanim(0, LEAF, 2)
 		playanim(0, LEAF, 2)
 		playanim(0, LEAF, 2)
-		WaitFrame(0, LEAF, v0)
+		WaitFrame(0, LEAF, var0)
 		do {
 			x = JungleObjStartX
 			y = JungleObjStartY
@@ -192,8 +192,8 @@ state Leaves { // 3
 				playframes(LEAF, 0, 111.0)
 			}
 			statusb = 0
-			v0 = 2s + rand(2s)
-			WaitFrame(0, LEAF, v0)
+			var0 = 2s + rand(2s)
+			WaitFrame(0, LEAF, var0)
 			statusb = FLAG_PHYSICS_ENGINE
 			velx = randi(-9m, 9m)
 			vely = rand(0.2m)
@@ -496,12 +496,12 @@ state Boulder_Obstacle { // 10
 	}
 	trans {
 		if (frametime - statetime >= 0.1s && GLOBALOBJ) {
-			v0 = true
+			var0 = true
 			interrupter = GLOBALOBJ
 			if (interrupter) {
 				changestateif(Boulder_Obstacle_Runover, interrupter->z - z >= -1.5m)
 			}
-			v0 = false
+			var0 = false
 			if (collider) {
 				soundpitch(4.0)
 				soundplay([FtreA], 0.4V)
@@ -521,7 +521,7 @@ state Boulder_Obstacle_Runover { // 11
 		soundpitch(4.0)
 		soundsetup(0, 9)
 		soundplay([FcreA], 0.2V)
-		if (!v0) {
+		if (!var0) {
 			player->speed = 0
 			playframe(0)
 			player->speed = 0

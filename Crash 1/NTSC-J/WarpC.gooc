@@ -54,7 +54,7 @@ state Warp_Out { // 0
 				}
 			}
 			else {
-				if (distance(player, 3) < 1.6m) {
+				if (distance(player, DIST_EXACT|DIST_NO_Y) < 1.6m) {
 					if (player->y >= y - 1.3m && player->y < y && player->statusa \ FLAG_GROUNDLAND && !(player->statusa \ 0x200000)) {
 						if (player->invincible == 5) {
 							player->invincible = 0

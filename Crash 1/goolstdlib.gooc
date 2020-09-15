@@ -825,7 +825,7 @@ inline sub EnemyFlingTransNoZone(enemy_size, ev) {
 	unless (STATUS_FIRSTFRAME) {
 		interrupter = getvalideventobj(ev, 0b11000)
 		if (interrupter) {
-			sendeventif(ev, interrupter, distance(interrupter, 0) < enemy_size, health)
+			sendeventif(ev, interrupter, distance(interrupter) < enemy_size, health)
 		}
 		else {
 			eventaccepted = false

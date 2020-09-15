@@ -34,7 +34,7 @@ sub RooJump (tile) {
 	TargetTileY = vecy
 	TargetTileZ = vecz
 	troty = atan2(TargetTileX)
-	v0 = troty
+	var0 = troty
 	if (health < RooNextDamage) {
 		setanim(ROO_HOP)
 		do (var f = 29.0) {
@@ -65,7 +65,7 @@ sub RooJump (tile) {
 	} while (i <= 28.0)
 	SoundPlayDefault([ld30A], 0.25V)
 	statusb |= FLAG_ROT_Y
-	troty = v0
+	troty = var0
 }
 
 sub SetHealthStatus () {

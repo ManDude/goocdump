@@ -90,12 +90,12 @@ inline sub KongSpawnTNT(xoff) {
 sub KongSpawnTNTStep (step) {
 	if (step == 0) {
 		if (player->x < 0) {
-			v0 = 3m
+			var0 = 3m
 		}
 		else {
-			v0 = -3m
+			var0 = -3m
 		}
-		KongSpawnTNT(v0)
+		KongSpawnTNT(var0)
 	}
 	else if (step == 1.0) {
 		if (health >= 2.0) {
@@ -104,8 +104,8 @@ sub KongSpawnTNTStep (step) {
 	}
 	else if (step == 2.0 || step == 3.0) {
 		if (health >= 4.0) {
-			v0 = -v0
-			KongSpawnTNT(v0)
+			var0 = -var0
+			KongSpawnTNT(var0)
 		}
 	}
 }

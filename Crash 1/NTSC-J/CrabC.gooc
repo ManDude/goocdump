@@ -110,7 +110,7 @@ state Crab_Fling { // 3
 		unless (STATUS_FIRSTFRAME) {
 			interrupter = getvalideventobj(EventFling, 0b11000)
 			if (interrupter) {
-				sendeventif(EventFling, interrupter, distance(interrupter, 0) < 2m, health)
+				sendeventif(EventFling, interrupter, distance(interrupter) < 2m, health)
 			}
 			else {
 				eventaccepted = false
