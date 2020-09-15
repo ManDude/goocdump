@@ -28,7 +28,8 @@ inline sub SoundLizardLand() {
 	SoundPlayDefault([ld10A], 0.2V)
 }
 
-inline sub LizardSetJumpVel(frame_count) {
+inline sub LizardSetJump(frame_count) {
+	SoundLizardJump()
 	vely = (-JumpHeight * ((frame_count>>8)+1) / 2s << 8) * 400
 }
 
@@ -47,8 +48,7 @@ inline sub LizardSeekPtTurnAnim(anim, start_frame, end_frame, frame_count, frame
 sub LizardJump (target_point) {
 	if (spawn == S_LIZARD) {
 		playframes(LIZARD_GREEN, 0, 9.0)
-		SoundLizardJump()
-		LizardSetJumpVel(29.0)
+		LizardSetJump(29.0)
 		statusb |= FLAG_PHYSICS_ENGINE
 		setanim(LIZARD_GREEN, 9.0)
 		do {
@@ -64,8 +64,7 @@ sub LizardJump (target_point) {
 	else if (spawn == S_LIZARD_GREEN) {
 		playframes(LIZARD_GREEN, 0, 9.0)
 		calcpath(target_point, vvec)
-		SoundLizardJump()
-		LizardSetJumpVel(29.0)
+		LizardSetJump(29.0)
 		statusb |= FLAG_PHYSICS_ENGINE
 		LizardSeekPtTurnAnim(LIZARD_GREEN, 1.0, 28.0, 28.0, 10.0)
 		y = groundy
@@ -89,8 +88,7 @@ sub LizardJump (target_point) {
 			}
 		}
 		vecx += player_dist_to_target
-		SoundLizardJump()
-		LizardSetJumpVel(29.0)
+		LizardSetJump(29.0)
 		statusb |= FLAG_PHYSICS_ENGINE
 		LizardSeekPtTurnAnim(LIZARD_RED, 1.0, 28.0, 28.0, 10.0)
 		y = groundy
@@ -130,13 +128,13 @@ state Lizard_Spawn {
 			setanim(LIZARD_GREEN)
 		}
 		animframe = 0
-		if (var start_dist = 0, v4 = 0; ZONEFLAGS & 0x800) {
+		if (var start_dist = 0, end_dist = 0; ZONEFLAGS & 0x800) {
 			calcpath(0, vvec)
 			start_dist = distance(vec, player, DIST_EXACT)
 			calcpath(pathlen-1.0, vvec)
-			v4 = distance(vec, player, DIST_EXACT)
+			end_dist = distance(vec, player, DIST_EXACT)
 			if (spawn == S_LIZARD_RED) {
-				if (start_dist > v4) {
+				if (start_dist > end_dist) {
 					pathprog = 0
 				}
 				else {
@@ -144,7 +142,7 @@ state Lizard_Spawn {
 				}
 			}
 			else {
-				if (start_dist < v4) {
+				if (start_dist < end_dist) {
 					pathprog = 0
 				}
 				else {
@@ -186,10 +184,8 @@ state Lizard_Wait {
 	stateflag 0x5
 	statusc 0
 	code () {
-		statusb = FLAG_COLLIDABLE | 0x4000 | FLAG_SOLID_SIDES
-		velx = 0
-		vely = 0
-		velz = 0
+		statusb = FLAG_COLLIDABLE | FLAG_SOLID_GROUND | FLAG_SOLID_SIDES
+		SetVel(0, 0, 0)
 		trotx = 270deg
 		roty = atan2(player->trans)
 		troty = roty
