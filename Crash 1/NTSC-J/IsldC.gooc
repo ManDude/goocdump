@@ -301,7 +301,7 @@ inline sub PlaySoundYeah() {
 	statusb &= ~FLAG_2D
 }
 
-sub Sub_453 () {
+sub IslandDoControls () {
 	misc = 0
 	if (IslandDirections == 1.0) {
 		if (dirhold(PAD_W) || dirhold(PAD_N)) {
@@ -475,7 +475,7 @@ state Island_Traveler_Stand {
 	}
 	trans {
 		changestateifn(Island_Traveler_Move, self->IslandCanMove)
-		Sub_453()
+		IslandDoControls()
 	}
 }
 
@@ -506,7 +506,7 @@ state Island_Traveler_Move {
 	}
 	trans {
 		changestateif(Island_Traveler_Stand, self->IslandCanMove)
-		Sub_453()
+		IslandDoControls()
 	}
 }
 

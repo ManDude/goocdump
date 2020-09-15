@@ -111,13 +111,9 @@ ShadowLastY, ShadowBaseY, ShadowSize, ShadowZMod, ShadowField, ShadowMaxSize, Sh
 state Shadow_Spawn {
 	code (hdif, maxsize, zdif) {
 		ShadowZMod = zdif
-		scalex = maxsize
-		scaley = maxsize
-		scalez = maxsize
+		SetScale(maxsize)
 		ShadowMaxSize = maxsize
-		rotx = 0
-		roty = 0
-		rotz = 0
+		SetRot(0)
 		parent->field_60 = 0
 		ShadowMinY = -0x7FFFFFFF
 		if (LEVEL == LEVEL_RoadToNowhere || LEVEL == LEVEL_TheHighRoad) {
@@ -139,14 +135,14 @@ state Shadow {
 	}
 	trans {
 		zindex = parent->zindex + ShadowZMod
-		statusb = 0x4000000 | 0x400
+		statusb = FLAG_HAS_SHADOW | FLAG_STRING_CENTER
 		ShadowLastY = y
 		x = parent->x
 		y = parent->y
 		z = parent->z
 		projectobjshadow(var0)
 		projectzoneshadow(var0)
-		if (eventaccepted && parent->statusb \ 0x4000000) {
+		if (eventaccepted && parent->statusb \ FLAG_HAS_SHADOW) {
 			if (abs(ShadowLastY - vecy) > 0.5m) {
 				y = vecy
 			}
@@ -156,14 +152,14 @@ state Shadow {
 			player->ShadowY = y
 		}
 		else {
-			statusb = 0x4000000 | 0x400 | FLAG_INVISIBLE
+			statusb = FLAG_HAS_SHADOW | FLAG_STRING_CENTER | FLAG_INVISIBLE
 			player->ShadowY = -0x7FFFFFFF
 		}
-		if (getfield(player, 73.0) < ShadowMinY) {
+		if (getfield(player, offsetof(ShadowY)) < ShadowMinY) {
 			if (player->y > ShadowMinY) {
 				y = ShadowMinY
 				player->ShadowY = y
-				statusb = 0x4000000 | 0x400
+				statusb = FLAG_HAS_SHADOW | FLAG_STRING_CENTER
 			}
 		}
 		if (parent->statusa \ FLAG_GROUNDLAND) {
@@ -282,16 +278,16 @@ state Boss_Health {
 	statusc 0
 	code (hp, type) {
 		zindex = -30
-		field_61 = type
+		var1 = type
 		var0 = hp
 		SetTrans(-209.0, 70.0, 0)
 		SetRot(0, 0, 0)
 		statusb = FLAG_2D
 		health = creator->health
-		if (field_61 == 1) {
+		if (var1 == 1) {
 			health = var0 - (health << 8)
 		}
-		else if (field_61 == 2) {
+		else if (var1 == 2) {
 			health = var0 - health
 		}
 		while (GAMESTATE == GAME_STATE_CUTSCENE) {
@@ -344,10 +340,10 @@ state Boss_Health {
 	trans {
 		unless (STATUS_FIRSTFRAME) {
 			health = creator->health
-			if (field_61 == 1) {
+			if (var1 == 1) {
 				health = var0 - (health << 8)
 			}
-			else if (field_61 == 2) {
+			else if (var1 == 2) {
 				health = var0 - health
 			}
 		}

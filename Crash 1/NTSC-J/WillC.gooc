@@ -108,6 +108,7 @@ event Event44            => state Willy_Death_Shock_H
 #include "BoxsC.gooh"
 #include "PoRoC.gooh"
 #include "WateC.gooh"
+#include "CardC.gooh"
 
 #iflev wz
 expr SoundFootstep1 = [fs60A]
@@ -1931,14 +1932,14 @@ state Willy_Warp_Out { // 32
 						statusb |= FLAG_INVISIBLE
 						SAVETYPE = SAVE_TYPE_LEVEL
 						GLOBALVAL = 9
-						spawn2(57, 0) // CardC-0
+						spawn2(CardC, CardC_S_CARD_MASTER)
 						do {
 							playnull()
 						} until (GLOBALVAL == 0)
 					}
 					else if (level_temp == LEVEL_BonusCortex) {
 						if (LEVEL == LEVEL_BonusCortex && GLOBALVAL != 0) {
-							spawn2(57, 0) // CardC-0
+							spawn2(CardC, CardC_S_CARD_MASTER)
 							do {
 								playnull()
 							} until (GLOBALVAL == 0)
