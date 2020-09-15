@@ -104,7 +104,6 @@ state Gem_Spawn { // 0
 			}
 			changestateif(Gem_Active, misc)
 		}
-		changestateif(Gem_Active, DEBUG)
 		changestate(Gem_Inactive)
 	}
 }

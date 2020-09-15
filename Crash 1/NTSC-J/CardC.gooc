@@ -660,7 +660,7 @@ state Card_Master_Select_Screen { // 1
 				changestate(Menu_Save_Point_Password)
 			}
 			else if (temp == 8) { // unused in J
-				changestate(Menu_Save_Point)
+				changestate(Menu_Test_Save)
 			}
 			else if (temp == 9) {
 				changestate(Menu_Check_Save_Point)
@@ -672,7 +672,7 @@ state Card_Master_Select_Screen { // 1
 				changestate(Menu_Final_Password)
 			}
 			else if (temp == 13) {
-				changestate(Menu_Save_Point) // test save system
+				changestate(Menu_Test_Save) // test save system
 			}
 		}
 	}
@@ -682,13 +682,21 @@ state Menu_Check_Save_Point { // 2
 	stateflag 0x60001
 	statusc 0
 	code () {
+		#ifnreg "ntsc-j"
+		memcardfn(8)
+		changestateif(Menu_Save_Point_Password, misc)
+		memcardfn(7)
+		changestateif(Menu_Save_Game, misc)
+		changestate(Menu_Test_Save)
+		#else
 		memcardfn(8)
 		if (misc) {
 			changestate(Menu_Save_Game)
 		}
 		memcardfn(7)
 		changestateif(Menu_Save_Game, misc)
-		changestate(Menu_Save_Point)
+		changestate(Menu_Test_Save)
+		#endif
 	}
 }
 
@@ -1537,7 +1545,7 @@ state Menu_Save_Game_Save_Error { // 27
 	}
 }
 
-state Menu_Save_Point { // 28
+state Menu_Test_Save { // 28
 	stateflag 0x60001
 	statusc 0x1000
 	code () {
@@ -1584,10 +1592,10 @@ state Menu_Unformat_Card { // 29
 		spawn(CardC, S_CARD_TEXT_CENTER, 1, 0, -16.0, TEXT, 67.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true) // ~c0~sx800~=~sx400~~c1 ~c0~sx800~+~sx400~~c1 ~c0~sx800~=~sx400~~c1 CANCEL==
 		do {
 			if (buttonpress(PAD_TRIANGLE) && buttonpress(PAD_SQUARE) && buttonpress(PAD_O)) {
+				playnull() // this should be outside the branch!!
 				memcardfn(12)
 				spawn(CardC, S_CARD_TEXT_CENTER_FLASH, 1, 0, -80.0, TEXT, 68.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true) // CARD UNFORMATTED
 			}
-				playnull() // this should be outside the branch!!
 		} while (1)
 	}
 	trans {
@@ -2783,7 +2791,7 @@ state Menu_Password_Test { // 59
 	stateflag 0x60001
 	statusc 0
 	code () {
-		var items1, items2, level, trials
+		var items1, items2, level, trials = 0
 		spawn(CardC, S_CARD_TEXT_CENTER_FLASH, 1, 0, 80.0, TEXT, 90.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true) // TESTING PASSWORD SYSTEM
 		spawn(CardC, S_CARD_TEXT_CENTER, 1, 0, 64.0, TEXT, 91.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true) // THIS WILL TAKE FOREVER
 		spawn(CardC, S_CARD_TEXT_CENTER, 1, 0, 48.0, TEXT, 92.0, offsetof(var0), .64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, true) // CHECK CONSOLE FOR ERRORS

@@ -168,8 +168,7 @@ inline sub SetBoxAnim(anim, frame) {
 }
 
 inline sub SetBoxAnim(anim) {
-	setanim(anim)
-	BoxFrame = 0
+	SetBoxAnim(anim, 0)
 }
 
 // Box Flags
