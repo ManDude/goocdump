@@ -57,10 +57,10 @@ state Generator_Master {
 		}
 		if (GLOBALVAL >= 90.0 && GLOBALVAL < 100.0) {
 			if (SHAKEY < 0) {
-				SHAKEY = -4.0
+				SHAKEY = 4.0
 			}
 			else {
-				SHAKEY = 4.0
+				SHAKEY = -4.0
 			}
 		}
 		if (100.0 == GLOBALVAL) {
