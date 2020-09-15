@@ -56,15 +56,15 @@ state Generator_Master {
 			GLOBALVAL = 0
 		}
 		if (GLOBALVAL >= 90.0 && GLOBALVAL < 100.0) {
-			if (GLOBAL_2 < 0) {
-				GLOBAL_2 = -4.0
+			if (SHAKEY < 0) {
+				SHAKEY = -4.0
 			}
 			else {
-				GLOBAL_2 = 4.0
+				SHAKEY = 4.0
 			}
 		}
 		if (100.0 == GLOBALVAL) {
-			GLOBAL_2 = 0
+			SHAKEY = 0
 			GLOBALVAL = 101.0
 			sendevent(EventWarp, player, 0)
 		}
