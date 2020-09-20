@@ -202,9 +202,9 @@ state Bullet_Spawn { // 6
 		vely <<= 2
 		velz <<= 3
 		if (getfield(parent, offsetof(MafiaVoice))) {
-			v0 = getfield(parent, offsetof(MafiaVoice))
-			soundfadet(.1s, v0)
-			soundfadev(0, v0, 3)
+			var0 = getfield(parent, offsetof(MafiaVoice))
+			soundfadet(.1s, var0)
+			soundfadev(0, var0, 3)
 		}
 		soundpitch(3.84 + rand(0.32))
 		soundsetup(0, 9)

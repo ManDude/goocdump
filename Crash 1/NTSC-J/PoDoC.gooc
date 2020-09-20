@@ -138,7 +138,7 @@ state Power_Door_Double_Spawn { // 6
 		vecz = z + 2m
 		zindex = -10
 		if (spawn == S_POWER_DOOR_DOUBLE_2) {
-			//return
+			return
 			zindex = -20
 			z -= 0.2m
 			y += 0.2m
