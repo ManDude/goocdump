@@ -39,13 +39,13 @@ state Barrel_Spawn {
 		else if (spawn == S_BARREL || spawn == S_BARREL_NO_RAND_BOB) {
 			setanim(BARREL_VOLATILE)
 		}
-		changestate(Barrel)
+		changestate(Barrel_Stance)
 		BarrelPathSpeed = 0
 		changestate(Barrel_Old)
 	}
 }
 
-state Barrel {
+state Barrel_Stance {
 	stateflag 0x81
 	statusc 0
 	code () {
@@ -120,7 +120,7 @@ state Barrel_Shadow {
 				var0 = 0
 			}
 			calcpath(var0)
-			x += 0.2m
+			x += .2m
 			statusb = parent->statusb & FLAG_INVISIBLE
 			playanim(0, BARREL_SHADOW)
 		} until (STATUS_PATH_END)
