@@ -43,11 +43,7 @@ state Power_Door_Spawn { // 0
 
 state Power_Door_Locked { // 1
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		y = PowerDoorStartY
-		sleepframe(0)
-	}
+	code => state Power_Door_Closed
 }
 
 state Power_Door_Closed { // 2
