@@ -402,7 +402,7 @@
 #spawn S_INTRO_BRIO               Intro_Brio_Stance
 #spawn S_INTRO_CORTEX             Intro_Cortex_Stance
 #spawn S_BRIO_LEVER               Brio_Lever_Stance
-#spawn S_INTRO_GLASS              Intro_Glass
+#spawn S_INTRO_GLASS              Intro_Glass_Stance
 #spawn S_WILLY_GLASS              Willy_Glass_Stance
 #spawn S_WILLY_ESCAPE             Willy_Escape_Wait
 #spawn S_CORTEX_ESCAPE            Cortex_Escape_Stance
@@ -1636,7 +1636,7 @@ state Willy_Glass_Stance { // 27
 	}
 }
 
-state Intro_Glass { // 28
+state Intro_Glass_Stance { // 28
 	code () {
 		do {
 			playnull()

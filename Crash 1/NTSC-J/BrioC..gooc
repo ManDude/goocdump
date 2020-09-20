@@ -64,11 +64,11 @@ state Brio_Spawn {
 		BrioHitsTallied = 0
 		GLOBALVAL = 0
 		spawn(ShadC, ShadC_S_BOSS_HEALTH, 1, 9.0, 2) // health type 2: health (as gool number) -> damage taken
-		changestate(Brio_Mix)
+		changestate(Brio_Stance)
 	}
 }
 
-state Brio_Mix {
+state Brio_Stance {
 	code () {
 		do {
 			playframes(BRIO_PREPARE_1, 0, 15.0)
@@ -138,30 +138,25 @@ state Brio_Throw {
 		}
 		else if (BrioVialsThrown == 2.0) {
 			BrioHitsTallied = 0
-			BrioThrowVialGreen(2m)
-			BrioThrowAnimLoop()
+			BrioThrowVialGreen(2m) BrioThrowAnimLoop()
 			BrioThrowVialGreen(-2m)
 		}
 		else if (BrioVialsThrown == 4.0) {
-			BrioThrowVialRed()
-			BrioThrowAnimLoop()
-			BrioThrowVialRed()
-			BrioThrowAnimLoop()
+			BrioThrowVialRed() BrioThrowAnimLoop()
+			BrioThrowVialRed() BrioThrowAnimLoop()
 			BrioThrowVialRed()
 		}
 		else if (BrioVialsThrown == 7.0) {
 			BrioHitsTallied = 0
 			do (var i = 0) {
-				BrioThrowVialGreen(2m)
-				BrioThrowAnimLoop()
+				BrioThrowVialGreen(2m) BrioThrowAnimLoop()
 				i += 1.0
 			} while (i < 2.0)
 			BrioThrowVialGreenAtPlayer(-2m)
 		}
 		else if (BrioVialsThrown == 10.0) {
 			do (var i = 0) {
-				BrioThrowVialRed()
-				BrioThrowAnimLoop()
+				BrioThrowVialRed() BrioThrowAnimLoop()
 				i += 1.0
 			} while (i < 5.0)
 			BrioThrowVialRed()
@@ -180,7 +175,7 @@ state Brio_Throw {
 			LoadAnim([BD3rV], [BS1rG])
 			BrioAnimSet = 1.0
 		}
-		changestate(Brio_Mix)
+		changestate(Brio_Stance)
 	}
 	trans {
 		EnemyHitPlayerGround()
@@ -197,7 +192,7 @@ state Brio_Scare {
 		while (distance(player) > 3m) {
 			if (distance(player) > 4m) {
 				playframes(BRIO_SCARE_PREPARE, 0, 12.0)
-				changestate(Brio_Mix)
+				changestate(Brio_Stance)
 			}
 			playanim(12, BRIO_SCARE_EXPLODE)
 		}
@@ -216,7 +211,7 @@ state Brio_Scare {
 		}
 		playframesback(17.0, 13.0)
 		playframes(BRIO_SCARE_PREPARE, 0, 12.0)
-		changestate(Brio_Mix)
+		changestate(Brio_Stance)
 	}
 }
 
@@ -460,7 +455,11 @@ state Brio_Monster_Hit {
 	code () {
 		soundpitch(4.0)
 		sounddecay(0.5625)
+		#ifnreg "ntsc-j"
+		soundplay([bhtrA], .8V)
+		#else
 		soundplay([BhtrA], 50) // typo? meant to be 0.5V?
+		#endif
 		playframes(BRIO_MONSTER_HIT, 0, 22.0)
 		sounddecay(0.625)
 		SoundPlayDefault([BrorA], 0.8V)
