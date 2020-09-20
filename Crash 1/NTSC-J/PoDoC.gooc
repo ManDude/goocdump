@@ -80,18 +80,15 @@ state Power_Door_Open { // 3
 
 state Power_Door_Opened { // 4
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		sleepframe(0)
-	}
+	code => state Power_Door_Open
 	trans {
 		once {
-			var0 = 0
+			var0 = false
 		}
 		changestateif(Power_Door_Close, player->z > z + 3m)
 		if (player->z > vecz && frametime - statetime >= 1s) {
 			if (!var0) {
-				var0 = 1.0
+				var0 = true
 				soundpitch(3.36 + rand(0.32))
 				soundplay([do13A], 0.3V)
 			}
@@ -109,14 +106,10 @@ state Power_Door_Opened { // 4
 
 state Power_Door_Close { // 5
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		sleepframe(0)
-	}
+	code => state Power_Door_Open
 	trans {
 		once {
-			SoundPitchDefault()
-			soundplay([do23A], 0.6V)
+			SoundPlayDefault([do23A], 0.6V)
 			soundsetup(0, voice, 5)
 		}
 		y -= 0.5m
@@ -134,7 +127,7 @@ state Power_Door_Double_Spawn { // 6
 		vecz = z + 2m
 		zindex = -10
 		if (spawn == S_POWER_DOOR_DOUBLE_2) {
-			return
+			//return
 			zindex = -20
 			z -= 0.2m
 			y += 0.2m
@@ -160,7 +153,7 @@ state Power_Door_Double_1_Right { // 7
 		sleepanim(0, POWER_DOOR_1_RIGHT)
 	}
 	trans {
-		x = getfield(creator, offsetof(PowerDoorMiddle)) + getfield(creator, offsetof(PowerDoorOffset))
+		x = creator->PowerDoorMiddle + creator->PowerDoorOffset
 		statusb = creator->statusb
 	}
 }
@@ -171,7 +164,7 @@ state Power_Door_Double_2_Right { // 8
 		sleepanim(0, POWER_DOOR_2_RIGHT)
 	}
 	trans {
-		x = getfield(creator, offsetof(PowerDoorMiddle)) + getfield(creator, offsetof(PowerDoorOffset))
+		x = creator->PowerDoorMiddle + creator->PowerDoorOffset
 		statusb = creator->statusb
 	}
 }
@@ -193,13 +186,10 @@ state Power_Door_Double_Closed { // 9
 
 state Power_Door_Double_Open { // 10
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		sleepframe(0)
-	}
+	code => state Power_Door_Double_Closed
 	trans {
 		once {
-			var0 = 0
+			var0 = false
 			soundpitch(3.52 + rand(0.32))
 			soundplay([do33A], 0.9V)
 		}
@@ -212,17 +202,14 @@ state Power_Door_Double_Open { // 10
 
 state Power_Door_Double_Opened { // 11
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		sleepframe(0)
-	}
+	code => state Power_Door_Double_Closed
 	trans {
 		changestateif(Power_Door_Double_Close, player->z > vecz)
 		PowerDoorOffset -= 0.25m
 		x = PowerDoorMiddle - PowerDoorOffset
 		if (player->z > vecz) {
 			if (!var0) {
-				var0 = 1.0
+				var0 = true
 				soundpitch(3.36 + rand(0.32))
 				soundplay([do33A], 0.5V)
 			}
@@ -240,17 +227,13 @@ state Power_Door_Double_Opened { // 11
 
 state Power_Door_Double_Close { // 12
 	statusc 0
-	code () {
-		statusb &= ~FLAG_INVISIBLE
-		sleepframe(0)
-	}
+	code => state Power_Door_Double_Closed
 	trans {
 		once {
 			if (!var0) {
-				var0 = 1.0
+				var0 = true
 			}
-			SoundPitchDefault()
-			soundplay([do33A], 1.0V)
+			SoundPlayDefault([do33A], 1.0V)
 		}
 		PowerDoorOffset -= 0.5m
 		x = PowerDoorMiddle - PowerDoorOffset
