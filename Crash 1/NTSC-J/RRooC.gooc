@@ -71,18 +71,7 @@ sub RooJump (tile) {
 sub SetHealthStatus () {
 	RooNextDamage = RooDamageTaken + 1
 	if (health >= RooNextDamage) {
-		colra = 0xff
-		colga = 0x20
-		colba = 0x20
-		colr1 = 0xff
-		colg1 = 0x20
-		colb1 = 0x20
-		colr2 = 0xff
-		colg2 = 0x20
-		colb2 = 0x20
-		colr3 = 0xff
-		colg3 = 0x20
-		colb3 = 0x20
+		SetColor(0xFF, 0x20, 0x20)
 	}
 	else {
 		SetDefaultColor()
