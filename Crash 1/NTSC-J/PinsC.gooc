@@ -493,7 +493,7 @@ state Pinstripe_Hit {
 		changestate(Pinstripe_Shoot)
 	}
 	trans {
-		if (!(frametime - statetime >= 1s)) {
+		unless (frametime - statetime >= 1s) {
 			roty += 24deg
 		}
 	}
@@ -545,7 +545,7 @@ state Pinstripe_Shadow {
 	stateflag 0x81
 	statusc 0
 	code () {
-		rotx = 0//90deg
+		rotx = 90deg
 		roty = 0
 		rotz = 0
 		y = 43.0
