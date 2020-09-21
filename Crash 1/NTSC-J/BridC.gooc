@@ -2,9 +2,9 @@
 
 #include "..\\goolstdlib.gooc"
 
-#anim BRIDGE_STANDARD1 [BS1bV] 1
+#anim BRIDGE_STANCE [BS1bV] 1
 #anim BRIDGE_EMPTY [BE1kV] 1
-#anim BRIDGE_STANDARD2 [Bs1kV] 1
+#anim BRIDGE_STABLE [Bs1kV] 1
 #anim BRIDGE_DROP [BD1kV] 1
 #anim BRIDGE_TEST [BT1kV] 1
 #anim BRIDGE_EMPTY_FALL [Be1kV] 30
@@ -81,7 +81,7 @@
 #tex 0x5A5A5A 1 1 0 2 112 8 32 32
 #tex 0x5A5A5A 1 1 0 2 120 8 32 32
 
-#spawn S_BRIDGE                   Bridge_Spawn
+#spawn S_BRIDGE                   Bridge_Stance
 #spawn S_BRIDGE_DROP              Bridge_Drop
 #spawn S_BRIDGE_STABLE            Bridge_Stable
 #spawn S_BRIDGE_BROKEN            Bridge_Broken
@@ -100,7 +100,7 @@ inline sub BridgeFlipRand() {
 	}
 }
 
-state Bridge_Spawn {
+state Bridge_Stance {
 	stateflag 0x801
 	statusc 0
 	code () {
@@ -109,7 +109,7 @@ state Bridge_Spawn {
 		BridgeObjYOffset = 0
 		zindex = 0
 		statusb = FLAG_COLLIDABLE | FLAG_SOLID_TOP
-		sleepanim(0, BRIDGE_STANDARD1)
+		sleepanim(0, BRIDGE_STANCE)
 	}
 	trans {
 		changestateif(Bridge_Fall, collider && !STATUS_FIRSTFRAME)
@@ -252,7 +252,7 @@ state Bridge_Stable {
 		}
 		BridgeFlipRand()
 		x += randi(-0.05m, 0.05m)
-		sleepanim(0, BRIDGE_STANDARD2)
+		sleepanim(0, BRIDGE_STABLE)
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
