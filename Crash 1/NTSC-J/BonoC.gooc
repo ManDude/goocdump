@@ -1807,6 +1807,7 @@ state Bonus_Master_Section { // 9
 		else if (bonus == 19) BonusObj_Bonus19();
 		else if (bonus == 20) BonusObj_Bonus20();
 		else if (bonus == 21) BonusObj_Bonus21();
+		/* begind NTSC-J bonus rounds */
 		else if (bonus == 22) BonusObj_Bonus22();
 		else if (bonus == 23) BonusObj_Bonus23();
 		else if (bonus == 24) BonusObj_Bonus24();
