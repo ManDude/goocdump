@@ -66,7 +66,8 @@ expr DIST_NO_Y  = 2
  * b5-10 - levels complete
  */
 
-expr GFLAG_CAM_TRACK         = 0x2
+expr GFLAG_CAMERA_TRACK      = 0x2
+expr GFLAG_RENDER_OBJECTS    = 0x4
 
 #ifver 1
 expr GAME_STATE_CUTSCENE = 0
