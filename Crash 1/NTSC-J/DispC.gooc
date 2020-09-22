@@ -217,7 +217,7 @@ state Display_Show { // 3
 				interrupter = child
 				spawn2(FruiC, FruiC_S_1UP_GOTO_HUD)
 				if (interrupter == child) {
-					setfield(player, 65.0, getfield(player, 65.0) + 1.0)
+					player->DisplayLife = player->DisplayLife + 1.0
 				}
 				DisplayStatus = 0
 			}
@@ -258,7 +258,7 @@ state Variable_Display { // 5
 			statusb = parent->statusb
 			x = parent->x + velx
 			y = parent->y + 16.0
-			playtext(0, TEXT, getfield(parent, getfield(parent, 74.0)) >> 8)
+			playtext(0, TEXT, getfield(parent, parent->DisplayVarField) >> 8)
 		} while (true)
 	}
 }
@@ -403,13 +403,13 @@ state Pickup_Icon_Hide { // 10
 sub MakePickupIcons(r, p) {
 	var iconcount = 0, child_temp = child
 	if (r == 103.0) {
-		iconcount = getfield(player, 70.0) //player->mem7
+		iconcount = player->DisplayCortex
 	}
 	else if (r == 104.0) {
-		iconcount = getfield(player, 71.0) //player->mem8
+		iconcount = player->DisplayBrio
 	}
 	else if (r == 105.0) {
-		iconcount = getfield(player, 72.0) //player->mem9
+		iconcount = player->DisplayTawna
 	}
 	if (iconcount == 1.0) {
 		spawn2(DispC, S_PICKUP_ICON, 1, r, p)
@@ -578,7 +578,7 @@ state Pickup_Display_Slave { // 14
 		y = parent->y
 		animseq = parent->animseq
 		animframe = parent->animframe
-		DisplayVarField = getfield(parent, 74.0) //parent->DisplayVarField
+		DisplayVarField = parent->DisplayVarField
 		scalex = parent->scalex
 		scaley = parent->scaley
 		if (getfield(parent, DisplayVarField) < var0) {
