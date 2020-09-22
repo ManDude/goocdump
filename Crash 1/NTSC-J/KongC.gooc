@@ -18,13 +18,13 @@
 #anim KONG_THROW_2 [KT2xV] 20
 #anim KONG_THROW_3 [KT3xV] 18
 #anim KONG_HOP [KH1xV] 16
-#anim ANIM_32 [Kh1xV] 14
-#anim ANIM_34 [Kh2xV] 16
-#anim ANIM_36 [KD1xV] 18
-#anim ANIM_38 [KD2xV] 18
+#anim KONG_HIT_1 [Kh1xV] 14
+#anim KONG_HIT_2 [Kh2xV] 16
+#anim KONG_DIE_1 [KD1xV] 18
+#anim KONG_DIE_2 [KD2xV] 18
 
-#spawn S_KOALA_KONG               Kong_Spawn
-#spawn S_DONKEYKONG               DonkeyKong_Spawner
+#spawn S_KONG                     Kong_Spawn
+#spawn S_KONG_SPAWNER_TEST        Kong_Spawner_Test
 
 var KongAnimSet, mem2, mem3
 
@@ -34,7 +34,7 @@ event EventRespawn => sub KongDeloadAnims
 #include "ShadC.gooh"
 #include "BoxsC.gooh"
 
-state DonkeyKong_Spawner {
+state Kong_Spawner_Test {
 	code () {
 		x = parent->x + randi(-10m, 10m)
 		z = parent->x + randi(-10m, 10m)
@@ -58,11 +58,11 @@ state Kong_Spawn {
 		KongAnimSet = 0
 		LoadAnim([Kh1xV], [KS1xG])
 		LoadAnim([Kh2xV], [KS1xG])
-		changestate(Kong_Stand)
+		changestate(Kong_Stance)
 	}
 }
 
-state Kong_Stand {
+state Kong_Stance {
 	statusc 0
 	code () {
 		playframes(KONG_STAND_1, 0, 23.0)
@@ -177,7 +177,7 @@ state Kong_Throw_Heavy {
 		sendeventif(Event27, interrupter, interrupter, x, vecy, 1)
 		SoundKongThrow()
 		playframes(KONG_THROW_3, 0, 17.0)
-		changestate(Kong_Stand)
+		changestate(Kong_Stance)
 	}
 	event => state Kong_Throw_Rocks
 }
@@ -194,8 +194,8 @@ state Kong_Hit {
 		sounddecay(0.5625)
 		soundpitch(1.92 + rand(0.32))
 		soundplay([hit0A], 1.0V)
-		playframes(ANIM_32, 0, 13.0)
-		playframes(ANIM_34, 0, 15.0)
+		playframes(KONG_HIT_1, 0, 13.0)
+		playframes(KONG_HIT_2, 0, 15.0)
 		SetDefaultColor()
 		if (health >= 3.0) {
 			DeloadAnim([Kh1xV], [KS1xG])
@@ -213,12 +213,12 @@ state Kong_Dead {
 	statusc 0
 	code () {
 		KillEntity()
-		playframes(ANIM_36, 0, 17.0)
+		playframes(KONG_DIE_1, 0, 17.0)
 		sounddecay(0.625)
 		SoundPitchDefault()
 		sounddelay(0.3s)
 		soundplay([BSlaA], 1.0V)
-		playframes(ANIM_38, 0, 17.0)
+		playframes(KONG_DIE_2, 0, 17.0)
 		sendevent(EventWarp, player, 0)
 		sleep()
 	}

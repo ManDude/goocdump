@@ -401,6 +401,11 @@ state Orbit_Platform { // 5
 	}
 }
 
+inline sub PlatAccelToBase () {
+	var y_diff = PlatBaseY-y
+	PlatAccel += spd(PlatDecay) * y_diff >> 8
+}
+
 state Sensitive_Platform { // 6
 	code () {
 		if (vecy) PlatDecay = vecy / 100;
@@ -416,8 +421,7 @@ state Sensitive_Platform { // 6
 	trans {
 		unless (STATUS_FIRSTFRAME) {
 			PlatAccel = 0
-			{var v3 = PlatBaseY-y
-			PlatAccel += spd(PlatDecay) * v3 >> 8}
+			PlatAccelToBase()
 			PlatAccel -= PlatFriction * PlatSpeed >> 8
 			if (collider, !PlatLastCollider) {
 				PlatAccel -= spd(40.0) * 400
