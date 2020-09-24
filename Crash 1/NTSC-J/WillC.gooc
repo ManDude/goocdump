@@ -110,7 +110,7 @@ event Event44            => state Willy_Death_Shock_H
 #include "WateC.gooh"
 #include "CardC.gooh"
 
-#iflev wz
+#iflev wzBC
 expr SoundFootstep1 = [fs60A]
 expr SoundFootstep2 = [fs70A]
 expr SoundLand = [ld30A]
