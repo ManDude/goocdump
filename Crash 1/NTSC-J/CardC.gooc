@@ -633,11 +633,6 @@ state Card_Master_Select_Screen { // 1
 		if (GLOBALVAL != 0) {
 			SetScale(1.0S)
 			SetRot(0, 0, 0)
-			
-			if (buttonhold(PAD_R1)) {
-				changestate(Test_Password_Generator)
-			}
-			
 			if (var temp = GLOBALVAL; temp == 1) {
 				changestate(Menu_Save_Point_Password)
 			}
