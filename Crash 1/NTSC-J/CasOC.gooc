@@ -308,7 +308,7 @@ state Gate_Old_Closed { // 9
 state Gate_Old_Open { // 10
 	code () {
 		while (y < groundy + 4.5m) {
-			y = seek(y, groundy + 4.5m, spd(0.5m))
+			y = seek(y, groundy + 4.5m, spd(.5m))
 			playframe()
 		}
 		statusb &= ~FLAG_COLLIDABLE
@@ -318,9 +318,9 @@ state Gate_Old_Open { // 10
 		}
 		var0 = true
 		do (var start = frametime) {
-			y += 0.1m
+			y += .1m
 			playframe()
-			y -= 0.1m
+			y -= .1m
 			playframe()
 		} while (frametime - start < 0.5s)
 		statusb |= FLAG_COLLIDABLE
