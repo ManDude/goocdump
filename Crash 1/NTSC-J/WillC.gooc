@@ -1860,7 +1860,7 @@ sub AnimWillyWarpOut1 () {
 		playframes(WILLY_WARP_OUT1_3, 0, 19.0)
 		vely = 20m
 		unless (ZONEFLAGS & 0x2000) {
-			gamefunc10(LEVEL_Map)
+			preloadlevel(LEVEL_Map)
 		}
 		AnimWillyWarpOut()
 	}
@@ -1891,10 +1891,10 @@ sub AnimWillyWarpOut2 (warp_out) {
 			vely = 20m
 			GetLevelGem()
 			if (misc) {
-				gamefunc10(LEVEL_Map)
+				preloadlevel(LEVEL_Map)
 			}
 			else {
-				gamefunc10(LEVEL_LevelEnd)
+				preloadlevel(LEVEL_LevelEnd)
 			}
 			AnimWillyWarpOut()
 		}
