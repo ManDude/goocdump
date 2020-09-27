@@ -89,7 +89,11 @@ expr ITEM_HAS_GEM9     = ITEMPOOL1 >> 10 & 1
 expr ITEM_HAS_GEM10    = ITEMPOOL1 >> 12 & 1
 expr ITEM_HAS_GEM11    = ITEMPOOL1 >> 13 & 1
 expr ITEM_HAS_GEM12    = ITEMPOOL1 >> 15 & 1
+#ifnreg "ntsc-j"
+expr ITEM_HAS_GEM13    = ITEMPOOL1 >> 16 & 1
+#else
 expr ITEM_HAS_GEM13    = ITEMPOOL1 >> 24 & 1
+#endif
 expr ITEM_HAS_GEM14    = ITEMPOOL1 >> 26 & 1
 expr ITEM_HAS_GEM15    = ITEMPOOL1 >> 19 & 1
 expr ITEM_HAS_GEM16    = ITEMPOOL1 >> 18 & 1
@@ -98,7 +102,11 @@ expr ITEM_HAS_GEM18    = ITEMPOOL1 >> 21 & 1
 expr ITEM_HAS_GEM19    = ITEMPOOL1 >> 14 & 1
 expr ITEM_HAS_GEM20    = ITEMPOOL1 >> 23 & 1
 expr ITEM_HAS_GEM21    = ITEMPOOL1 >> 25 & 1
+#ifnreg "ntsc-j"
+expr ITEM_HAS_GEM22    = ITEMPOOL1 >> 24 & 1
+#else
 expr ITEM_HAS_GEM22    = ITEMPOOL1 >> 16 & 1
+#endif
 expr ITEM_HAS_GEM23    = ITEMPOOL1 >> 29 & 1
 expr ITEM_HAS_GEM24    = ITEMPOOL1 >> 27 & 1
 expr ITEM_HAS_GEM25    = ITEMPOOL2 >>  8 & 1

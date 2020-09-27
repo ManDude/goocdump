@@ -240,21 +240,24 @@
 #spawn S_LEVEL_END_wILLY          Level_End_Willy_Spawn
 #spawn S_TITLE_WILLY              Title_Willy_Spawn
 #spawn S_LOGO_ANIM                Logo_Anim
-#spawn S_TEXT_DEFAULT             Text_Default
+#spawn S_TEXT_DEFAULT             Text_Default_Stance
 #spawn S_ISLAND_GEM_DISPLAY       Island_Gem_Display
 #spawn S_LOGO_NDI                 Logo_NDI
-#spawn S_TEXT_DEFAULT_FLASH       Text_Default
+#spawn S_TEXT_DEFAULT_FLASH       Text_Default_Stance
 #spawn S_KEY                      Key_Stance
 #spawn S_LOGO_UIS                 Logo_UIS
 #spawn S_18                       __s_18
 #spawn S_LOGO_SCE                 Logo_SCE
-#spawn S_TEXT                     Text
+#spawn S_TEXT                     Text_Stance
 #spawn S_TITLE_MENU               Title_Menu
 #spawn S_LEVEL_END_GEM_PATH       Level_End_Gem_Path
 #spawn S_LEVEL_END_GEM            Level_End_Gem
 #spawn S_GAMEOVER_MENU            GameOver_Menu
 #spawn S_BACKGROUND               Background_Stance
+
+#ifreg "ntsc-j"
 #spawn S_LEVEL_END_FLAVOR_J       Level_End_Flavor_J
+#endif
 
 var PasswordCode, mem2, PasswordSelectedIndex, mem4, mem5,
 LevelBoxCount, PercentBaseComplete, PercentComplete,
@@ -363,6 +366,11 @@ inline sub GemPathDoPathOld() {
 	GemPathDoPath(pathlen-1.0)
 }
 
+#ifnreg "ntsc-j"
+expr GemWinScreenX = -60.0
+#else
+expr GemWinScreenX = -24.0
+#endif
 state Level_End_Gem { // 1
 	code (new_gem, gem_id) {
 		var0 = false
@@ -375,8 +383,8 @@ state Level_End_Gem { // 1
 		if (new_gem) {
 			GemPathDoPathNew()
 			playframe(0, 1s)
-			if ((-24.0 - x) != 0) {
-				GemScreenX = (-24.0 - x) / GemTimeToCounter
+			if ((GemWinScreenX - x) != 0) {
+				GemScreenX = (GemWinScreenX - x) / GemTimeToCounter
 			}
 			else {
 				GemScreenX = 0
@@ -434,9 +442,13 @@ state Level_End_Gem { // 1
 }
 
 inline sub GetLevelPercent() {
-	var levelscomplete = LEVELCOUNT - 1
+	#ifreg "ntsc-u"
+	PercentBaseComplete = (LEVELCOUNT-1)<<1
+	#else
+	var levelscomplete = LEVELCOUNT-1
 	if (levelscomplete > 28) levelscomplete = 28;
-	PercentBaseComplete = levelscomplete*2
+	PercentBaseComplete = levelscomplete<<1
+	#endif
 }
 
 sub CalcGameProgress () {
@@ -511,13 +523,24 @@ state GameOver_Master { // 2
 		GLOBAL_52 = 0x5C
 		GLOBAL_53 = 4.4s
 		LoadAnim([Go1pV], [Go1pG])
+		#ifnreg "ntsc-j"
+		LoadAnim([Go2pV], [Go2pG])
+		LoadAnim([Go4pV], [Go4pG])
+		#else
 		LoadAnim([GO2pV], [GO2pG])
 		LoadAnim([GO2pV], [GO2pG])
+		#endif
 		loadfile([LogoT])
 		LogoAnimSet = 0
 		do {
 			playnull()
-		} until (isloaded([Go1pV], [Go1pG], [GO2pV], [GO2pG], [GO2pV], [GO2pG], [LogoT]))
+		} until (
+		#ifnreg "ntsc-j"
+		isloaded([Go1pV], [Go1pG], [Go2pV], [Go2pG], [Go4pV], [Go4pG], [LogoT])
+		#else
+		isloaded([Go1pV], [Go1pG], [GO2pV], [GO2pG], [GO2pV], [GO2pG], [LogoT])
+		#endif
+		)
 		soundpitch(16000Hz)
 		soundplay([go1pA], 0.75V)
 		soundpitch(16000Hz)
@@ -527,8 +550,16 @@ state GameOver_Master { // 2
 		spawn(GamOC, S_BACKGROUND)
 		spawn(GamOC, S_LOGO_ANIM, 1, 15)
 		spawn(GamOC, S_LOGO_ANIM, 1, 16)
+		#ifnreg "ntsc-j"
+		spawn(GamOC, S_LOGO_ANIM, 1, 17)
+		#endif
+		#ifnreg "ntsc-j"
+		LoadAnim([Go3pV], [Go2pG])
+		LoadAnim([Go5pV], [Go4pG])
+		#else
 		LoadAnim([GO3pV], [GO2pG])
 		LoadAnim([GO3pV], [GO2pG])
+		#endif
 		LogoAnimSet = 1.0
 		spawn(GamOC, S_GAMEOVER_MENU)
 		LoadAnim([WiWaV], [WillG])
@@ -557,25 +588,44 @@ state GameOver_Master { // 2
 		if (e == EventDespawn) {
 			if (LogoAnimSet == 0) {
 				DeloadAnim([Go1pV], [Go1pG])
+				#ifnreg "ntsc-j"
+				DeloadAnim([Go2pV], [Go2pG])
+				DeloadAnim([Go4pV], [Go4pG])
+				#else
 				DeloadAnim([GO2pV], [GO2pG])
 				DeloadAnim([GO2pV], [GO2pG])
+				#endif
 				deloadfile([LogoT])
 			}
 			else if (LogoAnimSet == 1.0) {
 				DeloadAnim([Go1pV], [Go1pG])
 				deloadfile([LogoT])
+				#ifnreg "ntsc-j"
+				DeloadAnim([Go2pV], [Go2pG])
+				DeloadAnim([Go4pV], [Go4pG])
+				DeloadAnim([Go3pV], [Go2pG])
+				DeloadAnim([Go5pV], [Go4pG])
+				#else
 				DeloadAnim([GO2pV], [GO2pG])
 				DeloadAnim([GO2pV], [GO2pG])
 				DeloadAnim([GO3pV], [GO2pG])
 				DeloadAnim([GO3pV], [GO2pG])
+				#endif
 			}
 			else if (LogoAnimSet == 2.0) {
 				DeloadAnim([Go1pV], [Go1pG])
 				deloadfile([LogoT])
+				#ifnreg "ntsc-j"
+				DeloadAnim([Go2pV], [Go2pG])
+				DeloadAnim([Go4pV], [Go4pG])
+				DeloadAnim([Go3pV], [Go2pG])
+				DeloadAnim([Go5pV], [Go4pG])
+				#else
 				DeloadAnim([GO2pV], [GO2pG])
 				DeloadAnim([GO2pV], [GO2pG])
 				DeloadAnim([GO3pV], [GO2pG])
 				DeloadAnim([GO3pV], [GO2pG])
+				#endif
 				DeloadAnim([WiWaV], [WillG])
 				DeloadAnim([Co1pV], [Co1pG])
 				deloadfile([Cr2vT])
@@ -601,17 +651,38 @@ inline sub SoundMenuSelect() {
 	statusb &= ~FLAG_2D
 }
 
+inline sub SpawnText(x_pos, y_pos, frame, fmt_var, r1, g1, b1, r2, g2, b2) {
+	spawn(GamOC, S_TEXT, 1, x_pos, y_pos, TEXT, frame, fmt_var, 0.64, 1.015, r1, g1, b1, r2, g2, b2, 0, 0)
+}
+
+inline sub SpawnTextDefaultCol(x_pos, y_pos, frame, fmt_var) {
+	SpawnText(x_pos, y_pos, frame, fmt_var, 0x1FF, 0x190, 0, 0x1FF, 0, 0)
+}
+
+inline sub SpawnTextDefaultCol(x_pos, y_pos, frame) {
+	SpawnTextDefaultCol(x_pos, y_pos, frame, offsetof(var0))
+}
+
+#ifnreg "ntsc-j"
+expr MenuButtonConfirm = buttonpress(PAD_START) || buttonpress(PAD_X)
+#else
+expr MenuButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+#endif
 state GameOver_Menu { // 3
 	code () {
 		SetRot(0)
 		statusb = FLAG_2D
 		SetScale(0.64, 1.015, 256.0)
 		zindex = 20
-		spawn(GamOC, S_TEXT, 1, -160.0, -48.0, TEXT, 0.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // Continue?
-		spawn(GamOC, S_TEXT, 1,   64.0, -48.0, TEXT, 1.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // Yes
-		spawn(GamOC, S_TEXT, 1,   64.0, -64.0, TEXT, 2.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // No
-
-		spawn(GamOC, S_TEXT, 1,   48.0, -48.0, TEXT, 3.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0) // >
+		#ifnreg "ntsc-j"
+		SpawnTextDefaultCol(-112.0, -48.0, 0.0) // CONTINUE?
+		#else
+		SpawnTextDefaultCol(-160.0, -48.0, 0.0) // CONTINUE?
+		#endif
+		SpawnTextDefaultCol(  64.0, -48.0, 1.0) // YES
+		SpawnTextDefaultCol(  64.0, -64.0, 2.0) // NO
+		
+		SpawnTextDefaultCol(  48.0, -48.0, 3.0) // >
 		var1 = 0
 		do {
 			if (frametime - statetime >= 30s) {
@@ -626,7 +697,7 @@ state GameOver_Menu { // 3
 				SoundMenuButton()
 				var1 -= 1
 			}
-			if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+			if (MenuButtonConfirm) {
 				SoundMenuSelect()
 				if (var1 == 0) {
 					save (SAVEDITEMPOOL1, SAVEDITEMPOOL2, LEVELCOUNT) {
@@ -641,7 +712,17 @@ state GameOver_Menu { // 3
 				}
 				else {
 					CalcGameProgress()
+					#ifnreg "ntsc-j"
+					if (PercentComplete != 0) {
+						GAMESCREEN = 14
+						GLOBALVAL = 11 // goto final password screen
+					}
+					else {
+						GAMESCREEN = 5
+					}
+					#else
 					GAMESCREEN = 5
+					#endif
 				}
 				GAMEFLAGS &= ~0x80000
 				playnull(2s)
@@ -668,6 +749,12 @@ state GameOver_Cortex { // 4
 	}
 }
 
+#ifnreg "ntsc-j"
+expr FileSoundExclamation = [xclpA]
+#else
+expr FileSoundExclamation = [XclpA]
+#endif
+
 state Title_Willy_Spawn { // 5
 	code () {
 		vecx = x
@@ -681,14 +768,35 @@ state Title_Willy_Spawn { // 5
 		LoadAnim2([WS10V], [WS10G])
 		LoadAnim2([WiD1V], [WillG])
 		loadfile2([LogoT])
+		#ifnreg "ntsc-j"
+		loadfile2([DemoT])
+		#endif
 		LoadAnim2([Lo1pV], [Lo1pG])
 		loadfile2([lgopA])
-		loadfile2([XclpA])
+		loadfile2(FileSoundExclamation)
+		#ifnreg "ntsc-j"
 		loadfile2([DemJT])
+		#endif
 		LogoAnimSet = 3.0
+		#ifnreg "ntsc-j"
+		LoadAnim([Lo2pV], [Lo2pG])
+		LoadAnim([Lo4pV], [Lo2pG])
+		#else
 		LoadAnim([LO2pV], [LO2pG])
 		LoadAnim([LO4pV], [LO2pG])
+		#endif
 		LoadAnim([WiS1V], [WillG])
+		#ifnreg "ntsc-j"
+		LoadAnim([Lo5pV], [Lo5pG])
+		LoadAnim([Lo6pV], [Lo6pG])
+		LoadAnim([Lo7pV], [Lo7pG])
+		LoadAnim([Lo8pV], [Lo8pG])
+		LoadAnim([Lo9pV], [Lo9pG])
+		LoadAnim([LoapV], [LoapG])
+		LoadAnim([LobpV], [LobpG])
+		LoadAnim([LocpV], [LocpG])
+		LoadAnim([LodpV], [LodpG])
+		#else
 		LoadAnim([LO5pV], [LO5pG])
 		LoadAnim([LO6pV], [LO6pG])
 		LoadAnim([LO7pV], [LO7pG])
@@ -698,6 +806,7 @@ state Title_Willy_Spawn { // 5
 		LoadAnim([LO9pV], [LO9pG])
 		LoadAnim([LO9pV], [LO9pG])
 		LoadAnim([LO9pV], [LO9pG])
+		#endif
 		loadfile([Dem2T])
 		loadfile([LogoT])
 		LogoAnimSet = 4.0
@@ -712,14 +821,33 @@ state Title_Willy_Spawn { // 5
 			DeloadAnim([WiTSV], [WillG])
 			DeloadAnim([WS10V], [WS10G])
 			DeloadAnim([WiD1V], [WillG])
+			#ifnreg "ntsc-j"
+			deloadfile([DemoT])
+			#endif
 			deloadfile([LogoT])
 			DeloadAnim([Lo1pV], [Lo1pG])
 			deloadfile([lgopA])
-			deloadfile([XclpA])
+			deloadfile(FileSoundExclamation)
 			if (LogoAnimSet == 4.0) {
+				#ifnreg "ntsc-j"
+				DeloadAnim([Lo2pV], [Lo2pG])
+				DeloadAnim([Lo4pV], [Lo2pG])
+				#else
 				DeloadAnim([LO2pV], [LO2pG])
 				DeloadAnim([LO4pV], [LO2pG])
+				#endif
 				DeloadAnim([WiS1V], [WillG])
+				#ifnreg "ntsc-j"
+				DeloadAnim([Lo5pV], [Lo5pG])
+				DeloadAnim([Lo6pV], [Lo6pG])
+				DeloadAnim([Lo7pV], [Lo7pG])
+				DeloadAnim([Lo8pV], [Lo8pG])
+				DeloadAnim([Lo9pV], [Lo9pG])
+				DeloadAnim([LoapV], [LoapG])
+				DeloadAnim([LobpV], [LobpG])
+				DeloadAnim([LocpV], [LocpG])
+				DeloadAnim([LodpV], [LodpG])
+				#else
 				DeloadAnim([LO5pV], [LO5pG])
 				DeloadAnim([LO6pV], [LO6pG])
 				DeloadAnim([LO7pV], [LO7pG])
@@ -729,6 +857,7 @@ state Title_Willy_Spawn { // 5
 				DeloadAnim([LO9pV], [LO9pG])
 				DeloadAnim([LO9pV], [LO9pG])
 				DeloadAnim([LO9pV], [LO9pG])
+				#endif
 				deloadfile([Dem2T])
 				deloadfile([LogoT])
 			}
@@ -766,12 +895,12 @@ state Title_Willy_Walk { // 6
 		if (z >= -2.5m && !TitlePlayedScream) {
 			soundpitch(16000Hz)
 			sounddecay(0.9375)
-			soundplay([XclpA], 0.75V)
+			soundplay(FileSoundExclamation, 0.75V)
 			TitlePlayedScream = 1
 		}
 		if (z >= -920.0) {
 			statusb &= ~FLAG_PHYSICS_ENGINE
-			changestate(Title_Willy_Surprise)
+			changestate(Title_Willy_Shock)
 		}
 		unless (STATUS_FIRSTFRAME) {
 			if (z >= -2860.0) {
@@ -781,7 +910,7 @@ state Title_Willy_Walk { // 6
 	}
 }
 
-state Title_Willy_Surprise { // 7
+state Title_Willy_Shock { // 7
 	code () {
 		playanim(1, WILLY_LAND, 2)
 		playanim(2, WILLY_LAND, 2)
@@ -821,6 +950,12 @@ state Title_Willy_Surprise { // 7
 			spawn(GamOC, S_LOGO_ANIM, 1, 4)
 			spawn(GamOC, S_LOGO_ANIM, 1, 5)
 			spawn(GamOC, S_LOGO_ANIM, 1, 6)
+			#ifnreg "ntsc-j"
+			spawn(GamOC, S_LOGO_ANIM, 1, 7)
+			spawn(GamOC, S_LOGO_ANIM, 1, 8)
+			spawn(GamOC, S_LOGO_ANIM, 1, 9)
+			spawn(GamOC, S_LOGO_ANIM, 1, 10)
+			#endif
 		}
 		do (var start = frametime) {
 			playanim(8, WILLY_DUCK, 1s)
@@ -860,23 +995,34 @@ state Title_Menu { // 8
 		statusb = FLAG_2D
 		SetScale(0.64, 1.015, 256.0)
 		zindex = 20
+		#ifreg "ntsc-j"
 		sy -= 8.0
+		#endif
 		x = sx
 		y = sy
-		spawn(GamOC, S_TEXT, 1, sx+16.0, sy, TEXT, 4.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
-		vecx = child
-		spawn(GamOC, S_TEXT, 1, sx+16.0, sy-16.0, TEXT, 5.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
-		vecy = child
-		spawn(GamOC, S_TEXT, 1, sx+16.0, sy-32.0, TEXT, 6.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
-		groundy = child
+		SpawnTextDefaultCol(sx+16.0, sy,      4.0) vecx = child
+		SpawnTextDefaultCol(sx+16.0, sy-16.0, 5.0) vecy = child
+		#ifnreg "ntsc-j"
+		SpawnTextDefaultCol(sx+16.0, sy-32.0, 6.0) vecz = child
+		SpawnTextDefaultCol(sx+16.0, sy-48.0, 7.0) groundy = child
+		TitleMenuOptions = 3
+		if (MenuDebug) {
+			TitleMenuOptions += 1
+			SpawnTextDefaultCol(sx+16.0, sy-64.0, 8.0)
+		}
+		#else
+		SpawnTextDefaultCol(sx+16.0, sy-32.0, 6.0) groundy = child
 		TitleMenuOptions = 2
 		if (MenuDebug) {
 			TitleMenuOptions += 1
-			spawn(GamOC, S_TEXT, 1, sx+16.0, sy-48.0, TEXT, 7.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
+			SpawnTextDefaultCol(sx+16.0, sy-48.0, 8.0)
 		}
+		#endif
 		spawn(GamOC, S_TEXT, 1, sx, sy, TEXT, 3.0, offsetof(var0), 0.64, 1.015, 0x1FF, 0x190, 0, 0x1FF, 0, 0, 0, 0)
 		var0 = 0
+		#ifreg "ntsc-j"
 		var1 = 0
+		#endif
 		do {
 			child->y = sy + var0 * -16.0
 			if (frametime - statetime >= 0.2s) {
@@ -890,6 +1036,7 @@ state Title_Menu { // 8
 					var0 -= 1
 					parent->TitleIdleTime = frametime
 				}
+				#ifreg "ntsc-j"
 				if (dirpress(PAD_N) || dirpress(PAD_S) || dirpress(PAD_W) || dirpress(PAD_E) || buttonpress(PAD_X|PAD_O|PAD_SQUARE|PAD_TRIANGLE|PAD_R1|PAD_R2|PAD_L1|PAD_L2|PAD_START|PAD_SELECT)) {
 					if (var1 == 0) { if (dirpress(PAD_N)) var1 += 1.0; else var1 = 0; }
 					else if (var1 == 1.0) { if (dirpress(PAD_N)) var1 += 1.0; else var1 = 0; }
@@ -913,7 +1060,8 @@ state Title_Menu { // 8
 						}
 					}
 				}
-				if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+				#endif
+				if (MenuButtonConfirm) {
 					SoundMenuSelect()
 					parent->TitleIdleTime = frametime
 					if (var0 == 0) {
@@ -923,6 +1071,19 @@ state Title_Menu { // 8
 						GAMESCREEN = 14
 						GLOBALVAL = 4
 					}
+					#ifnreg "ntsc-j"
+					else if (var0 == 2) {
+						GAMESCREEN = 14
+						GLOBALVAL = 3
+					}
+					else if (var0 == 3) {
+						GAMESCREEN = 6
+					}
+					else if (var0 == 4) {
+						GAMESCREEN = 14
+						GLOBALVAL = 13
+					}
+					#else
 					else if (var0 == 99) {
 						GAMESCREEN = 14
 						GLOBALVAL = 3
@@ -934,6 +1095,7 @@ state Title_Menu { // 8
 						GAMESCREEN = 14
 						GLOBALVAL = 13
 					}
+					#endif
 					sleepnull()
 				}
 			}
@@ -941,7 +1103,7 @@ state Title_Menu { // 8
 		} while (1)
 	}
 	event (e, a) {
-		accevcstate(Kill, e == Event14)
+		accevcstate(Die_Fast, e == Event14)
 	}
 }
 
@@ -954,6 +1116,38 @@ state Title_Willy_Start_Demo { // 9
 		FadeToBlack()
 		playanim(0, WILLY_STAND, 0.3s)
 		GAMESTATE = GAME_STATE_TITLE
+		#ifreg "ntsc-u"
+		if (var demo_id = DEMOID; demo_id == 0) {
+			GAMESTATE = GAME_STATE_CUTSCENE
+			loadlevel(LEVEL_Intro)
+		}
+		else if (demo_id == 1.0) {
+			loadlevel(LEVEL_JungleRollers)
+		}
+		else if (demo_id == 2.0) {
+			loadlevel(LEVEL_TheGreatGate)
+		}
+		else if (demo_id == 4.0) {
+			loadlevel(LEVEL_PapuPapu)
+		}
+		else if (demo_id == 3.0) {
+			loadlevel(LEVEL_Boulders)
+		}
+		else if (demo_id == 5.0) {
+			loadlevel(LEVEL_TheLostCity)
+		}
+		else if (demo_id == 6.0) {
+			loadlevel(LEVEL_JawsOfDarkness)
+		}
+		else if (demo_id == 7.0) {
+			loadlevel(LEVEL_TheLab)
+		}
+		DEMOID += 1.0
+		if (DEMOID >= 8.0) {
+			DEMOID = 0
+		}
+		#elifreg "pal"
+		#elifreg "ntsc-j"
 		if (var demo_id = DEMOID; demo_id == 0) {
 			GAMESTATE = GAME_STATE_CUTSCENE
 			loadlevel(LEVEL_Intro)
@@ -980,6 +1174,7 @@ state Title_Willy_Start_Demo { // 9
 		if (DEMOID >= 7.0) {
 			DEMOID = 0
 		}
+		#endif
 		sleepnull()
 	}
 	event => state Title_Willy_Spawn
@@ -1144,7 +1339,9 @@ state Logo_Anim { // 10
 			zindex = 60
 			WaitLogoAnim(LOGO_SUB_I, 50)
 			playframes(LOGO_SUB_I, 0, 55.0)
+			#ifreg "ntsc-j"
 			spawn(GamOC, S_LOGO_ANIM, 1, 33)
+			#endif
 		}
 		else if (l == 7) {
 			zindex = 60
@@ -1165,6 +1362,9 @@ state Logo_Anim { // 10
 			zindex = 60
 			WaitLogoAnim(LOGO_SUB_T, 50)
 			playframes(LOGO_SUB_T, 0, 55.0)
+			#ifnreg "ntsc-j"
+			spawn(GamOC, S_LOGO_ANIM, 1, 33)
+			#endif
 		}
 		else if (l == 15) {
 			playframes(GAMEOVER_BACKGROUND, 0, 38.0)
@@ -1213,9 +1413,15 @@ state Logo_Anim { // 10
 	}
 }
 
-inline sub SplashTransCommon(screen_id) {
+#ifnreg "ntsc-j"
+expr LogoButtonConfirm = buttonbuffer(PAD_START)
+#else
+expr LogoButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+#endif
+
+inline sub LogoTransCommon(screen_id) {
 	unless (STATUS_FIRSTFRAME) {
-		if (frametime - statetime >= 5s || (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)))) {
+		if (frametime - statetime >= 5s || (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && LogoButtonConfirm)) {
 			GAMESCREEN = screen_id
 			return_sup
 		}
@@ -1230,14 +1436,16 @@ state Logo_UIS { // 11
 		sleepnull()
 	}
 	trans {
-		SplashTransCommon(8)
+		LogoTransCommon(8)
 	}
 }
 
 state Logo_SCE { // 12
 	statusc 0
 	code () {
+		#ifnreg "ntsc-u"
 		changestateif(Logo_NDI_Load, GAMESCREEN == 10)
+		#endif
 		DEMOID = 0
 		statusb = FLAG_INVISIBLE
 		tpc = 0
@@ -1247,10 +1455,34 @@ state Logo_SCE { // 12
 		playnull()
 		statetime = frametime
 		settrans(__Logo_SCE_TRANS)
+		#ifreg "ntsc-u"
+		LoadAnim([ND3pV], [ND3pG])
+		LoadAnim([NDepV], [NDepG])
+		LoadAnim([ND1pV], [ND1pG])
+		LoadAnim([NDfpV], [ND1pG])
+		LoadAnim([NDgpV], [ND1pG])
+		LoadAnim([ND2pV], [ND2pG])
+		LoadAnim([NDhpV], [ND2pG])
+		LoadAnim([NDdpV], [NDdpG])
+		LoadAnim([ND4pV], [ND4pG])
+		LoadAnim([ND5pV], [ND5pG])
+		LoadAnim([ND6pV], [ND6pG])
+		LoadAnim([ND7pV], [ND7pG])
+		LoadAnim([ND8pV], [ND8pG])
+		LoadAnim([ND9pV], [ND9pG])
+		LoadAnim([NDapV], [NDapG])
+		LoadAnim([NDbpV], [NDbpG])
+		LoadAnim([NDcpV], [NDcpG])
+		loadfile([LogoT])
+		#endif
 		sleepnull()
 	}
 	trans {
-		SplashTransCommon(10)
+		#ifreg "ntsc-u"
+		LogoTransCommon(7)
+		#else
+		LogoTransCommon(10)
+		#endif
 	}
 }
 
@@ -1287,7 +1519,7 @@ state Logo_NDI_Load { // 13
 		sleepnull()
 	}
 	trans {
-		SplashTransCommon(7)
+		LogoTransCommon(7)
 	}
 }
 
@@ -1353,7 +1585,7 @@ state Logo_NDI { // 14
 	}
 	trans {
 		unless (STATUS_FIRSTFRAME) {
-			if (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X))) {
+			if (((frametime - statetime >= 0.1s && DEBUG) || frametime - statetime >= 2s) && LogoButtonConfirm) {
 				GAMESCREEN = 5
 			}
 		}
@@ -1362,14 +1594,24 @@ state Logo_NDI { // 14
 
 sub GetGemAnim (gem_id) {
 	if (gem_id == 12) {
+	#ifnreg "ntsc-j"
+		misc = GEM_GREEN
+	#else
 		misc = GEM_RED
+	#endif
 	}
 	else if (gem_id == 25) {
 		misc = GEM_PURPLE
 	}
+	#ifnreg "ntsc-j"
+	else if (gem_id == 24) {
+		misc = GEM_RED
+	}
+	#else
 	else if (gem_id == 16) {
 		misc = GEM_CLEAR
 	}
+	#endif
 	else if (gem_id == 29) {
 		misc = GEM_YELLOW
 	}
@@ -1382,9 +1624,11 @@ sub GetGemAnim (gem_id) {
 	else if (gem_id == 42 || gem_id == 52) {
 		misc = GEM_KEY
 	}
+	#ifreg "ntsc-j"
 	else if (gem_id == 8) {
 		misc = GEM_GREEN
 	}
+	#endif
 	else {
 		misc = GEM_CLEAR
 	}
@@ -1398,7 +1642,37 @@ inline sub WillyEndLevelLose() {
 state Level_End_Willy_Spawn { // 15
 	code () {
 		zindex = 24
-		statusb = FLAG_PHYSICS_FULL | 0x4000000
+		statusb = FLAG_PHYSICS_FULL | FLAG_HAS_SHADOW
+		#ifnreg "ntsc-j"
+		if (var level = PREVLEVEL;
+				 level == LEVEL_NSanityBeach) LevelBoxCount = 49.0;
+		else if (level == LEVEL_JungleRollers) LevelBoxCount = 38.0;
+		else if (level == LEVEL_TheGreatGate) LevelBoxCount = 26.0;
+		else if (level == LEVEL_HogWild) LevelBoxCount = 24.0;
+		else if (level == LEVEL_WholeHog) LevelBoxCount = 24.0;
+		else if (level == LEVEL_NativeFortress) LevelBoxCount = 42.0;
+		else if (level == LEVEL_Upstream) LevelBoxCount = 14.0;
+		else if (level == LEVEL_RollingStones) LevelBoxCount = 46.0;
+		else if (level == LEVEL_Boulders) LevelBoxCount = 16.0;
+		else if (level == LEVEL_BoulderDash) LevelBoxCount = 35.0;
+		else if (level == LEVEL_UpTheCreek) LevelBoxCount = 15.0;
+		else if (level == LEVEL_TempleRuins) LevelBoxCount = 67.0;
+		else if (level == LEVEL_TheLostCity) LevelBoxCount = 26.0;
+		else if (level == LEVEL_SunsetVista) LevelBoxCount = 53.0;
+		else if (level == LEVEL_JawsOfDarkness) LevelBoxCount = 65.0;
+		else if (level == LEVEL_CortexPower) LevelBoxCount = 41.0;
+		else if (level == LEVEL_HeavyMachinery) LevelBoxCount = 33.0;
+		else if (level == LEVEL_GeneratorRoom) LevelBoxCount = 44.0;
+		else if (level == LEVEL_ToxicWaste) LevelBoxCount = 26.0;
+		else if (level == LEVEL_RoadToNowhere) LevelBoxCount = 33.0;
+		else if (level == LEVEL_TheHighRoad) LevelBoxCount = 18.0;
+		else if (level == LEVEL_LightsOut) LevelBoxCount = 15.0;
+		else if (level == LEVEL_StormyAscent) LevelBoxCount = 34.0;
+		else if (level == LEVEL_FumblingInTheDark) LevelBoxCount = 18.0;
+		else if (level == LEVEL_SlipperyClimb) LevelBoxCount = 31.0;
+		else if (level == LEVEL_CastleMachinery) LevelBoxCount = 24.0;
+		else if (level == LEVEL_TheLab) LevelBoxCount = 24.0;
+		#else
 		if (var level = PREVLEVEL;
 				 level == LEVEL_NSanityBeach) LevelBoxCount = 48.0;
 		else if (level == LEVEL_JungleRollers) LevelBoxCount = 38.0;
@@ -1420,17 +1694,20 @@ state Level_End_Willy_Spawn { // 15
 		else if (level == LEVEL_GeneratorRoom) LevelBoxCount = 44.0;
 		else if (level == LEVEL_ToxicWaste) LevelBoxCount = 27.0;
 		else if (level == LEVEL_RoadToNowhere) LevelBoxCount = 33.0;
-		else if (level == LEVEL_TheHighRoad) LevelBoxCount = 14.0;
+		else if (level == LEVEL_TheHighRoad) LevelBoxCount = 13.0;
 		else if (level == LEVEL_LightsOut) LevelBoxCount = 15.0;
 		else if (level == LEVEL_StormyAscent) LevelBoxCount = 34.0;
 		else if (level == LEVEL_FumblingInTheDark) LevelBoxCount = 18.0;
 		else if (level == LEVEL_SlipperyClimb) LevelBoxCount = 34.0;
 		else if (level == LEVEL_CastleMachinery) LevelBoxCount = 27.0;
 		else if (level == LEVEL_TheLab) LevelBoxCount = 25.0;
+		#endif
+		#ifreg "ntsc-j"
 		if (buttonhold(PAD_R1) && DEBUG) {
 			WillyEndLevelLose()
 		}
 		changestateif(Level_End_Willy_Secret, buttonhold(PAD_L2) && DEBUG)
+		#endif
 		changestateif(Level_End_Willy_Win_Wait, PREVBOXCOUNT == LevelBoxCount || (buttonhold(PAD_L1) && DEBUG))
 		WillyEndLevelLose()
 	}
@@ -1478,6 +1755,12 @@ state Level_End_Willy_Lose { // 16
 		loadfile2([Ta2JT])
 		LoadAnim2([WiS1V], [WillG])
 		LoadAnim2([WiD1V], [WillG])
+		#ifnreg "ntsc-j"
+		spawn(GamOC, S_LEVEL_END_FLAVOR, 1, -210.0, 60.0, 224.0, 0)
+		var0 = 0
+		AnimWillyStand(false)
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -50.0, -50.0, TEXT, 9.0, offsetof(var0))
+		#else
 		spawn(GamOC, S_LEVEL_END_FLAVOR_J, 1, -170.0, 40.0, 118.0, 0)
 		CalcGameProgress()
 		vecz = PercentComplete
@@ -1491,10 +1774,12 @@ state Level_End_Willy_Lose { // 16
 		LevelBoxCount = PREVBOXCOUNT - 1.0
 		AnimWillyStand(false)
 		spawn(GamOC, S_TEXT_DEFAULT, 1, -20.0, -50.0, TEXT, 11.0, offsetof(var0))
+		#endif
 		player = child
 		playframes(WILLY_DUCK, 0, 7.0)
 		do (var i = 0) {
 			spawn(BoxsC, BoxsC_S_BOX_EMPTY_AUTO, 1, 5m, 5s, x-0.5m, y+1.5m, z-0.5m)
+			#ifreg "ntsc-j"
 			if (var r = rand(4); r == 0) {
 				soundpitch(16000Hz)
 				sounddelay(0.65s)
@@ -1515,6 +1800,7 @@ state Level_End_Willy_Lose { // 16
 				sounddelay(0.65s)
 				soundplay([Hyb0A], 0.7V)
 			}
+			#endif
 			playanim(9, WILLY_DUCK)
 			playanim(10, WILLY_DUCK)
 			playanim(11, WILLY_DUCK)
@@ -1524,8 +1810,10 @@ state Level_End_Willy_Lose { // 16
 			playanim(11, WILLY_DUCK)
 			playanim(10, WILLY_DUCK)
 			playanim(9, WILLY_DUCK)
-			i += 1.0
-		} while (i < LevelBoxCount - PREVBOXCOUNT)
+			#ifnreg "ntsc-j"
+			var0 = (i+1.0) >> 8
+			#endif
+		} while ({i += 1.0}; i < LevelBoxCount - PREVBOXCOUNT)
 		playframesback(WILLY_DUCK, 12.0, 0)
 		AnimWillyStand(true)
 		changestate(Level_End_Willy_Lose_Proceed)
@@ -1533,9 +1821,11 @@ state Level_End_Willy_Lose { // 16
 }
 
 inline sub AnimWillySpin() {
+	#ifnreg "ntsc-u"
 	soundpitch(4.0)
 	sounddecay(0.625)
 	soundplay([spn0A], 0.25V)
+	#endif
 	var f = 0
 	setanim(WILLY_BLOW)
 	do {
@@ -1566,6 +1856,12 @@ inline sub AnimWillyBadaba() {
 	playframes(WILLY_STAND_2, 0, 11.0)
 	playanim(11, WILLY_STAND_2, 0.5s)
 }
+
+#ifnreg "ntsc-j"
+expr LevelEndButtonConfirm = buttonbuffer(PAD_X) || buttonbuffer(PAD_START) 
+#else
+expr LevelEndButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+#endif
 
 state Level_End_Willy_Secret { // 17
 	code () {
@@ -1601,10 +1897,17 @@ state Level_End_Willy_Win_Wait { // 18
 		var1 = CURRENTLEVEL
 		vecx = GEMCOUNT
 		vecy = KEYCOUNT
+		#ifnreg "ntsc-j"
+		spawn(GamOC, S_LEVEL_END_FLAVOR, 1, 30.0, 60.0, 224.0, 1.0)
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0, 40.0, TEXT,10.0, offsetof(var0))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,  0.0, TEXT,11.0, offsetof(vecx))
+		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,-40.0, TEXT,12.0, offsetof(vecy))
+		#else
 		spawn(GamOC, S_LEVEL_END_FLAVOR_J, 1, 80.0, 40.0, 118.0, 1.0)
 		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0, 40.0, TEXT, 8.0, offsetof(var0))
 		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,  0.0, TEXT, 9.0, offsetof(vecx))
 		spawn(GamOC, S_TEXT_DEFAULT, 1, -210.0,-40.0, TEXT,10.0, offsetof(vecy))
+		#endif
 		interrupter = objectget(10.0)
 		sendevent(Event33, interrupter)
 		do {
@@ -1632,11 +1935,13 @@ state Level_End_Willy_Win { // 19
 			ITEMPOOL1 |= 1 << var1
 		}
 		CalcGameProgress()
+		#ifnreg "ntsc-u"
 		if (GEMCOUNT == 26) {
 			LEVELCOUNT = 31
 			LEVELSUNLOCKED = 31
 			CalcGameProgress()
 		}
+		#endif
 		vecx = GEMCOUNT
 		vecy = KEYCOUNT
 		var0 = PercentComplete
@@ -1651,7 +1956,7 @@ state Level_End_Willy_Win_Proceed { // 20
 		sleep()
 	}
 	trans {
-		if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+		if (LevelEndButtonConfirm) {
 			SoundMenuSelect()
 			if (GLOBAL_109) {
 				loadlevel(LEVEL_Map)
@@ -1671,7 +1976,7 @@ state Level_End_Willy_Lose_Proceed { // 21
 		} while (1)
 	}
 	trans {
-		if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+		if (LevelEndButtonConfirm) {
 			SoundMenuSelect()
 			GAMESTATE = GAME_STATE_CONTINUE
 			loadlevel(LEVEL_Map)
@@ -1712,6 +2017,7 @@ state Level_End_Flavor { // 24
 	}
 }
 
+#ifreg "ntsc-j"
 state Level_End_Flavor_J { // 25
 	statusc 0
 	code (posx, posy, anim, frame) {
@@ -1722,6 +2028,7 @@ state Level_End_Flavor_J { // 25
 		sleepframe(frame)
 	}
 }
+#endif
 
 inline sub GetSelectedGem() {
 	if (var1 >= 32) {
@@ -1790,7 +2097,7 @@ state Island_Gem_Display { // 26
 	}
 }
 
-state Text_Default { // 27
+state Text_Default_Stance { // 27
 	statusc 0
 	code (posx, posy, anim, frame, fmt_var) {
 		SetTrans(posx, posy, 0)
@@ -1804,7 +2111,7 @@ state Text_Default { // 27
 		} while (1)
 	}
 	event (e, a) {
-		accevcstate(Kill, e == Event12)
+		accevcstate(Die_Fast, e == Event12)
 	}
 	trans {
 		if ((frametime - statetime) % 1s > 0.5s && spawn == S_TEXT_DEFAULT_FLASH) {
@@ -1816,7 +2123,7 @@ state Text_Default { // 27
 	}
 }
 
-state Text { // 28
+state Text_Stance { // 28
 	statusc 0
 	code (posx, posy, anim, frame, fmt_var, sizex, sizey, r1, g1, b1, r2, g2, b2, flash, b) {
 		TextFlash = flash
@@ -1834,7 +2141,7 @@ state Text { // 28
 		} while (1)
 	}
 	event (e, a) {
-		accevcstate(Kill, e == Event12)
+		accevcstate(Die_Fast, e == Event12)
 	}
 	trans {
 		if (TextFlash) {
@@ -1848,7 +2155,7 @@ state Text { // 28
 	}
 }
 
-state Kill { // 29
+state Die_Fast { // 29
 	statusc 0
 	code () {}
 }
@@ -1884,12 +2191,21 @@ state Key_Collect { // 31
 	code () {
 		GLOBALVAL = 9
 		SAVETYPE = SAVE_TYPE_KEY
+		#ifnreg "ntsc-j"
+		if (var lev = CURRENTLEVEL; lev == 16) {
+			ITEMPOOL2 |= 1<<20
+		}
+		else if (lev == 26) {
+			ITEMPOOL2 |= 1<<10
+		}
+		#else
 		if (var lev = CURRENTLEVEL; lev == 24) {
 			ITEMPOOL2 |= 1<<20
 		}
 		else if (lev == 26) {
 			ITEMPOOL2 |= 1<<10
 		}
+		#endif
 		soundpitch(4.08)
 		soundsetup(0, 11)
 		soundplay([1up0A], 0.5V)
