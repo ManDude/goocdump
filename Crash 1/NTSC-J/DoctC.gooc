@@ -388,9 +388,7 @@ state Witch_Doctor { // 1
 			}
 			else {
 				DoctorSize = 1.3S
-				scalex = 2.0S
-				scaley = 2.0S
-				scalez = 2.0S
+				SetScale(2S)
 			}
 			accevcstate(Witch_Doctor_Help)
 		}
