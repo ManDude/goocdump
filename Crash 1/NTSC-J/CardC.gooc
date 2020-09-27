@@ -410,24 +410,24 @@ inline sub GetAdjustedLevelProg() {
 	}
 }
 
-inline sub EncodeNormalPassword(encode_op) {
+inline sub EncodeNormalPassword(hash) {
 	var passcode = 1, mask = 1<<30
 	do (var i = 0) {
 		passcode = passcode*passcode % 32399
 		if ((0x2D83 & mask) != 0) {
-			passcode = passcode*encode_op % 32399
+			passcode = passcode*hash % 32399
 		}
 		mask >>= 1
 	} while ({i+=1.0}; i < 31.0)
 	misc = passcode
 }
 
-inline sub EncodeSuperPassword(encode_op) {
+inline sub EncodeSuperPassword(hash) {
 	var passcode = 1, mask = 1<<30
 	do (var i = 0) {
 		passcode = passcode*passcode % 2021
 		if ((0x305 & mask) != 0) {
-			passcode = passcode*encode_op % 2021
+			passcode = passcode*hash % 2021
 		}
 		mask >>= 1
 	} while ({i+=1.0}; i < 31.0)
@@ -484,14 +484,10 @@ sub EncodePassword () {
 	else {
 		var passcode1, passcode2, passcode3, passcode4, encodedpasscode1, encodedpasscode2, encodedpasscode3, encodedpasscode4, v14
 		vely = true
-		EncodeSuperPassword((levels | (keys<<5)) | ((gems&3)<<7))
-		passcode1 = misc
-		EncodeSuperPassword((gems & 0x1FF<<2)>>2)
-		passcode2 = misc
-		EncodeSuperPassword((gems & 0x1FF<<11)>>11)
-		passcode3 = misc
-		EncodeSuperPassword((gems & 0x3F<<20)>>20)
-		passcode4 = misc		
+		EncodeSuperPassword((levels | (keys<<5)) | ((gems&3)<<7)) passcode1 = misc
+		EncodeSuperPassword((gems & 0x1FF<<2)>>2) passcode2 = misc
+		EncodeSuperPassword((gems & 0x1FF<<11)>>11) passcode3 = misc
+		EncodeSuperPassword((gems & 0x3F<<20)>>20) passcode4 = misc		
 		passcode1 ^= 0x18D
 		passcode2 ^= 0x24E
 		passcode3 ^= 0x3E4
@@ -2338,7 +2334,7 @@ inline sub DecodeNormalPassword(hash) {
 	var passcode = 1, mask = 1<<30
 	do (var i = 0) {
 		passcode = passcode*passcode % 32399
-		if ((0b1011 & mask) != 0) {
+		if ((0xB & mask) != 0) {
 			passcode = passcode*hash % 32399
 		}
 		mask >>= 1
@@ -2350,7 +2346,7 @@ inline sub DecodeSuperPassword(hash) {
 	var passcode = 1, mask = 1<<30
 	do (var i = 0) {
 		passcode = passcode*passcode % 2021
-		if ((0b0101 & mask) != 0) {
+		if ((0x5 & mask) != 0) {
 			passcode = passcode*hash % 2021
 		}
 		mask >>= 1
@@ -2421,7 +2417,7 @@ sub DecodePassword () {
 	else {
 		var hash
 		velz = velz & 0xFFFF
-		if ((0x3 & velz >> 0) == 0 && (0x3 & velz >> 2) == 0) hash = 0;
+		     if ((0x3 & velz >> 0) == 0 && (0x3 & velz >> 2) == 0) hash = 0;
 		else if ((0x3 & velz >> 0) == 0 && (0x3 & velz >> 2) == 1) hash = 1;
 		else if ((0x3 & velz >> 0) == 0 && (0x3 & velz >> 2) == 2) hash = 2;
 		else if ((0x3 & velz >> 0) == 1 && (0x3 & velz >> 2) == 0) hash = 3;
