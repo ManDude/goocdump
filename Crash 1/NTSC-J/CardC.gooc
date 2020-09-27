@@ -410,28 +410,32 @@ inline sub GetAdjustedLevelProg() {
 	}
 }
 
-inline sub EncodeNormalPassword(hash) {
+inline sub GenericEncodePassword(hash, integer, modulo) {
 	var passcode = 1, mask = 1<<30
 	do (var i = 0) {
-		passcode = passcode*passcode % 32399
-		if ((0x2D83 & mask) != 0) {
-			passcode = passcode*hash % 32399
+		passcode = passcode*passcode % modulo
+		if ((integer & mask) != 0) {
+			passcode = passcode*hash % modulo
 		}
 		mask >>= 1
 	} while ({i+=1.0}; i < 31.0)
 	misc = passcode
 }
 
+inline sub EncodeNormalPassword(hash) {
+	GenericEncodePassword(hash, 11651, 32399)
+}
+
+inline sub DecodeNormalPassword(hash) {
+	GenericEncodePassword(hash, 11, 32399) // 11 is modular inverse of 11651 mod totient(32399)
+}
+
 inline sub EncodeSuperPassword(hash) {
-	var passcode = 1, mask = 1<<30
-	do (var i = 0) {
-		passcode = passcode*passcode % 2021
-		if ((0x305 & mask) != 0) {
-			passcode = passcode*hash % 2021
-		}
-		mask >>= 1
-	} while ({i+=1.0}; i < 31.0)
-	misc = passcode
+	GenericEncodePassword(hash, 773, 2021)
+}
+
+inline sub DecodeSuperPassword(hash) {
+	GenericEncodePassword(hash, 5, 2021) // 5 is modular inverse of 773 mod totient(2021)
 }
 
 sub EncodePassword () {
@@ -487,7 +491,7 @@ sub EncodePassword () {
 		EncodeSuperPassword((levels | (keys<<5)) | ((gems&3)<<7)) passcode1 = misc
 		EncodeSuperPassword((gems & 0x1FF<<2)>>2) passcode2 = misc
 		EncodeSuperPassword((gems & 0x1FF<<11)>>11) passcode3 = misc
-		EncodeSuperPassword((gems & 0x3F<<20)>>20) passcode4 = misc		
+		EncodeSuperPassword((gems & 0x3F<<20)>>20) passcode4 = misc
 		passcode1 ^= 0x18D
 		passcode2 ^= 0x24E
 		passcode3 ^= 0x3E4
@@ -861,7 +865,7 @@ inline sub InvalidateConfirm() {
 	}
 }
 
-inline sub NavigateMemcardBlocks() {	
+inline sub NavigateMemcardBlocks() {
 	if (dirpress(PAD_E) && BlockIndex <= 9) {
 		SoundMenuButton()
 		BlockIndex += 5
@@ -1779,10 +1783,10 @@ sub GenRandomGame () {
 	if (gems & 1<<23) ITEMPOOL1 |= 1<<27;
 	if (gems & 1<<24) ITEMPOOL2 |= 1<<8;
 	if (gems & 1<<25) ITEMPOOL2 |= 1<<18;
-	
+
 	if (keys & 1<< 0) ITEMPOOL2 |= 1<<10;
 	if (keys & 1<< 1) ITEMPOOL2 |= 1<<20;
-	
+
 	CURRENTLEVEL = rand(27)
 	LEVELCOUNT = CURRENTLEVEL
 }
@@ -2328,30 +2332,6 @@ state Menu_Password { // 45
 	code => sub PasswordInputMaster
 	trans {
 	}
-}
-
-inline sub DecodeNormalPassword(hash) {	
-	var passcode = 1, mask = 1<<30
-	do (var i = 0) {
-		passcode = passcode*passcode % 32399
-		if ((0xB & mask) != 0) {
-			passcode = passcode*hash % 32399
-		}
-		mask >>= 1
-	} while ({i+=1.0}; i < 31.0)
-	misc = passcode
-}
-
-inline sub DecodeSuperPassword(hash) {	
-	var passcode = 1, mask = 1<<30
-	do (var i = 0) {
-		passcode = passcode*passcode % 2021
-		if ((0x5 & mask) != 0) {
-			passcode = passcode*hash % 2021
-		}
-		mask >>= 1
-	} while ({i+=1.0}; i < 31.0)
-	misc = passcode
 }
 
 sub DecodePassword () {
