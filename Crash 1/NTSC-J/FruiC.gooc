@@ -713,7 +713,9 @@ state Wumpa_IdleAnim_Thrown { // 14
 		} until (y < groundy && vely < 0)
 		y = groundy
 		spawn(FruiC, S_WUMPA_IDLEANIM_PART, 16)
+		#ifnreg "ntsc-u"
 		creator->statusa |= 0x400000
+		#endif
 		FruitPlayNextFrame()
 	}
 	trans {
