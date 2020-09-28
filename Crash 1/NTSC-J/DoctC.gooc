@@ -214,8 +214,11 @@
 #spawn S_DOCTOR_SPARKLE           Doctor_Sparkle
 #spawn S_DOCTOR_PARTICLE          Doctor_Particle
 #spawn S_DOCTOR_PARTICLE_DECEL    Doctor_Particle
+
+#ifreg "ntsc-j"
 #spawn S_DOCTOR_HELP_TEXT         Doctor_Help_Text
 #spawn S_7                        __s_7
+#endif
 
 var
 mem1, mem2, mem3, mem4, mem5, mem6, mem7, mem8, mem9, mem10,
@@ -245,7 +248,11 @@ inline sub SeekScale() {
 	}
 }
 
+#ifnreg "ntsc-j"
+inline sub FollowTarget () { // 0
+#else
 sub FollowTarget () { // 0
+#endif
 	/* Target position is in "vec" vector. */
 	var0 = distance(vec, self, 0)
 	if (DoctorHealth == 3.0) {
@@ -422,39 +429,21 @@ state Witch_Doctor { // 1
 	trans {
 		if (LEVEL == LEVEL_LightsOut || LEVEL == LEVEL_FumblingInTheDark) {
 			if (DoctorLightTimeLeft) {
-				colra = 2.0
-				colga = 2.0
-				colba = 2.0
-				colr1 = 2.0
-				colg1 = 2.0
-				colb1 = 2.0
-				colr2 = 2.0
-				colg2 = 2.0
-				colb2 = 2.0
-				colr3 = 2.0
-				colg3 = 2.0
-				colb3 = 2.0
+				SetColor(2.0, 2.0, 2.0)
 				DoctorLightTimeLeft -= 1
 				GLOBAL_54 = self
 			}
 			else {
-				colra = 1.0
-				colga = 1.0
-				colba = 1.0
-				colr1 = 1.0
-				colg1 = 1.0
-				colb1 = 1.0
-				colr2 = 1.0
-				colg2 = 1.0
-				colb2 = 1.0
-				colr3 = 1.0
-				colg3 = 1.0
-				colb3 = 1.0
+				SetColor(1.0, 1.0, 1.0)
 				GLOBAL_54 = 0
 			}
 		}
 		if (DoctorHealth == 2.0) {
+			#ifnreg "ntsc-j"
+			if (FRAMETIME < 30) {
+			#else
 			if (FRAMETIME < 27) {
+			#endif
 				if (!time(0.15s)) {
 					spawn(DoctC, S_DOCTOR_SPARKLE, 1, 34.0, self, 0.3s)
 				}
@@ -619,9 +608,7 @@ state Witch_Doctor_Dead { // 4
 				PlayDoctorSound()
 			}
 			spawn(DoctC, S_DOCTOR_PARTICLE_DECEL, 10)
-			scalex = 1.0S
-			scaley = 1.0S
-			scalez = 1.0S
+			SetScale(1S)
 			DoctorSize = 1.0S
 			statusb = FLAG_ROT_Y | FLAG_PHYSICS_ENGINE | 0x400 | 0x1000
 			accevcstate(Witch_Doctor_Help)
@@ -701,25 +688,12 @@ state Kill { // 7
 state Doctor_Feather { // 8
 	stateflag 0x80
 	code (r, g, b) {
-		scalex = 1.5S
-		scaley = 1.5S
-		scalez = 1.5S
+		SetScale(1.5S)
 		DoctorFloatOffset = y
 		var0 = -(10m + rand(0))
-		colra = r << 1
-		colga = g << 1
-		colba = b << 1
-		colr1 = r << 1
-		colg1 = g << 1
-		colb1 = b << 1
-		colr2 = r << 1
-		colg2 = g << 1
-		colb2 = b << 1
-		colr3 = r << 1
-		colg3 = g << 1
-		colb3 = b << 1
-		x += rand(-0.2m, 0.2m+1)
-		z += rand(-0.2m, 0.2m+1)
+		SetColor(r<<1, g<<1, b<<1)
+		x += randi(-0.2m, 0.2m)
+		z += randi(-0.2m, 0.2m)
 		y += 0.2m
 		zindex = 25
 		rotx = 0
@@ -744,7 +718,7 @@ state Doctor_Feather { // 8
 			playframe((animframe + 1.0) % 16.0, 2)
 		} until(vely < 0)
 		vely = -0.2m
-		var0 /= 16
+		var0 >>= 4
 		while (scalex > 0.1S) {
 			velx >>= 1
 			velz >>= 1
@@ -810,6 +784,7 @@ sub KillDoctor () { // 780
 	changestate(Witch_Doctor_Dead)
 }
 
+#ifreg "ntsc-j"
 sub DoctorGetHelpAmount () { // 782
 	if (var level = LEVEL; level == LEVEL_PapuPapu || level == LEVEL_RipperRoo || level == LEVEL_DrNBrio || level == LEVEL_DrNeoCortex || level == LEVEL_KoalaKong || level == LEVEL_Pinstripe) {
 		misc = 0
@@ -892,28 +867,11 @@ state Doctor_Help_Text {
 	statusc 0
 	code () {
 		zindex = 100
-		rotx = 0
-		roty = 0
-		rotz = 0
-		statusb = FLAG_2D | 0x4000000
-		scalex = 0.64
-		scaley = 1.015
-		scalez = 256.0
-		colr1 = 0x1FF
-		colg1 = 0x1FF
-		colb1 = 0x1FF
-		colr2 = 0x1FF
-		colg2 = 0x1FF
-		colb2 = 0x1FF
-		colr3 = 0xFF
-		colg3 = 0xFF
-		colb3 = 0xFF
-		colr4 = 0xFF
-		colg4 = 0xFF
-		colb4 = 0xFF
-		x = -220.0
-		y = 90.0
-		z = -220.0
+		SetRot(0)
+		statusb = FLAG_2D | FLAG_HAS_SHADOW
+		SetScale(.64, 1.015, 256.0)
+		SetTextColor(0x1FF, 0x1FF, 0x1FF, 0xFF, 0xFF, 0xFF)
+		SetTrans(-220.0, 90.0, -220.0)
 		setanim(DOCTOR_HELP_TEXT)
 		if (DOCTORHELPCOUNT == 7.0) {
 			sleepframe(1.0)
@@ -926,4 +884,5 @@ state Doctor_Help_Text {
 		accevcstate(Kill, e == Event12)
 	}
 }
+#endif
 
