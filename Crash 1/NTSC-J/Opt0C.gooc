@@ -42,6 +42,12 @@ inline sub SoundMenuSelect() {
 	statusb &= ~FLAG_2D
 }
 
+#ifnreg "ntsc-j"
+expr OptionsMenuButtonConfirm = buttonpress(PAD_X)
+#else
+expr OptionsMenuButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+#endif
+
 state Options_Menu {
 	statusc 0
 	code () {
@@ -161,7 +167,7 @@ state Option {
 			do {
 				if (MenuIndex == interrupter->MenuSelectedIndex) {
 					playanim(0, RETURN_ON)
-					if (buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) {
+					if (OptionsMenuButtonConfirm) {
 						SoundMenuSelect()
 						GAMESCREEN = 5
 						sleepanim(0, RETURN_ON)

@@ -664,9 +664,9 @@ inline sub SpawnTextDefaultCol(x_pos, y_pos, frame) {
 }
 
 #ifnreg "ntsc-j"
-expr MenuButtonConfirm = buttonpress(PAD_START) || buttonpress(PAD_X)
+expr StartMenuButtonConfirm = buttonpress(PAD_START) || buttonpress(PAD_X)
 #else
-expr MenuButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+expr StartMenuButtonConfirm = buttonbuffer(PAD_START) || buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
 #endif
 state GameOver_Menu { // 3
 	code () {
@@ -697,7 +697,7 @@ state GameOver_Menu { // 3
 				SoundMenuButton()
 				var1 -= 1
 			}
-			if (MenuButtonConfirm) {
+			if (StartMenuButtonConfirm) {
 				SoundMenuSelect()
 				if (var1 == 0) {
 					save (SAVEDITEMPOOL1, SAVEDITEMPOOL2, LEVELCOUNT) {
@@ -1061,7 +1061,7 @@ state Title_Menu { // 8
 					}
 				}
 				#endif
-				if (MenuButtonConfirm) {
+				if (StartMenuButtonConfirm) {
 					SoundMenuSelect()
 					parent->TitleIdleTime = frametime
 					if (var0 == 0) {
@@ -1658,7 +1658,7 @@ state Level_End_Willy_Spawn { // 15
 		else if (level == LEVEL_UpTheCreek) LevelBoxCount = 15.0;
 		else if (level == LEVEL_TempleRuins) LevelBoxCount = 67.0;
 		else if (level == LEVEL_TheLostCity) LevelBoxCount = 26.0;
-		else if (level == LEVEL_SunsetVista) LevelBoxCount = 53.0;
+		else if (level == LEVEL_SunsetVista) LevelBoxCount = 50.0;
 		else if (level == LEVEL_JawsOfDarkness) LevelBoxCount = 65.0;
 		else if (level == LEVEL_CortexPower) LevelBoxCount = 41.0;
 		else if (level == LEVEL_HeavyMachinery) LevelBoxCount = 33.0;

@@ -283,23 +283,49 @@ state Island_Traveler_Spawn {
 	}
 }
 
-inline sub PlaySoundMenuButton() {
+inline sub SoundMenuButton() {
 	statusb |= FLAG_2D
 	soundpitch(4.0)
 	sounddelay(1)
 	sounddecay(0.9375)
-	soundplay([Mb1iA], 0.5V)
+	soundplay([Mb1iA], .5V)
 	statusb &= ~FLAG_2D
 }
 
-inline sub PlaySoundYeah() {
-	statusb |= FLAG_2D
-	soundpitch(5.805)
+inline sub SoundYeah() {
+	soundpitch(16000Hz)
 	sounddecay(0.75)
-	soundplay([YeahA], 0.8V)
+	soundplay([YeahA], .8V)
+}
+
+inline sub SoundMenuSelect() {
+	statusb |= FLAG_2D
+	soundpitch(4.0)
+	sounddecay(.9375)
+	soundplay([selpA], .8V)
+	statusb &= ~FLAG_2D
+}
+
+inline sub SoundLevelSelect() {
+	statusb |= FLAG_2D
+	#ifnreg "ntsc-j"
+	SoundMenuSelect()
+	#else
+	SoundYeah()
+	#endif
 	soundsetup(0, voice, 5)
 	statusb &= ~FLAG_2D
 }
+
+#ifreg "ntsc-j"
+expr IslandMenuLookLeft = buttonhold(PAD_SQUARE)
+expr IslandMenuLookRight = buttonhold(PAD_O)
+expr IslandMenuButtonConfirm = buttonbuffer(PAD_X)
+#else
+expr IslandMenuLookLeft = buttonhold(PAD_L1)
+expr IslandMenuLookRight = buttonhold(PAD_R1)
+expr IslandMenuButtonConfirm = buttonbuffer(PAD_O) || buttonbuffer(PAD_X)
+#endif
 
 sub IslandDoControls () {
 	misc = 0
@@ -353,36 +379,36 @@ sub IslandDoControls () {
 	}
 	if (misc == 1 && IslandCanMove && IslandProgress < LEVELSUNLOCKED && IslandTargetPath != 21 && IslandTargetPath != 31) {
 		if (IslandProgress < 31) {
-			PlaySoundMenuButton()
+			SoundMenuButton()
 			GotoIslandProg(IslandProgress+1, 0)
 		}
 	}
 	else if (misc == -1 && IslandCanMove && IslandTargetPath != 21 && IslandTargetPath != 31) {
 		if (IslandProgress > 1) {
-			PlaySoundMenuButton()
+			SoundMenuButton()
 			GotoIslandProg(IslandProgress-1, true)
 			IslandTurnOffset = 180deg
 		}
 	}
 	else if (dirhold(PAD_N) && IslandCanMove && IslandProgress == 15) {
 		if (ITEM_KEY2) {
-			PlaySoundMenuButton()
+			SoundMenuButton()
 			GotoIslandProg(50, 0)
 		}
 	}
 	else if (dirhold(PAD_S) && IslandCanMove && IslandProgress == 50) {
-		PlaySoundMenuButton()
+		SoundMenuButton()
 		GotoIslandProg(51, 0)
 		IslandTurnOffset = 180deg
 	}
 	else if (dirhold(PAD_N) && IslandCanMove && IslandProgress == 25) {
 		if (ITEM_KEY1) {
-			PlaySoundMenuButton()
+			SoundMenuButton()
 			GotoIslandProg(40, 0)
 		}
 	}
 	else if (dirhold(PAD_S) && IslandCanMove && IslandProgress == 40) {
-		PlaySoundMenuButton()
+		SoundMenuButton()
 		GotoIslandProg(41, 0)
 		IslandTurnOffset = 180deg
 	}
@@ -392,8 +418,8 @@ sub IslandDoControls () {
 	else if (buttonhold(PAD_R1) && IslandCanRotate) {
 		IslandCamRotOffset = spd(IslandCamRotOffset, 90deg)
 	}
-	else if ((buttonbuffer(PAD_O) || buttonbuffer(PAD_X)) && IslandCanMove) {
-		PlaySoundYeah()
+	else if (IslandMenuButtonConfirm && IslandCanMove) {
+		SoundLevelSelect()
 		SAVEDSCREEN = GAMESCREEN
 		GLOBAL_48 = IslandProgress
 		GLOBAL_20 = IslandProgress
@@ -403,11 +429,15 @@ sub IslandDoControls () {
 		IslandCamRotOffset = degseek(IslandCamRotOffset, 0, 90deg)
 	}
 	if (buttonhold(PAD_L1) && buttonhold(PAD_L2) && buttonpress(PAD_R1) && buttonhold(PAD_R2) && (dirhold(PAD_W) || dirhold(PAD_E)) && DEBUG) {
-		PlaySoundYeah()
+		SoundLevelSelect()
 		LEVELSUNLOCKED = 31
 		if (dirhold(PAD_W)) {
 			ITEMPOOL2 = 1<<10 | 1<<20
+			#ifnreg "ntsc-j"
+			ITEMPOOL1 = 1<<12 | 1<<20 | 1<<23 | 1<<24 | 1<<25 | 1<<29
+			#else
 			ITEMPOOL1 = 1<<8 | 1<<12 | 1<<20 | 1<<21 | 1<<25 | 1<<29
+			#endif
 		}
 		MAPLEVELLINKS = 0xFFFFFFFF
 		MAPKEYLINKS = ITEMPOOL2

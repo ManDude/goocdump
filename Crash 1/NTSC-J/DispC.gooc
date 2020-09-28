@@ -277,14 +277,18 @@ state Pause_Menu { // 6
 		zindex = 1000
 		setanim(PAUSE_TEXT)
 		if (LEVEL == LEVEL_Map) {
+			#ifreg "ntsc-j"
 			spawn2(DispC, S_PAUSE_TEXT)
+			#endif
 			animframe = 2.0
 		}
 		else if (player->stateflag \ 0x20 || ZONEFLAGS & 0x2000 || !(player->statusa \ FLAG_GROUNDLAND || player->stateflag \ 0x8000)) {
 			animframe = 1.0
 		}
 		else {
+			#ifreg "ntsc-j"
 			spawn2(DispC, S_PAUSE_TEXT)
+			#endif
 			animframe = 0
 		}
 		do {
@@ -321,6 +325,7 @@ state Pause_Menu_Unpause { // 7
 	}
 }
 
+#ifreg "ntsc-j"
 state Pause_Text { // 8
 	stateflag 0x100001
 	code () {
@@ -340,6 +345,7 @@ state Pause_Text { // 8
 		statusb |= 0x400
 	}
 }
+#endif
 
 sub SetPickupDisplay(r) { // 231
 	DisplayFruitReward = r

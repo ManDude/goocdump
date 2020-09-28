@@ -183,11 +183,13 @@ state Willy_Spawn { // 0
 		else if (level == LEVEL_HogWild || level == LEVEL_WholeHog) {
 			HEALTH = 0
 		}
+		#ifreg "ntsc-j"
 		else if (level == LEVEL_NSanityBeach) {
 			if (HEALTH >= 2.0) {
 				HEALTH = 1.0
 			}
 		}
+		#endif
 		spawn(DoctC, DoctC_S_WITCH_DOCTOR, 1, HEALTH)
 		spawn(ShadC, ShadC_S_SHADOW, 1, 0, 1.0S, 0)
 		statusc &= ~0x8000
@@ -257,10 +259,12 @@ sub WillyEndStance () {
 		DeloadAnim([WiFrV], [WiFrG])
 		sendevent(Event12, child)
 	}
+	#ifreg "ntsc-j"
 	if (WillyAnimSet == 15.0) {
 		DeloadAnim([WiS2V], [WillG])
 		DeloadAnim([WiS3V], [WillG])
 	}
+	#endif
 	WillyAnimSet = 7.0
 	setanim(WILLY_STANCE1, 0)
 	statusb |= FLAG_ROT_Y
@@ -303,19 +307,24 @@ sub WillyStanceSpin () {
 	statusc &= ~0x1002
 }
 
+#ifreg "ntsc-u"
+expr WillyFruitScratchCount = 6.0
+#else
+expr WillyFruitScratchCount = 50.0
+#endif
 inline sub WillyFruitWaitFruit () {
 	do (var i = 0) {
-		playanim(14, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(15, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(16, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(17, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(18, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(19, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(18, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(17, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(16, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-		playanim(15, WILLY_STANCE3_3) if (statusa \ 0x400000) return;
-	} while ({i += 1.0}; i < 50.0)
+		playanim(14, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(15, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(16, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(17, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(18, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(19, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(18, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(17, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(16, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+		playanim(15, WILLY_STANCE3_3) #ifnreg "ntsc-u" if (statusa \ 0x400000) return; #endif
+	} while ({i += 1.0}; i < WillyFruitScratchCount)
 	soundpitch(5.92+rand(1.12))
 	soundplay([!sp0A], .12V)
 }
@@ -390,6 +399,14 @@ sub WillyDoStance () {
 				}
 				else if (statusa \ 0x40000) {
 					if (!rand(50)) {
+						#ifnreg "ntsc-j"
+						if (getpayload(&[WiS4V], &[WillG], &[WiS5V], &[WillG]) <= getfreepages() && getpayload(&[WiS5V], &[WillG], &[WiS6V], &[WillG]) <= getfreepages() && getpayload(&[WiS6V], &[WillG], &[WiFrV], &[WiFrG]) <= getfreepages()) {
+							onstateexit(WillyEndStance)
+							LoadAnim([WiS4V], [WillG])
+							LoadAnim([WiS5V], [WillG])
+							WillyAnimSet = 16.0
+						}
+						#else
 						if (!rand(2)) {
 							if (getpayload(&[WiS4V], &[WillG], &[WiS5V], &[WillG]) <= getfreepages() && getpayload(&[WiS5V], &[WillG], &[WiS6V], &[WillG]) <= getfreepages() && getpayload(&[WiS6V], &[WillG], &[WiFrV], &[WiFrG]) <= getfreepages()) {
 								onstateexit(WillyEndStance)
@@ -406,9 +423,11 @@ sub WillyDoStance () {
 								WillyAnimSet = 15.0
 							}
 						}
+						#endif
 					}
 				}
 			}
+			#ifreg "ntsc-j"
 			else if (temp == 15.0) {
 				WillyStanceSpin()
 				playframes(WILLY_STANCE2_1, 0, 11.0)
@@ -473,11 +492,14 @@ sub WillyDoStance () {
 				} while ({i+=1.0}; i < 3.0)
 				WillyEndStance()
 			}
+			#endif
 			else if (temp == 16.0) {
 				playframes(WILLY_STANCE3_1, 0, 8.0)
 				playanim(9, WILLY_STANCE3_1, .2s)
 				playframes(10.0, 20.0)
+				#ifreg "ntsc-u"
 				statusa &= ~0x400000
+				#endif
 				spawn(FruiC, FruiC_S_WUMPA_IDLEANIM, 1, 1.0, 1.58s)
 				WillyAnimSet = 17.0
 				playframes(21.0, 24.0)
@@ -786,7 +808,11 @@ state Willy_Hurt { // 9
 	code () {
 		SoundPitchDefault()
 		sounddecay(.625)
+		#ifnreg "ntsc-j"
+		soundplay([yip0A], 1V)
+		#else
 		soundplay([Yip0A], .55V)
+		#endif
 		SoundWillyJump()
 		unless (statusa \ 0x80) {
 			vely = 12.64912m
@@ -1200,9 +1226,11 @@ state Willy_Success { // 21
 	statusc 0x1022
 	code () {
 		if (eventreceived == Event39) {
+			#ifreg "ntsc-j"
 			soundpitch(4.0)
 			sounddecay(.625)
 			soundplay([Wpe0A], .8V)
+			#endif
 			var1 = true
 		}
 		else {
@@ -1221,27 +1249,35 @@ state Willy_Success { // 21
 	}
 }
 
+inline sub SpawnComboFruit(fruit_reward) {
+	#ifreg "ntsc-u"
+	spawn(FruiC, FruiC_S_FRUIT_AUTO, 1, fruit_reward, 0)
+	#else
+	spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, fruit_reward, 0)
+	#endif
+}
+
 sub DoComboReward (combo) {
 	if (var temp = combo; temp == 1.0) {
-		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 76.0, 0)
+		SpawnComboFruit(76.0)
 		child->x = interrupter->x
 		child->y = interrupter->y
 		child->z = interrupter->z
 	}
 	else if (temp == 2.0) {
-		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 94.0, 0)
+		SpawnComboFruit(94.0)
 		child->x = interrupter->x
 		child->y = interrupter->y
 		child->z = interrupter->z
 	}
 	else if (temp == 3.0) {
-		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 92.0, 0)
+		SpawnComboFruit(92.0)
 		child->x = interrupter->x
 		child->y = interrupter->y
 		child->z = interrupter->z
 	}
 	else if (temp == 4.0) {
-		spawn2(FruiC, FruiC_S_FRUIT_AUTO, 1, 97.0, 0)
+		SpawnComboFruit(97.0)
 		child->x = interrupter->x
 		child->y = interrupter->y
 		child->z = interrupter->z
@@ -1368,7 +1404,11 @@ state Willy_Death_Fall { // 22
 inline sub SoundWillyArgument() {
 	SoundPitchDefault()
 	sounddecay(.75)
+	#ifnreg "ntsc-j"
+	soundplay([arg0A], .5V)
+	#else
 	soundplay([Arg0A], .5V)
+	#endif
 }
 
 state Willy_Death_Spin { // 23
@@ -1853,7 +1893,11 @@ sub AnimWillyWarpOut1 () {
 		playframes(WILLY_WARP_OUT1_1, 0, 19.0)
 		LoadAnim([WW30V], [WiWoG])
 		WillyAnimSet = 11.0
+		#ifnreg "ntsc-j"
+		SoundWillyLevelEnd([phw0A], .5V)
+		#else
 		SoundWillyLevelEnd([Phw0A], .3V)
+		#endif
 		playframes(WILLY_WARP_OUT1_2, 0, 19.0)
 		SoundWillyWarpOutLose()
 		soundstop()
@@ -1879,7 +1923,9 @@ sub AnimWillyWarpOut2 (warp_out) {
 	if (getpayload(&[WW50V], &[WiWoG], &[WW60V], &[WiWoG]) <= getfreepages()) {
 		LoadAnim([WW50V], [WiWoG])
 		WillyAnimSet = 12.0
+		#ifreg "ntsc-j"
 		SoundWillyLevelEnd([Wpe0A], .7V)
+		#endif
 		playframes(WILLY_WARP_OUT2_1, 0, 15.0)
 		LoadAnim([WW60V], [WiWoG])
 		WillyAnimSet = 13.0
@@ -1901,6 +1947,19 @@ sub AnimWillyWarpOut2 (warp_out) {
 	}
 }
 
+inline sub SpawnCardScreen() {
+	#ifreg "ntsc-u"
+	spawn(CardC, CardC_S_CARD_MASTER)
+	#else
+	spawn2(CardC, CardC_S_CARD_MASTER)
+	#endif
+}
+
+#ifnreg "ntsc-j"
+expr WillyWarpOutNoWin = DEATHCOUNT || ZONEFLAGS & 0x2000 || LEVEL == LEVEL_TheGreatHall
+#else
+expr WillyWarpOutNoWin = ZONEFLAGS & 0x2000 || LEVEL == LEVEL_TheGreatHall
+#endif
 state Willy_Warp_Out { // 32
 	stateflag 0x20
 	statusc 0x1022
@@ -1915,13 +1974,18 @@ state Willy_Warp_Out { // 32
 		if (var level = LEVEL; level == LEVEL_KoalaKong || level == LEVEL_DrNBrio || level == LEVEL_RipperRoo || level == LEVEL_DrNeoCortex || level == LEVEL_Pinstripe || level == LEVEL_PapuPapu) {
 			eventreceived = 0
 			soundpitch(4.0)
+			#ifnreg "ntsc-u"
+			sounddecay(.9375)
+			soundplay([yeh0A], 1V)
+			#else
 			sounddecay(.945)
 			soundplay([Yeh0A], .7V)
+			#endif
 			AnimWillySuccess(2.6s)
 			soundstop()
 		}
 		else {
-			if (ZONEFLAGS & 0x2000 || LEVEL == LEVEL_TheGreatHall) {
+			if (WillyWarpOutNoWin) {
 				if (a == 2.0) {
 					AnimWillyWarpOut2(false)
 					changestate(Willy_Win_Wait)
@@ -1932,14 +1996,14 @@ state Willy_Warp_Out { // 32
 						statusb |= FLAG_INVISIBLE
 						SAVETYPE = SAVE_TYPE_LEVEL
 						GLOBALVAL = 9
-						spawn2(CardC, CardC_S_CARD_MASTER)
+						SpawnCardScreen()
 						do {
 							playnull()
 						} until (GLOBALVAL == 0)
 					}
 					else if (level_temp == LEVEL_BonusCortex) {
 						if (LEVEL == LEVEL_BonusCortex && GLOBALVAL != 0) {
-							spawn2(CardC, CardC_S_CARD_MASTER)
+							SpawnCardScreen()
 							do {
 								playnull()
 							} until (GLOBALVAL == 0)
@@ -1948,12 +2012,16 @@ state Willy_Warp_Out { // 32
 				}
 			}
 			else {
+				#ifnreg "ntsc-j"
+				AnimWillyWarpOut2(true)
+				#else
 				if (DEATHCOUNT) {
 					AnimWillyWarpOut1()
 				}
 				else {
 					AnimWillyWarpOut2(true)
 				}
+				#endif
 				GetLevelGem()
 				if (!misc) {
 					SetGameState(GAME_STATE_NEW_GEM)
