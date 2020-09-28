@@ -621,9 +621,7 @@ state State_5 { // 5
 	code (v) {
 		statusb = 0x2000000
 		var0 = v
-		scalex = 0.5S
-		scaley = 0.5S
-		scalez = 0.5S
+		SetScale(.5S)
 		sleepanim(1, WITCH_DOCTOR_OLD)
 	}
 	trans {
