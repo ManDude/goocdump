@@ -565,7 +565,9 @@ state Spear_Spawner { // 8
 			     else RuinsCycleOffset = rand(0.25s);
 			ActiveDistance = spawn == S_SPEAR_RIGHT
 			statusb = FLAG_INVISIBLE
+			#ifreg "ntsc-j"
 			playanim(0, RUINS_SPEAR, 2s)
+			#endif
 			sleepanim(0, RUINS_SPEAR)
 		}
 	}
@@ -651,6 +653,11 @@ state Crusher_Open { // 12
 	}
 }
 
+#ifreg "ntsc-u"
+expr CrusherMoveSpeed = .35
+#else
+expr CrusherMoveSpeed = spd(10.5)
+#endif
 state Crusher_Smash { // 13
 	statusc 0
 	code () {
@@ -664,7 +671,7 @@ state Crusher_Smash { // 13
 			OldZ = z
 			calcpath()
 			playframe(0)
-			pathprog += spd(10.5)
+			pathprog += CrusherMoveSpeed
 		} while (pathprog <= pathlen - 1.0)
 		calcpath(pathlen - 1.0)
 		if (spawn == S_CRUSHER_RIGHT) {
@@ -688,7 +695,7 @@ state Crusher_Smash { // 13
 			OldZ = z
 			calcpath(-pathprog)
 			playframe(0)
-			pathprog += spd(10.5)/2
+			pathprog += CrusherMoveSpeed>>1
 		} while (pathprog <= 0)
 		if (spawn == S_CRUSHER_RIGHT) {
 			soundfadet(0.08s, voice)
@@ -810,6 +817,11 @@ state Bat_To_Fruit { // 17
 	}
 }
 
+#ifreg "ntsc-u"
+expr BatMoveSpeed = .15
+#else
+expr BatMoveSpeed = spd(4.5)
+#endif
 state Bat_Fly { // 18
 	stateflag 0x81
 	code () {
@@ -841,7 +853,7 @@ state Bat_Fly { // 18
 			}
 			animframe = (animframe + 1.0) % 14.0
 			playframe()
-			pathprog += spd(4.5)
+			pathprog += BatMoveSpeed
 		} while (pathprog <= pathlen-1.0)
 		soundsetup(0, voice, 5)
 	}

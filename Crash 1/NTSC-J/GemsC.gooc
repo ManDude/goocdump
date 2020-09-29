@@ -40,13 +40,21 @@ mem11, GemOldX, GemOldY, GemOldZ, GemMoveSpeed, ClearGemCount
 
 sub SetColorGemID () {
 	if (spawn == S_GEM_RED) {
+		#ifnreg "ntsc-j"
+		GemID = 24
+		#else
 		GemID = 12
+		#endif
 	}
 	else if (spawn == S_GEM_BLUE) {
 		GemID = 21
 	}
 	else if (spawn == S_GEM_GREEN) {
+		#ifnreg "ntsc-j"
+		GemID = 12
+		#else
 		GemID = 8
+		#endif
 	}
 	else if (spawn == S_GEM_PURPLE) {
 		GemID = 25
@@ -109,12 +117,12 @@ state Gem_Spawn { // 0
 }
 
 sub GemInactiveTransLongDist () {
-	var dist = distance(player, 0)
+	var dist = distance(player)
 	if (dist > 7m) {
-		scalex = 0.35S
+		scalex = .35S
 	}
 	else if (dist < 5m) {
-		scalex = 0.0S
+		scalex = 0
 	}
 	else {
 		scalex = ((dist - 5m) >> 10) * 7
@@ -127,9 +135,7 @@ sub GemInactiveTransLongDist () {
 
 state Gem_Inactive { // 1
 	code () {
-		scalex = 0.35S
-		scaley = 0.35S
-		scalez = 0.35S
+		SetScale(.35S)
 		if (LEVEL == LEVEL_JungleRollers) {
 			settrans(GemInactiveTransLongDist)
 		}
@@ -268,22 +274,18 @@ state Gem_Kill_Block { // 3
 
 state Gem_Sparkle { // 4
 	code (v) {
-		rotx = 0
-		roty = 0
-		rotz = 0
-		scalex = 0
-		scaley = 0
-		scalez = 0
+		SetRot(0)
+		SetScale(0)
 		getvert(vtrans, creator, v)
 		playanim(0, SPARKLE, 0.3s)
 	}
 	trans {
 		once {
-			var0 = 0.3
+			var0 = 0.3S
 		}
-		scalex = seek(scalex, var0, .3S)
-		scaley = seek(scaley, var0, .3S)
-		scalez = seek(scalez, var0, .3S)
+		scalex = seek(scalex, var0, .96)
+		scaley = seek(scaley, var0, .96)
+		scalez = seek(scalez, var0, .96)
 		if (frametime - statetime >= 0.2s) {
 			var0 = 0
 		}
@@ -292,24 +294,24 @@ state Gem_Sparkle { // 4
 
 sub CountClearGems () {
 	ClearGemCount = 0
-	if (ITEM_CLEAR_GEM1) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM2) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM3) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM4) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM5) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM6) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM7) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM8) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM9) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM10) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM11) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM12) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM13) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM14) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM15) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM16) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM17) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM18) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM19) ClearGemCount += 1;
-	if (ITEM_CLEAR_GEM20) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR1) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR2) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR3) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR4) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR5) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR6) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR7) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR8) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR9) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR10) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR11) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR12) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR13) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR14) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR15) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR16) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR17) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR18) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR19) ClearGemCount += 1;
+	if (ITEM_GEM_CLEAR20) ClearGemCount += 1;
 }

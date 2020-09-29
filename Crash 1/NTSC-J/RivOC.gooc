@@ -110,6 +110,7 @@ sub KillVoice () {
 	soundsetup(0, voice, 5)
 }
 
+#ifreg "ntsc-j"
 state River_Ambience { // 1
 	code () {
 		loadfile([RivOC])
@@ -122,12 +123,17 @@ state River_Ambience { // 1
 		sleepanim(0, RIVER_VENUS1_WAIT)
 	}
 }
+#endif
+
+inline sub SetJpnScale(new_scale) {
+	#ifreg "ntsc-j"
+	SetScale(new_scale, 1S, new_scale)
+	#endif
+}
 
 state Venus_Wait { // 2
 	code () {
-		scalex = 1.1S
-		scaley = 1.0S
-		scalez = 1.1S
+		SetJpnScale(1.1S)
 		if (spawn == S_VENUS_CONSTANT) {
 			roty = 60deg
 		}
@@ -402,9 +408,7 @@ state Branch_Spawn { // 9
 		RiverObjVar1 = x
 		RiverObjVar2 = y
 		RiverObjVar3 = z
-		scalex = 1.2S
-		scaley = 1.0S
-		scalez = 1.2S
+		SetJpnScale(1.2S)
 		if (vecx) BranchCycleTime = vecx >> 8;
 		     else BranchCycleTime = 6.67s;
 		BranchPathSpeed = pathlen * 2 / (BranchCycleTime + 1)
@@ -487,9 +491,7 @@ state Leaf_Spawn { // 11
 		WaterY = y
 		RiverObjBaseY = y
 		zindex = 0
-		scalex = 1.3S
-		scaley = 1.0S
-		scalez = 1.3S
+		SetJpnScale(1.3S)
 		if (vecx) RiverObjVar3 = vecx * 400;
 		else RiverObjVar3 = 7m;
 		if (RiverObjBaseY - RiverObjVar3 > 15m) {
@@ -548,7 +550,7 @@ state Leaf_Float { // 12
 state Leaf_Touch { // 13
 	statusc 0
 	code () {
-		LeafHitVel = player->groundvel / 4
+		LeafHitVel = player->groundvel >> 2
 		if (LeafHitVel < -4.5m) LeafHitVel = -4.5m;
 		vely = LeafHitVel
 		SoundPitchDefault()

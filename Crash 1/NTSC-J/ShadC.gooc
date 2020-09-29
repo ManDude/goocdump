@@ -277,7 +277,11 @@ state Boss_Health_Point {
 state Boss_Health {
 	statusc 0
 	code (hp, type) {
+		#ifnreg "ntsc-j"
+		zindex = 200
+		#else
 		zindex = -30
+		#endif
 		var1 = type
 		var0 = hp
 		SetTrans(-209.0, 70.0, 0)

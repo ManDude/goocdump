@@ -2105,7 +2105,9 @@ state Willy_Intro { // 34
 		roty += 180deg
 		DeloadAnim([WiI6V], [WillG])
 		WillyAnimSet = 7.0
+		#ifreg "ntsc-j"
 		spawn(WillC, S_WILLY_INTRO_DOCTOR)
+		#endif
 		changestate(Willy_Spin_Adjust_Time)
 	}
 	trans {
@@ -2138,13 +2140,16 @@ state Willy_Intro { // 34
 					DeloadAnim([WiI6V], [WillG])
 				}
 				WillyAnimSet = 7.0
+				#ifreg "ntsc-j"
 				sendevent(Event6, creator, parent)
+				#endif
 				changestate(Willy_Stance)
 			}
 		}
 	}
 }
 
+#ifreg "ntsc-j"
 state Willy_Intro_Give_Doctor { // 35
 	stateflag 0x8001
 	statusc 0
@@ -2155,6 +2160,7 @@ state Willy_Intro_Give_Doctor { // 35
 		sendevent(Event6, creator, parent)
 	}
 }
+#endif
 #module default
 
 #module [WilhC]

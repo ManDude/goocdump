@@ -184,10 +184,12 @@ state Brio_Throw {
 
 state Brio_Scare {
 	code () {
+		#ifreg "ntsc-j"
 		soundpitch(3.84 + rand(0.32))
 		sounddecay(0.5625)
 		sounddelay(2)
 		soundplay([BgbrA], 0.35V)
+		#endif
 		playframes(BRIO_SCARE_EXPLODE, 0, 12.0)
 		while (distance(player) > 3m) {
 			if (distance(player) > 4m) {
@@ -238,11 +240,18 @@ state Brio_Drink {
 		BrioAnimSet = 2.0
 		GLOBALVAL = 1.0
 		playframes(BRIO_DRINK_1, 0, 28.0)
+		#ifreg "ntsc-j"
 		soundpitch(4.0)
 		sounddecay(0.75)
 		soundplay([XfmrA], 1.0V)
+		#endif
 		playanim(0, BRIO_DRINK_2, 0.5s)
 		playframes(BRIO_DRINK_2, 0, 22.0)
+		#ifnreg "ntsc-j"
+		soundpitch(4.0)
+		sounddecay(0.75)
+		soundplay([xfmrA], 1.0V)
+		#endif
 		var0 = true
 		do (var i = 0) {
 			playframes(BRIO_DRINK_3, 0, 3.0)
@@ -311,6 +320,15 @@ sub SpawnStone (stone_z) {
 	creator = child
 }
 
+inline sub SoundBrioRoar() {
+	sounddecay(0.625)
+	#ifnreg "ntsc-j"
+	SoundPlayDefault([brorA], 1V) // brormanis was is brio ?
+	#else
+	SoundPlayDefault([BrorA], 0.8V)
+	#endif
+}
+
 state Brio_Monster_Start {
 	statusc 0
 	code () {
@@ -323,8 +341,7 @@ state Brio_Monster_Start {
 		BrioCantTrigger = false
 		statusb |= FLAG_ROT_Y
 		trotx = 360deg
-		sounddecay(0.625)
-		SoundPlayDefault([BrorA], 0.8V) // brormanis was is brio ?
+		SoundBrioRoar()
 		playframes(BRIO_MONSTER_ROAR_1, 0, 21.0)
 		playframes(BRIO_MONSTER_ROAR_2, 0, 5.0)
 		SpawnStone(7m)
@@ -461,8 +478,7 @@ state Brio_Monster_Hit {
 		soundplay([BhtrA], 50) // typo? meant to be 0.5V?
 		#endif
 		playframes(BRIO_MONSTER_HIT, 0, 22.0)
-		sounddecay(0.625)
-		SoundPlayDefault([BrorA], 0.8V)
+		SoundBrioRoar()
 		playframes(BRIO_MONSTER_ROAR_1, 0, 21.0)
 		playframes(BRIO_MONSTER_ROAR_2, 0, 5.0)
 		changestate(Brio_Monster_Punch)

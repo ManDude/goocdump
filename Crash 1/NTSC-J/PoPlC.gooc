@@ -318,13 +318,18 @@ state Platform_Path_Spawn { // 5
 		else {
 			setanim(PLATFORM_PATH)
 		}
-		if (vecx) {
-			PlatformMoveSpeed = vecx * 0.12 >> 8
-		}
-		else {
-			PlatformMoveSpeed = 6.0
-		}
+		#ifreg "ntsc-u"
+		if (vecx) PlatformMoveSpeed = vecx >> 8;
+		     else PlatformMoveSpeed = 0.2;
+		#else
+		if (vecx) PlatformMoveSpeed = vecx*1s >> 8;
+		     else PlatformMoveSpeed = 6.0;
+		#endif
+		#ifreg "ntsc-u"
+		LoopPathProg(PlatformMoveSpeed)
+		#else
 		LoopPathProg(spd(PlatformMoveSpeed))
+		#endif
 		roty = vecz >> 8
 		changestate(Platform_Path_Wait)
 	}
@@ -378,7 +383,11 @@ state Platform_Path_Active { // 7
 		PlatformTouchWait = y
 		PlatformKillY = z
 		unless (STATUS_FIRSTFRAME) {
+			#ifreg "ntsc-u"
+			LoopPathProg(PlatformMoveSpeed)
+			#else
 			LoopPathProg(spd(PlatformMoveSpeed))
+			#endif
 			if (PlatformRotSpeed) {
 				roty = spd(roty, PlatformRotSpeed) & 0xFFF
 				if (collider && player->y - y > -0.5m && !(player->stateflag \ 0x8000)) {
@@ -456,19 +465,25 @@ state Platform_Path_Auto { // 8
 			setanim(PLATFORM_PATH)
 		}
 		if (spawn == S_PLATFORM_UP_AUTO || spawn == S_PLATFORM_PATH_AUTO) {
+			#ifreg "ntsc-u"
+			if (vecx) PlatformMoveSpeed = vecx >> 8;
+			     else PlatformMoveSpeed = 127;
+			#else
 			if (vecx != 0) PlatformMoveSpeed = abs(vecx) >> 8;
-			          else PlatformMoveSpeed = 0.5-1;
+			          else PlatformMoveSpeed = 127;
+			#endif
 			PlatformMoveFactor = (pathlen * 2) / (PlatformMoveSpeed + 1)
 			PlatformMoveOffset = vecy * (PlatformMoveSpeed + 1) >> 16
-			var v1 = time(PlatformMoveSpeed, PlatformMoveOffset)
-			calcpath(abs((v1 - (PlatformMoveSpeed >> 1)) * PlatformMoveFactor))
-			if (v1 >= PlatformMoveSpeed >> 1) {
-				statusa |= 0x4
-			}
+			TimePathProg(time(PlatformMoveSpeed, PlatformMoveOffset), PlatformMoveSpeed, PlatformMoveFactor)
 		}
 		else {
+			#ifreg "ntsc-u"
+			if (vecx) PlatformMoveSpeed = vecx >> 8;
+			     else PlatformMoveSpeed = .2;
+			#else
 			if (vecx) PlatformMoveSpeed = abs(vecx) >> 8;
 			     else PlatformMoveSpeed = 6.0;
+			#endif
 			LoopPathProg(PlatformMoveSpeed)
 		}
 		roty = vecz >> 8
@@ -477,15 +492,8 @@ state Platform_Path_Auto { // 8
 	trans {
 		unless (STATUS_FIRSTFRAME) {
 			TimePathProg(time(PlatformMoveSpeed, PlatformMoveOffset), PlatformMoveSpeed, PlatformMoveFactor)
-			if (collider && player->y - y > -0.2m) {
-				collider->statusa |= FLAG_GROUNDLAND
-				collider->groundtime = collider->frametime
-				if (collider->vely < 0) {
-					collider->groundvel = collider->vely
-				}
-				collider->x += x - PlatformFallWait // old x
-				collider->y += y - PlatformTouchWait // old y
-				collider->z += z - PlatformKillY // old z
+			if (collider && player->y - y > -.2m) {
+				CarryCollider(PlatformFallWait, PlatformTouchWait, PlatformKillY)
 			}
 		}
 		PlatformFallWait = x

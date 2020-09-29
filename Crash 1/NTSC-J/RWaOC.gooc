@@ -546,8 +546,10 @@ state Slide_Platform_Spawn { // 10
 		     else PlatCycleDur = 80;
 		if (vecy) PlatCycleOff = vecy >> 8;
 		     else PlatCycleOff = 0;
+		#ifreg "ntsc-j"
 		PlatCycleDur = spd(1s*PlatCycleDur)
 		PlatCycleOff = spd(1s*PlatCycleOff)
+		#endif
 		if (vecz & 0x100) {
 			setanim(SLIDE_PLAT_LONG)
 		}
@@ -695,10 +697,12 @@ state Pusher_Spawn { // 16
 		PlatMakeSound = !(vecz & 0x100)
 		PusherHasTop = vecz & 0x200
 		zindex = 24
-		if (!(vecz & 0x400)) {
+		#ifreg "ntsc-j"
+		unless (vecz & 0x400) {
 			PlatCycleDur = spd(1s*PlatCycleDur)
 			PlatCycleOff = spd(1s*PlatCycleOff)
 		}
+		#endif
 		SlidePlatWaitDur = (PlatCycleDur-1s*2/3) >> 1
 		if (PusherHasTop) {
 			playanim(0, PUSHER_TOP)

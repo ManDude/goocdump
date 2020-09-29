@@ -52,11 +52,11 @@ state Wall_Native_Spawn {
 		setanim(WALL_NATIVE_WALK, 0)
 		yzapproach = 120deg
 		statusb = FLAG_ROT_Y | FLAG_TRACK_PATH_ROT | FLAG_TRACK_PATH_SIGN | FLAG_COLLIDABLE | 0x800 | 0x2000 | FLAG_SOLID_ALL | 0x20000000
-		changestate(Wall_Native_Stand)
+		changestate(Wall_Native_Stance)
 	}
 }
 
-state Wall_Native_Stand {
+state Wall_Native_Stance {
 	statusc 0
 	code () {
 		trotx = 1500deg
@@ -103,7 +103,7 @@ state Wall_Native_Attack {
 		rejevret(e == EventSpinHit)
 	}
 	trans {
-		changestateif(Wall_Native_Stand, distance(player) > 7m)
+		changestateif(Wall_Native_Stance, distance(player) > 7m)
 		OldX = x
 		OldY = y
 		OldZ = z

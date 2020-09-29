@@ -151,7 +151,9 @@ state LabAss_Walk { // 2
 	event (e, a) {
 		rejevret(e == EventJumpedOn)
 		if (IsShock) {
+			#ifreg "ntsc-j"
 			accevcstate(LabAss_Pushed, e == EventHitInvincible)
+			#endif
 			rejevret()
 		}
 		else {

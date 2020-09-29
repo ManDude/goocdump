@@ -53,8 +53,13 @@ state Turtle_Spawn {
 		     else field_61 = 1.6m;
 		if (vecy) TurtleBouncePropulsion = vecy;
 		     else TurtleBouncePropulsion = 12.64912m;
-		if (vecz) TurtlePathSpeed = vecz * 0.12 >> 8;
+		#ifreg "ntsc-u"
+		if (vecz) TurtlePathSpeed = vecz * 1s >> 8;
+		     else TurtlePathSpeed = .29;
+		#else
+		if (vecz) TurtlePathSpeed = vecz * 1s >> 8;
 		     else TurtlePathSpeed = 8.7;
+		#endif
 		TurtleWalkDirOff = 0
 		zindex = 25
 		TurtleTrackOffset = 0
@@ -125,7 +130,11 @@ state Turtle_Path {
 			}
 		}
 		else {
-			calcpath(loopseek(pathprog, pathlen + spd(TurtlePathSpeed) + -1.0, spd(TurtlePathSpeed)))
+			#ifreg "ntsc-u"
+			LoopPathProg(TurtlePathSpeed)
+			#else
+			LoopPathProg(spd(TurtlePathSpeed))
+			#endif
 			if (STATUS_PATH_END) {
 				trotx = 720deg
 				statusb &= ~0x20000000

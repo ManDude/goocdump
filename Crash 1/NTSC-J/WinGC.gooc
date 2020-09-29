@@ -866,16 +866,18 @@ expr CreditsLineHeight = G0x18
 state Credit_Line_Stance { // 9
 	statusc 0
 	code (text_frame, text_y, font) {
-		statusb = FLAG_INVISIBLE | FLAG_2D | 0x400
+		statusb = FLAG_INVISIBLE | FLAG_2D | FLAG_STRING_CENTER
 		if (font == 1) {
 			invincible = FONT_SMALL
 			SetScale(0.64, 1.015/2, 256.0)
 			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF)
 		}
+		#ifreg "ntsc-j"
 		else if (font == 2) {
 			SetScale(0.64, 1.015, 256.0)
 			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF, 0x1FF)
 		}
+		#endif
 		else {
 			zindex = 2000
 			SetTextColor(0x1FF, 0x1FF, 0x1FF, 0xC8, 0xC8, 0xC8)
@@ -899,7 +901,11 @@ state Credit_Line_Stance { // 9
 
 inline sub SpawnCreditLine (frame_num, line) {
 	spawn(WinGC, S_CREDIT_LINE, 1, frame_num, line*CreditsLineHeight, 0)
-	playnull(0.5s)
+	#ifnreg "ntsc-j"
+	playnull(.3s)
+	#else
+	playnull(.5s)
+	#endif
 }
 
 sub SpawnCredits () {

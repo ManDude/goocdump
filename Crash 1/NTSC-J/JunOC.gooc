@@ -277,13 +277,11 @@ state Boulder_Wait { // 6
 		BoulderMoveWaver = randi(-10deg, 10deg)
 		pathprog = 0
 		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
-		if (vecx) {
-			JungleObjPathSpeed = vecx >> 8
-		}
-		else {
-			JungleObjPathSpeed = 124.16
-		}
+		if (vecx) JungleObjPathSpeed = vecx >> 8;
+		     else JungleObjPathSpeed = 124.16;
+		#ifnreg "ntsc-u"
 		JungleObjPathSpeed = JungleObjPathSpeed * 0.98 >> 8
+		#endif
 		calcpath(0)
 		y += JungleObjYOff + 1020.0
 		if (player->z > z) {

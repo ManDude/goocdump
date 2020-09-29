@@ -65,8 +65,19 @@ state Cortex_Spawn {
 
 inline sub SoundAttack() {
 	if (!rand(2)) {
+		#ifnreg "ntsc-j"
+		if (!rand(2)) {
+			soundpitch(3.84 + rand(0.32))
+			soundplay([takvA], 0.6V + rand(0.2V))
+		}
+		else {
+			soundpitch(3.84 + rand(0.32))
+			soundplay([tk2vA], 0.6V + rand(0.2V))
+		}
+		#else
 		soundpitch(3.84 + rand(0.32))
 		soundplay([TakvA], 0.6V + rand(0.2V))
+		#endif
 	}
 }
 
@@ -76,10 +87,15 @@ inline sub SoundBlast() {
 }
 
 inline sub SoundCortexLaugh() {
+	#ifnreg "ntsc-j"
+	soundpitch(3.84 + rand(0.32))
+	soundplay([chgvA], 0.7V)
+	#else
 	if (!rand(3)) {
 		soundpitch(3.84 + rand(0.32))
 		soundplay([ChgvA], 0.7V)
 	}
+	#endif
 }
 
 inline sub AnimCortexFireAim() {
@@ -358,7 +374,9 @@ state Cortex_Hit {
 		voice = CortexHoverboardVoice
 		soundfadet(1s/3 + rand(1s/3), voice)
 		soundpitch(3.6 + rand(0.8), voice, 2)
+		#ifreg "ntsc-j"
 		SoundPlayDefault([HitvA], 0.5V)
+		#endif
 		sounddelay(1s/6)
 		SoundPlayDefault([sspvA], 0.5V)
 		playframes(CORTEX_HIT_1, 0, 17.0)
@@ -413,7 +431,9 @@ state Cortex_Dead {
 		wait(0.5s)
 		sendevent(EventWarp, player, 0)
 		wait(1.5s)
+		#ifreg "ntsc-j"
 		wait(0.5s)
+		#endif
 		loadlevel(LEVEL_GameWin)
 	}
 }
@@ -422,10 +442,15 @@ inline sub MakeHoverboardExplosion2() {
 	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 3, 1)
 	spawn(BoxsC, BoxsC_S_TNT_PARTICLE, 5, 0)
 	spawn(CorOC, CorOC_S_HOVERBOARD_SMOKE, 3)
+	#ifnreg "ntsc-j"
+	sounddecay(0.25)
+	SoundPlayDefault([tnt0A], 0.6V + rand(0.2V))
+	#else
 	if (!rand(2)) {
 		sounddecay(0.25)
 		SoundPlayDefault([tnt0A], 0.6V + rand(0.2V))
 	}
+	#endif
 }
 
 state Hoverboard_Break {
@@ -469,7 +494,11 @@ state Cortex_Intro {
 		LoadAnim([CI7vV], [CS1vG])
 		CortexAnimSet = 2.0
 		soundpitch(4.0)
+		#ifnreg "ntsc-j"
+		soundplay([madvA], 1.0V)
+		#else
 		soundplay([MadvA], 1.0V)
+		#endif
 		voice = CortexHoverboardVoice
 		soundfadet(1s, voice)
 		soundfadev(0.3V, voice, 2)
