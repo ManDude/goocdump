@@ -361,6 +361,14 @@ inline sub WillyCheckFall (grace_time) {
 	}
 }
 
+inline sub AnimWillyStanceStop() {
+	#ifnreg "pal"
+	playanim(11, WILLY_STANCE1, 1s)
+	#else
+	playanim(11, WILLY_STANCE1, .85s)
+	#endif
+}
+
 sub WillyDoStance () {
 	WillyResetStats()
 	playanim(11, WILLY_STANCE1, 1s)
