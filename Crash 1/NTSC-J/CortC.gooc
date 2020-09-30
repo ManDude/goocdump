@@ -30,7 +30,7 @@
 var OldX, OldY, OldZ, CortexPhase, mem5, CortexLookVec, CortexAnimSet, CortexHoverboardVoice
 
 event EventHit => state Cortex_Hit
-event EventTriggered => state Cortex_Cover
+event EventTriggered => state Cortex_Cower
 event EventRespawn => sub DeloadAnims
 
 #include "ShadC.gooh"
@@ -404,7 +404,7 @@ state Cortex_Hit {
 	}
 }
 
-state Cortex_Cover {
+state Cortex_Cower {
 	statusc 0
 	code () {
 		playframes(CORTEX_HIT_COVER, 0, 11.0)
