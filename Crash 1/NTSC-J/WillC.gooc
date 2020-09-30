@@ -65,7 +65,10 @@
 #spawn S_WILLY                    Willy_Spawn
 #spawn S_WILLY_EFFECT             Willy_Effect_Stance
 #spawn S_2                        __s_2
+
+#ifnreg "ntsc-u"
 #spawn S_WILLY_INTRO_DOCTOR       Willy_Intro_Give_Doctor
+#endif
 
 var FruitCount, LifeCount, mem3, mem4, mem5, mem6, PickupCortexCount, PickupBrioCount,
 PickupTawnaCount, ShadowY, SpinTime, SpinRotSpeed, mem13, SpinCooldownTime, SpinCooldownDuration, SpinAirCount,
@@ -172,7 +175,7 @@ state Willy_Spawn { // 0
 		PickupTawnaCount = TAWNACOUNT
 		SpinCooldownTime = 0
 		mem3 = 0
-		mem4 = 2.5s
+		mem4 = 75
 		SpinCooldownDuration = 10s
 		SpinTime = 0
 		WillyResetStats()
