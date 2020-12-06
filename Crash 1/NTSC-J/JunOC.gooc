@@ -51,12 +51,12 @@
 #anim LEAF [1014I] 112
 #endif
 #anim BOULDER [JuSeV] 1
-#anim BOULDER_OBSTACLE_1 [JB1eV] 1
-#anim BOULDER_OBSTACLE_2 [JB2eV] 1
-#anim BOULDER_OBSTACLE_3 [JB3eV] 1
-#anim BOULDER_OBSTACLE_4 [JB4eV] 1
-#anim BOULDER_OBSTACLE_5 [JB5eV] 1
-#anim BOULDER_OBSTACLE_6 [JB6eV] 1
+#anim BOULDER_FENCE_1 [JB1eV] 1
+#anim BOULDER_FENCE_2 [JB2eV] 1
+#anim BOULDER_FENCE_3 [JB3eV] 1
+#anim BOULDER_FENCE_4 [JB4eV] 1
+#anim BOULDER_FENCE_5 [JB5eV] 1
+#anim BOULDER_FENCE_6 [JB6eV] 1
 
 #sprite JUNGLE_PARTICLES [Ju4eT]
 #tex 0x808080 0 3 9 11 32 4 16 16
@@ -77,12 +77,12 @@
 #spawn S_LEAVES                   Leaves
 #spawn S_ROCK_PARTICLE            Rock_Particle
 #spawn S_BOULDER                  Boulder_Wait
-#spawn S_OBSTACLE_HIGH_SMALL      Boulder_Obstacle
-#spawn S_OBSTACLE_HIGH_MEDIUM     Boulder_Obstacle
-#spawn S_OBSTACLE_HIGH_LARGE      Boulder_Obstacle
-#spawn S_OBSTACLE_LOW_SMALL       Boulder_Obstacle
-#spawn S_OBSTACLE_LOW_MEDIUM      Boulder_Obstacle
-#spawn S_OBSTACLE_LOW_LARGE       Boulder_Obstacle
+#spawn S_FENCE_HIGH_SMALL         Boulder_Fence
+#spawn S_FENCE_HIGH_MEDIUM        Boulder_Fence
+#spawn S_FENCE_HIGH_LARGE         Boulder_Fence
+#spawn S_FENCE_LOW_SMALL          Boulder_Fence
+#spawn S_FENCE_LOW_MEDIUM         Boulder_Fence
+#spawn S_FENCE_LOW_LARGE          Boulder_Fence
 #spawn S_JUNGLE_TEST              Jungle_Test
 
 var JungleObjStartY, JungleObjStartX, JungleObjStartZ, RockFallHeight, JungleObjPathSpeed,
@@ -479,17 +479,17 @@ state Jungle_Particle { // 9
 	}
 }
 
-state Boulder_Obstacle { // 10
+state Boulder_Fence { // 10
 	stateflag 0x81
 	code () {
 		zindex = 30
 		statusb = FLAG_COLLIDABLE | FLAG_SOLID_ALL
-		if (spawn == S_OBSTACLE_HIGH_SMALL) setanim(BOULDER_OBSTACLE_4);
-		else if (spawn == S_OBSTACLE_HIGH_MEDIUM) setanim(BOULDER_OBSTACLE_5);
-		else if (spawn == S_OBSTACLE_HIGH_LARGE) setanim(BOULDER_OBSTACLE_6);
-		else if (spawn == S_OBSTACLE_LOW_SMALL) setanim(BOULDER_OBSTACLE_1);
-		else if (spawn == S_OBSTACLE_LOW_MEDIUM) setanim(BOULDER_OBSTACLE_2);
-		else if (spawn == S_OBSTACLE_LOW_LARGE) setanim(BOULDER_OBSTACLE_3);
+		if (spawn == S_FENCE_HIGH_SMALL) setanim(BOULDER_FENCE_4);
+		else if (spawn == S_FENCE_HIGH_MEDIUM) setanim(BOULDER_FENCE_5);
+		else if (spawn == S_FENCE_HIGH_LARGE) setanim(BOULDER_FENCE_6);
+		else if (spawn == S_FENCE_LOW_SMALL) setanim(BOULDER_FENCE_1);
+		else if (spawn == S_FENCE_LOW_MEDIUM) setanim(BOULDER_FENCE_2);
+		else if (spawn == S_FENCE_LOW_LARGE) setanim(BOULDER_FENCE_3);
 		sleepframe(0)
 	}
 	trans {
@@ -497,19 +497,19 @@ state Boulder_Obstacle { // 10
 			var0 = true
 			interrupter = GLOBALOBJ
 			if (interrupter) {
-				changestateif(Boulder_Obstacle_Runover, interrupter->z - z >= -1.5m)
+				changestateif(Boulder_Fence_Runover, interrupter->z - z >= -1.5m)
 			}
 			var0 = false
 			if (collider) {
 				soundpitch(4.0)
 				soundplay([FtreA], 0.4V)
-				changestate(Boulder_Obstacle_Runover)
+				changestate(Boulder_Fence_Runover)
 			}
 		}
 	}
 }
 
-state Boulder_Obstacle_Runover { // 11
+state Boulder_Fence_Runover { // 11
 	stateflag 0x81
 	code () {
 		yzapproach = 360deg

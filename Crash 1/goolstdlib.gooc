@@ -4,6 +4,7 @@ expr FLAG_FIRSTFRAME         = 0x20 // statusa
 expr FLAG_INVALID_PATH       = 0x200 // statusa
 expr FLAG_REACHED_TROT       = 0x800 // statusa
 expr FLAG_PLAYER_D_COLLIDER  = 0x1000 // statusa
+expr FLAG_KEEP_EVENT_STACK   = 0x20000 // statusa
 
 expr FLAG_ROT_Y              = 0x1 // statusb
 expr FLAG_TRACK_PATH_ROT     = 0x2 // statusb
@@ -45,8 +46,8 @@ expr FADE_TO                 = -1.0
 expr FADE_FROM               = 1.0
 expr FADE_FULL               = -1
 
-expr DIST_EXACT = 1
-expr DIST_NO_Y  = 2
+expr DIST_EXACT = 0x1
+expr DIST_NO_Y  = 0x2
 
 /* memcard i/o flags
  * 1 - accessing?
