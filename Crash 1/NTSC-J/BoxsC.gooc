@@ -529,11 +529,7 @@ state Box_Normal_Spawn { // 0
 		}
 		BoxCheckRewards()
 		do {
-			#ifnreg "pal"
-			playframe(BoxFrame, 2.0s)
-			#else
-			playframe(BoxFrame, 2.0s * 5/6)
-			#endif
+			playframe(BoxFrame, autopal(2.0s))
 			if (BoxBreakTime) {
 				changestateif(Box_Break, frametime - statetime >= BoxBreakTime)
 			}
@@ -668,11 +664,7 @@ state Box_Ghost_Appear { // 6
 		SoundPitchDefault()
 		soundplay([bap0A], 0.4V)
 		entitysetstate(1)
-		#ifnreg "pal"
-		playframe(BoxFrame, 0.2s)
-		#else
-		playframe(BoxFrame, 0.2s * 5/6)
-		#endif
+		playframe(BoxFrame, autopal(0.2s))
 		if (!(BoxFlag & BOX_FLAG_NO_TRIGGER)) {
 			BoxTrigger()
 		}
@@ -1704,11 +1696,7 @@ state Smoke_Stance { // 32
 			if (var0) {
 				return
 			}
-			#ifnreg "pal"
-			playframe(animframe, 0.5s)
-			#else
-			playframe(animframe, 0.5s * 5/6)
-			#endif
+			playframe(animframe, autopal(0.5s))
 		} while (animframe + 1.0 < 17.0)
 	}
 	event (e, a) {
