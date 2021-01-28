@@ -422,7 +422,7 @@ sub IslandDoControls () {
 		SoundLevelSelect()
 		SAVEDSCREEN = GAMESCREEN
 		GLOBAL_48 = IslandProgress
-		GLOBAL_20 = IslandProgress
+		CURRENTLEVEL = IslandProgress
 		loadlevel(IslandLevel)
 	}
 	else if (!IslandCanMove) {
